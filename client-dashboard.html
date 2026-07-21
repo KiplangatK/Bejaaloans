@@ -8,44 +8,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-<title>Client Dashboard | Bejja Loan Credit</title>
+<title>Client Dashboard | Bejja Credit</title>
 
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
 
 
 <style>
 
-body{
 
-font-family:'Poppins',sans-serif;
+*{
 
-background:#f4f7fb;
+margin:0;
+padding:0;
+box-sizing:border-box;
 
 }
 
 
+
+body{
+
+background:#edf4ff;
+
+font-family:'Segoe UI',Tahoma,sans-serif;
+
+}
+
+
+
+
+
 /* SIDEBAR */
+
 
 .sidebar{
 
 position:fixed;
 
-top:0;
-
 left:0;
+
+top:0;
 
 width:260px;
 
 height:100vh;
 
-background:linear-gradient(180deg,#0F4C81,#2563EB);
-
-padding:25px;
+background:#0F4C81;
 
 color:white;
 
@@ -53,11 +67,27 @@ color:white;
 
 
 
-.sidebar h3{
+.logo{
 
-font-weight:700;
+padding:25px;
+
+font-size:25px;
+
+font-weight:bold;
+
+border-bottom:1px solid rgba(255,255,255,.2);
 
 }
+
+
+
+.logo i{
+
+margin-right:10px;
+
+}
+
+
 
 
 
@@ -65,15 +95,13 @@ font-weight:700;
 
 display:block;
 
+padding:15px 25px;
+
 color:white;
 
 text-decoration:none;
 
-padding:12px;
-
-margin:8px 0;
-
-border-radius:10px;
+transition:.3s;
 
 }
 
@@ -81,17 +109,74 @@ border-radius:10px;
 
 .sidebar a:hover{
 
-background:rgba(255,255,255,.2);
+background:#2563EB;
+
+padding-left:35px;
 
 }
 
 
 
-/* MAIN */
+
+
+.sidebar i{
+
+width:25px;
+
+}
+
+
+
+
+
+
+
+/* MAIN AREA */
+
 
 .main{
 
 margin-left:260px;
+
+}
+
+
+
+
+
+
+/* TOP BAR */
+
+
+.topbar{
+
+height:70px;
+
+background:#2563EB;
+
+color:white;
+
+display:flex;
+
+align-items:center;
+
+justify-content:space-between;
+
+padding:0 30px;
+
+box-shadow:0 4px 15px rgba(0,0,0,.2);
+
+}
+
+
+
+
+
+
+/* CONTENT */
+
+
+.content{
 
 padding:30px;
 
@@ -100,74 +185,152 @@ padding:30px;
 
 
 
-.profile-img{
 
-width:75px;
 
-height:75px;
+
+/* PROFILE HEADER */
+
+
+.profile-header{
+
+background:white;
+
+border-radius:20px;
+
+padding:25px;
+
+box-shadow:0 5px 20px rgba(0,0,0,.1);
+
+display:flex;
+
+align-items:center;
+
+gap:25px;
+
+}
+
+
+
+.profile-header img{
+
+width:100px;
+
+height:100px;
 
 border-radius:50%;
 
 object-fit:cover;
 
-border:3px solid #2563EB;
-
-background:white;
+border:4px solid #2563EB;
 
 }
 
 
 
 
-.cardx{
 
-padding:25px;
+.client-name{
 
-border-radius:18px;
+font-size:26px;
 
-color:white;
+font-weight:bold;
 
-box-shadow:0 8px 20px rgba(0,0,0,.1);
-
-}
-
-
-
-.blue{
-
-background:#0F4C81;
+color:#0F4C81;
 
 }
 
 
 
-.green{
+
+
+.badge-active{
 
 background:#198754;
 
-}
+color:white;
 
+padding:8px 20px;
 
-
-.orange{
-
-background:#f59e0b;
+border-radius:20px;
 
 }
 
 
 
-.panel{
+
+
+/* SUMMARY CARDS */
+
+
+.summary-card{
 
 background:white;
 
-padding:20px;
+border-radius:20px;
 
-border-radius:18px;
+padding:25px;
 
-box-shadow:0 8px 18px rgba(0,0,0,.08);
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+
+height:150px;
 
 }
+
+
+
+.summary-card i{
+
+font-size:35px;
+
+color:#2563EB;
+
+}
+
+
+
+.summary-title{
+
+color:#666;
+
+font-size:15px;
+
+}
+
+
+
+
+
+.summary-value{
+
+font-size:25px;
+
+font-weight:bold;
+
+color:#0F4C81;
+
+}
+
+
+
+
+
+
+/* QUICK BUTTONS */
+
+
+.quick-btn{
+
+height:55px;
+
+border-radius:15px;
+
+font-weight:bold;
+
+font-size:17px;
+
+}
+
+
 
 
 
@@ -181,32 +344,56 @@ box-shadow:0 8px 18px rgba(0,0,0,.08);
 <body>
 
 
-<!-- DATABASE FILES -->
 
 <script src="assets/js/database.js"></script>
+
 <script src="assets/js/auth.js"></script>
 
+
+
+<script>
+
+
+if(!AUTH.currentClient()){
+
+
+window.location.href="client-portal.html";
+
+
+}
+
+
+</script>
+
+
+
+
+
+
+
 <!-- SIDEBAR -->
+
 
 <div class="sidebar">
 
 
-<h3>
+
+<div class="logo">
 
 <i class="fa-solid fa-building-columns"></i>
 
 Bejja Credit
 
-</h3>
+</div>
 
 
-<hr>
+
 
 
 
 <a href="client-dashboard.html">
 
-<i class="fa fa-home"></i>
+<i class="fa fa-dashboard"></i>
 
 Dashboard
 
@@ -214,9 +401,11 @@ Dashboard
 
 
 
+
+
 <a href="apply-loan.html">
 
-<i class="fa fa-money-bill"></i>
+<i class="fa fa-hand-holding-dollar"></i>
 
 Apply Loan
 
@@ -224,27 +413,38 @@ Apply Loan
 
 
 
-<a href="my-loan.html">
 
-<i class="fa fa-file"></i>
 
-My Loan
+
+<a href="my-loans.html">
+
+<i class="fa fa-money-bill"></i>
+
+My Loans
 
 </a>
 
 
 
-<a href="profile.html">
+
+
+
+
+<a href="client-profile.html">
 
 <i class="fa fa-user"></i>
 
-Profile
+My Profile
 
 </a>
 
 
 
-<a href="#" onclick="logout()">
+
+
+
+
+<a href="client-portal.html">
 
 <i class="fa fa-right-from-bracket"></i>
 
@@ -253,180 +453,382 @@ Logout
 </a>
 
 
+
+
+
 </div>
 
 
 
 
-<!-- MAIN CONTENT -->
+
+
+
+
+
+
+<!-- MAIN -->
+
 
 <div class="main">
 
 
 
-<div class="d-flex align-items-center gap-3 mb-4">
 
 
-<img id="profileImage"
-class="profile-img"
+<div class="topbar">
+
+
+<h3>
+
+Client Dashboard
+
+</h3>
+
+
+
+<div>
+
+Welcome,
+
+<strong id="clientNameTop">
+
+</strong>
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="content">
+
+
+
+
+
+
+<!-- PROFILE HEADER -->
+
+
+<div class="profile-header mb-4">
+
+
+
+<img id="clientPhoto"
+
 src="">
+
+
 
 
 
 <div>
 
 
-<h2 id="welcome">
+<h3 class="client-name"
 
-Welcome
+id="clientName">
 
-</h2>
+</h3>
 
 
-<p class="text-muted">
 
-Manage your Bejja Credit account.
+<span class="badge-active">
 
-</p>
+ACTIVE CLIENT
+
+</span>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+<!-- SUMMARY CARDS -->
+
+
+<div class="row g-4">
+
+
+
+<div class="col-md-3">
+
+
+<div class="summary-card">
+
+
+<i class="fa fa-money-bill-wave"></i>
+
+
+<div class="summary-title">
+
+Active Loan
+
+</div>
+
+
+<div class="summary-value"
+
+id="activeLoan">
+
+KES 0
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="col-md-3">
+
+
+<div class="summary-card">
+
+
+<i class="fa fa-wallet"></i>
+
+
+<div class="summary-title">
+
+Outstanding Balance
+
+</div>
+
+
+<div class="summary-value"
+
+id="balance">
+
+KES 0
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="col-md-3">
+
+
+<div class="summary-card">
+
+
+<i class="fa fa-calendar"></i>
+
+
+<div class="summary-title">
+
+Next Due Date
+
+</div>
+
+
+<div class="summary-value"
+
+id="dueDate">
+
+-
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="col-md-3">
+
+
+<div class="summary-card">
+
+
+<i class="fa fa-check-circle"></i>
+
+
+<div class="summary-title">
+
+Total Paid
+
+</div>
+
+
+<div class="summary-value"
+
+id="paid">
+
+KES 0
+
+</div>
+
+
+</div>
+
+
+</div>
+  <a href="client-dashboard.html">
+
+<i class="fa fa-home"></i>
+
+Home
+
+</a>
+  <!-- =========================
+     LOAN STATUS SECTION
+========================= -->
+
+
+<div class="row mt-4">
+
+
+
+<div class="col-md-8">
+
+
+<div class="summary-card"
+
+style="height:auto;">
+
+
+
+<h5 class="text-primary fw-bold">
+
+<i class="fa fa-file-circle-check"></i>
+
+Loan Status
+
+</h5>
+
+
+
+
+<div id="loanStatus">
+
+
+Loading loan information...
+
+
+</div>
+
+
 
 
 </div>
 
 
 </div>
-<!-- NO LOAN MESSAGE -->
-
-<div id="noLoan"
-
-class="panel"
-
-style="display:none;">
 
 
-<h4>
-
-<i class="fa fa-info-circle"></i>
-
-No Active Loan
-
-</h4>
 
 
-<p>
 
-You don't have any approved loan currently.
 
-</p>
+
+<div class="col-md-4">
+
+
+<div class="summary-card"
+
+style="height:auto;">
+
+
+
+<h5 class="text-primary fw-bold">
+
+<i class="fa fa-bolt"></i>
+
+Quick Actions
+
+</h5>
+
 
 
 
 <a href="apply-loan.html"
 
-class="btn btn-success">
+class="btn btn-primary w-100 quick-btn mb-2">
+
 
 <i class="fa fa-plus"></i>
 
-Apply For Loan
+Apply New Loan
+
 
 </a>
 
 
-</div>
 
 
 
+<a href="my-loans.html"
+
+class="btn btn-success w-100 quick-btn mb-2">
 
 
-<!-- LOAN INFORMATION -->
+<i class="fa fa-money-bill"></i>
 
-<div id="loanArea"
-
-style="display:none;">
+My Loans
 
 
-
-<div class="row g-3">
-
-
-
-<div class="col-md-4">
-
-
-<div class="cardx blue">
-
-
-<small>
-
-Active Loan Amount
-
-</small>
-
-
-<h3 id="loanAmount">
-
-KES 0
-
-</h3>
-
-
-</div>
-
-
-</div>
+</a>
 
 
 
 
 
 
-<div class="col-md-4">
+<a href="client-profile.html"
+
+class="btn btn-info text-white w-100 quick-btn">
 
 
-<div class="cardx green">
+<i class="fa fa-user"></i>
+
+My Profile
 
 
-<small>
-
-Remaining Balance
-
-</small>
-
-
-<h3 id="remaining">
-
-KES 0
-
-</h3>
-
-
-</div>
-
-
-</div>
+</a>
 
 
 
 
-
-
-<div class="col-md-4">
-
-
-<div class="cardx orange">
-
-
-<small>
-
-Expected Interest (20%)
-
-</small>
-
-
-<h3 id="interest">
-
-KES 0
-
-</h3>
 
 
 </div>
@@ -444,33 +846,43 @@ KES 0
 
 
 
-<!-- LOAN PROGRESS -->
+<!-- =========================
+     REPAYMENT PROGRESS
+========================= -->
 
 
-<div class="panel mt-4">
+<div class="summary-card mt-4"
 
-
-<h4>
-
-Loan Progress
-
-</h4>
+style="height:auto;">
 
 
 
-<div class="progress">
+<h5 class="text-primary fw-bold">
+
+<i class="fa fa-chart-line"></i>
+
+Repayment Progress
+
+</h5>
 
 
-<div id="bar"
 
-class="progress-bar"
 
-role="progressbar">
+<div class="progress"
+
+style="height:25px;">
+
+
+
+<div id="progressBar"
+
+class="progress-bar bg-success"
+
+style="width:0%">
+
 
 0%
 
-</div>
-
 
 </div>
 
@@ -479,39 +891,597 @@ role="progressbar">
 
 
 
+</div>
 
 
 
 
-<!-- TRANSACTIONS -->
-
-
-<div class="panel mt-4">
-
-
-<h4>
-
-Recent Payments
-
-</h4>
 
 
 
 
-<table class="table">
+
+<script>
 
 
-<thead>
+// ===============================
+// LOAD CLIENT DASHBOARD DATA
+// ===============================
+
+
+
+document.addEventListener(
+
+"DOMContentLoaded",
+
+()=>{
+
+
+
+let client = AUTH.currentClient();
+
+
+
+
+if(!client){
+
+
+window.location.href="client-portal.html";
+
+
+return;
+
+
+}
+
+
+
+
+
+
+// PROFILE HEADER
+
+
+document.getElementById(
+
+"clientName"
+
+).innerHTML =
+
+client.fullname;
+
+
+
+
+document.getElementById(
+
+"clientNameTop"
+
+).innerHTML =
+
+client.fullname;
+
+
+
+
+
+
+document.getElementById(
+
+"clientPhoto"
+
+).src =
+
+client.profilePhoto ||
+
+"https://via.placeholder.com/100";
+
+
+
+
+
+
+
+// GET LOANS
+
+
+let loans = DB.getLoans();
+
+
+
+
+let loan = loans.find(l=>
+
+
+String(l.clientId)===String(client.id)
+
+&&
+
+l.status==="ACTIVE"
+
+
+);
+
+
+
+
+
+
+
+if(!loan){
+
+
+
+document.getElementById(
+
+"loanStatus"
+
+).innerHTML=`
+
+
+<div class="alert alert-warning">
+
+
+<i class="fa fa-info-circle"></i>
+
+
+You currently have no active loan.
+
+
+</div>
+
+
+`;
+
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+// ACTIVE LOAN CARD
+
+
+document.getElementById(
+
+"activeLoan"
+
+).innerHTML =
+
+money(loan.originalPrincipal);
+
+
+
+
+
+
+
+// BALANCE
+
+
+let balance = Number(
+
+loan.remainingPrincipal ||
+
+loan.originalPrincipal ||
+
+0
+
+);
+
+
+
+
+document.getElementById(
+
+"balance"
+
+).innerHTML =
+
+money(balance);
+
+
+
+
+
+
+
+
+// DUE DATE
+
+
+document.getElementById(
+
+"dueDate"
+
+).innerHTML =
+
+loan.dueDate || "-";
+
+
+
+
+
+
+
+// PAYMENT CALCULATION
+
+
+let payments = DB.getLoanPayments(
+
+loan.id
+
+);
+
+
+
+let totalPaid=0;
+
+
+
+payments.forEach(p=>{
+
+
+totalPaid += Number(
+
+p.amount || 0
+
+);
+
+
+});
+
+
+
+
+
+
+document.getElementById(
+
+"paid"
+
+).innerHTML =
+
+money(totalPaid);
+
+
+
+
+
+
+
+// PROGRESS
+
+
+let percentage = 0;
+
+
+
+if(Number(loan.originalPrincipal)>0){
+
+
+
+percentage = Math.round(
+
+(totalPaid /
+
+Number(loan.originalPrincipal))
+
+*100
+
+);
+
+
+}
+
+
+
+
+
+
+document.getElementById(
+
+"progressBar"
+
+).style.width =
+
+percentage+"%";
+
+
+
+
+
+document.getElementById(
+
+"progressBar"
+
+).innerHTML =
+
+percentage+"%";
+
+
+
+
+
+
+
+
+// LOAN STATUS BOX
+
+
+document.getElementById(
+
+"loanStatus"
+
+).innerHTML=`
+
+
+
+<div class="detail-box">
+
+
+<p>
+
+<b>Loan Amount:</b>
+
+${money(loan.originalPrincipal)}
+
+</p>
+
+
+
+<p>
+
+<b>Outstanding:</b>
+
+${money(balance)}
+
+</p>
+
+
+
+
+<p>
+
+<b>Loan Date:</b>
+
+${loan.loanDate || "-"}
+
+</p>
+
+
+
+
+<p>
+
+<b>Due Date:</b>
+
+${loan.dueDate || "-"}
+
+</p>
+
+
+
+
+<span class="badge bg-success">
+
+ACTIVE
+
+</span>
+
+
+
+</div>
+
+
+`;
+
+
+
+
+
+
+});
+
+
+
+
+
+
+
+
+
+function money(value){
+
+
+return "KES "+
+
+Number(value||0)
+
+.toLocaleString();
+
+
+}
+
+
+
+</script>
+  <!-- =========================
+     PAYMENT HISTORY BUTTON
+========================= -->
+
+
+<div class="summary-card mt-4"
+
+style="height:auto;">
+
+
+
+<h5 class="text-primary fw-bold">
+
+<i class="fa fa-clock-rotate-left"></i>
+
+Payment History
+
+</h5>
+
+
+
+
+<button
+
+onclick="showPaymentHistory()"
+
+class="btn btn-primary w-100 quick-btn">
+
+
+<i class="fa fa-list"></i>
+
+View Payment History
+
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- =========================
+     APPLICATION STATUS
+========================= -->
+
+
+<div class="summary-card mt-4"
+
+style="height:auto;">
+
+
+
+<h5 class="text-primary fw-bold">
+
+<i class="fa fa-file-lines"></i>
+
+Loan Applications
+
+</h5>
+
+
+
+
+<div id="applicationStatus">
+
+
+Loading applications...
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- =========================
+     PAYMENT MODAL
+========================= -->
+
+
+<div class="modal fade"
+
+id="paymentModal">
+
+
+
+<div class="modal-dialog modal-lg">
+
+
+
+<div class="modal-content">
+
+
+
+
+
+<div class="modal-header bg-primary text-white">
+
+
+
+<h5 class="modal-title">
+
+
+Payment History
+
+
+</h5>
+
+
+
+
+<button
+
+class="btn-close"
+
+data-bs-dismiss="modal">
+
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="modal-body">
+
+
+
+<table class="table table-bordered">
+
+
+
+<thead class="table-primary">
+
 
 <tr>
 
+
 <th>Date</th>
 
-<th>Description</th>
 
 <th>Amount</th>
 
-<th>Status</th>
+
+<th>Principal</th>
+
+
+<th>Interest</th>
+
 
 </tr>
 
@@ -520,10 +1490,12 @@ Recent Payments
 
 
 
-<tbody id="tx">
+
+<tbody id="paymentTable">
 
 
 </tbody>
+
 
 
 
@@ -546,6 +1518,11 @@ Recent Payments
 
 
 
+</div>
+
+
+
+
 
 
 
@@ -554,105 +1531,298 @@ Recent Payments
 <script>
 
 
-document.addEventListener("DOMContentLoaded",function(){
+// ===============================
+// SHOW PAYMENT HISTORY
+// ===============================
 
 
 
-/*
+function showPaymentHistory(){
 
-CHECK LOGIN
 
-*/
 
+let client = AUTH.currentClient();
 
-const client = AUTH.currentClient();
 
 
 
-if(!client){
+let loans = DB.getLoans();
 
 
-window.location.href="../client-portal.html";
 
 
-return;
+let loan = loans.find(l=>
 
 
-}
+String(l.clientId)===String(client.id)
 
+&&
 
+l.status==="ACTIVE"
 
 
+);
 
 
-/*
 
-SHOW CLIENT DETAILS
 
-*/
 
+let table=document.getElementById(
 
-document.getElementById("welcome").innerHTML =
+"paymentTable"
 
-"Welcome, "+client.fullname+" 👋";
+);
 
 
 
+table.innerHTML="";
 
 
-if(client.profilePhoto){
 
 
-document.getElementById("profileImage").src =
-
-client.profilePhoto;
-
-
-}
-
-
-
-
-
-
-
-
-/*
-
-GET CLIENT LOAN FROM DATABASE
-
-*/
-
-
-let loan=null;
-
-
-
-if(DB.getLoanByClient){
-
-
-loan = DB.getLoanByClient(client.id);
-
-
-}
-
-
-
-
-
-
-
-/*
-
-NO LOAN
-
-*/
 
 
 if(!loan){
 
 
-document.getElementById("noLoan").style.display="block";
+
+table.innerHTML=`
+
+
+<tr>
+
+<td colspan="4"
+
+class="text-center">
+
+
+No active loan found.
+
+
+</td>
+
+</tr>
+
+
+`;
+
+
+
+}
+
+else{
+
+
+
+let payments = DB.getLoanPayments(
+
+loan.id
+
+);
+
+
+
+
+
+if(payments.length===0){
+
+
+
+table.innerHTML=`
+
+
+<tr>
+
+<td colspan="4"
+
+class="text-center">
+
+
+No payments made yet.
+
+
+</td>
+
+</tr>
+
+
+`;
+
+
+
+}
+
+else{
+
+
+
+payments.reverse().forEach(p=>{
+
+
+
+table.innerHTML += `
+
+
+
+<tr>
+
+
+<td>
+
+${p.date || "-"}
+
+</td>
+
+
+
+
+<td>
+
+${money(p.amount)}
+
+</td>
+
+
+
+
+<td>
+
+${money(p.principalPaid)}
+
+</td>
+
+
+
+
+<td>
+
+${money(p.interestPaid)}
+
+</td>
+
+
+
+</tr>
+
+
+
+`;
+
+
+
+});
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+let modal = new bootstrap.Modal(
+
+document.getElementById(
+
+"paymentModal"
+
+)
+
+);
+
+
+
+modal.show();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+// ===============================
+// LOAD APPLICATION STATUS
+// ===============================
+
+
+
+function loadApplications(){
+
+
+
+let client = AUTH.currentClient();
+
+
+
+
+let applications = DB.getApplications();
+
+
+
+
+
+let myApplications = applications.filter(app=>
+
+
+String(app.clientId)===String(client.id)
+
+
+);
+
+
+
+
+
+
+
+let box=document.getElementById(
+
+"applicationStatus"
+
+);
+
+
+
+box.innerHTML="";
+
+
+
+
+
+
+
+if(myApplications.length===0){
+
+
+
+box.innerHTML=`
+
+
+<div class="alert alert-info">
+
+
+No loan applications found.
+
+
+</div>
+
+
+`;
+
 
 
 return;
@@ -666,70 +1836,118 @@ return;
 
 
 
-/*
-
-SHOW LOAN AREA
-
-*/
-
-
-document.getElementById("loanArea").style.display="block";
+myApplications.reverse().forEach(app=>{
 
 
 
+let badge="bg-warning";
 
 
 
+if(app.status==="APPROVED"){
 
-let loanAmount = Number(
 
-loan.amount ||
+badge="bg-success";
 
-loan.originalPrincipal ||
 
-0
-
-);
+}
 
 
 
+if(app.status==="REJECTED"){
 
 
+badge="bg-danger";
 
-let remaining = Number(
 
-loan.remainingBalance ||
-
-loan.remainingPrincipal ||
-
-loanAmount
-
-);
+}
 
 
 
 
 
 
-/*
-
-EXPECTED INTEREST 20%
-
-*/
-
-
-let interest = remaining * 0.20;
+box.innerHTML += `
 
 
 
+<div class="detail-box mb-3">
 
 
+
+<h6>
+
+Application #${app.id}
+
+</h6>
+
+
+
+
+<p>
+
+<b>Amount:</b>
+
+${money(app.amount)}
+
+</p>
+
+
+
+
+<p>
+
+<b>Date:</b>
+
+${app.applicationDate}
+
+</p>
+
+
+
+
+<span class="badge ${badge}">
+
+
+${app.status}
+
+
+</span>
+
+
+
+
+</div>
+
+
+
+`;
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// MONEY FORMAT
 
 
 function money(value){
 
 
-return "KES "+Number(value)
+return "KES "+
+
+Number(value||0)
 
 .toLocaleString();
 
@@ -741,217 +1959,10 @@ return "KES "+Number(value)
 
 
 
+// RUN
 
-document.getElementById("loanAmount").innerHTML =
 
-money(loanAmount);
-
-
-
-
-
-document.getElementById("remaining").innerHTML =
-
-money(remaining);
-
-
-
-
-
-
-document.getElementById("interest").innerHTML =
-
-money(interest);
-
-
-
-
-
-
-/*
-
-LOAN PROGRESS
-
-*/
-
-
-let paid = loanAmount - remaining;
-
-
-let progress = 0;
-
-
-
-if(loanAmount>0){
-
-
-progress = Math.round(
-
-(paid / loanAmount) * 100
-
-);
-
-
-}
-
-
-
-
-document.getElementById("bar").style.width =
-
-progress+"%";
-
-
-
-document.getElementById("bar").innerHTML =
-
-progress+"%";
-
-
-
-
-
-
-
-/*
-
-LOAD PAYMENTS FROM DATABASE
-
-*/
-
-
-let payments=[];
-
-
-
-if(DB.getLoanPayments){
-
-
-payments = DB.getLoanPayments(loan.id);
-
-
-}
-
-
-
-
-
-const table = document.getElementById("tx");
-
-
-table.innerHTML="";
-
-
-
-
-
-payments.slice(-5).reverse().forEach(function(payment){
-
-
-
-table.innerHTML += `
-
-<tr>
-
-<td>
-
-${payment.date || "-"}
-
-</td>
-
-
-<td>
-
-${payment.description || "Loan Payment"}
-
-</td>
-
-
-<td>
-
-KES ${Number(payment.amount || payment.totalPaid || 0).toLocaleString()}
-
-</td>
-
-
-<td>
-
-<span class="badge bg-success">
-
-Completed
-
-</span>
-
-
-</td>
-
-
-</tr>
-
-`;
-
-
-
-});
-
-
-
-
-
-
-if(table.innerHTML===""){
-
-
-table.innerHTML=`
-
-<tr>
-
-<td colspan="4"
-
-class="text-center">
-
-No payments recorded yet.
-
-</td>
-
-
-</tr>
-
-`;
-
-}
-
-
-
-
-
-});
-
-
-
-
-
-
-
-
-/*
-
-LOGOUT FUNCTION
-
-*/
-
-
-function logout(){
-
-
-localStorage.removeItem("currentClient");
-
-
-window.location.href="client-portal.html";
-
-
-}
-
+loadApplications();
 
 
 </script>
@@ -960,7 +1971,16 @@ window.location.href="client-portal.html";
 
 
 
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
 </body>
 
-
 </html>
+
+
+
+
+
+</div>
