@@ -118,6 +118,7 @@ background:#0F4C81;
 }
 
 
+
 .g{
 
 background:#198754;
@@ -125,11 +126,13 @@ background:#198754;
 }
 
 
+
 .o{
 
 background:#f59e0b;
 
 }
+
 
 
 
@@ -145,6 +148,7 @@ padding:20px;
 box-shadow:0 8px 18px rgba(0,0,0,.08);
 
 }
+
 
 
 
@@ -170,31 +174,21 @@ border:3px solid #2563EB;
 </head>
 
 
+
 <body>
 
 
 
-<!-- SCRIPTS -->
-
-<script src="../assets/js/database.js"></script>
-
-<script src="../assets/js/auth.js"></script>
 
 
+<!-- DATABASE -->
 
 
+<script src="assets/js/database.js"></script>
 
-<script>
-
-
-if(!AUTH.currentClient()){
-
-window.location.href="client-portal.html";
-
-}
+<script src="assets/js/auth.js"></script>
 
 
-</script>
 
 
 
@@ -217,7 +211,9 @@ Bejja Credit
 </h3>
 
 
+
 <hr>
+
 
 
 <a href="client-dashboard.html">
@@ -227,6 +223,7 @@ Bejja Credit
 Dashboard
 
 </a>
+
 
 
 
@@ -240,6 +237,7 @@ Apply Loan
 
 
 
+
 <a href="my-loan.html">
 
 <i class="fa fa-file"></i>
@@ -250,6 +248,7 @@ My Loan
 
 
 
+
 <a href="profile.html">
 
 <i class="fa fa-user"></i>
@@ -257,6 +256,7 @@ My Loan
 Profile
 
 </a>
+
 
 
 
@@ -279,10 +279,12 @@ Logout
 
 
 
-
 <!-- MAIN -->
 
+
 <div class="main">
+
+
 
 
 
@@ -299,11 +301,13 @@ src="">
 
 <div>
 
+
 <h2 id="welcome">
 
 Welcome
 
 </h2>
+
 
 
 <p class="text-muted">
@@ -317,6 +321,8 @@ Manage your loans from your dashboard.
 
 
 </div>
+
+
 
 
 
@@ -349,18 +355,22 @@ You don't have an approved loan yet.
 
 
 
+
 <a href="apply-loan.html"
 
 class="btn btn-success">
 
 
-Apply For Loan
+<i class="fa fa-plus"></i>
+
+Apply Loan
 
 </a>
 
 
 
 </div>
+
 
 
 
@@ -378,7 +388,11 @@ style="display:none;">
 
 
 
+
+
 <div class="row g-3">
+
+
 
 
 
@@ -395,13 +409,19 @@ Active Loan Amount
 </small>
 
 
-<h3 id="loanAmount"></h3>
+<h3 id="loanAmount">
+
+KES 0
+
+</h3>
 
 
 </div>
 
 
 </div>
+
+
 
 
 
@@ -416,18 +436,24 @@ Active Loan Amount
 
 <small>
 
-Remaining Principal
+Remaining Balance
 
 </small>
 
 
-<h3 id="remaining"></h3>
+<h3 id="remaining">
+
+KES 0
+
+</h3>
 
 
 </div>
 
 
 </div>
+
+
 
 
 
@@ -442,12 +468,16 @@ Remaining Principal
 
 <small>
 
-Interest
+Expected Interest (20%)
 
 </small>
 
 
-<h3 id="interest"></h3>
+<h3 id="interest">
+
+KES 0
+
+</h3>
 
 
 </div>
@@ -457,7 +487,11 @@ Interest
 
 
 
+
+
+
 </div>
+
 
 
 
@@ -477,6 +511,7 @@ Loan Progress
 
 
 
+
 <div class="progress">
 
 
@@ -484,9 +519,11 @@ Loan Progress
 
 class="progress-bar"
 
-role="progressbar">
+style="width:0%">
+
 
 0%
+
 
 </div>
 
@@ -559,7 +596,11 @@ Recent Transactions
 
 
 
+
 </div>
+
+
+
 
 
 
@@ -578,18 +619,29 @@ Recent Transactions
 <script>
 
 
-document.addEventListener("DOMContentLoaded",()=>{
-
-
-const c=AUTH.currentClient();
+document.addEventListener("DOMContentLoaded",function(){
 
 
 
-if(!c){
+
+
+// CHECK LOGIN
+
+
+const client = AUTH.currentClient();
+
+
+
+
+
+if(!client){
+
 
 window.location.href="client-portal.html";
 
+
 return;
+
 
 }
 
@@ -597,21 +649,33 @@ return;
 
 
 
-// CLIENT INFO
+
+
+// CLIENT NAME
 
 
 document.getElementById("welcome").innerHTML=
 
-"Welcome, "+c.fullname+" 👋";
+"Welcome, "+client.fullname+" 👋";
 
 
 
 
-if(c.profilePhoto){
+
+
+
+
+
+// PROFILE IMAGE
+
+
+if(client.profilePhoto){
+
 
 document.getElementById("profileImage").src=
 
-c.profilePhoto;
+client.profilePhoto;
+
 
 }
 
@@ -621,13 +685,21 @@ c.profilePhoto;
 
 
 
-// GET LOAN
-
-
-const loan=DB.getLoanByClient(c.id);
 
 
 
+// GET LOAN FROM DATABASE
+
+
+const loan = DB.getLoanByClient(client.id);
+
+
+
+
+
+
+
+// NO LOAN
 
 
 if(!loan){
@@ -645,6 +717,9 @@ return;
 
 
 
+
+
+
 document.getElementById("loanArea").style.display="block";
 
 
@@ -652,7 +727,13 @@ document.getElementById("loanArea").style.display="block";
 
 
 
-const op=Number(
+
+
+
+// LOAN VALUES
+
+
+const amount = Number(
 
 loan.originalPrincipal ||
 
@@ -664,21 +745,16 @@ loan.amount ||
 
 
 
-const rp=Number(
+
+
+
+const remaining = Number(
 
 loan.remainingPrincipal ??
 
-op
+loan.remainingBalance ??
 
-);
-
-
-
-const rate=Number(
-
-loan.interestRate ||
-
-20
+amount
 
 );
 
@@ -688,7 +764,19 @@ loan.interestRate ||
 
 
 
-const fmt=value=>{
+// FIXED 20% INTEREST
+
+
+const interest = remaining * 0.20;
+
+
+
+
+
+
+
+
+function formatMoney(value){
 
 
 if(DB.formatMoney){
@@ -701,7 +789,8 @@ return DB.formatMoney(value);
 return "KES "+Number(value).toLocaleString();
 
 
-};
+}
+
 
 
 
@@ -710,7 +799,7 @@ return "KES "+Number(value).toLocaleString();
 
 document.getElementById("loanAmount").innerHTML=
 
-fmt(op);
+formatMoney(amount);
 
 
 
@@ -718,7 +807,7 @@ fmt(op);
 
 document.getElementById("remaining").innerHTML=
 
-fmt(rp);
+formatMoney(remaining);
 
 
 
@@ -726,7 +815,8 @@ fmt(rp);
 
 document.getElementById("interest").innerHTML=
 
-fmt(rp*rate/100);
+formatMoney(interest);
+
 
 
 
@@ -737,23 +827,30 @@ fmt(rp*rate/100);
 // PROGRESS
 
 
-const pct=op?
+let paid = amount - remaining;
 
-Math.round(((op-rp)/op)*100)
+
+let progress = amount > 0 ?
+
+Math.round((paid / amount) * 100)
 
 :0;
 
 
 
 
+
 document.getElementById("bar").style.width=
 
-pct+"%";
+progress+"%";
+
+
+
 
 
 document.getElementById("bar").innerHTML=
 
-pct+"%";
+progress+"%";
 
 
 
@@ -766,9 +863,7 @@ pct+"%";
 // PAYMENTS
 
 
-const pays=
-
-DB.getLoanPayments ?
+const payments = DB.getLoanPayments ?
 
 DB.getLoanPayments(loan.id)
 
@@ -778,7 +873,7 @@ DB.getLoanPayments(loan.id)
 
 
 
-let tx=document.getElementById("tx");
+const tx=document.getElementById("tx");
 
 
 tx.innerHTML="";
@@ -786,18 +881,20 @@ tx.innerHTML="";
 
 
 
-pays.slice(-5).reverse().forEach(p=>{
+
+
+payments.slice(-5).reverse().forEach(payment=>{
 
 
 tx.innerHTML+=`
 
 <tr>
 
-<td>${p.date||"-"}</td>
+<td>${payment.date || "-"}</td>
 
-<td>${p.description||"Payment"}</td>
+<td>${payment.description || "Payment"}</td>
 
-<td>${fmt(p.totalPaid||0)}</td>
+<td>${formatMoney(payment.totalPaid || 0)}</td>
 
 <td>
 
@@ -811,11 +908,11 @@ Completed
 
 </tr>
 
-
 `;
 
 
 });
+
 
 
 
@@ -839,15 +936,18 @@ No transactions yet.
 
 </tr>
 
-
 `;
+
 
 }
 
 
 
 
+
 });
+
+
 
 
 
@@ -867,7 +967,9 @@ window.location.href="client-portal.html";
 }
 
 
+
 </script>
+
 
 
 
