@@ -19,7 +19,10 @@ body{
 
     color:#333;
 
+    overflow-x:hidden;
+
 }
+
 
 
 a{
@@ -30,6 +33,7 @@ a{
 
 
 
+
 /* =====================================
         NAVBAR
 ===================================== */
@@ -37,11 +41,13 @@ a{
 
 .navbar{
 
-    background:#0F4C81;
+    background:#064b86;
 
     padding:18px 0;
 
     transition:.3s;
+
+    z-index:1000;
 
 }
 
@@ -49,7 +55,7 @@ a{
 
 .navbar-brand{
 
-    font-size:22px;
+    font-size:23px;
 
     letter-spacing:.5px;
 
@@ -63,7 +69,7 @@ a{
 
     margin-left:20px;
 
-    font-weight:500;
+    font-weight:600;
 
 }
 
@@ -76,34 +82,6 @@ a{
 }
 
 
-
-.dropdown-menu{
-
-    border-radius:12px;
-
-    border:none;
-
-    box-shadow:0 10px 30px rgba(0,0,0,.15);
-
-}
-
-
-
-.dropdown-item{
-
-    padding:12px 20px;
-
-}
-
-
-
-.dropdown-item:hover{
-
-    background:#0F4C81;
-
-    color:white;
-
-}
 
 
 
@@ -120,53 +98,104 @@ a{
 
     align-items:center;
 
+
     background:
 
     linear-gradient(
-    135deg,
-    rgba(15,76,129,.95),
-    rgba(37,99,235,.9)
+        135deg,
+        #07558c,
+        #3478e5
     );
+
 
     color:white;
 
-    padding-top:80px;
+    padding-top:90px;
 
 }
+
+
 
 
 
 .hero h1{
 
-    font-size:55px;
+    font-size:64px;
 
-    font-weight:700;
+    font-weight:800;
 
-    margin-bottom:20px;
+    margin-bottom:25px;
+
+    line-height:1.2;
 
 }
+
 
 
 
 .hero p{
 
-    font-size:20px;
+    font-size:22px;
 
     line-height:1.7;
 
-    margin-bottom:35px;
+    margin-bottom:40px;
+
+    max-width:600px;
 
 }
 
 
 
+
 .hero-icon{
 
-    font-size:250px;
+    font-size:260px;
 
     color:white;
 
-    opacity:.9;
+    opacity:.95;
+
+    filter:drop-shadow(0 10px 20px rgba(0,0,0,.2));
+
+}
+
+
+
+
+
+/* =====================================
+        HERO BUTTONS
+===================================== */
+
+
+.hero .btn-warning{
+
+    background:#ffc107;
+
+    border:none;
+
+    font-weight:700;
+
+}
+
+
+
+.hero .btn-outline-light{
+
+    border:2px solid white;
+
+    font-weight:600;
+
+}
+
+
+
+.hero .btn-outline-light:hover{
+
+    background:white;
+
+    color:#07558c;
 
 }
 
@@ -188,9 +217,11 @@ a{
 
     background:white;
 
+
     box-shadow:
 
-    0 10px 30px rgba(0,0,0,.1);
+    0 10px 30px rgba(0,0,0,.12);
+
 
     height:100%;
 
@@ -204,7 +235,7 @@ a{
 
     font-size:45px;
 
-    color:#0F4C81;
+    color:#07558c;
 
     margin-bottom:20px;
 
@@ -224,11 +255,9 @@ a{
 
     transform:translateY(-10px);
 
-    box-shadow:
-
-    0 20px 40px rgba(0,0,0,.2);
-
 }
+
+
 
 
 
@@ -251,7 +280,7 @@ a{
 
     font-size:45px;
 
-    color:#16A34A;
+    color:#16a34a;
 
     margin-bottom:15px;
 
@@ -259,25 +288,20 @@ a{
 
 
 
-.why h5{
-
-    font-weight:600;
-
-}
-
-
 
 
 /* =====================================
-        BUTTONS
+        NAV BUTTON
 ===================================== */
 
 
 .btn-success{
 
-    background:#16A34A;
+    background:#16a34a!important;
 
     border:none;
+
+    font-weight:600;
 
 }
 
@@ -285,17 +309,10 @@ a{
 
 .btn-success:hover{
 
-    background:#12813a;
+    background:#12813a!important;
 
 }
 
-
-
-.btn-warning{
-
-    font-weight:600;
-
-}
 
 
 
@@ -317,13 +334,6 @@ footer{
 
 
 
-footer h4{
-
-    font-weight:700;
-
-}
-
-
 
 
 /* =====================================
@@ -333,7 +343,8 @@ footer h4{
 
 .hero h1,
 .hero p,
-.hero a{
+.hero a,
+.hero-icon{
 
     animation:fadeUp 1s ease;
 
@@ -346,29 +357,26 @@ footer h4{
 
 from{
 
-    opacity:0;
+opacity:0;
 
-    transform:translateY(40px);
+transform:translateY(40px);
 
 }
 
 
 to{
 
-    opacity:1;
+opacity:1;
 
-    transform:translateY(0);
-
-}
-
+transform:translateY(0);
 
 }
 
 
+}
 
-/* =====================================
-        SMOOTH SCROLL
-===================================== */
+
+
 
 
 html{
