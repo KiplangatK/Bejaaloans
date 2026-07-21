@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>Client Dashboard | Bejja Loan Credit</title>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+
+
+
+<style>
+
+
+body{
+
+font-family:Poppins,sans-serif;
+
+background:#f4f7fb;
+
+}
+
+
+
+.sidebar{
+
+position:fixed;
+
+top:0;
+
+left:0;
+
+width:260px;
+
+height:100vh;
+
+background:linear-gradient(180deg,#0F4C81,#2563EB);
+
+padding:25px;
+
+color:white;
+
+}
+
+
+
+.sidebar h3{
+
+font-weight:700;
+
+}
+
+
+
+.sidebar a{
+
+display:block;
+
+color:white;
+
+text-decoration:none;
+
+padding:12px;
+
+margin:6px 0;
+
+border-radius:10px;
+
+}
+
+
+
+.sidebar a:hover{
+
+background:rgba(255,255,255,.2);
+
+}
+
+
+
+
+.main{
+
+margin-left:260px;
+
+padding:30px;
+
+}
+
+
+
+
+.cardx{
+
+border-radius:18px;
+
+color:white;
+
+padding:22px;
+
+}
+
+
+
+.b{
+
+background:#0F4C81;
+
+}
+
+
+.g{
+
+background:#198754;
+
+}
+
+
+.o{
+
+background:#f59e0b;
+
+}
+
+
+
+
+.panel{
+
+background:white;
+
+border-radius:18px;
+
+padding:20px;
+
+box-shadow:0 8px 18px rgba(0,0,0,.08);
+
+}
+
+
+
+.profile-img{
+
+width:70px;
+
+height:70px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+border:3px solid #2563EB;
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+
+<!-- SCRIPTS -->
+
+<script src="../assets/js/database.js"></script>
+
+<script src="../assets/js/auth.js"></script>
+
+
+
+
+
+<script>
+
+
+if(!AUTH.currentClient()){
+
+window.location.href="client-portal.html";
+
+}
+
+
+</script>
+
+
+
+
+
+
+
+<!-- SIDEBAR -->
+
+
+<div class="sidebar">
+
+
+<h3>
+
+<i class="fa-solid fa-building-columns"></i>
+
+Bejja Credit
+
+</h3>
+
+
+<hr>
+
+
+<a href="client-dashboard.html">
+
+<i class="fa fa-home"></i>
+
+Dashboard
+
+</a>
+
+
+
+<a href="apply-loan.html">
+
+<i class="fa fa-money-bill"></i>
+
+Apply Loan
+
+</a>
+
+
+
+<a href="my-loan.html">
+
+<i class="fa fa-file"></i>
+
+My Loan
+
+</a>
+
+
+
+<a href="profile.html">
+
+<i class="fa fa-user"></i>
+
+Profile
+
+</a>
+
+
+
+<a href="#" onclick="logout()">
+
+<i class="fa fa-right-from-bracket"></i>
+
+Logout
+
+</a>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- MAIN -->
+
+<div class="main">
+
+
+
+<div class="d-flex align-items-center gap-3 mb-4">
+
+
+<img id="profileImage"
+
+class="profile-img"
+
+src="">
+
+
+
+<div>
+
+<h2 id="welcome">
+
+Welcome
+
+</h2>
+
+
+<p class="text-muted">
+
+Manage your loans from your dashboard.
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- NO LOAN -->
+
+
+<div id="noLoan"
+
+class="panel"
+
+style="display:none;">
+
+
+<h4>
+
+No Active Loan
+
+</h4>
+
+
+<p>
+
+You don't have an approved loan yet.
+
+</p>
+
+
+
+<a href="apply-loan.html"
+
+class="btn btn-success">
+
+
+Apply For Loan
+
+</a>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- LOAN AREA -->
+
+
+<div id="loanArea"
+
+style="display:none;">
+
+
+
+<div class="row g-3">
+
+
+
+<div class="col-md-4">
+
+
+<div class="cardx b">
+
+
+<small>
+
+Active Loan Amount
+
+</small>
+
+
+<h3 id="loanAmount"></h3>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<div class="col-md-4">
+
+
+<div class="cardx g">
+
+
+<small>
+
+Remaining Principal
+
+</small>
+
+
+<h3 id="remaining"></h3>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<div class="col-md-4">
+
+
+<div class="cardx o">
+
+
+<small>
+
+Interest
+
+</small>
+
+
+<h3 id="interest"></h3>
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="panel mt-4">
+
+
+<h4>
+
+Loan Progress
+
+</h4>
+
+
+
+<div class="progress">
+
+
+<div id="bar"
+
+class="progress-bar"
+
+role="progressbar">
+
+0%
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="panel mt-4">
+
+
+<h4>
+
+Recent Transactions
+
+</h4>
+
+
+
+<table class="table">
+
+
+<thead>
+
+
+<tr>
+
+<th>Date</th>
+
+<th>Description</th>
+
+<th>Amount</th>
+
+<th>Status</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+<tbody id="tx">
+
+
+</tbody>
+
+
+
+</table>
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<script>
+
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+
+const c=AUTH.currentClient();
+
+
+
+if(!c){
+
+window.location.href="client-portal.html";
+
+return;
+
+}
+
+
+
+
+
+// CLIENT INFO
+
+
+document.getElementById("welcome").innerHTML=
+
+"Welcome, "+c.fullname+" 👋";
+
+
+
+
+if(c.profilePhoto){
+
+document.getElementById("profileImage").src=
+
+c.profilePhoto;
+
+}
+
+
+
+
+
+
+
+// GET LOAN
+
+
+const loan=DB.getLoanByClient(c.id);
+
+
+
+
+
+if(!loan){
+
+
+document.getElementById("noLoan").style.display="block";
+
+
+return;
+
+
+}
+
+
+
+
+
+document.getElementById("loanArea").style.display="block";
+
+
+
+
+
+
+const op=Number(
+
+loan.originalPrincipal ||
+
+loan.amount ||
+
+0
+
+);
+
+
+
+const rp=Number(
+
+loan.remainingPrincipal ??
+
+op
+
+);
+
+
+
+const rate=Number(
+
+loan.interestRate ||
+
+20
+
+);
+
+
+
+
+
+
+
+const fmt=value=>{
+
+
+if(DB.formatMoney){
+
+return DB.formatMoney(value);
+
+}
+
+
+return "KES "+Number(value).toLocaleString();
+
+
+};
+
+
+
+
+
+
+document.getElementById("loanAmount").innerHTML=
+
+fmt(op);
+
+
+
+
+
+document.getElementById("remaining").innerHTML=
+
+fmt(rp);
+
+
+
+
+
+document.getElementById("interest").innerHTML=
+
+fmt(rp*rate/100);
+
+
+
+
+
+
+
+// PROGRESS
+
+
+const pct=op?
+
+Math.round(((op-rp)/op)*100)
+
+:0;
+
+
+
+
+document.getElementById("bar").style.width=
+
+pct+"%";
+
+
+document.getElementById("bar").innerHTML=
+
+pct+"%";
+
+
+
+
+
+
+
+
+
+// PAYMENTS
+
+
+const pays=
+
+DB.getLoanPayments ?
+
+DB.getLoanPayments(loan.id)
+
+:[];
+
+
+
+
+
+let tx=document.getElementById("tx");
+
+
+tx.innerHTML="";
+
+
+
+
+pays.slice(-5).reverse().forEach(p=>{
+
+
+tx.innerHTML+=`
+
+<tr>
+
+<td>${p.date||"-"}</td>
+
+<td>${p.description||"Payment"}</td>
+
+<td>${fmt(p.totalPaid||0)}</td>
+
+<td>
+
+<span class="badge bg-success">
+
+Completed
+
+</span>
+
+</td>
+
+</tr>
+
+
+`;
+
+
+});
+
+
+
+
+
+
+if(tx.innerHTML===""){
+
+
+tx.innerHTML=`
+
+<tr>
+
+<td colspan="4"
+
+class="text-center">
+
+No transactions yet.
+
+</td>
+
+</tr>
+
+
+`;
+
+}
+
+
+
+
+});
+
+
+
+
+
+
+
+function logout(){
+
+
+localStorage.removeItem("currentClient");
+
+
+window.location.href="client-portal.html";
+
+
+}
+
+
+</script>
+
+
+
+
+</body>
+
+</html>
