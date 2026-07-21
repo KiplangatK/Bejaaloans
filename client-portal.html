@@ -17,6 +17,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
 
 
+
 <style>
 
 
@@ -38,7 +39,6 @@ align-items:center;
 
 
 
-
 .login-card{
 
 width:430px;
@@ -55,7 +55,6 @@ overflow:hidden;
 
 
 
-
 .logo{
 
 font-size:60px;
@@ -63,7 +62,6 @@ font-size:60px;
 color:#2563EB;
 
 }
-
 
 
 
@@ -77,13 +75,11 @@ border-radius:12px;
 
 
 
-
 .input-group-text{
 
 border-radius:12px 0 0 12px;
 
 }
-
 
 
 
@@ -101,7 +97,6 @@ font-weight:600;
 
 
 
-
 #errorMessage{
 
 display:none;
@@ -116,9 +111,7 @@ display:none;
 
 
 
-
 <body>
-
 
 
 
@@ -136,7 +129,6 @@ display:none;
 
 
 <i class="fa-solid fa-building-columns logo"></i>
-
 
 
 <h3 class="fw-bold mt-3">
@@ -162,7 +154,9 @@ Client Portal Login
 
 
 
+
 <div id="errorMessage" class="alert alert-danger"></div>
+
 
 
 
@@ -212,10 +206,12 @@ placeholder="07XXXXXXXX"
 required>
 
 
+
 </div>
 
 
 </div>
+
 
 
 
@@ -246,7 +242,6 @@ Password
 
 
 
-
 <input
 
 type="password"
@@ -264,8 +259,8 @@ required>
 </div>
 
 
-
 </div>
+
 
 
 
@@ -284,6 +279,7 @@ Forgot Password?
 
 
 </div>
+
 
 
 
@@ -319,7 +315,10 @@ Login
 
 
 
+
+
 <hr>
+
 
 
 
@@ -335,6 +334,7 @@ Login
 Don't have an account?
 
 </p>
+
 
 
 
@@ -358,7 +358,11 @@ Create New Account
 
 
 
+
+
 <br><br>
+
+
 
 
 
@@ -388,8 +392,8 @@ Back to Homepage
 
 
 
-</div>
 
+</div>
 
 </div>
 
@@ -405,7 +409,6 @@ Back to Homepage
 
 <script src="../assets/js/database.js"></script>
 
-<script src="../assets/js/auth.js"></script>
 
 
 
@@ -413,23 +416,30 @@ Back to Homepage
 
 
 
-<script>
 <script>
 
 
 document.addEventListener("DOMContentLoaded",function(){
 
 
+
 const form = document.getElementById("loginForm");
 
+
 const errorBox = document.getElementById("errorMessage");
+
+
+
 
 
 
 form.addEventListener("submit",function(e){
 
 
+
 e.preventDefault();
+
+
 
 
 
@@ -439,9 +449,24 @@ errorBox.innerHTML="";
 
 
 
-const phone = document.getElementById("phone").value.trim();
 
-const password = document.getElementById("password").value.trim();
+
+
+const phone = document
+.getElementById("phone")
+.value
+.trim();
+
+
+
+
+
+const password = document
+.getElementById("password")
+.value
+.trim();
+
+
 
 
 
@@ -449,12 +474,20 @@ const password = document.getElementById("password").value.trim();
 
 // CHECK EMPTY
 
+
 if(phone==="" || password===""){
 
 
-errorBox.innerHTML="Please enter phone number and password.";
+
+errorBox.innerHTML=
+
+"Please enter phone number and password.";
+
+
 
 errorBox.style.display="block";
+
+
 
 return;
 
@@ -465,7 +498,12 @@ return;
 
 
 
+
+
+
+
 // GET REGISTERED CLIENTS
+
 
 let clients = JSON.parse(
 
@@ -479,13 +517,17 @@ localStorage.getItem("bejja_clients")
 
 
 
-// CHECK PHONE EXISTS
+
+
+// FIND PHONE NUMBER
 
 
 const client = clients.find(function(c){
 
 
+
 return c.phone === phone;
+
 
 
 });
@@ -495,15 +537,24 @@ return c.phone === phone;
 
 
 
+
+
+
+// PHONE NOT FOUND
+
+
 if(!client){
+
 
 
 errorBox.innerHTML=
 
-"Phone number is not registered. Please create an account first.";
+"Phone number not registered. Please create an account first.";
+
 
 
 errorBox.style.display="block";
+
 
 
 return;
@@ -518,10 +569,13 @@ return;
 
 
 
-// CHECK PASSWORD
+
+
+// PASSWORD CHECK
 
 
 if(client.password !== password){
+
 
 
 errorBox.innerHTML=
@@ -529,13 +583,17 @@ errorBox.innerHTML=
 "Incorrect password.";
 
 
+
 errorBox.style.display="block";
+
 
 
 return;
 
 
 }
+
+
 
 
 
@@ -560,11 +618,12 @@ JSON.stringify(client)
 
 
 
-// GO TO DASHBOARD
+
+
+// OPEN CLIENT DASHBOARD
 
 
 window.location.href="client-dashboard.html";
-
 
 
 
@@ -576,10 +635,12 @@ window.location.href="client-dashboard.html";
 
 
 
+});
+
 
 
 </script>
-</script>
+
 
 
 
