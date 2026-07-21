@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>Apply Loan | Bejja Loan Credit</title>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+
+
+
+<style>
+
+
+body{
+
+background:#f4f7fb;
+
+font-family:'Poppins',sans-serif;
+
+}
+
+
+
+.header{
+
+background:linear-gradient(135deg,#0F4C81,#2563EB);
+
+color:white;
+
+padding:25px;
+
+border-radius:0 0 25px 25px;
+
+}
+
+
+
+.card{
+
+border:none;
+
+border-radius:20px;
+
+box-shadow:0 10px 25px rgba(0,0,0,.12);
+
+}
+
+
+
+.section-title{
+
+background:#0F4C81;
+
+color:white;
+
+padding:12px;
+
+border-radius:12px;
+
+margin-bottom:20px;
+
+}
+
+
+
+.form-control{
+
+height:50px;
+
+border-radius:12px;
+
+}
+
+
+
+textarea.form-control{
+
+height:auto;
+
+}
+
+
+
+.profile-img{
+
+width:120px;
+
+height:120px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+border:4px solid #2563EB;
+
+}
+
+
+
+.document-img{
+
+width:100%;
+
+height:160px;
+
+object-fit:contain;
+
+border-radius:12px;
+
+border:1px solid #ddd;
+
+background:#fafafa;
+
+}
+
+
+
+.upload-box{
+
+border:2px dashed #2563EB;
+
+padding:15px;
+
+border-radius:15px;
+
+background:#f8f9fa;
+
+}
+
+
+
+.btn-submit{
+
+height:55px;
+
+border-radius:15px;
+
+font-size:18px;
+
+font-weight:600;
+
+}
+
+
+
+.alert{
+
+display:none;
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+<!-- DATABASE -->
+
+<script src="../assets/js/database.js"></script>
+
+<script src="../assets/js/auth.js"></script>
+
+
+
+
+<script>
+
+
+if(!AUTH.currentClient()){
+
+
+window.location.href="client-portal.html";
+
+
+}
+
+
+</script>
+
+
+
+
+
+<div class="header text-center">
+
+
+<h2>
+
+<i class="fa-solid fa-building-columns"></i>
+
+BEJJA LOAN CREDIT
+
+</h2>
+
+
+<p>
+
+Loan Application
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+<div class="container py-4">
+
+
+
+<div class="card p-4">
+
+
+
+<div id="errorBox" class="alert alert-danger"></div>
+
+
+<div id="successBox" class="alert alert-success"></div>
+
+
+
+
+
+<h4 class="section-title">
+
+<i class="fa fa-user"></i>
+
+Client Information
+
+</h4>
+
+
+
+
+
+<div class="row">
+
+
+
+<div class="col-md-3 text-center mb-3">
+
+
+<img id="clientPhoto"
+
+class="profile-img"
+
+src="">
+
+
+</div>
+
+
+
+
+
+<div class="col-md-9">
+
+
+<div class="row">
+
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>Full Name</label>
+
+
+<input id="fullname"
+
+class="form-control"
+
+readonly>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>National ID</label>
+
+
+<input id="nationalID"
+
+class="form-control"
+
+readonly>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>Phone Number</label>
+
+
+<input id="phone"
+
+class="form-control"
+
+readonly>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>Occupation</label>
+
+
+<input id="occupation"
+
+class="form-control"
+
+readonly>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>Employer / Business</label>
+
+
+<input id="employer"
+
+class="form-control"
+
+readonly>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>Monthly Income</label>
+
+
+<input id="income"
+
+class="form-control"
+
+readonly>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>County</label>
+
+
+<input id="county"
+
+class="form-control"
+
+readonly>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>Address</label>
+
+
+<input id="address"
+
+class="form-control"
+
+readonly>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<hr>
+
+
+
+
+
+<h4 class="section-title">
+
+<i class="fa fa-money-bill"></i>
+
+Loan Details
+
+</h4>
+
+
+
+
+<div class="row">
+
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>
+
+Loan Amount (KES)
+
+</label>
+
+
+<input
+
+type="number"
+
+id="loanAmount"
+
+class="form-control"
+
+placeholder="Enter amount"
+
+required>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>
+
+Loan Purpose
+
+</label>
+
+
+<input
+
+type="text"
+
+id="purpose"
+
+class="form-control"
+
+placeholder="Business, School, Emergency..."
+
+required>
+
+
+</div>
+  <!-- GUARANTOR SECTION -->
+
+<h4 class="section-title mt-4">
+
+<i class="fa fa-user-shield"></i>
+
+Guarantor Information
+
+</h4>
+
+
+
+
+
+<div class="row">
+
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>
+
+Guarantor Full Name
+
+</label>
+
+
+<input
+
+type="text"
+
+id="guarantorName"
+
+class="form-control"
+
+placeholder="Enter guarantor name"
+
+required>
+
+
+</div>
+
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>
+
+Guarantor National ID
+
+</label>
+
+
+<input
+
+type="text"
+
+id="guarantorID"
+
+class="form-control"
+
+placeholder="Enter ID number"
+
+required>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>
+
+Guarantor Phone Number
+
+</label>
+
+
+<input
+
+type="tel"
+
+id="guarantorPhone"
+
+class="form-control"
+
+placeholder="07XXXXXXXX"
+
+required>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>
+
+Relationship With Client
+
+</label>
+
+
+<input
+
+type="text"
+
+id="relationship"
+
+class="form-control"
+
+placeholder="Brother, Friend, Parent..."
+
+required>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="col-12 mb-3">
+
+
+<label>
+
+Guarantor Physical Address
+
+</label>
+
+
+<textarea
+
+id="guarantorAddress"
+
+class="form-control"
+
+rows="3"
+
+placeholder="Enter guarantor address"
+
+required></textarea>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<h4 class="section-title mt-4">
+
+<i class="fa fa-file-image"></i>
+
+Guarantor Verification Documents
+
+</h4>
+
+
+
+
+
+
+
+<div class="row">
+
+
+
+
+
+
+
+<div class="col-md-4 mb-3">
+
+
+<div class="upload-box">
+
+
+
+<label class="fw-bold">
+
+Guarantor Photo
+
+</label>
+
+
+
+<input
+
+type="file"
+
+id="guarantorPhoto"
+
+class="form-control"
+
+accept="image/*"
+
+required>
+
+
+
+
+<img
+
+id="guarantorPhotoPreview"
+
+class="document-img mt-3"
+
+style="display:none;">
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="col-md-4 mb-3">
+
+
+<div class="upload-box">
+
+
+
+<label class="fw-bold">
+
+Guarantor ID Front
+
+</label>
+
+
+
+<input
+
+type="file"
+
+id="guarantorIDFront"
+
+class="form-control"
+
+accept="image/*"
+
+required>
+
+
+
+
+<img
+
+id="guarantorIDFrontPreview"
+
+class="document-img mt-3"
+
+style="display:none;">
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="col-md-4 mb-3">
+
+
+<div class="upload-box">
+
+
+
+<label class="fw-bold">
+
+Guarantor ID Back
+
+</label>
+
+
+
+<input
+
+type="file"
+
+id="guarantorIDBack"
+
+class="form-control"
+
+accept="image/*"
+
+required>
+
+
+
+
+<img
+
+id="guarantorIDBackPreview"
+
+class="document-img mt-3"
+
+style="display:none;">
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<hr>
+
+
+
+
+
+<div class="text-center mt-4">
+
+
+
+<button
+
+onclick="submitLoanApplication()"
+
+class="btn btn-primary w-100 btn-submit">
+
+
+<i class="fa fa-paper-plane"></i>
+
+
+Submit Loan Application
+
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+</div>
+
+
+
+
+
+<script>
+
+
+/* =====================================
+   LOAD CLIENT DETAILS
+===================================== */
+
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+
+const client = AUTH.currentClient();
+
+
+
+if(!client){
+
+
+window.location.href="client-portal.html";
+
+return;
+
+
+}
+
+
+
+
+document.getElementById("fullname").value =
+client.fullname || "";
+
+
+
+document.getElementById("nationalID").value =
+client.nationalID || "";
+
+
+
+document.getElementById("phone").value =
+client.phone || "";
+
+
+
+document.getElementById("occupation").value =
+client.occupation || "";
+
+
+
+document.getElementById("employer").value =
+client.employer || "";
+
+
+
+document.getElementById("income").value =
+client.monthlyIncome || "";
+
+
+
+document.getElementById("county").value =
+client.county || "";
+
+
+
+document.getElementById("address").value =
+client.address || "";
+
+
+
+
+
+if(client.profilePhoto){
+
+
+document.getElementById("clientPhoto").src =
+client.profilePhoto;
+
+
+}
+
+
+
+
+});
+
+
+
+</script>
+  <script>
+
+
+/* =====================================
+   IMAGE PREVIEW
+===================================== */
+
+
+function previewImage(input,target){
+
+
+const file=input.files[0];
+
+
+if(file){
+
+
+const reader=new FileReader();
+
+
+reader.onload=function(e){
+
+
+target.src=e.target.result;
+
+target.style.display="block";
+
+
+}
+
+
+reader.readAsDataURL(file);
+
+
+}
+
+
+}
+
+
+
+
+
+document.getElementById("guarantorPhoto")
+.onchange=function(){
+
+
+previewImage(
+
+this,
+
+document.getElementById("guarantorPhotoPreview")
+
+);
+
+
+};
+
+
+
+
+
+document.getElementById("guarantorIDFront")
+.onchange=function(){
+
+
+previewImage(
+
+this,
+
+document.getElementById("guarantorIDFrontPreview")
+
+);
+
+
+};
+
+
+
+
+
+document.getElementById("guarantorIDBack")
+.onchange=function(){
+
+
+previewImage(
+
+this,
+
+document.getElementById("guarantorIDBackPreview")
+
+);
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================
+   IMAGE COMPRESSION
+===================================== */
+
+
+function compressImage(file){
+
+
+return new Promise(resolve=>{
+
+
+const reader=new FileReader();
+
+
+
+reader.onload=function(e){
+
+
+const img=new Image();
+
+
+
+img.onload=function(){
+
+
+
+const canvas=document.createElement("canvas");
+
+
+let width=img.width;
+
+let height=img.height;
+
+
+const max=900;
+
+
+
+if(width>max){
+
+
+height = height * max / width;
+
+width=max;
+
+
+}
+
+
+
+
+canvas.width=width;
+
+canvas.height=height;
+
+
+
+const ctx=canvas.getContext("2d");
+
+
+ctx.drawImage(
+img,
+0,
+0,
+width,
+height
+);
+
+
+
+resolve(
+
+canvas.toDataURL(
+"image/jpeg",
+0.7
+)
+
+);
+
+
+
+}
+
+
+
+img.src=e.target.result;
+
+
+}
+
+
+
+reader.readAsDataURL(file);
+
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+
+
+/* =====================================
+   SUBMIT LOAN APPLICATION
+===================================== */
+
+
+async function submitLoanApplication(){
+
+
+
+const errorBox =
+document.getElementById("errorBox");
+
+
+const successBox =
+document.getElementById("successBox");
+
+
+
+errorBox.style.display="none";
+
+successBox.style.display="none";
+
+
+
+
+
+
+const client = AUTH.currentClient();
+
+
+
+if(!client){
+
+
+window.location.href="client-portal.html";
+
+return;
+
+
+}
+
+
+
+
+
+
+
+const loanAmount =
+Number(
+document.getElementById("loanAmount").value
+);
+
+
+
+const purpose =
+document.getElementById("purpose").value.trim();
+
+
+
+
+
+
+
+
+const guarantorName =
+document.getElementById("guarantorName").value.trim();
+
+
+
+const guarantorID =
+document.getElementById("guarantorID").value.trim();
+
+
+
+const guarantorPhone =
+document.getElementById("guarantorPhone").value.trim();
+
+
+
+const relationship =
+document.getElementById("relationship").value.trim();
+
+
+
+const guarantorAddress =
+document.getElementById("guarantorAddress").value.trim();
+
+
+
+
+
+
+
+
+
+// VALIDATION
+
+
+if(
+
+!loanAmount ||
+
+!purpose ||
+
+!guarantorName ||
+
+!guarantorID ||
+
+!guarantorPhone ||
+
+!relationship ||
+
+!guarantorAddress
+
+){
+
+
+errorBox.innerHTML=
+
+"Please fill all required fields.";
+
+
+errorBox.style.display="block";
+
+
+return;
+
+
+}
+
+
+
+
+
+
+if(
+
+document.getElementById("guarantorPhoto").files.length===0 ||
+
+document.getElementById("guarantorIDFront").files.length===0 ||
+
+document.getElementById("guarantorIDBack").files.length===0
+
+){
+
+
+errorBox.innerHTML=
+
+"Please upload all guarantor documents.";
+
+
+errorBox.style.display="block";
+
+
+return;
+
+
+}
+
+
+
+
+
+
+if(!/^07\d{8}$/.test(guarantorPhone)){
+
+
+errorBox.innerHTML=
+
+"Invalid guarantor phone number format.";
+
+
+errorBox.style.display="block";
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+
+
+// COMPRESS GUARANTOR DOCUMENTS
+
+
+const guarantorPhoto =
+
+await compressImage(
+
+document.getElementById("guarantorPhoto").files[0]
+
+);
+
+
+
+
+const guarantorIDFront =
+
+await compressImage(
+
+document.getElementById("guarantorIDFront").files[0]
+
+);
+
+
+
+
+
+const guarantorIDBack =
+
+await compressImage(
+
+document.getElementById("guarantorIDBack").files[0]
+
+);
+
+
+
+
+
+
+
+
+
+// CREATE APPLICATION OBJECT
+
+
+const application={
+
+
+clientId:client.id,
+
+
+
+// loan details
+
+
+amount:loanAmount,
+
+
+purpose:purpose,
+
+
+
+
+// client snapshot
+
+
+clientName:client.fullname,
+
+clientPhone:client.phone,
+
+clientID:client.nationalID,
+
+
+
+
+// guarantor
+
+
+guarantor:{
+
+
+name:guarantorName,
+
+
+nationalID:guarantorID,
+
+
+phone:guarantorPhone,
+
+
+relationship:relationship,
+
+
+address:guarantorAddress,
+
+
+
+photo:guarantorPhoto,
+
+
+idFront:guarantorIDFront,
+
+
+idBack:guarantorIDBack
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+
+
+// SAVE TO DATABASE
+
+
+const saved =
+
+DB.addApplication(application);
+
+
+
+
+
+
+
+
+if(saved){
+
+
+
+successBox.innerHTML=`
+
+<h5>
+
+<i class="fa fa-check-circle"></i>
+
+Loan Application Submitted
+
+</h5>
+
+
+<p>
+
+Your application has been sent for approval.
+
+</p>
+
+`;
+
+
+
+successBox.style.display="block";
+
+
+
+
+
+setTimeout(()=>{
+
+
+window.location.href="client-dashboard.html";
+
+
+},2000);
+
+
+
+
+
+}
+
+
+
+
+}
+
+
+
+
+
+
+</script>
+
+
+</body>
+
+</html>
+
+
+
+
+
+</div>
