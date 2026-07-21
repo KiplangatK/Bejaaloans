@@ -619,10 +619,9 @@ Monthly Interest
 </th>
 
 
-<th>
-Loan Date
-</th>
+<th>Loan Date</th>
 
+<th>Due Date</th>
 
 <th>
 Action
@@ -1434,7 +1433,18 @@ ${money(interest)}
 
 <td>
 
-${loan.loanDate || loan.createdAt || "-"}
+${loan.loanDate || "-"}
+
+</td>
+
+
+<td>
+
+<span class="badge bg-danger">
+
+${loan.dueDate || "-"}
+
+</span>
 
 </td>
 
@@ -1522,7 +1532,9 @@ loan.clientId
 );
 
 
+document.getElementById("loanDueDate").innerHTML =
 
+loan.dueDate || "-";
 
 
 if(!client){
