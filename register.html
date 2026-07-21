@@ -1391,8 +1391,9 @@ status:"Pending"
 
 
 
-// SAVE CLIENT
-// This connects to database.js
+// ============================
+// CHECK EXISTING PHONE NUMBER
+// ============================
 
 
 let clients = JSON.parse(
@@ -1402,6 +1403,38 @@ localStorage.getItem("bejja_clients")
 ) || [];
 
 
+
+const existingClient = clients.find(
+
+c => c.phone === phone
+
+);
+
+
+
+if(existingClient){
+
+
+errorBox.innerHTML =
+
+"Phone number already registered. Please login.";
+
+
+errorBox.style.display="block";
+
+
+return;
+
+
+}
+
+
+
+
+
+// ============================
+// SAVE NEW CLIENT
+// ============================
 
 
 clients.push(client);
@@ -1415,8 +1448,6 @@ localStorage.setItem(
 JSON.stringify(clients)
 
 );
-
-
 
 
 
@@ -1446,8 +1477,9 @@ Your Bejja Credit account has been created successfully.
 
 
 <a href="client-portal.html"
-
 class="btn btn-primary">
+
+<i class="fa fa-right-to-bracket"></i>
 
 Login Now
 
