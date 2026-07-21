@@ -20,16 +20,16 @@
 
 <style>
 
-
 body{
 
-font-family:Poppins,sans-serif;
+font-family:'Poppins',sans-serif;
 
 background:#f4f7fb;
 
 }
 
 
+/* SIDEBAR */
 
 .sidebar{
 
@@ -71,7 +71,7 @@ text-decoration:none;
 
 padding:12px;
 
-margin:6px 0;
+margin:8px 0;
 
 border-radius:10px;
 
@@ -87,6 +87,7 @@ background:rgba(255,255,255,.2);
 
 
 
+/* MAIN */
 
 .main{
 
@@ -99,19 +100,40 @@ padding:30px;
 
 
 
-.cardx{
+.profile-img{
 
-border-radius:18px;
+width:75px;
 
-color:white;
+height:75px;
 
-padding:22px;
+border-radius:50%;
+
+object-fit:cover;
+
+border:3px solid #2563EB;
+
+background:white;
 
 }
 
 
 
-.b{
+
+.cardx{
+
+padding:25px;
+
+border-radius:18px;
+
+color:white;
+
+box-shadow:0 8px 20px rgba(0,0,0,.1);
+
+}
+
+
+
+.blue{
 
 background:#0F4C81;
 
@@ -119,7 +141,7 @@ background:#0F4C81;
 
 
 
-.g{
+.green{
 
 background:#198754;
 
@@ -127,7 +149,7 @@ background:#198754;
 
 
 
-.o{
+.orange{
 
 background:#f59e0b;
 
@@ -135,34 +157,15 @@ background:#f59e0b;
 
 
 
-
-
 .panel{
 
 background:white;
 
-border-radius:18px;
-
 padding:20px;
 
+border-radius:18px;
+
 box-shadow:0 8px 18px rgba(0,0,0,.08);
-
-}
-
-
-
-
-.profile-img{
-
-width:70px;
-
-height:70px;
-
-border-radius:50%;
-
-object-fit:cover;
-
-border:3px solid #2563EB;
 
 }
 
@@ -178,11 +181,7 @@ border:3px solid #2563EB;
 <body>
 
 
-
-
-
-<!-- DATABASE -->
-
+<!-- DATABASE FILES -->
 
 <script src="assets/js/database.js"></script>
 
@@ -190,14 +189,7 @@ border:3px solid #2563EB;
 
 
 
-
-
-
-
-
-
 <!-- SIDEBAR -->
-
 
 <div class="sidebar">
 
@@ -209,7 +201,6 @@ border:3px solid #2563EB;
 Bejja Credit
 
 </h3>
-
 
 
 <hr>
@@ -226,7 +217,6 @@ Dashboard
 
 
 
-
 <a href="apply-loan.html">
 
 <i class="fa fa-money-bill"></i>
@@ -234,7 +224,6 @@ Dashboard
 Apply Loan
 
 </a>
-
 
 
 
@@ -248,7 +237,6 @@ My Loan
 
 
 
-
 <a href="profile.html">
 
 <i class="fa fa-user"></i>
@@ -256,7 +244,6 @@ My Loan
 Profile
 
 </a>
-
 
 
 
@@ -269,22 +256,14 @@ Logout
 </a>
 
 
-
 </div>
 
 
 
 
-
-
-
-
-<!-- MAIN -->
-
+<!-- MAIN CONTENT -->
 
 <div class="main">
-
-
 
 
 
@@ -292,9 +271,7 @@ Logout
 
 
 <img id="profileImage"
-
 class="profile-img"
-
 src="">
 
 
@@ -309,10 +286,9 @@ Welcome
 </h2>
 
 
-
 <p class="text-muted">
 
-Manage your loans from your dashboard.
+Manage your Bejja Credit account.
 
 </p>
 
@@ -321,17 +297,7 @@ Manage your loans from your dashboard.
 
 
 </div>
-
-
-
-
-
-
-
-
-
-<!-- NO LOAN -->
-
+<!-- NO LOAN MESSAGE -->
 
 <div id="noLoan"
 
@@ -342,6 +308,8 @@ style="display:none;">
 
 <h4>
 
+<i class="fa fa-info-circle"></i>
+
 No Active Loan
 
 </h4>
@@ -349,10 +317,9 @@ No Active Loan
 
 <p>
 
-You don't have an approved loan yet.
+You don't have any approved loan currently.
 
 </p>
-
 
 
 
@@ -360,13 +327,11 @@ You don't have an approved loan yet.
 
 class="btn btn-success">
 
-
 <i class="fa fa-plus"></i>
 
-Apply Loan
+Apply For Loan
 
 </a>
-
 
 
 </div>
@@ -375,12 +340,7 @@ Apply Loan
 
 
 
-
-
-
-
-<!-- LOAN AREA -->
-
+<!-- LOAN INFORMATION -->
 
 <div id="loanArea"
 
@@ -388,18 +348,14 @@ style="display:none;">
 
 
 
-
-
 <div class="row g-3">
-
-
 
 
 
 <div class="col-md-4">
 
 
-<div class="cardx b">
+<div class="cardx blue">
 
 
 <small>
@@ -426,12 +382,10 @@ KES 0
 
 
 
-
-
 <div class="col-md-4">
 
 
-<div class="cardx g">
+<div class="cardx green">
 
 
 <small>
@@ -458,12 +412,10 @@ KES 0
 
 
 
-
-
 <div class="col-md-4">
 
 
-<div class="cardx o">
+<div class="cardx orange">
 
 
 <small>
@@ -487,9 +439,6 @@ KES 0
 
 
 
-
-
-
 </div>
 
 
@@ -498,6 +447,7 @@ KES 0
 
 
 
+<!-- LOAN PROGRESS -->
 
 
 <div class="panel mt-4">
@@ -511,7 +461,6 @@ Loan Progress
 
 
 
-
 <div class="progress">
 
 
@@ -519,19 +468,16 @@ Loan Progress
 
 class="progress-bar"
 
-style="width:0%">
-
+role="progressbar">
 
 0%
 
-
 </div>
 
 
 </div>
 
 
-
 </div>
 
 
@@ -540,6 +486,7 @@ style="width:0%">
 
 
 
+<!-- TRANSACTIONS -->
 
 
 <div class="panel mt-4">
@@ -547,9 +494,10 @@ style="width:0%">
 
 <h4>
 
-Recent Transactions
+Recent Payments
 
 </h4>
+
 
 
 
@@ -557,7 +505,6 @@ Recent Transactions
 
 
 <thead>
-
 
 <tr>
 
@@ -568,7 +515,6 @@ Recent Transactions
 <th>Amount</th>
 
 <th>Status</th>
-
 
 </tr>
 
@@ -595,19 +541,11 @@ Recent Transactions
 
 
 
-
-
 </div>
 
 
 
-
-
-
-
-
 </div>
-
 
 
 
@@ -623,14 +561,14 @@ document.addEventListener("DOMContentLoaded",function(){
 
 
 
+/*
 
+CHECK LOGIN
 
-// CHECK LOGIN
+*/
 
 
 const client = AUTH.currentClient();
-
-
 
 
 
@@ -650,11 +588,14 @@ return;
 
 
 
+/*
 
-// CLIENT NAME
+SHOW CLIENT DETAILS
+
+*/
 
 
-document.getElementById("welcome").innerHTML=
+document.getElementById("welcome").innerHTML =
 
 "Welcome, "+client.fullname+" 👋";
 
@@ -662,17 +603,10 @@ document.getElementById("welcome").innerHTML=
 
 
 
-
-
-
-
-// PROFILE IMAGE
-
-
 if(client.profilePhoto){
 
 
-document.getElementById("profileImage").src=
+document.getElementById("profileImage").src =
 
 client.profilePhoto;
 
@@ -686,20 +620,36 @@ client.profilePhoto;
 
 
 
+/*
+
+GET CLIENT LOAN FROM DATABASE
+
+*/
 
 
-// GET LOAN FROM DATABASE
-
-
-const loan = DB.getLoanByClient(client.id);
-
-
-
-
+let loan=null;
 
 
 
-// NO LOAN
+if(DB.getLoanByClient){
+
+
+loan = DB.getLoanByClient(client.id);
+
+
+}
+
+
+
+
+
+
+
+/*
+
+NO LOAN
+
+*/
 
 
 if(!loan){
@@ -719,6 +669,12 @@ return;
 
 
 
+/*
+
+SHOW LOAN AREA
+
+*/
+
 
 document.getElementById("loanArea").style.display="block";
 
@@ -728,16 +684,11 @@ document.getElementById("loanArea").style.display="block";
 
 
 
-
-
-// LOAN VALUES
-
-
-const amount = Number(
-
-loan.originalPrincipal ||
+let loanAmount = Number(
 
 loan.amount ||
+
+loan.originalPrincipal ||
 
 0
 
@@ -748,13 +699,13 @@ loan.amount ||
 
 
 
-const remaining = Number(
+let remaining = Number(
 
-loan.remainingPrincipal ??
+loan.remainingBalance ||
 
-loan.remainingBalance ??
+loan.remainingPrincipal ||
 
-amount
+loanAmount
 
 );
 
@@ -763,30 +714,27 @@ amount
 
 
 
+/*
 
-// FIXED 20% INTEREST
+EXPECTED INTEREST 20%
 
-
-const interest = remaining * 0.20;
-
-
+*/
 
 
-
+let interest = remaining * 0.20;
 
 
 
-function formatMoney(value){
 
 
-if(DB.formatMoney){
-
-return DB.formatMoney(value);
-
-}
 
 
-return "KES "+Number(value).toLocaleString();
+function money(value){
+
+
+return "KES "+Number(value)
+
+.toLocaleString();
 
 
 }
@@ -797,50 +745,68 @@ return "KES "+Number(value).toLocaleString();
 
 
 
-document.getElementById("loanAmount").innerHTML=
+document.getElementById("loanAmount").innerHTML =
 
-formatMoney(amount);
-
-
-
-
-
-document.getElementById("remaining").innerHTML=
-
-formatMoney(remaining);
+money(loanAmount);
 
 
 
 
 
-document.getElementById("interest").innerHTML=
+document.getElementById("remaining").innerHTML =
 
-formatMoney(interest);
+money(remaining);
 
 
 
 
 
 
+document.getElementById("interest").innerHTML =
 
-
-// PROGRESS
-
-
-let paid = amount - remaining;
-
-
-let progress = amount > 0 ?
-
-Math.round((paid / amount) * 100)
-
-:0;
+money(interest);
 
 
 
 
 
-document.getElementById("bar").style.width=
+
+/*
+
+LOAN PROGRESS
+
+*/
+
+
+let paid = loanAmount - remaining;
+
+
+let progress = 0;
+
+
+
+if(loanAmount>0){
+
+
+progress = Math.round(
+
+(paid / loanAmount) * 100
+
+);
+
+
+}
+
+
+
+
+document.getElementById("bar").style.width =
+
+progress+"%";
+
+
+
+document.getElementById("bar").innerHTML =
 
 progress+"%";
 
@@ -848,53 +814,68 @@ progress+"%";
 
 
 
-document.getElementById("bar").innerHTML=
-
-progress+"%";
 
 
+/*
+
+LOAD PAYMENTS FROM DATABASE
+
+*/
 
 
-
-
-
-
-
-// PAYMENTS
-
-
-const payments = DB.getLoanPayments ?
-
-DB.getLoanPayments(loan.id)
-
-:[];
+let payments=[];
 
 
 
+if(DB.getLoanPayments){
 
 
-const tx=document.getElementById("tx");
+payments = DB.getLoanPayments(loan.id);
 
 
-tx.innerHTML="";
+}
 
 
 
 
 
+const table = document.getElementById("tx");
 
-payments.slice(-5).reverse().forEach(payment=>{
+
+table.innerHTML="";
 
 
-tx.innerHTML+=`
+
+
+
+payments.slice(-5).reverse().forEach(function(payment){
+
+
+
+table.innerHTML += `
 
 <tr>
 
-<td>${payment.date || "-"}</td>
+<td>
 
-<td>${payment.description || "Payment"}</td>
+${payment.date || "-"}
 
-<td>${formatMoney(payment.totalPaid || 0)}</td>
+</td>
+
+
+<td>
+
+${payment.description || "Loan Payment"}
+
+</td>
+
+
+<td>
+
+KES ${Number(payment.amount || payment.totalPaid || 0).toLocaleString()}
+
+</td>
+
 
 <td>
 
@@ -904,11 +885,14 @@ Completed
 
 </span>
 
+
 </td>
+
 
 </tr>
 
 `;
+
 
 
 });
@@ -918,11 +902,10 @@ Completed
 
 
 
+if(table.innerHTML===""){
 
-if(tx.innerHTML===""){
 
-
-tx.innerHTML=`
+table.innerHTML=`
 
 <tr>
 
@@ -930,14 +913,14 @@ tx.innerHTML=`
 
 class="text-center">
 
-No transactions yet.
+No payments recorded yet.
 
 </td>
+
 
 </tr>
 
 `;
-
 
 }
 
@@ -953,6 +936,12 @@ No transactions yet.
 
 
 
+
+/*
+
+LOGOUT FUNCTION
+
+*/
 
 
 function logout(){
@@ -975,5 +964,6 @@ window.location.href="client-portal.html";
 
 
 </body>
+
 
 </html>
