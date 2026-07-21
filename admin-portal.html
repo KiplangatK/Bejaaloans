@@ -17,6 +17,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
 
 
+
 <style>
 
 
@@ -101,7 +102,10 @@ display:none;
 
 
 
+
 <body>
+
+
 
 
 
@@ -112,10 +116,13 @@ display:none;
 
 
 
+
+
 <div class="text-center mb-4">
 
 
 <i class="fa-solid fa-user-shield logo"></i>
+
 
 
 <h3 class="fw-bold mt-3">
@@ -123,6 +130,7 @@ display:none;
 BEJJA LOAN CREDIT
 
 </h3>
+
 
 
 <p class="text-muted">
@@ -133,6 +141,7 @@ Administrator Portal
 
 
 </div>
+
 
 
 
@@ -150,7 +159,10 @@ class="alert alert-danger">
 
 
 
+
+
 <form id="adminLoginForm">
+
 
 
 
@@ -166,6 +178,7 @@ Username
 </label>
 
 
+
 <div class="input-group">
 
 
@@ -174,6 +187,7 @@ Username
 <i class="fa fa-user"></i>
 
 </span>
+
 
 
 <input
@@ -212,6 +226,7 @@ Password
 </label>
 
 
+
 <div class="input-group">
 
 
@@ -220,6 +235,7 @@ Password
 <i class="fa fa-lock"></i>
 
 </span>
+
 
 
 <input
@@ -239,6 +255,7 @@ required>
 
 
 </div>
+
 
 
 
@@ -274,7 +291,9 @@ Login
 
 
 
+
 <hr>
+
 
 
 
@@ -303,10 +322,12 @@ Back Home
 
 
 
-</div>
 
 
 </div>
+
+</div>
+
 
 
 
@@ -320,6 +341,9 @@ Back Home
 <script src="assets/js/database.js"></script>
 
 <script src="assets/js/auth.js"></script>
+
+
+
 
 
 
@@ -341,20 +365,22 @@ e.preventDefault();
 
 
 
-const username = 
+let username = 
 
 document.getElementById("username").value.trim();
 
 
 
-const password =
+
+let password =
 
 document.getElementById("password").value.trim();
 
 
 
 
-const errorBox =
+
+let errorBox =
 
 document.getElementById("errorBox");
 
@@ -362,13 +388,19 @@ document.getElementById("errorBox");
 
 errorBox.style.display="none";
 
+errorBox.innerHTML="";
 
 
 
 
 
 
-const result = AUTH.adminLogin(
+
+
+// LOGIN CHECK
+
+
+let result = AUTH.adminLogin(
 
 username,
 
@@ -381,11 +413,13 @@ password
 
 
 
+
+
 if(!result.success){
 
 
 
-errorBox.innerHTML=result.message;
+errorBox.innerHTML = result.message;
 
 
 errorBox.style.display="block";
@@ -402,7 +436,24 @@ return;
 
 
 
-// SUCCESS
+// SUCCESSFUL LOGIN
+
+
+sessionStorage.setItem(
+
+"loggedInAdmin",
+
+JSON.stringify(result.admin)
+
+);
+
+
+
+
+
+
+
+// REDIRECT TO DASHBOARD
 
 
 window.location.href="admin-dashboard.html";
@@ -411,4 +462,18 @@ window.location.href="admin-dashboard.html";
 
 
 
+
 });
+
+
+
+</script>
+
+
+
+
+
+
+</body>
+
+</html>
