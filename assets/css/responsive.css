@@ -23,9 +23,10 @@
 }
 
 
+
 .navbar-nav{
 
-    background:#0F4C81;
+    background:#064b86;
 
     padding:20px;
 
@@ -34,6 +35,7 @@
     margin-top:15px;
 
 }
+
 
 
 .nav-link{
@@ -50,7 +52,6 @@
 
 
 
-
 /* Tablets */
 
 @media(max-width:768px){
@@ -63,13 +64,23 @@ body{
 }
 
 
-/* Hero */
+
+/* HERO */
+
 
 .hero{
 
     text-align:center;
 
     padding-top:120px;
+
+}
+
+
+
+.hero .row{
+
+    min-height:auto;
 
 }
 
@@ -93,7 +104,7 @@ body{
 
 .hero-icon{
 
-    margin-top:40px;
+    margin-top:50px;
 
     font-size:130px;
 
@@ -102,11 +113,15 @@ body{
 
 
 
+
+/* BUTTONS */
+
+
 .hero .btn{
 
     display:block;
 
-    width:90%;
+    width:85%;
 
     margin:15px auto;
 
@@ -115,7 +130,8 @@ body{
 
 
 
-/* Loan Cards */
+
+/* LOAN CARDS */
 
 
 .loan-card{
@@ -125,6 +141,9 @@ body{
 }
 
 
+
+
+/* WHY SECTION */
 
 
 .why{
@@ -143,8 +162,9 @@ body{
 
 
 
-
 }
+
+
 
 
 
@@ -156,7 +176,7 @@ body{
 
 .navbar-brand{
 
-    font-size:18px;
+    font-size:17px;
 
 }
 
