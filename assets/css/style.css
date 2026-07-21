@@ -1,0 +1,565 @@
+/*=========================================================
+    BEJJA LOAN CREDIT
+    GLOBAL STYLE SHEET
+    Version: 1.0
+=========================================================*/
+
+
+/*========================
+   GLOBAL SETTINGS
+========================*/
+
+
+*{
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+
+}
+
+
+body{
+
+    font-family:
+
+    'Segoe UI',
+    Tahoma,
+    Geneva,
+    Verdana,
+    sans-serif;
+
+
+    background:#f5f7fb;
+
+    color:#333;
+
+}
+
+
+
+/*========================
+   LINKS
+========================*/
+
+
+a{
+
+    text-decoration:none;
+
+}
+
+
+
+/*========================
+   BUTTONS
+========================*/
+
+
+.btn-primary-custom{
+
+
+    background:#0F4C81;
+
+    color:white;
+
+    border:none;
+
+    padding:12px 25px;
+
+    border-radius:12px;
+
+    font-weight:600;
+
+
+}
+
+
+
+.btn-primary-custom:hover{
+
+
+    background:#08345c;
+
+    color:white;
+
+
+}
+
+
+
+
+
+.btn-success-custom{
+
+
+    background:#28a745;
+
+    color:white;
+
+    border:none;
+
+    padding:12px 25px;
+
+    border-radius:12px;
+
+    font-weight:600;
+
+
+}
+
+
+.btn-success-custom:hover{
+
+
+    background:#218838;
+
+    color:white;
+
+
+}
+
+
+
+
+
+
+/*========================
+   CARDS
+========================*/
+
+
+.card-custom{
+
+
+    background:white;
+
+    border:none;
+
+    border-radius:20px;
+
+    box-shadow:
+
+    0 15px 35px rgba(0,0,0,.12);
+
+
+    padding:25px;
+
+
+}
+
+
+
+
+
+
+/*========================
+   LOGIN / REGISTER PAGES
+========================*/
+
+
+.auth-background{
+
+
+    min-height:100vh;
+
+
+    display:flex;
+
+
+    justify-content:center;
+
+
+    align-items:center;
+
+
+
+    background:
+
+    linear-gradient(
+
+    135deg,
+
+    #0F4C81,
+
+    #2563EB
+
+    );
+
+
+}
+
+
+
+.auth-card{
+
+
+    width:430px;
+
+
+    border-radius:20px;
+
+
+    overflow:hidden;
+
+
+    box-shadow:
+
+    0 20px 40px rgba(0,0,0,.25);
+
+
+}
+
+
+
+
+
+.logo-icon{
+
+
+    font-size:60px;
+
+
+    color:#0F4C81;
+
+
+}
+
+
+
+
+
+.form-control{
+
+
+    height:50px;
+
+
+    border-radius:12px;
+
+
+}
+
+
+
+
+.form-control:focus{
+
+
+    border-color:#0F4C81;
+
+
+    box-shadow:
+
+    0 0 0 .2rem rgba(15,76,129,.25);
+
+
+}
+
+
+
+
+
+/*========================
+   CLIENT SIDEBAR
+========================*/
+
+
+.sidebar{
+
+
+    width:250px;
+
+
+    height:100vh;
+
+
+    position:fixed;
+
+
+    left:0;
+
+
+    top:0;
+
+
+    background:#062b45;
+
+
+    color:white;
+
+
+}
+
+
+
+.sidebar .logo{
+
+
+    padding:25px;
+
+
+    font-size:25px;
+
+
+    font-weight:bold;
+
+
+    color:#28a745;
+
+
+}
+
+
+
+
+.sidebar a{
+
+
+    display:block;
+
+
+    padding:15px 25px;
+
+
+    color:white;
+
+
+    transition:.3s;
+
+
+}
+
+
+
+
+.sidebar a:hover{
+
+
+    background:#0b466b;
+
+
+    padding-left:35px;
+
+
+}
+
+
+
+
+
+
+/*========================
+   MAIN CONTENT AREA
+========================*/
+
+
+.main-content{
+
+
+    margin-left:250px;
+
+
+    padding:30px;
+
+
+}
+
+
+
+
+
+
+
+/*========================
+   DASHBOARD CARDS
+========================*/
+
+
+.dashboard-card{
+
+
+    background:white;
+
+
+    border-radius:15px;
+
+
+    padding:25px;
+
+
+    box-shadow:
+
+    0 5px 15px rgba(0,0,0,.1);
+
+
+}
+
+
+
+
+.dashboard-card h3{
+
+
+    color:#0F4C81;
+
+
+    font-weight:bold;
+
+
+}
+
+
+
+
+
+/*========================
+   TABLES
+========================*/
+
+
+.table-card{
+
+
+    background:white;
+
+
+    border-radius:15px;
+
+
+    padding:20px;
+
+
+    box-shadow:
+
+    0 5px 15px rgba(0,0,0,.1);
+
+
+}
+
+
+
+
+table{
+
+
+    vertical-align:middle;
+
+
+}
+
+
+
+
+
+
+/*========================
+   PROFILE IMAGE
+========================*/
+
+
+.profile-image{
+
+
+    width:120px;
+
+
+    height:120px;
+
+
+    border-radius:50%;
+
+
+    object-fit:cover;
+
+
+    border:4px solid #0F4C81;
+
+
+}
+
+
+
+
+
+
+/*========================
+   DOCUMENT IMAGES
+========================*/
+
+
+.document-image{
+
+
+    width:100%;
+
+
+    height:220px;
+
+
+    object-fit:cover;
+
+
+    border-radius:12px;
+
+
+}
+
+
+
+
+
+
+/*========================
+   MOBILE RESPONSIVE
+========================*/
+
+
+@media(max-width:768px){
+
+
+
+.sidebar{
+
+
+    width:70px;
+
+
+}
+
+
+
+.sidebar a{
+
+
+    font-size:0;
+
+
+}
+
+
+
+.sidebar a i{
+
+
+    font-size:20px;
+
+
+}
+
+
+
+.main-content{
+
+
+    margin-left:70px;
+
+
+    padding:15px;
+
+
+}
+
+
+
+}
