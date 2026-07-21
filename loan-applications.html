@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>Loan Applications | Bejja Credit</title>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+
+
+<style>
+
+
+*{
+
+margin:0;
+padding:0;
+box-sizing:border-box;
+
+}
+
+
+
+body{
+
+background:#edf4ff;
+
+font-family:
+
+Segoe UI,
+Tahoma,
+Geneva,
+Verdana,
+sans-serif;
+
+}
+
+
+
+
+
+/* SIDEBAR */
+
+.sidebar{
+
+width:260px;
+
+min-height:100vh;
+
+background:#0d47a1;
+
+color:white;
+
+position:fixed;
+
+left:0;
+
+top:0;
+
+}
+
+
+
+.logo{
+
+padding:25px;
+
+font-size:28px;
+
+font-weight:bold;
+
+border-bottom:
+
+1px solid rgba(255,255,255,.2);
+
+}
+
+
+
+.logo i{
+
+margin-right:10px;
+
+}
+
+
+
+.sidebar ul{
+
+list-style:none;
+
+padding:15px 0;
+
+}
+
+
+
+.sidebar ul li a{
+
+display:block;
+
+padding:15px 25px;
+
+color:white;
+
+text-decoration:none;
+
+transition:.3s;
+
+}
+
+
+
+.sidebar ul li a:hover{
+
+background:#1565c0;
+
+padding-left:35px;
+
+}
+
+
+
+.sidebar i{
+
+width:25px;
+
+}
+
+
+
+
+
+
+/* MAIN */
+
+
+.main{
+
+margin-left:260px;
+
+width:calc(100% - 260px);
+
+}
+
+
+
+
+
+
+
+/* TOPBAR */
+
+
+.topbar{
+
+height:70px;
+
+background:#1976d2;
+
+color:white;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:0 30px;
+
+}
+
+
+
+.topbar h2{
+
+font-size:28px;
+
+}
+
+
+
+
+
+
+
+
+/* CONTENT */
+
+
+.content{
+
+padding:30px;
+
+}
+
+
+
+
+
+
+.table-card{
+
+background:white;
+
+border-radius:15px;
+
+overflow:hidden;
+
+box-shadow:
+
+0 5px 15px rgba(0,0,0,.1);
+
+}
+
+
+
+
+.table-header{
+
+background:#1976d2;
+
+color:white;
+
+font-size:22px;
+
+font-weight:bold;
+
+padding:18px 25px;
+
+}
+
+
+
+.table th{
+
+background:#e3f2fd;
+
+color:#0d47a1;
+
+}
+
+
+
+.table td,
+.table th{
+
+padding:15px;
+
+vertical-align:middle;
+
+}
+
+
+
+
+
+
+
+.btn-view{
+
+background:#1976d2;
+
+color:white;
+
+border-radius:20px;
+
+padding:7px 18px;
+
+}
+
+
+
+.btn-view:hover{
+
+background:#0d47a1;
+
+color:white;
+
+}
+
+
+
+
+
+.profile-img{
+
+width:50px;
+
+height:50px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+}
+
+
+
+
+
+.section-title{
+
+font-weight:bold;
+
+color:#1976d2;
+
+border-bottom:2px solid #1976d2;
+
+padding-bottom:5px;
+
+margin-bottom:15px;
+
+}
+
+
+
+
+</style>
+
+
+</head>
+
+
+
+
+
+<body>
+
+
+
+
+<div class="wrapper">
+
+
+
+
+
+<!-- SIDEBAR -->
+
+
+<div class="sidebar">
+
+
+
+<div class="logo">
+
+<i class="fa-solid fa-building-columns"></i>
+
+Bejja Credit
+
+</div>
+
+
+
+
+
+<ul>
+
+
+<li>
+
+<a href="admin-dashboard.html">
+
+<i class="fa-solid fa-gauge"></i>
+
+Dashboard
+
+</a>
+
+</li>
+
+
+
+
+
+<li>
+
+<a href="registered-clients.html">
+
+<i class="fa-solid fa-users"></i>
+
+Registered Clients
+
+</a>
+
+</li>
+
+
+
+
+
+<li>
+
+<a href="active-loans.html">
+
+<i class="fa-solid fa-money-bill-wave"></i>
+
+Active Loans
+
+</a>
+
+</li>
+
+
+
+
+
+
+<li>
+
+<a href="loan-applications.html">
+
+<i class="fa-solid fa-file-circle-check"></i>
+
+Loan Applications
+
+</a>
+
+</li>
+
+
+
+
+
+
+<li>
+
+<a href="admin-login.html">
+
+<i class="fa-solid fa-right-from-bracket"></i>
+
+Logout
+
+</a>
+
+</li>
+
+
+
+
+</ul>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- MAIN CONTENT -->
+
+
+<div class="main">
+
+
+
+
+
+<div class="topbar">
+
+
+<h2>
+
+Loan Applications
+
+</h2>
+
+
+
+<div>
+
+Welcome,
+
+<strong id="adminName">
+
+Admin
+
+</strong>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="content">
+
+
+
+
+
+
+<div class="table-card">
+
+
+
+<div class="table-header">
+
+Pending Loan Applications
+
+</div>
+
+
+
+
+
+
+<div class="table-responsive">
+
+
+<table class="table table-hover mb-0">
+
+
+<thead>
+
+
+<tr>
+
+
+<th>
+
+Photo
+
+</th>
+
+
+
+<th>
+
+Client Name
+
+</th>
+
+
+
+<th>
+
+Phone
+
+</th>
+
+
+
+<th>
+
+ID Number
+
+</th>
+
+
+
+<th>
+
+Amount
+
+</th>
+
+
+
+<th>
+
+Date Applied
+
+</th>
+
+
+
+<th>
+
+Status
+
+</th>
+
+
+
+<th>
+
+Action
+
+</th>
+
+
+
+</tr>
+
+
+
+</thead>
+
+
+
+
+<tbody id="applicationsTable">
+
+
+
+</tbody>
+
+
+
+
+</table>
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+</div>
+<!-- =========================
+     APPLICATION DETAILS MODAL
+========================= -->
+
+
+<div class="modal fade" id="applicationModal" tabindex="-1">
+
+
+<div class="modal-dialog modal-lg">
+
+
+<div class="modal-content">
+
+
+
+
+
+<div class="modal-header bg-primary text-white">
+
+
+<h5 class="modal-title">
+
+Loan Application Details
+
+</h5>
+
+
+<button type="button"
+
+class="btn-close"
+
+data-bs-dismiss="modal">
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="modal-body">
+
+
+
+
+
+<!-- CLIENT DETAILS -->
+
+
+<h5 class="section-title">
+
+Client Information
+
+</h5>
+
+
+
+
+<div class="row">
+
+
+
+<div class="col-md-4 text-center">
+
+
+<img id="clientPhoto"
+
+class="profile-img mb-3"
+
+style="width:120px;height:120px;">
+
+
+
+<h5 id="clientName">
+
+</h5>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="col-md-8">
+
+
+
+<p>
+
+<b>Phone:</b>
+
+<span id="clientPhone"></span>
+
+</p>
+
+
+
+<p>
+
+<b>ID Number:</b>
+
+<span id="clientId"></span>
+
+</p>
+
+
+
+
+<p>
+
+<b>Email:</b>
+
+<span id="clientEmail"></span>
+
+</p>
+
+
+
+<p>
+
+<b>Address:</b>
+
+<span id="clientAddress"></span>
+
+</p>
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<hr>
+
+
+
+
+
+
+<!-- LOAN APPLICATION DETAILS -->
+
+
+<h5 class="section-title">
+
+Application Information
+
+</h5>
+
+
+
+
+
+<div class="row">
+
+
+<div class="col-md-6">
+
+
+<p>
+
+<b>Application ID:</b>
+
+<span id="applicationId"></span>
+
+</p>
+
+
+
+
+<p>
+
+<b>Date Applied:</b>
+
+<span id="applicationDate"></span>
+
+</p>
+
+
+
+
+<p>
+
+<b>Purpose:</b>
+
+<span id="loanPurpose"></span>
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="col-md-6">
+
+
+<p>
+
+<b>Amount Requested:</b>
+
+<span id="loanAmount"></span>
+
+</p>
+
+
+
+<p>
+
+<b>Monthly Interest (20%):</b>
+
+<span id="monthlyInterest"></span>
+
+</p>
+
+
+
+<p>
+
+<b>Status:</b>
+
+<span id="applicationStatus"></span>
+
+</p>
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<hr>
+
+
+
+
+
+<!-- GUARANTORS -->
+
+
+<h5 class="section-title">
+
+Guarantor Details
+
+</h5>
+
+
+
+
+
+
+
+<table class="table table-bordered">
+
+
+<thead class="table-primary">
+
+
+<tr>
+
+
+<th>
+
+Name
+
+</th>
+
+
+<th>
+
+Phone
+
+</th>
+
+
+<th>
+
+ID Number
+
+</th>
+
+
+
+</tr>
+
+
+</thead>
+
+
+
+<tbody id="guarantorTable">
+
+
+</tbody>
+
+
+
+</table>
+
+
+
+
+
+
+
+<hr>
+
+
+
+
+
+
+
+<!-- ACTION BUTTONS -->
+
+
+<div class="text-end">
+
+
+
+<button class="btn btn-success"
+
+onclick="approveApplication()">
+
+
+<i class="fa fa-check"></i>
+
+Approve Loan
+
+
+</button>
+
+
+
+
+
+<button class="btn btn-danger"
+
+onclick="rejectApplication()">
+
+
+<i class="fa fa-times"></i>
+
+Reject
+
+
+</button>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+<!-- DATABASE -->
+
+<script src="assets/js/database.js"></script>
+
+<script src="assets/js/auth.js"></script>
+
+
+
+<script>
+
+
+// ===============================
+// CHECK ADMIN LOGIN
+// ===============================
+
+
+if(!AUTH.currentAdmin()){
+
+
+window.location.href="admin-login.html";
+
+
+}
+
+
+
+
+
+
+// SHOW ADMIN NAME
+
+
+let admin = AUTH.currentAdmin();
+
+
+
+if(admin){
+
+
+document.getElementById("adminName").innerHTML =
+
+admin.username;
+
+
+}
+
+
+
+
+
+
+
+
+let selectedApplication = null;
+
+
+
+
+
+
+
+
+
+// FORMAT MONEY
+
+
+function money(value){
+
+
+return "KES " +
+
+Number(value || 0)
+
+.toLocaleString();
+
+
+}
+
+
+
+
+
+
+
+
+
+// ===============================
+// LOAD APPLICATIONS
+// ===============================
+
+
+function loadApplications(){
+
+
+
+let applications = DB.getApplications();
+
+
+
+
+let table = document.getElementById(
+
+"applicationsTable"
+
+);
+
+
+
+
+
+table.innerHTML="";
+
+
+
+
+
+
+let pending = applications.filter(app =>
+
+app.status === "PENDING"
+
+);
+
+
+
+
+
+
+
+
+
+if(pending.length === 0){
+
+
+
+table.innerHTML = `
+
+
+<tr>
+
+<td colspan="8"
+
+class="text-center text-muted p-4">
+
+
+No pending applications found.
+
+
+</td>
+
+
+</tr>
+
+
+`;
+
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+
+
+
+pending.forEach(application=>{
+
+
+
+
+
+let client = DB.getClientById(
+
+application.clientId
+
+);
+
+
+
+
+
+
+if(!client){
+
+return;
+
+}
+
+
+
+
+
+
+
+
+let photo = client.profilePhoto ||
+
+"https://via.placeholder.com/100";
+
+
+
+
+
+
+table.innerHTML += `
+
+
+
+<tr>
+
+
+
+<td>
+
+
+<img src="${photo}"
+
+class="profile-img">
+
+
+</td>
+
+
+
+
+
+<td>
+
+${client.fullname || "-"}
+
+</td>
+
+
+
+
+
+<td>
+
+${client.phone || "-"}
+
+</td>
+
+
+
+
+
+<td>
+
+${client.idNumber || "-"}
+
+</td>
+
+
+
+
+
+<td>
+
+${money(application.amount)}
+
+</td>
+
+
+
+
+
+<td>
+
+${application.applicationDate || "-"}
+
+</td>
+
+
+
+
+
+<td>
+
+
+<span class="badge bg-warning">
+
+${application.status}
+
+</span>
+
+
+</td>
+
+
+
+
+
+<td>
+
+
+<button
+
+class="btn btn-view btn-sm"
+
+onclick="viewApplication(${application.id})">
+
+
+<i class="fa fa-eye"></i>
+
+View Details
+
+
+</button>
+
+
+
+</td>
+
+
+
+
+
+
+</tr>
+
+
+
+`;
+
+
+
+
+
+});
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+// ===============================
+// VIEW APPLICATION
+// ===============================
+
+
+function viewApplication(id){
+
+
+
+selectedApplication = DB.getApplication(id);
+
+
+
+
+
+if(!selectedApplication){
+
+return;
+
+}
+
+
+
+
+
+let client = DB.getClientById(
+
+selectedApplication.clientId
+
+);
+
+
+
+
+
+
+
+if(client){
+
+
+
+
+
+document.getElementById("clientPhoto").src =
+
+client.profilePhoto ||
+
+"https://via.placeholder.com/100";
+
+
+
+
+
+document.getElementById("clientName").innerHTML =
+
+client.fullname || "-";
+
+
+
+
+
+document.getElementById("clientPhone").innerHTML =
+
+client.phone || "-";
+
+
+
+
+
+document.getElementById("clientId").innerHTML =
+
+client.idNumber || "-";
+
+
+
+
+
+document.getElementById("clientEmail").innerHTML =
+
+client.email || "-";
+
+
+
+
+
+document.getElementById("clientAddress").innerHTML =
+
+client.address || "-";
+
+
+
+}
+
+
+
+
+
+
+
+
+// APPLICATION DETAILS
+
+
+
+document.getElementById("applicationId").innerHTML =
+
+selectedApplication.id;
+
+
+
+
+
+
+document.getElementById("applicationDate").innerHTML =
+
+selectedApplication.applicationDate || "-";
+
+
+
+
+
+document.getElementById("loanPurpose").innerHTML =
+
+selectedApplication.purpose || "-";
+
+
+
+
+
+
+document.getElementById("loanAmount").innerHTML =
+
+money(selectedApplication.amount);
+
+
+
+
+
+
+document.getElementById("monthlyInterest").innerHTML =
+
+money(
+
+Number(selectedApplication.amount || 0) * 0.20
+
+);
+
+
+
+
+
+document.getElementById("applicationStatus").innerHTML =
+
+selectedApplication.status;
+
+
+
+
+
+
+
+
+
+// GUARANTORS
+
+
+let guarantorTable =
+
+document.getElementById("guarantorTable");
+
+
+
+guarantorTable.innerHTML="";
+
+
+
+
+
+
+let g1 = selectedApplication.guarantor1 || {};
+
+let g2 = selectedApplication.guarantor2 || {};
+
+
+
+
+
+
+
+guarantorTable.innerHTML += `
+
+
+<tr>
+
+
+<td>
+
+${g1.name || "-"}
+
+</td>
+
+
+<td>
+
+${g1.phone || "-"}
+
+</td>
+
+
+<td>
+
+${g1.idNumber || "-"}
+
+</td>
+
+
+
+</tr>
+
+
+
+
+
+<tr>
+
+
+<td>
+
+${g2.name || "-"}
+
+</td>
+
+
+<td>
+
+${g2.phone || "-"}
+
+</td>
+
+
+<td>
+
+${g2.idNumber || "-"}
+
+</td>
+
+
+
+</tr>
+
+
+
+`;
+
+
+
+
+
+
+
+
+let modal = new bootstrap.Modal(
+
+document.getElementById("applicationModal")
+
+);
+
+
+
+modal.show();
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+// ===============================
+// APPROVE APPLICATION
+// ===============================
+
+
+function approveApplication(){
+
+
+
+if(!selectedApplication){
+
+return;
+
+}
+
+
+
+
+
+
+let loan = {
+
+
+
+clientId:
+
+selectedApplication.clientId,
+
+
+
+
+
+applicationId:
+
+selectedApplication.id,
+
+
+
+
+
+originalPrincipal:
+
+Number(selectedApplication.amount),
+
+
+
+
+
+remainingPrincipal:
+
+Number(selectedApplication.amount),
+
+
+
+
+
+loanDate:
+
+DB.today(),
+
+
+
+
+
+status:
+
+"ACTIVE"
+
+
+
+
+
+};
+
+
+
+
+
+
+
+
+DB.addLoan(loan);
+
+
+
+
+
+
+
+
+selectedApplication.status="APPROVED";
+
+selectedApplication.approvedDate=DB.today();
+
+
+
+DB.updateApplication(selectedApplication);
+
+
+
+
+
+
+
+alert("Loan approved successfully");
+
+
+
+
+
+location.reload();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// ===============================
+// REJECT APPLICATION
+// ===============================
+
+
+function rejectApplication(){
+
+
+
+if(!selectedApplication){
+
+return;
+
+}
+
+
+
+
+
+
+selectedApplication.status="REJECTED";
+
+selectedApplication.rejectedDate=DB.today();
+
+
+
+
+
+
+DB.updateApplication(selectedApplication);
+
+
+
+
+
+
+
+alert("Application rejected");
+
+
+
+
+
+location.reload();
+
+
+
+}
+
+
+
+
+
+
+
+
+// START
+
+
+loadApplications();
+
+
+
+</script>
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+</body>
+
+</html>
