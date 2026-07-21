@@ -45,13 +45,22 @@ border-radius:0 0 25px 25px;
 
 
 
+
+.container{
+
+max-width:1100px;
+
+}
+
+
+
 .card{
 
 border:none;
 
 border-radius:20px;
 
-box-shadow:0 10px 25px rgba(0,0,0,.12);
+box-shadow:0 10px 30px rgba(0,0,0,.12);
 
 }
 
@@ -63,7 +72,7 @@ background:#0F4C81;
 
 color:white;
 
-padding:12px;
+padding:12px 18px;
 
 border-radius:12px;
 
@@ -93,9 +102,9 @@ height:auto;
 
 .profile-img{
 
-width:120px;
+width:130px;
 
-height:120px;
+height:130px;
 
 border-radius:50%;
 
@@ -107,33 +116,45 @@ border:4px solid #2563EB;
 
 
 
-.document-img{
+.document-box{
 
-width:100%;
+background:#f8f9fa;
 
-height:160px;
+border-radius:15px;
 
-object-fit:contain;
+padding:15px;
 
-border-radius:12px;
-
-border:1px solid #ddd;
-
-background:#fafafa;
+border:1px dashed #2563EB;
 
 }
 
 
 
-.upload-box{
+.document-img{
 
-border:2px dashed #2563EB;
+width:100%;
 
-padding:15px;
+height:150px;
+
+object-fit:contain;
+
+border-radius:10px;
+
+display:none;
+
+}
+
+
+
+.interest-box{
+
+background:#198754;
+
+color:white;
+
+padding:20px;
 
 border-radius:15px;
-
-background:#f8f9fa;
 
 }
 
@@ -160,14 +181,16 @@ display:none;
 }
 
 
-
 </style>
 
 
 </head>
 
 
+
 <body>
+
+
 
 
 <!-- DATABASE -->
@@ -175,6 +198,7 @@ display:none;
 <script src="../assets/js/database.js"></script>
 
 <script src="../assets/js/auth.js"></script>
+
 
 
 
@@ -192,6 +216,8 @@ window.location.href="client-portal.html";
 
 
 </script>
+
+
 
 
 
@@ -223,6 +249,9 @@ Loan Application
 
 
 
+
+
+
 <div class="container py-4">
 
 
@@ -231,10 +260,25 @@ Loan Application
 
 
 
-<div id="errorBox" class="alert alert-danger"></div>
 
 
-<div id="successBox" class="alert alert-success"></div>
+<div id="errorBox"
+
+class="alert alert-danger">
+
+</div>
+
+
+
+<div id="successBox"
+
+class="alert alert-success">
+
+</div>
+
+
+
+
 
 
 
@@ -244,7 +288,7 @@ Loan Application
 
 <i class="fa fa-user"></i>
 
-Client Information
+Client Details
 
 </h4>
 
@@ -252,7 +296,13 @@ Client Information
 
 
 
+
+
+
+
 <div class="row">
+
+
 
 
 
@@ -272,6 +322,9 @@ src="">
 
 
 
+
+
+
 <div class="col-md-9">
 
 
@@ -279,13 +332,23 @@ src="">
 
 
 
+
+
+
+
 <div class="col-md-6 mb-3">
 
 
-<label>Full Name</label>
+<label>
+
+Full Name
+
+</label>
 
 
-<input id="fullname"
+<input
+
+id="fullname"
 
 class="form-control"
 
@@ -298,13 +361,23 @@ readonly>
 
 
 
+
+
+
+
 <div class="col-md-6 mb-3">
 
 
-<label>National ID</label>
+<label>
+
+National ID
+
+</label>
 
 
-<input id="nationalID"
+<input
+
+id="nationalID"
 
 class="form-control"
 
@@ -317,13 +390,23 @@ readonly>
 
 
 
+
+
+
+
 <div class="col-md-6 mb-3">
 
 
-<label>Phone Number</label>
+<label>
+
+Phone Number
+
+</label>
 
 
-<input id="phone"
+<input
+
+id="phone"
 
 class="form-control"
 
@@ -336,13 +419,23 @@ readonly>
 
 
 
+
+
+
+
 <div class="col-md-6 mb-3">
 
 
-<label>Occupation</label>
+<label>
+
+Occupation
+
+</label>
 
 
-<input id="occupation"
+<input
+
+id="occupation"
 
 class="form-control"
 
@@ -355,13 +448,23 @@ readonly>
 
 
 
+
+
+
+
 <div class="col-md-6 mb-3">
 
 
-<label>Employer / Business</label>
+<label>
+
+Employer / Business
+
+</label>
 
 
-<input id="employer"
+<input
+
+id="employer"
 
 class="form-control"
 
@@ -374,13 +477,23 @@ readonly>
 
 
 
+
+
+
+
 <div class="col-md-6 mb-3">
 
 
-<label>Monthly Income</label>
+<label>
+
+Monthly Income
+
+</label>
 
 
-<input id="income"
+<input
+
+id="income"
 
 class="form-control"
 
@@ -393,13 +506,23 @@ readonly>
 
 
 
+
+
+
+
 <div class="col-md-6 mb-3">
 
 
-<label>County</label>
+<label>
+
+County
+
+</label>
 
 
-<input id="county"
+<input
+
+id="county"
 
 class="form-control"
 
@@ -412,13 +535,23 @@ readonly>
 
 
 
+
+
+
+
 <div class="col-md-6 mb-3">
 
 
-<label>Address</label>
+<label>
+
+Address
+
+</label>
 
 
-<input id="address"
+<input
+
+id="address"
 
 class="form-control"
 
@@ -430,19 +563,30 @@ readonly>
 
 
 
-</div>
+
+
 
 
 </div>
 
 
 </div>
+
+
+</div>
+
+
+
+
 
 
 
 
 
 <hr>
+
+
+
 
 
 
@@ -459,7 +603,14 @@ Loan Details
 
 
 
+
+
+
+
+
 <div class="row">
+
+
 
 
 
@@ -483,10 +634,15 @@ class="form-control"
 
 placeholder="Enter amount"
 
+oninput="calculateInterest()"
+
 required>
 
 
 </div>
+
+
+
 
 
 
@@ -510,79 +666,7 @@ id="purpose"
 
 class="form-control"
 
-placeholder="Business, School, Emergency..."
-
-required>
-
-
-</div>
-  <!-- GUARANTOR SECTION -->
-
-<h4 class="section-title mt-4">
-
-<i class="fa fa-user-shield"></i>
-
-Guarantor Information
-
-</h4>
-
-
-
-
-
-<div class="row">
-
-
-
-<div class="col-md-6 mb-3">
-
-
-<label>
-
-Guarantor Full Name
-
-</label>
-
-
-<input
-
-type="text"
-
-id="guarantorName"
-
-class="form-control"
-
-placeholder="Enter guarantor name"
-
-required>
-
-
-</div>
-
-
-
-
-
-
-<div class="col-md-6 mb-3">
-
-
-<label>
-
-Guarantor National ID
-
-</label>
-
-
-<input
-
-type="text"
-
-id="guarantorID"
-
-class="form-control"
-
-placeholder="Enter ID number"
+placeholder="Business / Emergency / Other"
 
 required>
 
@@ -595,94 +679,6 @@ required>
 
 
 
-<div class="col-md-6 mb-3">
-
-
-<label>
-
-Guarantor Phone Number
-
-</label>
-
-
-<input
-
-type="tel"
-
-id="guarantorPhone"
-
-class="form-control"
-
-placeholder="07XXXXXXXX"
-
-required>
-
-
-</div>
-
-
-
-
-
-
-
-<div class="col-md-6 mb-3">
-
-
-<label>
-
-Relationship With Client
-
-</label>
-
-
-<input
-
-type="text"
-
-id="relationship"
-
-class="form-control"
-
-placeholder="Brother, Friend, Parent..."
-
-required>
-
-
-</div>
-
-
-
-
-
-
-
-<div class="col-12 mb-3">
-
-
-<label>
-
-Guarantor Physical Address
-
-</label>
-
-
-<textarea
-
-id="guarantorAddress"
-
-class="form-control"
-
-rows="3"
-
-placeholder="Enter guarantor address"
-
-required></textarea>
-
-
-</div>
-
-
 
 </div>
 
@@ -693,231 +689,28 @@ required></textarea>
 
 
 
-
-<h4 class="section-title mt-4">
-
-<i class="fa fa-file-image"></i>
-
-Guarantor Verification Documents
-
-</h4>
+<div class="interest-box mb-4">
 
 
+<h5>
+
+Monthly Interest (20%)
+
+</h5>
 
 
 
+<h2 id="monthlyInterest">
 
+KES 0
 
-<div class="row">
-
-
-
-
-
-
-
-<div class="col-md-4 mb-3">
-
-
-<div class="upload-box">
-
-
-
-<label class="fw-bold">
-
-Guarantor Photo
-
-</label>
-
-
-
-<input
-
-type="file"
-
-id="guarantorPhoto"
-
-class="form-control"
-
-accept="image/*"
-
-required>
-
-
-
-
-<img
-
-id="guarantorPhotoPreview"
-
-class="document-img mt-3"
-
-style="display:none;">
-
-
-
-</div>
+</h2>
 
 
 </div>
 
 
 
-
-
-
-
-
-
-<div class="col-md-4 mb-3">
-
-
-<div class="upload-box">
-
-
-
-<label class="fw-bold">
-
-Guarantor ID Front
-
-</label>
-
-
-
-<input
-
-type="file"
-
-id="guarantorIDFront"
-
-class="form-control"
-
-accept="image/*"
-
-required>
-
-
-
-
-<img
-
-id="guarantorIDFrontPreview"
-
-class="document-img mt-3"
-
-style="display:none;">
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div class="col-md-4 mb-3">
-
-
-<div class="upload-box">
-
-
-
-<label class="fw-bold">
-
-Guarantor ID Back
-
-</label>
-
-
-
-<input
-
-type="file"
-
-id="guarantorIDBack"
-
-class="form-control"
-
-accept="image/*"
-
-required>
-
-
-
-
-<img
-
-id="guarantorIDBackPreview"
-
-class="document-img mt-3"
-
-style="display:none;">
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<hr>
-
-
-
-
-
-<div class="text-center mt-4">
-
-
-
-<button
-
-onclick="submitLoanApplication()"
-
-class="btn btn-primary w-100 btn-submit">
-
-
-<i class="fa fa-paper-plane"></i>
-
-
-Submit Loan Application
-
-
-</button>
-
-
-
-</div>
-
-
-
-
-
-</div>
-
-</div>
 
 
 
@@ -926,9 +719,7 @@ Submit Loan Application
 <script>
 
 
-/* =====================================
-   LOAD CLIENT DETAILS
-===================================== */
+// AUTO LOAD CLIENT DETAILS
 
 
 document.addEventListener("DOMContentLoaded",()=>{
@@ -947,6 +738,7 @@ return;
 
 
 }
+
 
 
 
@@ -1004,107 +796,811 @@ client.profilePhoto;
 
 
 
-
 });
 
 
 
+
+
+
+
+
+
+// INTEREST CALCULATOR
+
+
+function calculateInterest(){
+
+
+
+let amount = Number(
+
+document.getElementById("loanAmount").value
+
+) || 0;
+
+
+
+let interest = amount * 0.20;
+
+
+
+document.getElementById("monthlyInterest").innerHTML =
+
+"KES " + interest.toLocaleString();
+
+
+
+}
+
+
+
 </script>
-  <script>
+<!-- ================================
+     GUARANTOR SECTION
+================================ -->
 
 
-/* =====================================
-   IMAGE PREVIEW
-===================================== */
+<h4 class="section-title mt-4">
+
+<i class="fa fa-users"></i>
+
+Guarantor Details (Required)
+
+</h4>
+
+
+
+
+
+<!-- ================================
+     GUARANTOR ONE
+================================ -->
+
+<div class="card p-4 mb-4">
+
+
+<h5 class="mb-3 text-primary">
+
+Guarantor 1
+
+</h5>
+
+
+
+<div class="row">
+
+
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+Full Name
+
+</label>
+
+
+<input
+
+type="text"
+
+id="g1_name"
+
+class="form-control"
+
+placeholder="Guarantor full name"
+
+required>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+National ID
+
+</label>
+
+
+<input
+
+type="text"
+
+id="g1_id"
+
+class="form-control"
+
+placeholder="National ID number"
+
+required>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+Phone Number
+
+</label>
+
+
+<input
+
+type="tel"
+
+id="g1_phone"
+
+class="form-control"
+
+placeholder="07XXXXXXXX"
+
+required>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+Relationship
+
+</label>
+
+
+<input
+
+type="text"
+
+id="g1_relationship"
+
+class="form-control"
+
+placeholder="Friend / Relative / Colleague"
+
+required>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="col-md-12 mb-3">
+
+<label>
+
+Address
+
+</label>
+
+
+<textarea
+
+id="g1_address"
+
+class="form-control"
+
+placeholder="Physical address"
+
+required></textarea>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+<div class="row">
+
+
+
+<div class="col-md-4">
+
+<div class="document-box">
+
+
+<label>
+
+Guarantor Photo
+
+</label>
+
+
+<input
+
+type="file"
+
+class="form-control"
+
+accept="image/*"
+
+onchange="previewImage(this,'g1_photo_preview')"
+
+id="g1_photo"
+
+required>
+
+
+<img
+
+id="g1_photo_preview"
+
+class="document-img mt-2">
+
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+
+<div class="col-md-4">
+
+
+<div class="document-box">
+
+
+<label>
+
+ID Front
+
+</label>
+
+
+<input
+
+type="file"
+
+class="form-control"
+
+accept="image/*"
+
+onchange="previewImage(this,'g1_idfront_preview')"
+
+id="g1_idfront"
+
+required>
+
+
+
+<img
+
+id="g1_idfront_preview"
+
+class="document-img mt-2">
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="col-md-4">
+
+
+<div class="document-box">
+
+
+<label>
+
+ID Back
+
+</label>
+
+
+<input
+
+type="file"
+
+class="form-control"
+
+accept="image/*"
+
+onchange="previewImage(this,'g1_idback_preview')"
+
+id="g1_idback"
+
+required>
+
+
+
+<img
+
+id="g1_idback_preview"
+
+class="document-img mt-2">
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ================================
+     GUARANTOR TWO
+================================ -->
+
+
+<div class="card p-4 mb-4">
+
+
+<h5 class="mb-3 text-primary">
+
+Guarantor 2
+
+</h5>
+
+
+
+
+
+<div class="row">
+
+
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+Full Name
+
+</label>
+
+
+<input
+
+type="text"
+
+id="g2_name"
+
+class="form-control"
+
+placeholder="Guarantor full name"
+
+required>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+National ID
+
+</label>
+
+
+<input
+
+type="text"
+
+id="g2_id"
+
+class="form-control"
+
+placeholder="National ID number"
+
+required>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+Phone Number
+
+</label>
+
+
+<input
+
+type="tel"
+
+id="g2_phone"
+
+class="form-control"
+
+placeholder="07XXXXXXXX"
+
+required>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+<label>
+
+Relationship
+
+</label>
+
+
+<input
+
+type="text"
+
+id="g2_relationship"
+
+class="form-control"
+
+placeholder="Friend / Relative / Colleague"
+
+required>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="col-md-12 mb-3">
+
+<label>
+
+Address
+
+</label>
+
+
+<textarea
+
+id="g2_address"
+
+class="form-control"
+
+placeholder="Physical address"
+
+required></textarea>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="row">
+
+
+
+<div class="col-md-4">
+
+
+<div class="document-box">
+
+
+<label>
+
+Guarantor Photo
+
+</label>
+
+
+<input
+
+type="file"
+
+class="form-control"
+
+accept="image/*"
+
+onchange="previewImage(this,'g2_photo_preview')"
+
+id="g2_photo"
+
+required>
+
+
+<img
+
+id="g2_photo_preview"
+
+class="document-img mt-2">
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="col-md-4">
+
+
+<div class="document-box">
+
+
+<label>
+
+ID Front
+
+</label>
+
+
+<input
+
+type="file"
+
+class="form-control"
+
+accept="image/*"
+
+onchange="previewImage(this,'g2_idfront_preview')"
+
+id="g2_idfront"
+
+required>
+
+
+
+<img
+
+id="g2_idfront_preview"
+
+class="document-img mt-2">
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="col-md-4">
+
+
+<div class="document-box">
+
+
+<label>
+
+ID Back
+
+</label>
+
+
+<input
+
+type="file"
+
+class="form-control"
+
+accept="image/*"
+
+onchange="previewImage(this,'g2_idback_preview')"
+
+id="g2_idback"
+
+required>
+
+
+
+<img
+
+id="g2_idback_preview"
+
+class="document-img mt-2">
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<script>
+
+
+// IMAGE PREVIEW FUNCTION
 
 
 function previewImage(input,target){
 
 
+
 const file=input.files[0];
 
 
-if(file){
+
+if(!file){
+
+return;
+
+}
+
 
 
 const reader=new FileReader();
 
 
+
 reader.onload=function(e){
 
 
-target.src=e.target.result;
 
-target.style.display="block";
+let img=document.getElementById(target);
+
+
+
+img.src=e.target.result;
+
+
+
+img.style.display="block";
 
 
 }
+
 
 
 reader.readAsDataURL(file);
 
 
-}
-
 
 }
 
 
 
+</script>
+<!-- ================================
+     SUBMIT APPLICATION
+================================ -->
 
 
-document.getElementById("guarantorPhoto")
-.onchange=function(){
+<div class="text-center mt-4">
 
 
-previewImage(
+<button
 
-this,
+onclick="submitLoanApplication()"
 
-document.getElementById("guarantorPhotoPreview")
-
-);
+class="btn btn-primary btn-submit w-100">
 
 
-};
+<i class="fa fa-paper-plane"></i>
+
+Submit Loan Application
 
 
+</button>
 
 
-
-document.getElementById("guarantorIDFront")
-.onchange=function(){
-
-
-previewImage(
-
-this,
-
-document.getElementById("guarantorIDFrontPreview")
-
-);
-
-
-};
+</div>
 
 
 
 
 
-document.getElementById("guarantorIDBack")
-.onchange=function(){
+</div>
 
-
-previewImage(
-
-this,
-
-document.getElementById("guarantorIDBackPreview")
-
-);
-
-
-};
+</div>
 
 
 
@@ -1114,9 +1610,11 @@ document.getElementById("guarantorIDBackPreview")
 
 
 
-/* =====================================
-   IMAGE COMPRESSION
-===================================== */
+<script>
+
+
+
+// IMAGE COMPRESSION
 
 
 function compressImage(file){
@@ -1132,6 +1630,7 @@ const reader=new FileReader();
 reader.onload=function(e){
 
 
+
 const img=new Image();
 
 
@@ -1143,24 +1642,28 @@ img.onload=function(){
 const canvas=document.createElement("canvas");
 
 
+
 let width=img.width;
 
 let height=img.height;
 
 
-const max=900;
+
+const maxWidth=800;
 
 
 
-if(width>max){
+if(width>maxWidth){
 
 
-height = height * max / width;
+height = height * maxWidth / width;
 
-width=max;
+
+width=maxWidth;
 
 
 }
+
 
 
 
@@ -1174,21 +1677,33 @@ canvas.height=height;
 const ctx=canvas.getContext("2d");
 
 
+
 ctx.drawImage(
+
 img,
+
 0,
+
 0,
+
 width,
+
 height
+
 );
+
+
 
 
 
 resolve(
 
 canvas.toDataURL(
+
 "image/jpeg",
+
 0.7
+
 )
 
 );
@@ -1200,6 +1715,7 @@ canvas.toDataURL(
 
 
 img.src=e.target.result;
+
 
 
 }
@@ -1223,21 +1739,17 @@ reader.readAsDataURL(file);
 
 
 
-/* =====================================
-   SUBMIT LOAN APPLICATION
-===================================== */
+// SUBMIT LOAN APPLICATION
+
 
 
 async function submitLoanApplication(){
 
 
 
-const errorBox =
-document.getElementById("errorBox");
+const errorBox=document.getElementById("errorBox");
 
-
-const successBox =
-document.getElementById("successBox");
+const successBox=document.getElementById("successBox");
 
 
 
@@ -1250,7 +1762,7 @@ successBox.style.display="none";
 
 
 
-const client = AUTH.currentClient();
+const client=AUTH.currentClient();
 
 
 
@@ -1258,6 +1770,7 @@ if(!client){
 
 
 window.location.href="client-portal.html";
+
 
 return;
 
@@ -1270,14 +1783,19 @@ return;
 
 
 
-const loanAmount =
-Number(
+// LOAN DETAILS
+
+
+const amount=Number(
+
 document.getElementById("loanAmount").value
+
 );
 
 
 
-const purpose =
+const purpose=
+
 document.getElementById("purpose").value.trim();
 
 
@@ -1286,63 +1804,12 @@ document.getElementById("purpose").value.trim();
 
 
 
-
-const guarantorName =
-document.getElementById("guarantorName").value.trim();
-
-
-
-const guarantorID =
-document.getElementById("guarantorID").value.trim();
-
-
-
-const guarantorPhone =
-document.getElementById("guarantorPhone").value.trim();
-
-
-
-const relationship =
-document.getElementById("relationship").value.trim();
-
-
-
-const guarantorAddress =
-document.getElementById("guarantorAddress").value.trim();
-
-
-
-
-
-
-
-
-
-// VALIDATION
-
-
-if(
-
-!loanAmount ||
-
-!purpose ||
-
-!guarantorName ||
-
-!guarantorID ||
-
-!guarantorPhone ||
-
-!relationship ||
-
-!guarantorAddress
-
-){
+if(amount<=0){
 
 
 errorBox.innerHTML=
 
-"Please fill all required fields.";
+"Please enter a valid loan amount.";
 
 
 errorBox.style.display="block";
@@ -1358,15 +1825,107 @@ return;
 
 
 
-if(
 
-document.getElementById("guarantorPhoto").files.length===0 ||
 
-document.getElementById("guarantorIDFront").files.length===0 ||
+// GUARANTOR VALIDATION
 
-document.getElementById("guarantorIDBack").files.length===0
 
-){
+const required=[
+
+
+"g1_name",
+
+"g1_id",
+
+"g1_phone",
+
+"g1_relationship",
+
+"g1_address",
+
+
+
+"g2_name",
+
+"g2_id",
+
+"g2_phone",
+
+"g2_relationship",
+
+"g2_address"
+
+
+];
+
+
+
+
+
+
+for(let id of required){
+
+
+
+if(document.getElementById(id).value.trim()===""){
+
+
+errorBox.innerHTML=
+
+"Please fill all guarantor details.";
+
+
+errorBox.style.display="block";
+
+
+return;
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+// CHECK UPLOADS
+
+
+
+const files=[
+
+
+"g1_photo",
+
+"g1_idfront",
+
+"g1_idback",
+
+
+"g2_photo",
+
+"g2_idfront",
+
+"g2_idback"
+
+
+];
+
+
+
+
+
+for(let f of files){
+
+
+
+if(document.getElementById(f).files.length===0){
 
 
 errorBox.innerHTML=
@@ -1383,24 +1942,6 @@ return;
 }
 
 
-
-
-
-
-if(!/^07\d{8}$/.test(guarantorPhone)){
-
-
-errorBox.innerHTML=
-
-"Invalid guarantor phone number format.";
-
-
-errorBox.style.display="block";
-
-
-return;
-
-
 }
 
 
@@ -1411,37 +1952,69 @@ return;
 
 
 
-// COMPRESS GUARANTOR DOCUMENTS
+// COMPRESS IMAGES
 
 
-const guarantorPhoto =
+
+const g1Photo=
 
 await compressImage(
 
-document.getElementById("guarantorPhoto").files[0]
+document.getElementById("g1_photo").files[0]
+
+);
+
+
+
+const g1Front=
+
+await compressImage(
+
+document.getElementById("g1_idfront").files[0]
+
+);
+
+
+
+const g1Back=
+
+await compressImage(
+
+document.getElementById("g1_idback").files[0]
 
 );
 
 
 
 
-const guarantorIDFront =
+
+
+
+const g2Photo=
 
 await compressImage(
 
-document.getElementById("guarantorIDFront").files[0]
+document.getElementById("g2_photo").files[0]
 
 );
 
 
 
-
-
-const guarantorIDBack =
+const g2Front=
 
 await compressImage(
 
-document.getElementById("guarantorIDBack").files[0]
+document.getElementById("g2_idfront").files[0]
+
+);
+
+
+
+const g2Back=
+
+await compressImage(
+
+document.getElementById("g2_idback").files[0]
 
 );
 
@@ -1456,17 +2029,51 @@ document.getElementById("guarantorIDBack").files[0]
 // CREATE APPLICATION OBJECT
 
 
+
 const application={
+
 
 
 clientId:client.id,
 
 
 
-// loan details
+// CLIENT DETAILS FROM REGISTRATION
 
 
-amount:loanAmount,
+client:{
+
+
+fullname:client.fullname,
+
+nationalID:client.nationalID,
+
+phone:client.phone,
+
+occupation:client.occupation,
+
+employer:client.employer,
+
+monthlyIncome:client.monthlyIncome,
+
+county:client.county,
+
+address:client.address
+
+
+},
+
+
+
+
+
+// LOAN DETAILS
+
+
+amount:amount,
+
+
+monthlyInterest:amount*0.20,
 
 
 purpose:purpose,
@@ -1474,51 +2081,75 @@ purpose:purpose,
 
 
 
-// client snapshot
+
+// GUARANTOR ONE
 
 
-clientName:client.fullname,
-
-clientPhone:client.phone,
-
-clientID:client.nationalID,
+guarantor1:{
 
 
+name:document.getElementById("g1_name").value,
 
 
-// guarantor
+id:document.getElementById("g1_id").value,
 
 
-guarantor:{
+phone:document.getElementById("g1_phone").value,
 
 
-name:guarantorName,
+relationship:document.getElementById("g1_relationship").value,
 
 
-nationalID:guarantorID,
-
-
-phone:guarantorPhone,
-
-
-relationship:relationship,
-
-
-address:guarantorAddress,
+address:document.getElementById("g1_address").value,
 
 
 
-photo:guarantorPhoto,
+photo:g1Photo,
+
+idFront:g1Front,
+
+idBack:g1Back
 
 
-idFront:guarantorIDFront,
+},
 
 
-idBack:guarantorIDBack
 
+
+
+
+// GUARANTOR TWO
+
+
+
+guarantor2:{
+
+
+name:document.getElementById("g2_name").value,
+
+
+id:document.getElementById("g2_id").value,
+
+
+phone:document.getElementById("g2_phone").value,
+
+
+relationship:document.getElementById("g2_relationship").value,
+
+
+address:document.getElementById("g2_address").value,
+
+
+
+photo:g2Photo,
+
+idFront:g2Front,
+
+idBack:g2Back
 
 
 }
+
 
 
 
@@ -1535,9 +2166,8 @@ idBack:guarantorIDBack
 // SAVE TO DATABASE
 
 
-const saved =
 
-DB.addApplication(application);
+const saved = DB.addApplication(application);
 
 
 
@@ -1552,20 +2182,30 @@ if(saved){
 
 successBox.innerHTML=`
 
-<h5>
+<h4>
 
 <i class="fa fa-check-circle"></i>
 
-Loan Application Submitted
+Application Submitted Successfully
 
-</h5>
+</h4>
 
 
 <p>
 
-Your application has been sent for approval.
+Your loan request has been sent for approval.
 
 </p>
+
+
+<a href="client-dashboard.html"
+
+class="btn btn-success">
+
+Go To Dashboard
+
+</a>
+
 
 `;
 
@@ -1575,28 +2215,11 @@ successBox.style.display="block";
 
 
 
-
-
-setTimeout(()=>{
-
-
-window.location.href="client-dashboard.html";
-
-
-},2000);
-
-
-
-
-
 }
 
 
 
-
 }
-
-
 
 
 
@@ -1604,12 +2227,11 @@ window.location.href="client-dashboard.html";
 </script>
 
 
+
+
+
+
+
 </body>
 
 </html>
-
-
-
-
-
-</div>
