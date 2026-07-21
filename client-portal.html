@@ -17,9 +17,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
 
 
-
 <style>
-
 
 body{
 
@@ -36,7 +34,6 @@ justify-content:center;
 align-items:center;
 
 }
-
 
 
 .login-card{
@@ -115,13 +112,10 @@ display:none;
 
 
 
-
 <div class="card login-card">
 
 
 <div class="card-body p-5">
-
-
 
 
 
@@ -138,7 +132,6 @@ BEJJA LOAN CREDIT
 </h3>
 
 
-
 <p class="text-muted">
 
 Client Portal Login
@@ -151,14 +144,7 @@ Client Portal Login
 
 
 
-
-
-
-
 <div id="errorMessage" class="alert alert-danger"></div>
-
-
-
 
 
 
@@ -168,18 +154,13 @@ Client Portal Login
 
 
 
-
-
-
 <div class="mb-3">
-
 
 <label class="fw-semibold">
 
 Phone Number
 
 </label>
-
 
 
 <div class="input-group">
@@ -190,7 +171,6 @@ Phone Number
 <i class="fa fa-phone"></i>
 
 </span>
-
 
 
 <input
@@ -206,14 +186,9 @@ placeholder="07XXXXXXXX"
 required>
 
 
-
 </div>
 
-
 </div>
-
-
-
 
 
 
@@ -221,14 +196,11 @@ required>
 
 <div class="mb-3">
 
-
 <label class="fw-semibold">
 
 Password
 
 </label>
-
-
 
 
 <div class="input-group">
@@ -239,7 +211,6 @@ Password
 <i class="fa fa-lock"></i>
 
 </span>
-
 
 
 <input
@@ -255,14 +226,9 @@ placeholder="Enter Password"
 required>
 
 
-
 </div>
 
-
 </div>
-
-
-
 
 
 
@@ -279,9 +245,6 @@ Forgot Password?
 
 
 </div>
-
-
-
 
 
 
@@ -304,24 +267,13 @@ Login
 
 
 
-
-
-
 </form>
 
 
 
 
 
-
-
-
-
 <hr>
-
-
-
-
 
 
 
@@ -337,16 +289,12 @@ Don't have an account?
 
 
 
-
-
-
 <a href="register.html"
 
 class="btn btn-outline-primary rounded-pill">
 
 
 <i class="fa fa-user-plus"></i>
-
 
 Create New Account
 
@@ -355,17 +303,7 @@ Create New Account
 
 
 
-
-
-
-
-
 <br><br>
-
-
-
-
-
 
 
 
@@ -376,7 +314,6 @@ class="text-decoration-none">
 
 <i class="fa fa-arrow-left"></i>
 
-
 Back to Homepage
 
 
@@ -384,20 +321,14 @@ Back to Homepage
 
 
 
+</div>
+
 
 
 </div>
 
 
-
-
-
-
 </div>
-
-</div>
-
-
 
 
 
@@ -406,62 +337,62 @@ Back to Homepage
 
 
 <!-- DATABASE -->
+
 <script src="assets/js/database.js"></script>
+
 <script src="assets/js/auth.js"></script>
+
+
+
+
 
 <script>
 
-document.getElementById("loginForm")
+
+document
+.getElementById("loginForm")
 .addEventListener("submit",function(e){
+
 
 e.preventDefault();
 
 
-let phone=document.getElementById("phone").value.trim();
 
-let password=document.getElementById("password").value.trim();
+const phone = 
+document.getElementById("phone").value.trim();
 
-let errorBox=document.getElementById("errorMessage");
+
+
+const password =
+document.getElementById("password").value.trim();
+
+
+
+const errorBox =
+document.getElementById("errorMessage");
+
 
 
 errorBox.style.display="none";
 
-
-// GET CLIENTS
-
-let clients = JSON.parse(
-localStorage.getItem("bejja_clients")
-) || [];
+errorBox.innerHTML="";
 
 
 
-// FIND CLIENT
-
-let client = clients.find(c => 
-c.phone === phone
-);
 
 
+// CHECK EMPTY
 
-if(!client){
 
-errorBox.innerHTML="Phone number not registered.";
+if(phone==="" || password===""){
+
+
+errorBox.innerHTML =
+"Please enter phone number and password.";
+
 
 errorBox.style.display="block";
 
-return;
-
-}
-
-
-
-
-if(client.password !== password){
-
-
-errorBox.innerHTML="Incorrect password.";
-
-errorBox.style.display="block";
 
 return;
 
@@ -470,27 +401,54 @@ return;
 
 
 
-// SAVE LOGIN
 
-localStorage.setItem(
-"currentClient",
-JSON.stringify(client)
+
+
+// LOGIN USING AUTH.JS
+
+
+const result = AUTH.clientLogin(
+phone,
+password
 );
 
 
 
-// OPEN DASHBOARD
 
-window.location.href="client-portal.html";
+
+
+if(!result.success){
+
+
+errorBox.innerHTML=result.message;
+
+
+errorBox.style.display="block";
+
+
+return;
+
+
+}
+
+
+
+
+
+
+// LOGIN SUCCESS
+
+
+window.location.href="client-dashboard.html";
+
+
 
 
 });
 
 
+
 </script>
-
-
-
 
 
 
