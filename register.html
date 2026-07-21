@@ -4,15 +4,20 @@
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+
 <title>Create Account | Bejja Loan Credit</title>
+
 
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+
+
 
 
 
@@ -157,7 +162,10 @@ border-radius:10px;
 </head>
 
 
+
 <body>
+
+
 
 
 
@@ -165,6 +173,8 @@ border-radius:10px;
 
 
 <div class="card-body p-5">
+
+
 
 
 
@@ -183,6 +193,7 @@ BEJJA LOAN CREDIT
 
 
 
+
 <p class="text-muted">
 
 Create Client Account
@@ -190,7 +201,9 @@ Create Client Account
 </p>
 
 
+
 </div>
+
 
 
 
@@ -217,6 +230,8 @@ Create Client Account
 
 
 
+<!-- FULL NAME -->
+
 <div class="col-md-6 mb-3">
 
 
@@ -225,6 +240,7 @@ Create Client Account
 Full Name
 
 </label>
+
 
 
 <input
@@ -245,6 +261,7 @@ required>
 
 
 
+<!-- NATIONAL ID -->
 
 <div class="col-md-6 mb-3">
 
@@ -254,6 +271,7 @@ required>
 National ID
 
 </label>
+
 
 
 <input
@@ -274,6 +292,7 @@ required>
 
 
 
+<!-- PHONE -->
 
 <div class="col-md-6 mb-3">
 
@@ -283,6 +302,7 @@ required>
 Phone Number
 
 </label>
+
 
 
 <input
@@ -305,6 +325,7 @@ required>
 
 
 
+<!-- EMAIL -->
 
 <div class="col-md-6 mb-3">
 
@@ -314,6 +335,7 @@ required>
 Email
 
 </label>
+
 
 
 <input
@@ -332,6 +354,7 @@ class="form-control">
 
 
 
+<!-- OCCUPATION -->
 
 <div class="col-md-6 mb-3">
 
@@ -341,6 +364,7 @@ class="form-control">
 Occupation
 
 </label>
+
 
 
 <input
@@ -361,6 +385,7 @@ required>
 
 
 
+<!-- EMPLOYER -->
 
 <div class="col-md-6 mb-3">
 
@@ -370,6 +395,7 @@ required>
 Employer / Business Name
 
 </label>
+
 
 
 <input
@@ -388,6 +414,7 @@ class="form-control">
 
 
 
+<!-- INCOME -->
 
 <div class="col-md-6 mb-3">
 
@@ -397,6 +424,7 @@ class="form-control">
 Monthly Income
 
 </label>
+
 
 
 <input
@@ -417,6 +445,7 @@ required>
 
 
 
+<!-- COUNTY -->
 
 <div class="col-md-6 mb-3">
 
@@ -426,6 +455,7 @@ required>
 County
 
 </label>
+
 
 
 <input
@@ -446,6 +476,7 @@ required>
 
 
 
+<!-- ADDRESS -->
 
 <div class="col-12 mb-3">
 
@@ -455,6 +486,7 @@ required>
 Physical Address
 
 </label>
+
 
 
 <textarea
@@ -474,7 +506,7 @@ required></textarea>
 
 
 
-
+<!-- DOCUMENT UPLOAD TITLE -->
 
 <div class="col-12 mb-3">
 
@@ -497,6 +529,8 @@ Upload Verification Documents
 
 
 
+<!-- PROFILE PHOTO -->
+
 <div class="col-md-4 mb-3">
 
 
@@ -508,6 +542,7 @@ Upload Verification Documents
 Profile Photo
 
 </label>
+
 
 
 <input
@@ -544,6 +579,9 @@ class="preview">
 
 
 
+
+<!-- ID FRONT -->
+
 <div class="col-md-4 mb-3">
 
 
@@ -557,6 +595,7 @@ National ID Front
 </label>
 
 
+
 <input
 
 type="file"
@@ -568,6 +607,7 @@ class="form-control"
 accept="image/*"
 
 required>
+
 
 
 
@@ -591,6 +631,9 @@ class="id-preview">
 
 
 
+
+<!-- ID BACK -->
+
 <div class="col-md-4 mb-3">
 
 
@@ -604,6 +647,7 @@ National ID Back
 </label>
 
 
+
 <input
 
 type="file"
@@ -615,6 +659,7 @@ class="form-control"
 accept="image/*"
 
 required>
+
 
 
 
@@ -638,6 +683,9 @@ class="id-preview">
 
 
 
+
+<!-- PASSWORD -->
+
 <div class="col-md-6 mb-3">
 
 
@@ -646,6 +694,7 @@ class="id-preview">
 Password
 
 </label>
+
 
 
 <input
@@ -659,6 +708,7 @@ class="form-control"
 required>
 
 
+
 </div>
 
 
@@ -666,6 +716,10 @@ required>
 
 
 
+
+
+
+<!-- CONFIRM PASSWORD -->
 
 <div class="col-md-6 mb-4">
 
@@ -675,6 +729,7 @@ required>
 Confirm Password
 
 </label>
+
 
 
 <input
@@ -688,11 +743,6 @@ class="form-control"
 required>
 
 
-</div>
-
-
-
-
 
 </div>
 
@@ -701,16 +751,34 @@ required>
 
 
 
-<button 
-type="button"
-onclick="createAccount()"
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- CREATE ACCOUNT BUTTON -->
+
+<button
+
+type="submit"
+
 class="btn btn-primary w-100">
+
 
 <i class="fa fa-user-plus"></i>
 
-SUBMIT
+
+Create Account
+
 
 </button>
+
 
 
 
@@ -723,10 +791,13 @@ SUBMIT
 
 
 
+
+
 <div class="text-center mt-4">
 
 
 Already have an account?
+
 
 
 <a href="client-portal.html">
@@ -742,6 +813,9 @@ Login Here
 
 
 
+
+
+</div>
 
 </div>
 
@@ -804,8 +878,10 @@ reader.readAsDataURL(file);
 
 
 
+
+
 document.getElementById("profilePhoto")
-.onchange=function(){
+.addEventListener("change",function(){
 
 
 previewImage(
@@ -817,14 +893,15 @@ document.getElementById("profilePreview")
 );
 
 
-}
+});
+
 
 
 
 
 
 document.getElementById("idFront")
-.onchange=function(){
+.addEventListener("change",function(){
 
 
 previewImage(
@@ -836,14 +913,15 @@ document.getElementById("frontPreview")
 );
 
 
-}
+});
+
 
 
 
 
 
 document.getElementById("idBack")
-.onchange=function(){
+.addEventListener("change",function(){
 
 
 previewImage(
@@ -855,7 +933,9 @@ document.getElementById("backPreview")
 );
 
 
-}
+});
+
+
 
 
 
@@ -866,7 +946,6 @@ document.getElementById("backPreview")
 /* ============================
    IMAGE COMPRESSION
 ============================ */
-
 
 
 function compressImage(file){
@@ -894,7 +973,6 @@ img.onload=function(){
 const canvas=document.createElement("canvas");
 
 
-
 const maxWidth=800;
 
 
@@ -906,14 +984,13 @@ let height=img.height;
 
 
 
-
 if(width>maxWidth){
 
 
 height = height * maxWidth / width;
 
 
-width = maxWidth;
+width=maxWidth;
 
 
 }
@@ -954,7 +1031,6 @@ canvas.toDataURL(
 
 
 
-
 }
 
 
@@ -986,8 +1062,9 @@ reader.readAsDataURL(file);
 
 
 
+
 /* ============================
-   REGISTER CLIENT
+   CREATE CLIENT ACCOUNT
 ============================ */
 
 
@@ -1005,13 +1082,9 @@ e.preventDefault();
 
 
 
-const errorBox =
-document.getElementById("errorBox");
+const errorBox=document.getElementById("errorBox");
 
-
-
-const successBox =
-document.getElementById("successBox");
+const successBox=document.getElementById("successBox");
 
 
 
@@ -1029,58 +1102,57 @@ successBox.style.display="none";
 // GET DETAILS
 
 
-const fullname =
+const fullname=
 document.getElementById("fullname").value.trim();
 
 
 
-const nationalID =
+const nationalID=
 document.getElementById("nationalID").value.trim();
 
 
 
-const phone =
+const phone=
 document.getElementById("phone").value.trim();
 
 
 
-const email =
+const email=
 document.getElementById("email").value.trim();
 
 
 
-const occupation =
+const occupation=
 document.getElementById("occupation").value.trim();
 
 
 
-const employer =
+const employer=
 document.getElementById("employer").value.trim();
 
 
 
-const income =
+const income=
 document.getElementById("income").value.trim();
 
 
 
-const county =
+const county=
 document.getElementById("county").value.trim();
 
 
 
-const address =
+const address=
 document.getElementById("address").value.trim();
 
 
 
-
-const password =
+const password=
 document.getElementById("password").value;
 
 
 
-const confirmPassword =
+const confirmPassword=
 document.getElementById("confirmPassword").value;
 
 
@@ -1089,7 +1161,8 @@ document.getElementById("confirmPassword").value;
 
 
 
-// CHECK EMPTY FIELDS
+
+// CHECK REQUIRED FIELDS
 
 
 if(
@@ -1116,41 +1189,7 @@ confirmPassword===""
 
 
 errorBox.innerHTML=
-
 "Please fill all required fields.";
-
-
-errorBox.style.display="block";
-
-
-return;
-
-
-}
-
-
-
-
-
-
-
-// CHECK DOCUMENTS
-
-
-if(
-
-document.getElementById("profilePhoto").files.length===0 ||
-
-document.getElementById("idFront").files.length===0 ||
-
-document.getElementById("idBack").files.length===0
-
-){
-
-
-errorBox.innerHTML=
-
-"Please upload all verification documents.";
 
 
 errorBox.style.display="block";
@@ -1171,24 +1210,21 @@ return;
 // CHECK PASSWORD
 
 
-if(password!==confirmPassword){
-
+if(password !== confirmPassword){
 
 
 errorBox.innerHTML=
-
 "Passwords do not match.";
 
 
-
 errorBox.style.display="block";
-
 
 
 return;
 
 
 }
+
 
 
 
@@ -1202,15 +1238,11 @@ return;
 if(!/^07\d{8}$/.test(phone)){
 
 
-
 errorBox.innerHTML=
-
-"Invalid phone number format. Use 07XXXXXXXX.";
-
+"Invalid phone number format.";
 
 
 errorBox.style.display="block";
-
 
 
 return;
@@ -1225,34 +1257,68 @@ return;
 
 
 
-// COMPRESS IMAGES
+// CHECK DOCUMENTS
 
 
-const profilePhoto =
+if(
+
+profilePhoto.files.length===0 ||
+
+idFront.files.length===0 ||
+
+idBack.files.length===0
+
+){
+
+
+errorBox.innerHTML=
+"Please upload all verification documents.";
+
+
+errorBox.style.display="block";
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+
+
+// COMPRESS FILES
+
+
+const profile=
 
 await compressImage(
 
-document.getElementById("profilePhoto").files[0]
+profilePhoto.files[0]
 
 );
 
 
 
-const idFront =
+const front=
 
 await compressImage(
 
-document.getElementById("idFront").files[0]
+idFront.files[0]
 
 );
 
 
 
-const idBack =
+const back=
 
 await compressImage(
 
-document.getElementById("idBack").files[0]
+idBack.files[0]
 
 );
 
@@ -1263,10 +1329,14 @@ document.getElementById("idBack").files[0]
 
 
 
-// CLIENT OBJECT
+
+// CLIENT DATA
 
 
 const client={
+
+
+id:Date.now(),
 
 
 fullname:fullname,
@@ -1296,18 +1366,19 @@ county:county,
 address:address,
 
 
-
-profilePhoto:profilePhoto,
-
-
-idFront:idFront,
+profilePhoto:profile,
 
 
-idBack:idBack,
+idFront:front,
 
 
+idBack:back,
 
-password:password
+
+password:password,
+
+
+status:"Pending"
 
 
 };
@@ -1319,33 +1390,31 @@ password:password
 
 
 
-// SAVE ACCOUNT
+
+// SAVE CLIENT
+// This connects to database.js
 
 
-const result =
+let clients = JSON.parse(
 
-AUTH.registerClient(client);
+localStorage.getItem("bejja_clients")
 
-
-
-
+) || [];
 
 
 
 
-if(!result.success){
+clients.push(client);
 
 
-errorBox.innerHTML=result.message;
 
+localStorage.setItem(
 
-errorBox.style.display="block";
+"bejja_clients",
 
+JSON.stringify(clients)
 
-return;
-
-
-}
+);
 
 
 
@@ -1355,7 +1424,7 @@ return;
 
 
 
-// SUCCESS
+// SUCCESS MESSAGE
 
 
 successBox.innerHTML=`
@@ -1371,7 +1440,7 @@ Account Created Successfully
 
 <p>
 
-Your Bejja Credit account has been created.
+Your Bejja Credit account has been created successfully.
 
 </p>
 
@@ -1388,11 +1457,14 @@ Login Now
 
 
 
-
 successBox.style.display="block";
 
 
 
+
+
+
+// RESET FORM
 
 
 document
@@ -1404,8 +1476,8 @@ document
 
 
 
-
 });
+
 
 
 
@@ -1415,7 +1487,7 @@ document
 
 
 
+
 </body>
 
 </html>
-</div>
