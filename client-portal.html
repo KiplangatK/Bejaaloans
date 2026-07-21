@@ -4,58 +4,77 @@
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 
 <title>Client Portal | Bejja Loan Credit</title>
 
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
 
 
 <style>
 
+
 body{
 
 background:linear-gradient(135deg,#0F4C81,#2563EB);
+
 font-family:'Poppins',sans-serif;
+
 min-height:100vh;
+
 display:flex;
+
 justify-content:center;
+
 align-items:center;
 
 }
 
 
 
+
 .login-card{
 
 width:430px;
+
 border:none;
+
 border-radius:20px;
+
 box-shadow:0 20px 40px rgba(0,0,0,.25);
+
 overflow:hidden;
 
 }
 
 
 
+
 .logo{
 
 font-size:60px;
+
 color:#2563EB;
 
 }
 
 
 
+
 .form-control{
 
 height:50px;
+
 border-radius:12px;
 
 }
+
 
 
 
@@ -67,14 +86,19 @@ border-radius:12px 0 0 12px;
 
 
 
+
 .btn-login{
 
 height:50px;
+
 border-radius:12px;
+
 font-size:18px;
+
 font-weight:600;
 
 }
+
 
 
 
@@ -91,7 +115,11 @@ display:none;
 </head>
 
 
+
+
 <body>
+
+
 
 
 
@@ -102,10 +130,13 @@ display:none;
 
 
 
+
+
 <div class="text-center mb-4">
 
 
 <i class="fa-solid fa-building-columns logo"></i>
+
 
 
 <h3 class="fw-bold mt-3">
@@ -113,6 +144,7 @@ display:none;
 BEJJA LOAN CREDIT
 
 </h3>
+
 
 
 <p class="text-muted">
@@ -128,6 +160,8 @@ Client Portal Login
 
 
 
+
+
 <div id="errorMessage" class="alert alert-danger"></div>
 
 
@@ -135,7 +169,9 @@ Client Portal Login
 
 
 
+
 <form id="loginForm">
+
 
 
 
@@ -157,7 +193,7 @@ Phone Number
 
 <span class="input-group-text">
 
-<i class="fa-solid fa-phone"></i>
+<i class="fa fa-phone"></i>
 
 </span>
 
@@ -198,14 +234,16 @@ Password
 
 
 
+
 <div class="input-group">
 
 
 <span class="input-group-text">
 
-<i class="fa-solid fa-lock"></i>
+<i class="fa fa-lock"></i>
 
 </span>
+
 
 
 
@@ -222,7 +260,9 @@ placeholder="Enter Password"
 required>
 
 
+
 </div>
+
 
 
 </div>
@@ -259,6 +299,7 @@ class="btn btn-primary w-100 btn-login">
 
 
 <i class="fa fa-right-to-bracket"></i>
+
 
 Login
 
@@ -299,15 +340,22 @@ Don't have an account?
 
 
 
-<a
+<a href="register.html"
 
-<a href="register.html" class="btn btn-outline-primary rounded-pill">
+class="btn btn-outline-primary rounded-pill">
+
 
 <i class="fa fa-user-plus"></i>
 
+
 Create New Account
 
+
 </a>
+
+
+
+
 
 
 <br><br>
@@ -315,25 +363,24 @@ Create New Account
 
 
 
-<a href="index.html" class="text-decoration-none">
+
+
+<a href="../index.html"
+
+class="text-decoration-none">
+
 
 <i class="fa fa-arrow-left"></i>
 
+
 Back to Homepage
+
 
 </a>
 
 
 
 
-</div>
-
-
-
-
-
-</div>
-
 
 </div>
 
@@ -341,20 +388,48 @@ Back to Homepage
 
 
 
+</div>
 
 
-<script src="assets/js/database.js"></script>
-<script src="assets/js/auth.js"></script>
+</div>
+
+
+
+
+
+
+
+
+
+<!-- DATABASE -->
+
+<script src="../assets/js/database.js"></script>
+
+<script src="../assets/js/auth.js"></script>
+
+
+
+
+
 
 
 <script>
 
+
 document.addEventListener("DOMContentLoaded",function(){
 
 
-const form = document.getElementById("loginForm");
 
-const errorBox = document.getElementById("errorMessage");
+
+
+const form=document.getElementById("loginForm");
+
+
+const errorBox=document.getElementById("errorMessage");
+
+
+
+
 
 
 
@@ -365,100 +440,6 @@ e.preventDefault();
 
 
 
-errorBox.style.display="none";
-
-
-
-const phone =
-document.getElementById("phone").value.trim();
-
-
-const password =
-document.getElementById("password").value;
-
-
-
-
-
-// GET REGISTERED CLIENTS
-
-let clients = JSON.parse(
-
-localStorage.getItem("bejja_clients")
-
-) || [];
-
-
-
-
-
-// FIND CLIENT
-
-const client = clients.find(function(c){
-
-
-return c.phone === phone &&
-c.password === password;
-
-
-});
-
-
-
-
-
-
-
-if(!client){
-
-
-errorBox.innerHTML =
-"Invalid phone number or password.";
-
-
-errorBox.style.display="block";
-
-
-return;
-
-
-}
-
-
-
-
-
-
-// SAVE LOGIN SESSION
-
-
-localStorage.setItem(
-
-"currentClient",
-
-JSON.stringify(client)
-
-);
-
-
-
-
-
-
-// OPEN DASHBOARD
-
-
-window.location.href="client/dashboard.html";
-
-
-
-});
-
-
-
-});
-
-</script>
 
 
 errorBox.style.display="none";
@@ -469,10 +450,11 @@ errorBox.innerHTML="";
 
 
 
-const phone = document.getElementById("phone").value.trim();
+
+const phone=document.getElementById("phone").value.trim();
 
 
-const password = document.getElementById("password").value;
+const password=document.getElementById("password").value.trim();
 
 
 
@@ -483,8 +465,8 @@ const password = document.getElementById("password").value;
 if(phone==="" || password===""){
 
 
+errorBox.innerHTML=
 
-errorBox.innerHTML =
 "Please enter phone number and password.";
 
 
@@ -502,7 +484,16 @@ return;
 
 
 
-const result = AUTH.clientLogin(phone,password);
+// LOGIN
+
+
+const result = AUTH.clientLogin(
+
+phone,
+
+password
+
+);
 
 
 
@@ -514,8 +505,7 @@ if(!result.success){
 
 
 
-errorBox.innerHTML =
-result.message;
+errorBox.innerHTML=result.message;
 
 
 errorBox.style.display="block";
@@ -532,16 +522,38 @@ return;
 
 
 
-// Successful login
 
-window.location.href =
-"client/dashboard.html";
+// SAVE SESSION
+
+
+localStorage.setItem(
+
+"currentClient",
+
+JSON.stringify(result.client)
+
+);
+
+
+
+
+
+
+
+// REDIRECT
+
+
+window.location.href="client-dashboard.html";
+
+
 
 
 
 
 
 });
+
+
 
 
 
@@ -550,6 +562,8 @@ window.location.href =
 
 
 </script>
+
+
 
 
 
