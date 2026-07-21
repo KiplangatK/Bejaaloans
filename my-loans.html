@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>My Loans | Bejja Credit</title>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+
+
+<style>
+
+
+*{
+
+margin:0;
+padding:0;
+box-sizing:border-box;
+
+}
+
+
+body{
+
+background:#edf4ff;
+
+font-family:'Segoe UI',Tahoma,sans-serif;
+
+}
+
+
+
+/* HEADER */
+
+
+.header{
+
+background:linear-gradient(135deg,#0F4C81,#2563EB);
+
+color:white;
+
+padding:25px;
+
+border-radius:0 0 25px 25px;
+
+box-shadow:0 5px 15px rgba(0,0,0,.2);
+
+}
+
+
+
+.header h2{
+
+font-weight:700;
+
+}
+
+
+
+
+/* CONTENT */
+
+
+.container{
+
+max-width:1200px;
+
+}
+
+
+
+
+.card-box{
+
+background:white;
+
+border-radius:20px;
+
+padding:25px;
+
+box-shadow:0 8px 25px rgba(0,0,0,.12);
+
+}
+
+
+
+
+
+/* SUMMARY CARDS */
+
+
+.summary-card{
+
+border-radius:18px;
+
+padding:25px;
+
+color:white;
+
+height:140px;
+
+}
+
+
+
+.summary-card h2{
+
+font-size:32px;
+
+font-weight:bold;
+
+}
+
+
+
+.total{
+
+background:#1565c0;
+
+}
+
+
+.active{
+
+background:#198754;
+
+}
+
+
+.borrowed{
+
+background:#6f42c1;
+
+}
+
+
+.balance{
+
+background:#dc3545;
+
+}
+
+
+
+
+
+/* TABLE */
+
+
+.table-card{
+
+background:white;
+
+border-radius:20px;
+
+overflow:hidden;
+
+box-shadow:0 8px 25px rgba(0,0,0,.12);
+
+}
+
+
+
+.table-header{
+
+background:#0F4C81;
+
+color:white;
+
+padding:18px;
+
+font-size:22px;
+
+font-weight:bold;
+
+}
+
+
+
+.table th{
+
+background:#e3f2fd;
+
+color:#0F4C81;
+
+}
+
+
+
+.table td,
+.table th{
+
+padding:15px;
+
+vertical-align:middle;
+
+}
+
+
+
+
+.badge{
+
+font-size:14px;
+
+padding:8px 15px;
+
+}
+
+
+
+
+
+.btn-view{
+
+background:#2563EB;
+
+color:white;
+
+border-radius:20px;
+
+}
+
+
+
+.btn-payment{
+
+background:#198754;
+
+color:white;
+
+border-radius:20px;
+
+}
+
+
+
+
+.btn-view:hover{
+
+background:#0F4C81;
+
+color:white;
+
+}
+
+
+.btn-payment:hover{
+
+background:#146c43;
+
+color:white;
+
+}
+
+
+
+
+
+
+
+/* MODAL */
+
+
+.section-title{
+
+color:#0F4C81;
+
+font-weight:bold;
+
+border-bottom:2px solid #2563EB;
+
+padding-bottom:5px;
+
+margin-bottom:15px;
+
+}
+
+
+
+.detail-box{
+
+background:#f8fbff;
+
+padding:15px;
+
+border-radius:12px;
+
+margin-bottom:10px;
+
+}
+
+
+
+
+.profile-img{
+
+width:100px;
+
+height:100px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+border:3px solid #2563EB;
+
+}
+
+
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+<!-- DATABASE -->
+
+<script src="assets/js/database.js"></script>
+
+<script src="assets/js/auth.js"></script>
+
+
+
+<script>
+
+
+if(!AUTH.currentClient()){
+
+
+window.location.href="client-portal.html";
+
+
+}
+
+
+</script>
+
+
+
+
+
+<!-- HEADER -->
+
+
+<div class="header text-center">
+
+
+<h2>
+
+<i class="fa-solid fa-building-columns"></i>
+
+BEJJA LOAN CREDIT
+
+</h2>
+
+
+<p>
+
+My Loans
+
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="container py-4">
+
+
+
+<!-- SUMMARY -->
+
+
+<div class="row g-4 mb-4">
+
+
+
+<div class="col-md-3">
+
+
+<div class="summary-card total">
+
+
+<h5>
+
+Total Loans
+
+</h5>
+
+
+<h2 id="totalLoans">
+
+0
+
+</h2>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-3">
+
+
+<div class="summary-card active">
+
+
+<h5>
+
+Active Loans
+
+</h5>
+
+
+<h2 id="activeLoans">
+
+0
+
+</h2>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-3">
+
+
+<div class="summary-card borrowed">
+
+
+<h5>
+
+Total Borrowed
+
+</h5>
+
+
+<h2 id="totalBorrowed">
+
+KES 0
+
+</h2>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-3">
+
+
+<div class="summary-card balance">
+
+
+<h5>
+
+Outstanding
+
+</h5>
+
+
+<h2 id="outstanding">
+
+KES 0
+
+</h2>
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+<!-- LOAN TABLE -->
+
+
+<div class="table-card">
+
+
+<div class="table-header">
+
+<i class="fa fa-money-bill-wave"></i>
+
+My Loan History
+
+</div>
+
+
+
+
+<div class="table-responsive">
+
+
+<table class="table table-hover mb-0">
+
+
+<thead>
+
+
+<tr>
+
+<th>
+
+Loan Date
+
+</th>
+
+
+<th>
+
+Amount
+
+</th>
+
+
+<th>
+
+Balance
+
+</th>
+
+
+<th>
+
+Due Date
+
+</th>
+
+
+<th>
+
+Status
+
+</th>
+
+
+<th>
+
+Action
+
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+
+<tbody id="myLoansTable">
+
+
+</tbody>
+
+
+
+</table>
+
+
+</div>
+
+
+</div>
+<script>
+
+
+// ===============================
+// MONEY FORMAT
+// ===============================
+
+function money(value){
+
+return "KES " +
+
+Number(value || 0)
+
+.toLocaleString();
+
+}
+
+
+
+
+
+// ===============================
+// LOAD CLIENT LOANS
+// ===============================
+
+
+function loadMyLoans(){
+
+
+
+const client = AUTH.currentClient();
+
+
+
+if(!client){
+
+window.location.href="client-portal.html";
+
+return;
+
+}
+
+
+
+
+let loans = DB.getLoans();
+
+
+
+
+
+// ONLY THIS CLIENT LOANS
+
+
+let myLoans = loans.filter(loan =>
+
+
+String(loan.clientId) === String(client.id)
+
+
+);
+
+
+
+
+
+
+
+let table = document.getElementById(
+"myLoansTable"
+);
+
+
+
+table.innerHTML="";
+
+
+
+
+
+
+// SUMMARY VARIABLES
+
+
+let totalBorrowed = 0;
+
+let outstanding = 0;
+
+let activeCount = 0;
+
+
+
+
+
+
+
+if(myLoans.length === 0){
+
+
+
+table.innerHTML = `
+
+
+<tr>
+
+<td colspan="6"
+
+class="text-center text-muted p-4">
+
+
+No loans found.
+
+
+</td>
+
+</tr>
+
+
+`;
+
+
+
+updateSummary(
+0,
+0,
+0,
+0
+);
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+myLoans.reverse().forEach(loan=>{
+
+
+
+
+
+let amount = Number(
+
+loan.originalPrincipal ||
+
+loan.amount ||
+
+0
+
+);
+
+
+
+
+
+let balance = Number(
+
+loan.remainingPrincipal ||
+
+0
+
+);
+
+
+
+
+
+
+totalBorrowed += amount;
+
+
+
+outstanding += balance;
+
+
+
+
+
+if(loan.status==="ACTIVE"){
+
+
+activeCount++;
+
+
+}
+
+
+
+
+
+
+
+let statusColor =
+
+loan.status==="ACTIVE"
+
+?
+
+"bg-success"
+
+:
+
+"bg-secondary";
+
+
+
+
+
+
+
+
+table.innerHTML += `
+
+
+<tr>
+
+
+
+<td>
+
+${loan.loanDate || "-"}
+
+</td>
+
+
+
+
+
+<td>
+
+${money(amount)}
+
+</td>
+
+
+
+
+
+<td>
+
+${money(balance)}
+
+</td>
+
+
+
+
+
+
+<td>
+
+<span class="text-danger fw-bold">
+
+${loan.dueDate || "-"}
+
+</span>
+
+</td>
+
+
+
+
+
+
+
+<td>
+
+
+<span class="badge ${statusColor}">
+
+${loan.status}
+
+</span>
+
+
+</td>
+
+
+
+
+
+
+
+<td>
+
+
+<button
+
+class="btn btn-view btn-sm me-2"
+
+onclick="viewLoan(${loan.id})">
+
+
+<i class="fa fa-eye"></i>
+
+Details
+
+
+</button>
+
+
+
+
+
+
+
+<button
+
+class="btn btn-payment btn-sm"
+
+onclick="viewPayments(${loan.id})">
+
+
+<i class="fa fa-clock-rotate-left"></i>
+
+Payments
+
+
+</button>
+
+
+
+</td>
+
+
+
+
+</tr>
+
+
+
+`;
+
+
+
+
+
+});
+
+
+
+
+
+
+
+
+updateSummary(
+
+myLoans.length,
+
+activeCount,
+
+totalBorrowed,
+
+outstanding
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// ===============================
+// UPDATE SUMMARY CARDS
+// ===============================
+
+
+function updateSummary(
+
+total,
+
+active,
+
+borrowed,
+
+balance
+
+){
+
+
+
+document.getElementById(
+"totalLoans"
+).innerHTML = total;
+
+
+
+
+
+document.getElementById(
+"activeLoans"
+).innerHTML = active;
+
+
+
+
+
+document.getElementById(
+"totalBorrowed"
+).innerHTML = money(borrowed);
+
+
+
+
+
+document.getElementById(
+"outstanding"
+).innerHTML = money(balance);
+
+
+
+}
+
+
+
+
+
+
+
+
+// START PAGE
+
+
+loadMyLoans();
+
+
+
+</script>
+<!-- ===============================
+     LOAN DETAILS MODAL
+================================ -->
+
+
+<div class="modal fade" id="loanDetailsModal">
+
+
+<div class="modal-dialog modal-lg">
+
+
+<div class="modal-content">
+
+
+
+<div class="modal-header bg-primary text-white">
+
+
+<h5 class="modal-title">
+
+Loan Details
+
+</h5>
+
+
+<button class="btn-close"
+
+data-bs-dismiss="modal">
+
+</button>
+
+
+</div>
+
+
+
+
+
+<div class="modal-body">
+
+
+
+<div class="row">
+
+
+
+<div class="col-md-4 text-center">
+
+
+<img id="loanClientPhoto"
+
+class="profile-img"
+
+src="">
+
+
+
+<h5 class="mt-3"
+
+id="loanClientName">
+
+</h5>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-8">
+
+
+
+<div class="detail-box">
+
+
+<p>
+
+<b>Loan Amount:</b>
+
+<span id="detailAmount"></span>
+
+</p>
+
+
+
+
+<p>
+
+<b>Date Taken:</b>
+
+<span id="detailDate"></span>
+
+</p>
+
+
+
+
+
+<p>
+
+<b>Due Date:</b>
+
+<span id="detailDue"
+
+class="text-danger fw-bold"></span>
+
+</p>
+
+
+
+
+
+<p>
+
+<b>Status:</b>
+
+<span id="detailStatus"></span>
+
+</p>
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<hr>
+
+
+
+
+<h5 class="section-title">
+
+Financial Details
+
+</h5>
+
+
+
+
+
+<div class="row">
+
+
+
+<div class="col-md-6">
+
+
+<div class="detail-box">
+
+
+<p>
+
+<b>Original Principal:</b>
+
+<span id="detailPrincipal"></span>
+
+</p>
+
+
+
+<p>
+
+<b>Remaining Balance:</b>
+
+<span id="detailBalance"></span>
+
+</p>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-6">
+
+
+<div class="detail-box">
+
+
+<p>
+
+<b>Interest Rate:</b>
+
+<span id="detailInterest"></span>
+
+</p>
+
+
+
+<p>
+
+<b>Next Payment:</b>
+
+<span id="detailNextPayment"></span>
+
+</p>
+
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- ===============================
+     PAYMENT HISTORY MODAL
+================================ -->
+
+
+<div class="modal fade" id="paymentModal">
+
+
+<div class="modal-dialog modal-lg">
+
+
+<div class="modal-content">
+
+
+
+<div class="modal-header bg-success text-white">
+
+
+<h5 class="modal-title">
+
+Payment History
+
+</h5>
+
+
+
+<button class="btn-close"
+
+data-bs-dismiss="modal">
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+<div class="modal-body">
+
+
+
+<h5 id="paymentLoanTitle"></h5>
+
+
+
+
+<table class="table table-bordered">
+
+
+<thead class="table-success">
+
+
+<tr>
+
+
+<th>
+
+Date
+
+</th>
+
+
+<th>
+
+Amount Paid
+
+</th>
+
+
+<th>
+
+Principal
+
+</th>
+
+
+<th>
+
+Interest
+
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+
+<tbody id="paymentTable">
+
+
+</tbody>
+
+
+
+</table>
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
