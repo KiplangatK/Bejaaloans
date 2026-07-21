@@ -414,22 +414,15 @@ Back to Homepage
 
 
 <script>
+<script>
 
 
 document.addEventListener("DOMContentLoaded",function(){
 
 
+const form = document.getElementById("loginForm");
 
-
-
-const form=document.getElementById("loginForm");
-
-
-const errorBox=document.getElementById("errorMessage");
-
-
-
-
+const errorBox = document.getElementById("errorMessage");
 
 
 
@@ -440,72 +433,74 @@ e.preventDefault();
 
 
 
-
-
 errorBox.style.display="none";
 
 errorBox.innerHTML="";
 
 
 
+const phone = document.getElementById("phone").value.trim();
 
-
-
-const phone=document.getElementById("phone").value.trim();
-
-
-const password=document.getElementById("password").value.trim();
+const password = document.getElementById("password").value.trim();
 
 
 
 
 
-
+// CHECK EMPTY
 
 if(phone==="" || password===""){
 
 
+errorBox.innerHTML="Please enter phone number and password.";
+
+errorBox.style.display="block";
+
+return;
+
+
+}
+
+
+
+
+
+// GET REGISTERED CLIENTS
+
+let clients = JSON.parse(
+
+localStorage.getItem("bejja_clients")
+
+) || [];
+
+
+
+
+
+
+
+// CHECK PHONE EXISTS
+
+
+const client = clients.find(function(c){
+
+
+return c.phone === phone;
+
+
+});
+
+
+
+
+
+
+if(!client){
+
+
 errorBox.innerHTML=
 
-"Please enter phone number and password.";
-
-
-errorBox.style.display="block";
-
-
-return;
-
-
-}
-
-
-
-
-
-
-
-// LOGIN
-
-
-const result = AUTH.clientLogin(
-
-phone,
-
-password
-
-);
-
-
-
-
-
-
-
-if(!result.success){
-
-
-
-errorBox.innerHTML=result.message;
+"Phone number is not registered. Please create an account first.";
 
 
 errorBox.style.display="block";
@@ -523,14 +518,39 @@ return;
 
 
 
-// SAVE SESSION
+// CHECK PASSWORD
+
+
+if(client.password !== password){
+
+
+errorBox.innerHTML=
+
+"Incorrect password.";
+
+
+errorBox.style.display="block";
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+// LOGIN SUCCESS
 
 
 localStorage.setItem(
 
 "currentClient",
 
-JSON.stringify(result.client)
+JSON.stringify(client)
 
 );
 
@@ -540,7 +560,7 @@ JSON.stringify(result.client)
 
 
 
-// REDIRECT
+// GO TO DASHBOARD
 
 
 window.location.href="client-dashboard.html";
@@ -550,17 +570,15 @@ window.location.href="client-dashboard.html";
 
 
 
-
 });
 
 
 
 
 
-});
 
 
-
+</script>
 </script>
 
 
