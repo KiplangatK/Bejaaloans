@@ -1,46 +1,27 @@
-/*=========================================================
-    BEJJA LOAN CREDIT
-    GLOBAL STYLE SHEET
-    Version: 1.0
-=========================================================*/
+/* =====================================
+        BEJJA LOAN CREDIT
+        MAIN STYLESHEET v2.0
+===================================== */
 
 
-/*========================
-   GLOBAL SETTINGS
-========================*/
-
+/* GLOBAL */
 
 *{
-
     margin:0;
     padding:0;
     box-sizing:border-box;
-
 }
 
 
 body{
 
-    font-family:
-
-    'Segoe UI',
-    Tahoma,
-    Geneva,
-    Verdana,
-    sans-serif;
-
-
-    background:#f5f7fb;
+    font-family:'Poppins',Arial,sans-serif;
 
     color:#333;
 
+    background:#fff;
+
 }
-
-
-
-/*========================
-   LINKS
-========================*/
 
 
 a{
@@ -50,516 +31,471 @@ a{
 }
 
 
+/* =====================================
+        NAVBAR
+===================================== */
 
-/*========================
-   BUTTONS
-========================*/
+
+.navbar{
+
+    background:#0F4C81;
+
+    padding:18px 0;
+
+}
 
 
-.btn-primary-custom{
+.navbar-brand{
 
+    font-size:22px;
+
+    font-weight:700;
+
+}
+
+
+.nav-link{
+
+    color:white!important;
+
+    margin-left:20px;
+
+    font-weight:500;
+
+}
+
+
+.nav-link:hover{
+
+    color:#ffc107!important;
+
+}
+
+
+.dropdown-menu{
+
+    border:none;
+
+    border-radius:12px;
+
+}
+
+
+.dropdown-item{
+
+    padding:12px 20px;
+
+}
+
+
+.dropdown-item:hover{
 
     background:#0F4C81;
 
     color:white;
 
-    border:none;
-
-    padding:12px 25px;
-
-    border-radius:12px;
-
-    font-weight:600;
-
-
 }
 
 
 
-.btn-primary-custom:hover{
+/* =====================================
+        HERO
+===================================== */
 
 
-    background:#08345c;
-
-    color:white;
-
-
-}
-
-
-
-
-
-.btn-success-custom{
-
-
-    background:#28a745;
-
-    color:white;
-
-    border:none;
-
-    padding:12px 25px;
-
-    border-radius:12px;
-
-    font-weight:600;
-
-
-}
-
-
-.btn-success-custom:hover{
-
-
-    background:#218838;
-
-    color:white;
-
-
-}
-
-
-
-
-
-
-/*========================
-   CARDS
-========================*/
-
-
-.card-custom{
-
-
-    background:white;
-
-    border:none;
-
-    border-radius:20px;
-
-    box-shadow:
-
-    0 15px 35px rgba(0,0,0,.12);
-
-
-    padding:25px;
-
-
-}
-
-
-
-
-
-
-/*========================
-   LOGIN / REGISTER PAGES
-========================*/
-
-
-.auth-background{
-
+.hero{
 
     min-height:100vh;
 
-
     display:flex;
 
-
-    justify-content:center;
-
-
     align-items:center;
-
-
 
     background:
 
     linear-gradient(
-
-    135deg,
-
-    #0F4C81,
-
-    #2563EB
-
+        135deg,
+        #0F4C81,
+        #2563EB
     );
 
+    color:white;
+
+    padding-top:90px;
+
+}
+
+
+.hero h1{
+
+    font-size:58px;
+
+    font-weight:800;
+
+    line-height:1.2;
 
 }
 
 
 
-.auth-card{
+.hero p{
+
+    font-size:20px;
+
+    margin:25px 0;
+
+    line-height:1.7;
+
+}
 
 
-    width:430px;
 
+.hero-icon{
+
+    font-size:260px;
+
+    opacity:.9;
+
+}
+
+
+
+/* HERO BUTTONS */
+
+
+.hero .btn{
+
+    padding:14px 35px;
+
+    font-weight:600;
+
+}
+
+
+
+/* =====================================
+        SECTION TITLES
+===================================== */
+
+
+section h2{
+
+    font-weight:800;
+
+    color:#0F4C81;
+
+}
+
+
+
+
+/* =====================================
+        LOAN PRODUCTS
+===================================== */
+
+
+.loan-card{
+
+    padding:35px 25px;
+
+    background:white;
 
     border-radius:20px;
 
-
-    overflow:hidden;
-
+    text-align:center;
 
     box-shadow:
 
-    0 20px 40px rgba(0,0,0,.25);
+    0 10px 30px rgba(0,0,0,.1);
 
-
-}
-
-
-
-
-
-.logo-icon{
-
-
-    font-size:60px;
-
-
-    color:#0F4C81;
-
-
-}
-
-
-
-
-
-.form-control{
-
-
-    height:50px;
-
-
-    border-radius:12px;
-
-
-}
-
-
-
-
-.form-control:focus{
-
-
-    border-color:#0F4C81;
-
-
-    box-shadow:
-
-    0 0 0 .2rem rgba(15,76,129,.25);
-
-
-}
-
-
-
-
-
-/*========================
-   CLIENT SIDEBAR
-========================*/
-
-
-.sidebar{
-
-
-    width:250px;
-
-
-    height:100vh;
-
-
-    position:fixed;
-
-
-    left:0;
-
-
-    top:0;
-
-
-    background:#062b45;
-
-
-    color:white;
-
-
-}
-
-
-
-.sidebar .logo{
-
-
-    padding:25px;
-
-
-    font-size:25px;
-
-
-    font-weight:bold;
-
-
-    color:#28a745;
-
-
-}
-
-
-
-
-.sidebar a{
-
-
-    display:block;
-
-
-    padding:15px 25px;
-
-
-    color:white;
-
+    height:100%;
 
     transition:.3s;
 
-
 }
 
 
 
+.loan-card i{
 
-.sidebar a:hover{
-
-
-    background:#0b466b;
-
-
-    padding-left:35px;
-
-
-}
-
-
-
-
-
-
-/*========================
-   MAIN CONTENT AREA
-========================*/
-
-
-.main-content{
-
-
-    margin-left:250px;
-
-
-    padding:30px;
-
-
-}
-
-
-
-
-
-
-
-/*========================
-   DASHBOARD CARDS
-========================*/
-
-
-.dashboard-card{
-
-
-    background:white;
-
-
-    border-radius:15px;
-
-
-    padding:25px;
-
-
-    box-shadow:
-
-    0 5px 15px rgba(0,0,0,.1);
-
-
-}
-
-
-
-
-.dashboard-card h3{
-
+    font-size:45px;
 
     color:#0F4C81;
 
+    margin-bottom:20px;
 
-    font-weight:bold;
+}
 
+
+
+.loan-card h4{
+
+    font-weight:700;
+
+}
+
+
+
+.loan-card:hover{
+
+    transform:translateY(-10px);
 
 }
 
 
 
 
+/* =====================================
+        HOW IT WORKS
+===================================== */
 
-/*========================
-   TABLES
-========================*/
+
+.steps{
+
+    background:#f8f9fa;
+
+    padding:70px 0;
+
+}
 
 
-.table-card{
 
+.step-card{
 
     background:white;
 
+    padding:30px;
 
-    border-radius:15px;
+    border-radius:20px;
 
-
-    padding:20px;
-
+    text-align:center;
 
     box-shadow:
 
-    0 5px 15px rgba(0,0,0,.1);
-
-
-}
-
-
-
-
-table{
-
-
-    vertical-align:middle;
-
+    0 10px 25px rgba(0,0,0,.08);
 
 }
 
 
 
+.step-card span{
 
+    display:inline-flex;
 
+    width:55px;
 
-/*========================
-   PROFILE IMAGE
-========================*/
+    height:55px;
 
+    justify-content:center;
 
-.profile-image{
+    align-items:center;
 
+    background:#16A34A;
 
-    width:120px;
-
-
-    height:120px;
-
+    color:white;
 
     border-radius:50%;
 
+    font-size:22px;
 
-    object-fit:cover;
+    font-weight:bold;
 
-
-    border:4px solid #0F4C81;
-
-
-}
-
-
-
-
-
-
-/*========================
-   DOCUMENT IMAGES
-========================*/
-
-
-.document-image{
-
-
-    width:100%;
-
-
-    height:220px;
-
-
-    object-fit:cover;
-
-
-    border-radius:12px;
-
+    margin-bottom:15px;
 
 }
 
 
 
 
+/* =====================================
+        BENEFITS
+===================================== */
 
 
-/*========================
-   MOBILE RESPONSIVE
-========================*/
+.benefit-card{
+
+    padding:30px;
+
+    border-radius:18px;
+
+    text-align:center;
+
+}
+
+
+
+.benefit-card i{
+
+    font-size:45px;
+
+    color:#16A34A;
+
+    margin-bottom:15px;
+
+}
+
+
+
+
+/* =====================================
+        WHY SECTION
+===================================== */
+
+
+.why{
+
+    background:#f8f9fa;
+
+    padding:70px 0;
+
+}
+
+
+
+.why i{
+
+    font-size:45px;
+
+    color:#16A34A;
+
+}
+
+
+
+.why h5{
+
+    margin-top:15px;
+
+    font-weight:700;
+
+}
+
+
+
+
+/* =====================================
+        BUTTONS
+===================================== */
+
+
+.btn-success{
+
+    background:#16A34A;
+
+    border:none;
+
+}
+
+
+
+.btn-success:hover{
+
+    background:#12813a;
+
+}
+
+
+
+.btn-warning{
+
+    font-weight:600;
+
+}
+
+
+
+/* =====================================
+        FOOTER
+===================================== */
+
+
+footer{
+
+    background:#0b1f33;
+
+    color:white;
+
+    padding:50px 0;
+
+}
+
+
+footer h4{
+
+    font-weight:800;
+
+}
+
+
+
+/* =====================================
+        ANIMATION
+===================================== */
+
+
+.hero h1,
+.hero p,
+.hero a{
+
+    animation:fadeUp 1s ease;
+
+}
+
+
+
+@keyframes fadeUp{
+
+
+from{
+
+opacity:0;
+
+transform:translateY(40px);
+
+}
+
+
+to{
+
+opacity:1;
+
+transform:translateY(0);
+
+}
+
+
+}
+
+
+
+/* =====================================
+        RESPONSIVE
+===================================== */
 
 
 @media(max-width:768px){
 
 
+.hero h1{
 
-.sidebar{
-
-
-    width:70px;
-
+    font-size:40px;
 
 }
 
 
 
-.sidebar a{
+.hero-icon{
 
-
-    font-size:0;
-
+    font-size:150px;
 
 }
 
 
+.nav-link{
 
-.sidebar a i{
-
-
-    font-size:20px;
-
+    margin-left:0;
 
 }
-
-
-
-.main-content{
-
-
-    margin-left:70px;
-
-
-    padding:15px;
-
-
-}
-
 
 
 }
