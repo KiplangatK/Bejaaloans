@@ -1152,19 +1152,29 @@ DB.updateApplication(app);
 
 
 
-
 // CREATE ACTIVE LOAN
 
 
-let loan={
+let approvalDate = new Date();
 
+
+// ADD ONE MONTH DUE DATE
+
+let due = new Date();
+
+due.setMonth(
+    due.getMonth()+1
+);
+
+
+
+let loan={
 
 
 clientId:app.clientId,
 
 
 applicationId:app.id,
-
 
 
 amount:app.amount,
@@ -1180,7 +1190,26 @@ remainingPrincipal:app.amount,
 interestRate:20,
 
 
-loanDate:DB.today(),
+
+// DATE LOAN WAS GIVEN
+
+loanDate:
+
+approvalDate.toLocaleDateString("en-KE"),
+
+
+
+// REPAYMENT DEADLINE
+
+dueDate:
+
+due.toLocaleDateString("en-KE"),
+
+
+
+approvedBy:
+
+admin.username,
 
 
 
