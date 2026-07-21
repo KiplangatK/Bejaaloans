@@ -1,0 +1,1268 @@
+<!-- DATABASE -->
+
+<script src="assets/js/database.js"></script>
+
+<script src="assets/js/auth.js"></script>
+
+
+
+<script>
+
+
+// CHECK ADMIN LOGIN
+
+if(!AUTH.currentAdmin()){
+
+window.location.href="admin-login.html";
+
+}
+
+
+
+
+
+// SHOW ADMIN NAME
+
+let admin = AUTH.currentAdmin();
+
+
+if(admin){
+
+document.getElementById("adminName").innerHTML =
+
+admin.username;
+
+}
+
+
+
+
+
+
+
+
+
+// FORMAT MONEY
+
+function money(value){
+
+return "KES " +
+
+Number(value || 0)
+
+.toLocaleString();
+
+}
+
+
+
+
+
+
+
+
+
+// LOAD ACTIVE LOANS
+
+
+function loadActiveLoans(){
+
+
+
+let loans = DB.getLoans();
+
+
+
+
+let table = document.getElementById(
+"activeLoansTable"
+);
+
+
+
+table.innerHTML="";
+
+
+
+
+
+
+// ONLY ACTIVE LOANS
+
+
+let active = loans.filter(loan =>
+
+loan.status === "ACTIVE"
+
+);
+
+
+
+
+
+
+
+
+if(active.length===0){
+
+
+table.innerHTML=`
+
+<tr>
+
+<td colspan="8"
+
+class="text-center p-4 text-muted">
+
+
+No active loans found.
+
+
+</td>
+
+</tr>
+
+
+`;
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+
+
+active.forEach(loan=>{
+
+
+
+
+
+let client = DB.getClientById(
+
+loan.clientId
+
+);
+
+
+
+
+
+
+if(!client){
+
+return;
+
+}
+
+
+
+
+
+
+
+let remaining = Number(
+
+loan.remainingPrincipal ||
+
+loan.originalPrincipal ||
+
+loan.amount ||
+
+0
+
+);
+
+
+
+
+
+
+
+// 20% MONTHLY INTEREST
+
+
+let interest = remaining * 0.20;
+
+
+
+
+
+
+
+let photo = client.profilePhoto ||
+
+"https://via.placeholder.com/100";
+
+
+
+
+
+
+
+
+
+table.innerHTML += `
+
+
+<tr>
+
+
+
+<td>
+
+<img src="${photo}"
+
+class="profile-img">
+
+</td>
+
+
+
+
+
+<td>
+
+${client.fullname || "-"}
+
+</td>
+
+
+
+
+
+<td>
+
+${client.phone || "-"}
+
+</td>
+
+
+
+
+
+<td>
+
+${money(
+
+loan.originalPrincipal ||
+
+loan.amount
+
+)}
+
+</td>
+
+
+
+
+
+<td>
+
+${money(remaining)}
+
+</td>
+
+
+
+
+
+<td>
+
+${money(interest)}
+
+</td>
+
+
+
+
+
+<td>
+
+${loan.loanDate ||
+
+loan.createdAt ||
+
+"-"}
+
+</td>
+
+
+
+
+
+<td>
+
+
+<button
+
+class="btn btn-primary btn-sm"
+
+onclick="viewLoan(${loan.id})">
+
+
+<i class="fa fa-eye"></i>
+
+View Details
+
+
+</button>
+
+
+
+</td>
+
+
+
+
+
+
+</tr>
+
+
+`;
+
+
+
+
+
+});
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+// VIEW DETAILS
+
+
+function viewLoan(id){
+
+
+
+let loan = DB.getLoan(id);
+
+
+
+
+if(!loan){
+
+return;
+
+}
+
+
+
+
+
+
+
+let client = DB.getClientById(
+
+loan.clientId
+
+);
+
+
+
+
+
+
+
+
+document.getElementById("clientPhoto").src =
+
+client.profilePhoto ||
+
+"https://via.placeholder.com/100";
+
+
+
+
+
+
+document.getElementById("clientName").innerHTML =
+
+client.fullname;
+
+
+
+
+
+
+document.getElementById("clientPhone").innerHTML =
+
+client.phone;
+
+
+
+
+
+document.getElementById("clientId").innerHTML =
+
+client.idNumber || "-";
+
+
+
+
+
+
+document.getElementById("loanDate").innerHTML =
+
+loan.loanDate ||
+
+loan.createdAt ||
+
+"-";
+
+
+
+
+
+let balance = Number(
+
+loan.remainingPrincipal ||
+
+loan.originalPrincipal ||
+
+0
+
+);
+
+
+
+
+
+
+
+document.getElementById("loanAmount").innerHTML =
+
+money(
+
+loan.originalPrincipal ||
+
+loan.amount
+
+);
+
+
+
+
+
+
+
+document.getElementById("loanBalance").innerHTML =
+
+money(balance);
+
+
+
+
+
+
+document.getElementById("loanInterest").innerHTML =
+
+money(balance * 0.20);
+
+
+
+
+
+
+
+
+// LOAD GUARANTORS FROM APPLICATION
+
+
+let application = DB.getApplication(
+
+loan.applicationId
+
+);
+
+
+
+
+let guarantorTable = document.getElementById(
+
+"guarantorTable"
+
+);
+
+
+
+
+
+guarantorTable.innerHTML="";
+
+
+
+
+
+
+
+
+if(application){
+
+
+
+
+
+let g1 = application.guarantor1 || {};
+
+let g2 = application.guarantor2 || {};
+
+
+
+
+
+
+guarantorTable.innerHTML += `
+
+
+<tr>
+
+<td>${g1.name || "-"}</td>
+
+<td>${g1.phone || "-"}</td>
+
+<td>${g1.idNumber || "-"}</td>
+
+</tr>
+
+
+
+<tr>
+
+<td>${g2.name || "-"}</td>
+
+<td>${g2.phone || "-"}</td>
+
+<td>${g2.idNumber || "-"}</td>
+
+</tr>
+
+
+
+`;
+
+
+
+
+}
+
+else{
+
+
+guarantorTable.innerHTML=`
+
+<tr>
+
+<td colspan="3">
+
+No guarantor details found.
+
+</td>
+
+</tr>
+
+`;
+
+}
+
+
+
+
+
+
+
+let modal = new bootstrap.Modal(
+
+document.getElementById("loanModal")
+
+);
+
+
+modal.show();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+loadActiveLoans();
+
+
+
+</script>
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+</body>
+
+</html>
+<!-- DATABASE -->
+
+<script src="assets/js/database.js"></script>
+
+<script src="assets/js/auth.js"></script>
+
+
+
+<script>
+
+
+// CHECK ADMIN LOGIN
+
+if(!AUTH.currentAdmin()){
+
+window.location.href="admin-login.html";
+
+}
+
+
+
+
+
+// SHOW ADMIN NAME
+
+let admin = AUTH.currentAdmin();
+
+
+if(admin){
+
+document.getElementById("adminName").innerHTML =
+
+admin.username;
+
+}
+
+
+
+
+
+
+
+
+
+// FORMAT MONEY
+
+function money(value){
+
+return "KES " +
+
+Number(value || 0)
+
+.toLocaleString();
+
+}
+
+
+
+
+
+
+
+
+
+// LOAD ACTIVE LOANS
+
+
+function loadActiveLoans(){
+
+
+
+let loans = DB.getLoans();
+
+
+
+
+let table = document.getElementById(
+"activeLoansTable"
+);
+
+
+
+table.innerHTML="";
+
+
+
+
+
+
+// ONLY ACTIVE LOANS
+
+
+let active = loans.filter(loan =>
+
+loan.status === "ACTIVE"
+
+);
+
+
+
+
+
+
+
+
+if(active.length===0){
+
+
+table.innerHTML=`
+
+<tr>
+
+<td colspan="8"
+
+class="text-center p-4 text-muted">
+
+
+No active loans found.
+
+
+</td>
+
+</tr>
+
+
+`;
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+
+
+active.forEach(loan=>{
+
+
+
+
+
+let client = DB.getClientById(
+
+loan.clientId
+
+);
+
+
+
+
+
+
+if(!client){
+
+return;
+
+}
+
+
+
+
+
+
+
+let remaining = Number(
+
+loan.remainingPrincipal ||
+
+loan.originalPrincipal ||
+
+loan.amount ||
+
+0
+
+);
+
+
+
+
+
+
+
+// 20% MONTHLY INTEREST
+
+
+let interest = remaining * 0.20;
+
+
+
+
+
+
+
+let photo = client.profilePhoto ||
+
+"https://via.placeholder.com/100";
+
+
+
+
+
+
+
+
+
+table.innerHTML += `
+
+
+<tr>
+
+
+
+<td>
+
+<img src="${photo}"
+
+class="profile-img">
+
+</td>
+
+
+
+
+
+<td>
+
+${client.fullname || "-"}
+
+</td>
+
+
+
+
+
+<td>
+
+${client.phone || "-"}
+
+</td>
+
+
+
+
+
+<td>
+
+${money(
+
+loan.originalPrincipal ||
+
+loan.amount
+
+)}
+
+</td>
+
+
+
+
+
+<td>
+
+${money(remaining)}
+
+</td>
+
+
+
+
+
+<td>
+
+${money(interest)}
+
+</td>
+
+
+
+
+
+<td>
+
+${loan.loanDate ||
+
+loan.createdAt ||
+
+"-"}
+
+</td>
+
+
+
+
+
+<td>
+
+
+<button
+
+class="btn btn-primary btn-sm"
+
+onclick="viewLoan(${loan.id})">
+
+
+<i class="fa fa-eye"></i>
+
+View Details
+
+
+</button>
+
+
+
+</td>
+
+
+
+
+
+
+</tr>
+
+
+`;
+
+
+
+
+
+});
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+// VIEW DETAILS
+
+
+function viewLoan(id){
+
+
+
+let loan = DB.getLoan(id);
+
+
+
+
+if(!loan){
+
+return;
+
+}
+
+
+
+
+
+
+
+let client = DB.getClientById(
+
+loan.clientId
+
+);
+
+
+
+
+
+
+
+
+document.getElementById("clientPhoto").src =
+
+client.profilePhoto ||
+
+"https://via.placeholder.com/100";
+
+
+
+
+
+
+document.getElementById("clientName").innerHTML =
+
+client.fullname;
+
+
+
+
+
+
+document.getElementById("clientPhone").innerHTML =
+
+client.phone;
+
+
+
+
+
+document.getElementById("clientId").innerHTML =
+
+client.idNumber || "-";
+
+
+
+
+
+
+document.getElementById("loanDate").innerHTML =
+
+loan.loanDate ||
+
+loan.createdAt ||
+
+"-";
+
+
+
+
+
+let balance = Number(
+
+loan.remainingPrincipal ||
+
+loan.originalPrincipal ||
+
+0
+
+);
+
+
+
+
+
+
+
+document.getElementById("loanAmount").innerHTML =
+
+money(
+
+loan.originalPrincipal ||
+
+loan.amount
+
+);
+
+
+
+
+
+
+
+document.getElementById("loanBalance").innerHTML =
+
+money(balance);
+
+
+
+
+
+
+document.getElementById("loanInterest").innerHTML =
+
+money(balance * 0.20);
+
+
+
+
+
+
+
+
+// LOAD GUARANTORS FROM APPLICATION
+
+
+let application = DB.getApplication(
+
+loan.applicationId
+
+);
+
+
+
+
+let guarantorTable = document.getElementById(
+
+"guarantorTable"
+
+);
+
+
+
+
+
+guarantorTable.innerHTML="";
+
+
+
+
+
+
+
+
+if(application){
+
+
+
+
+
+let g1 = application.guarantor1 || {};
+
+let g2 = application.guarantor2 || {};
+
+
+
+
+
+
+guarantorTable.innerHTML += `
+
+
+<tr>
+
+<td>${g1.name || "-"}</td>
+
+<td>${g1.phone || "-"}</td>
+
+<td>${g1.idNumber || "-"}</td>
+
+</tr>
+
+
+
+<tr>
+
+<td>${g2.name || "-"}</td>
+
+<td>${g2.phone || "-"}</td>
+
+<td>${g2.idNumber || "-"}</td>
+
+</tr>
+
+
+
+`;
+
+
+
+
+}
+
+else{
+
+
+guarantorTable.innerHTML=`
+
+<tr>
+
+<td colspan="3">
+
+No guarantor details found.
+
+</td>
+
+</tr>
+
+`;
+
+}
+
+
+
+
+
+
+
+let modal = new bootstrap.Modal(
+
+document.getElementById("loanModal")
+
+);
+
+
+modal.show();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+loadActiveLoans();
+
+
+
+</script>
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+</body>
+
+</html>
