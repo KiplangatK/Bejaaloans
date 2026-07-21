@@ -406,187 +406,62 @@ Back to Homepage
 
 
 <!-- DATABASE -->
-
-<script src="../assets/js/database.js"></script>
-
-
-
-
-
-
-
+<script src="assets/js/database.js"></script>
+<script src="assets/js/auth.js"></script>
 
 <script>
 
-
-document.addEventListener("DOMContentLoaded",function(){
-
-
-
-const form = document.getElementById("loginForm");
-
-
-const errorBox = document.getElementById("errorMessage");
-
-
-
-
-
-
-form.addEventListener("submit",function(e){
-
-
+document.getElementById("loginForm")
+.addEventListener("submit",function(e){
 
 e.preventDefault();
 
 
+let phone=document.getElementById("phone").value.trim();
 
+let password=document.getElementById("password").value.trim();
+
+let errorBox=document.getElementById("errorMessage");
 
 
 errorBox.style.display="none";
 
-errorBox.innerHTML="";
 
-
-
-
-
-
-const phone = document
-.getElementById("phone")
-.value
-.trim();
-
-
-
-
-
-const password = document
-.getElementById("password")
-.value
-.trim();
-
-
-
-
-
-
-
-// CHECK EMPTY
-
-
-if(phone==="" || password===""){
-
-
-
-errorBox.innerHTML=
-
-"Please enter phone number and password.";
-
-
-
-errorBox.style.display="block";
-
-
-
-return;
-
-
-}
-
-
-
-
-
-
-
-
-
-// GET REGISTERED CLIENTS
-
+// GET CLIENTS
 
 let clients = JSON.parse(
-
 localStorage.getItem("bejja_clients")
-
 ) || [];
 
 
 
+// FIND CLIENT
 
+let client = clients.find(c => 
+c.phone === phone
+);
 
-
-
-
-
-// FIND PHONE NUMBER
-
-
-const client = clients.find(function(c){
-
-
-
-return c.phone === phone;
-
-
-
-});
-
-
-
-
-
-
-
-
-
-// PHONE NOT FOUND
 
 
 if(!client){
 
-
-
-errorBox.innerHTML=
-
-"Phone number not registered. Please create an account first.";
-
-
+errorBox.innerHTML="Phone number not registered.";
 
 errorBox.style.display="block";
 
-
-
 return;
-
 
 }
 
 
-
-
-
-
-
-
-
-
-// PASSWORD CHECK
 
 
 if(client.password !== password){
 
 
-
-errorBox.innerHTML=
-
-"Incorrect password.";
-
-
+errorBox.innerHTML="Incorrect password.";
 
 errorBox.style.display="block";
-
-
 
 return;
 
@@ -595,48 +470,21 @@ return;
 
 
 
-
-
-
-
-
-
-// LOGIN SUCCESS
-
+// SAVE LOGIN
 
 localStorage.setItem(
-
 "currentClient",
-
 JSON.stringify(client)
-
 );
 
 
 
-
-
-
-
-
-
-// OPEN CLIENT DASHBOARD
-
+// OPEN DASHBOARD
 
 window.location.href="client-dashboard.html";
 
 
-
-
-
 });
-
-
-
-
-
-});
-
 
 
 </script>
