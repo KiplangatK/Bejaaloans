@@ -1071,17 +1071,28 @@ async function waitForDB() {
 
 
 /*====================================
- LOAD DASHBOARD DATA
+ LOAD ALL DASHBOARD DATA
 ====================================*/
 
-
-async function loadDashboard(){
+async function loadAllDashboardData(){
 
     const ready = await waitForDB();
     if (!ready) {
         console.error("Database failed to load");
         return;
     }
+
+    // Load stats and recent applications together
+    await Promise.all([
+        loadDashboardStats(),
+        loadRecentApplications()
+    ]);
+
+}
+
+
+
+async function loadDashboardStats(){
 
     try {
 
@@ -1115,7 +1126,7 @@ async function loadDashboard(){
         document.getElementById("lateLoans").innerHTML = lateLoans;
 
     } catch (err) {
-        console.error("Dashboard load error:", err);
+        console.error("Dashboard stats load error:", err);
     }
 
 }
@@ -1199,12 +1210,11 @@ function logout(){
 
 
 /*====================================
- START DASHBOARD
+ START — single entry point
 ====================================*/
 
 
-loadDashboard();
-loadRecentApplications();
+loadAllDashboardData();
 
 
 
