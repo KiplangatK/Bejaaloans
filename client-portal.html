@@ -237,7 +237,7 @@ required>
 <div class="text-end mb-4">
 
 
-<a href="#" class="text-decoration-none">
+<a href="#" class="text-decoration-none" onclick="alert('Contact support for password reset.')">
 
 Forgot Password?
 
@@ -312,8 +312,6 @@ Create New Account
     Back to Homepage
 </a>
 
-</a>
-
 
 
 </div>
@@ -346,7 +344,7 @@ Create New Account
 
 document
 .getElementById("loginForm")
-.addEventListener("submit",function(e){
+.addEventListener("submit",async function(e){
 
 
 e.preventDefault();
@@ -402,7 +400,7 @@ return;
 // LOGIN USING AUTH.JS
 
 
-const result = AUTH.clientLogin(
+const result = await AUTH.clientLogin(
 phone,
 password
 );
