@@ -1124,38 +1124,29 @@ function money(value){
 
 
 // ===============================
-// WAIT FOR DB — fast check
-// ===============================
-
-function waitForDB() {
-    return new Promise((resolve) => {
-        if (window.DB && typeof DB.getLoans === "function") {
-            resolve();
-            return;
-        }
-        let retries = 0;
-        const check = setInterval(() => {
-            if (window.DB && typeof DB.getLoans === "function") {
-                clearInterval(check);
-                resolve();
-            }
-            retries++;
-            if (retries > 50) {
-                clearInterval(check);
-                resolve();
-            }
-        }, 50);
-    });
-}
-
-
-// ===============================
-// LOAD ALL DATA AT ONCE
+// LOAD ALL DATA
 // ===============================
 
 async function loadAllData() {
 
-    await waitForDB();
+    // Wait for DB to be FULLY ready by testing an actual query
+    let dbReady = false;
+    let retries = 0;
+    while (!dbReady && retries < 50) {
+        try {
+            if (window.DB && typeof DB.getLoans === "function") {
+                const test = await DB.getLoans();
+                if (Array.isArray(test)) {
+                    dbReady = true;
+                    break;
+                }
+            }
+        } catch(e) {}
+        await new Promise(r => setTimeout(r, 100));
+        retries++;
+    }
+
+    if (!dbReady) return;
 
     let client = AUTH.currentClient();
 
@@ -1199,7 +1190,6 @@ async function loadAllData() {
         document.getElementById("balance").innerHTML = money(balance);
         document.getElementById("dueDate").innerHTML = loan.dueDate || "-";
 
-        // Payments
         let payments = await DB.getLoanPayments(loan.id);
         let totalPaid = 0;
         if (Array.isArray(payments)) {
@@ -1300,7 +1290,7 @@ async function showPaymentHistory() {
 
 
 // ===============================
-// START — single call loads everything
+// START
 // ===============================
 
 loadAllData();
