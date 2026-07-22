@@ -356,7 +356,7 @@ document
 
 .getElementById("adminLoginForm")
 
-.addEventListener("submit",function(e){
+.addEventListener("submit",async function(e){
 
 
 
@@ -400,7 +400,7 @@ errorBox.innerHTML="";
 // LOGIN CHECK
 
 
-let result = AUTH.adminLogin(
+let result = await AUTH.adminLogin(
 
 username,
 
@@ -436,24 +436,7 @@ return;
 
 
 
-// SUCCESSFUL LOGIN
-
-
-sessionStorage.setItem(
-
-"loggedInAdmin",
-
-JSON.stringify(result.admin)
-
-);
-
-
-
-
-
-
-
-// REDIRECT TO DASHBOARD
+// SUCCESSFUL LOGIN — redirect to dashboard
 
 
 window.location.href="admin-dashboard.html";
