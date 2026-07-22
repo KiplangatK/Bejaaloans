@@ -11,9 +11,11 @@
 <title>Active Loans | Bejja Credit</title>
 
 
+<!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 
+<!-- Font Awesome -->
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
@@ -23,11 +25,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 
 
 *{
-
 margin:0;
 padding:0;
 box-sizing:border-box;
-
 }
 
 
@@ -45,8 +45,6 @@ Verdana,
 sans-serif;
 
 }
-
-
 
 
 
@@ -83,9 +81,7 @@ font-size:28px;
 
 font-weight:bold;
 
-border-bottom:
-
-1px solid rgba(255,255,255,.2);
+border-bottom:1px solid rgba(255,255,255,.2);
 
 }
 
@@ -147,7 +143,6 @@ width:25px;
 
 
 
-
 /*=========================
 MAIN
 =========================*/
@@ -186,9 +181,7 @@ justify-content:space-between;
 
 padding:0 30px;
 
-box-shadow:
-
-0 3px 10px rgba(0,0,0,.15);
+box-shadow:0 3px 10px rgba(0,0,0,.15);
 
 }
 
@@ -199,8 +192,6 @@ box-shadow:
 font-size:28px;
 
 }
-
-
 
 
 
@@ -221,7 +212,6 @@ padding:30px;
 
 
 
-
 .table-card{
 
 background:white;
@@ -230,12 +220,9 @@ border-radius:15px;
 
 overflow:hidden;
 
-box-shadow:
-
-0 5px 15px rgba(0,0,0,.1);
+box-shadow:0 5px 15px rgba(0,0,0,.1);
 
 }
-
 
 
 
@@ -252,8 +239,6 @@ font-weight:bold;
 padding:18px 25px;
 
 }
-
-
 
 
 
@@ -281,7 +266,6 @@ vertical-align:middle;
 
 
 
-
 .profile-img{
 
 width:50px;
@@ -295,7 +279,6 @@ object-fit:cover;
 border:2px solid #1976d2;
 
 }
-
 
 
 
@@ -326,42 +309,27 @@ color:white;
 
 
 
+.btn-payment{
 
+background:#198754;
 
+color:white;
 
-/*=========================
-MODAL
-=========================*/
+border-radius:20px;
 
-
-.section-title{
-
-color:#1976d2;
-
-font-weight:bold;
-
-border-bottom:2px solid #1976d2;
-
-padding-bottom:5px;
-
-margin-bottom:15px;
+padding:7px 18px;
 
 }
 
 
 
-.detail-box{
+.btn-payment:hover{
 
-background:#f8fbff;
+background:#146c43;
 
-padding:15px;
-
-border-radius:10px;
-
-margin-bottom:10px;
+color:white;
 
 }
-
 
 
 
@@ -386,9 +354,7 @@ width:calc(100% - 220px);
 }
 
 
-
 }
-
 
 
 
@@ -400,7 +366,6 @@ width:calc(100% - 220px);
 
 
 <body>
-
 
 
 <div class="wrapper">
@@ -442,7 +407,6 @@ Dashboard
 
 
 
-
 <li>
 
 <a href="registered-clients.html">
@@ -454,7 +418,6 @@ Registered Clients
 </a>
 
 </li>
-
 
 
 
@@ -474,7 +437,6 @@ Active Loans
 
 
 
-
 <li>
 
 <a href="loan-applications.html">
@@ -486,8 +448,6 @@ Loan Applications
 </a>
 
 </li>
-
-
 
 
 
@@ -505,13 +465,10 @@ Logout
 </li>
 
 
-
 </ul>
 
 
-
 </div>
-
 
 
 
@@ -561,11 +518,14 @@ Admin
 
 
 
+
+
 <div class="content">
 
 
 
 <div class="table-card">
+
 
 
 <div class="table-header">
@@ -588,6 +548,7 @@ Active Loan List
 
 
 <tr>
+
 
 <th>
 Photo
@@ -615,13 +576,19 @@ Balance
 
 
 <th>
-Monthly Interest
+Monthly Interest (24%)
 </th>
 
 
-<th>Loan Date</th>
+<th>
+Loan Date
+</th>
 
-<th>Due Date</th>
+
+<th>
+Due Date
+</th>
+
 
 <th>
 Action
@@ -647,15 +614,9 @@ Action
 
 
 </div>
-
-
-
-</div>
-
-<!-- =========================
-     LOAN DETAILS MODAL
+     <!-- =========================
+LOAN DETAILS MODAL
 ========================= -->
-
 
 <div class="modal fade" id="loanModal" tabindex="-1">
 
@@ -692,8 +653,6 @@ data-bs-dismiss="modal">
 
 
 
-
-
 <div class="modal-body">
 
 
@@ -701,7 +660,6 @@ data-bs-dismiss="modal">
 
 
 <!-- CLIENT INFORMATION -->
-
 
 <h5 class="section-title">
 
@@ -806,7 +764,7 @@ id="clientName">
 
 
 
-<!-- APPLICATION DETAILS -->
+<!-- LOAN APPLICATION DETAILS -->
 
 
 <h5 class="section-title">
@@ -814,6 +772,7 @@ id="clientName">
 Loan Application Details
 
 </h5>
+
 
 
 
@@ -856,9 +815,7 @@ Loan Application Details
 </p>
 
 
-
 </div>
-
 
 
 </div>
@@ -885,7 +842,6 @@ Loan Application Details
 
 
 
-
 <p>
 
 <b>Status:</b>
@@ -905,6 +861,8 @@ Loan Application Details
 </p>
 
 
+</div>
+
 
 </div>
 
@@ -913,8 +871,6 @@ Loan Application Details
 </div>
 
 
-
-</div>
 
 
 
@@ -939,11 +895,12 @@ Loan Information
 <div class="row">
 
 
+
 <div class="col-md-6">
 
 
-
 <div class="detail-box">
+
 
 
 <p>
@@ -955,13 +912,20 @@ Loan Information
 </p>
 
 
+
 <p>
 
 <b>Due Date:</b>
 
-<span id="loanDueDate" class="text-danger fw-bold"></span>
+<span id="loanDueDate"
+
+class="text-danger fw-bold">
+
+</span>
 
 </p>
+
+
 
 
 <p>
@@ -974,13 +938,10 @@ Loan Information
 
 
 
-
 </div>
 
 
-
 </div>
-
 
 
 
@@ -992,8 +953,8 @@ Loan Information
 <div class="col-md-6">
 
 
-
 <div class="detail-box">
+
 
 
 <p>
@@ -1009,7 +970,7 @@ Loan Information
 
 <p>
 
-<b>Monthly Interest (20%):</b>
+<b>Monthly Interest (24%):</b>
 
 <span id="loanInterest"></span>
 
@@ -1020,12 +981,70 @@ Loan Information
 </div>
 
 
-
 </div>
 
 
 
 </div>
+
+
+
+
+
+
+
+
+
+<!-- PAYMENT HISTORY -->
+
+
+<h5 class="section-title mt-4">
+
+Payment History
+
+</h5>
+
+
+
+<table class="table table-bordered">
+
+
+<thead class="table-primary">
+
+
+<tr>
+
+
+<th>
+Date
+</th>
+
+
+<th>
+Amount Paid
+</th>
+
+
+<th>
+Balance
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+<tbody id="paymentHistoryTable">
+
+
+</tbody>
+
+
+
+</table>
 
 
 
@@ -1078,7 +1097,6 @@ ID Number
 </th>
 
 
-
 </tr>
 
 
@@ -1099,9 +1117,8 @@ ID Number
 
 
 
+
 </div>
-
-
 
 
 
@@ -1141,17 +1158,218 @@ Close
 
 
 
+
+
+
+
+
+
+
+
+<!-- =========================
+RECORD PAYMENT MODAL
+========================= -->
+
+
+<div class="modal fade" id="paymentModal" tabindex="-1">
+
+
+<div class="modal-dialog">
+
+
+<div class="modal-content">
+
+
+
+<div class="modal-header bg-success text-white">
+
+
+<h5 class="modal-title">
+
+Record Loan Payment
+
+</h5>
+
+
+<button type="button"
+
+class="btn-close"
+
+data-bs-dismiss="modal">
+
+</button>
+
+
 </div>
 
-<!-- END MAIN -->
+
+
+
+
+
+<div class="modal-body">
+
+
+
+<input type="hidden"
+
+id="paymentLoanId">
+
+
+
+
+
+<div class="mb-3">
+
+
+<label class="form-label">
+
+Payment Amount
+
+</label>
+
+
+<input type="number"
+
+class="form-control"
+
+id="paymentAmount"
+
+placeholder="Enter amount paid">
 
 
 </div>
 
-<!-- END WRAPPER -->
+
+
+
+
+
+
+<div class="mb-3">
+
+
+<label class="form-label">
+
+Payment Date
+
+</label>
+
+
+<input type="date"
+
+class="form-control"
+
+id="paymentDate">
+
 
 </div>
-<!-- DATABASE -->
+
+
+
+
+
+
+
+<div class="mb-3">
+
+
+<label class="form-label">
+
+Payment Method
+
+</label>
+
+
+<select class="form-select"
+
+id="paymentMethod">
+
+
+<option>
+
+Cash
+
+</option>
+
+
+<option>
+
+M-Pesa
+
+</option>
+
+
+<option>
+
+Bank
+
+</option>
+
+
+</select>
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="modal-footer">
+
+
+<button class="btn btn-secondary"
+
+data-bs-dismiss="modal">
+
+Cancel
+
+</button>
+
+
+
+
+<button class="btn btn-success"
+
+onclick="savePayment()">
+
+
+<i class="fa fa-check"></i>
+
+Save Payment
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 
 <script src="assets/js/database.js"></script>
 
@@ -1169,13 +1387,9 @@ Close
 
 if(!AUTH.currentAdmin()){
 
-
 window.location.href="admin-login.html";
 
-
 }
-
-
 
 
 
@@ -1188,16 +1402,11 @@ let admin = AUTH.currentAdmin();
 
 if(admin){
 
-
 document.getElementById("adminName").innerHTML =
 
 admin.username;
 
-
 }
-
-
-
 
 
 
@@ -1210,18 +1419,11 @@ admin.username;
 
 function money(value){
 
-
 return "KES " +
 
-Number(value || 0)
-
-.toLocaleString();
-
+Number(value || 0).toLocaleString();
 
 }
-
-
-
 
 
 
@@ -1235,9 +1437,7 @@ Number(value || 0)
 function loadActiveLoans(){
 
 
-
 let loans = DB.getLoans();
-
 
 
 let table = document.getElementById(
@@ -1245,11 +1445,7 @@ let table = document.getElementById(
 );
 
 
-
 table.innerHTML="";
-
-
-
 
 
 
@@ -1262,9 +1458,6 @@ loan.status === "ACTIVE"
 
 
 
-
-
-
 if(activeLoans.length === 0){
 
 
@@ -1272,12 +1465,12 @@ table.innerHTML=`
 
 <tr>
 
-<td colspan="8"
+<td colspan="9"
 
 class="text-center p-4 text-muted">
 
 
-No active loans found.
+No active loans found
 
 
 </td>
@@ -1289,20 +1482,13 @@ No active loans found.
 
 return;
 
-
 }
 
 
 
 
 
-
-
-
-
 activeLoans.forEach(loan=>{
-
-
 
 
 
@@ -1314,14 +1500,11 @@ loan.clientId
 
 
 
-
-
 if(!client){
 
 return;
 
 }
-
 
 
 
@@ -1341,11 +1524,7 @@ loan.originalPrincipal ||
 
 
 
-
-// 20% MONTHLY INTEREST
-
-
-let interest = balance * 0.20;
+let interest = balance * 0.24;
 
 
 
@@ -1353,9 +1532,7 @@ let interest = balance * 0.20;
 
 let photo = client.profilePhoto ||
 
-
 "https://via.placeholder.com/120";
-
 
 
 
@@ -1366,22 +1543,16 @@ let photo = client.profilePhoto ||
 table.innerHTML += `
 
 
-
 <tr>
 
 
-
 <td>
-
 
 <img src="${photo}"
 
 class="profile-img">
 
-
 </td>
-
-
 
 
 
@@ -1390,7 +1561,6 @@ class="profile-img">
 ${client.fullname || "-"}
 
 </td>
-
 
 
 
@@ -1404,17 +1574,11 @@ ${client.phone || "-"}
 
 
 
-
 <td>
 
-${money(
-
-loan.originalPrincipal
-
-)}
+${money(loan.originalPrincipal)}
 
 </td>
-
 
 
 
@@ -1428,7 +1592,6 @@ ${money(balance)}
 
 
 
-
 <td>
 
 ${money(interest)}
@@ -1438,12 +1601,13 @@ ${money(interest)}
 
 
 
-
 <td>
 
 ${loan.loanDate || "-"}
 
 </td>
+
+
 
 
 <td>
@@ -1459,13 +1623,10 @@ ${loan.dueDate || "-"}
 
 
 
-
 <td>
 
 
-<button
-
-class="btn btn-view"
+<button class="btn btn-view btn-sm"
 
 onclick="viewLoan(${loan.id})">
 
@@ -1478,14 +1639,25 @@ View
 </button>
 
 
+
+
+<button class="btn btn-payment btn-sm"
+
+onclick="openPayment(${loan.id})">
+
+
+<i class="fa fa-money-bill"></i>
+
+Payment
+
+
+</button>
+
+
 </td>
 
 
-
-
-
 </tr>
-
 
 
 `;
@@ -1496,11 +1668,7 @@ View
 
 
 
-
 }
-
-
-
 
 
 
@@ -1522,13 +1690,11 @@ function viewLoan(id){
 let loan = DB.getLoan(id);
 
 
-
 if(!loan){
 
 return;
 
 }
-
 
 
 
@@ -1540,10 +1706,6 @@ loan.clientId
 );
 
 
-document.getElementById("loanDueDate").innerHTML =
-
-loan.dueDate || "-";
-
 
 if(!client){
 
@@ -1554,10 +1716,6 @@ return;
 
 
 
-
-
-
-// CLIENT DETAILS
 
 
 document.getElementById("clientPhoto").src =
@@ -1612,11 +1770,6 @@ client.address || "-";
 
 
 
-
-
-// LOAN DETAILS
-
-
 let balance = Number(
 
 loan.remainingPrincipal ||
@@ -1634,8 +1787,15 @@ loan.originalPrincipal ||
 
 document.getElementById("loanDate").innerHTML =
 
-loan.loanDate || loan.createdAt || "-";
+loan.loanDate || "-";
 
+
+
+
+
+document.getElementById("loanDueDate").innerHTML =
+
+loan.dueDate || "-";
 
 
 
@@ -1643,13 +1803,7 @@ loan.loanDate || loan.createdAt || "-";
 
 document.getElementById("loanAmount").innerHTML =
 
-money(
-
-loan.originalPrincipal
-
-);
-
-
+money(loan.originalPrincipal);
 
 
 
@@ -1663,11 +1817,9 @@ money(balance);
 
 
 
-
-
 document.getElementById("loanInterest").innerHTML =
 
-money(balance * 0.20);
+money(balance * 0.24);
 
 
 
@@ -1687,17 +1839,12 @@ loan.applicationId
 
 
 
-
-
-
 if(application){
-
 
 
 document.getElementById("applicationId").innerHTML =
 
 application.id || "-";
-
 
 
 
@@ -1707,11 +1854,9 @@ application.applicationDate || "-";
 
 
 
-
 document.getElementById("loanPurpose").innerHTML =
 
 application.purpose || "-";
-
 
 
 
@@ -1724,7 +1869,6 @@ money(application.amount);
 document.getElementById("applicationStatus").innerHTML =
 
 application.status || "-";
-
 
 
 
@@ -1741,27 +1885,19 @@ application.approvedDate || "-";
 
 
 
-
-
 // GUARANTORS
 
 
-let guarantorTable =
-
-document.getElementById("guarantorTable");
-
+let guarantorTable = document.getElementById(
+"guarantorTable"
+);
 
 
 guarantorTable.innerHTML="";
 
 
 
-
-
-
 if(application){
-
-
 
 
 
@@ -1773,106 +1909,41 @@ let g2 = application.guarantor2 || {};
 
 
 
-
-
 guarantorTable.innerHTML += `
 
 
-
 <tr>
 
-<td>
+<td>${g1.name || "-"}</td>
 
-${g1.name || "-"}
+<td>${g1.phone || "-"}</td>
 
-</td>
-
-
-<td>
-
-${g1.phone || "-"}
-
-</td>
-
-
-<td>
-
-${g1.idNumber || "-"}
-
-</td>
+<td>${g1.idNumber || "-"}</td>
 
 </tr>
 
 
-
-
-
 <tr>
 
-<td>
+<td>${g2.name || "-"}</td>
 
-${g2.name || "-"}
+<td>${g2.phone || "-"}</td>
 
-</td>
-
-
-<td>
-
-${g2.phone || "-"}
-
-</td>
-
-
-<td>
-
-${g2.idNumber || "-"}
-
-</td>
+<td>${g2.idNumber || "-"}</td>
 
 </tr>
 
 
 `;
 
-
-
-
-}
-
-else{
-
-
-guarantorTable.innerHTML = `
-
-<tr>
-
-<td colspan="3"
-
-class="text-center">
-
-
-No guarantor information
-
-
-</td>
-
-
-</tr>
-
-
-`;
-
-
 }
 
 
 
+loadPaymentHistory(id);
 
 
 
-
-
-// OPEN MODAL
 
 
 let modal = new bootstrap.Modal(
@@ -1882,12 +1953,352 @@ document.getElementById("loanModal")
 );
 
 
+modal.show();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// ===============================
+// OPEN PAYMENT MODAL
+// ===============================
+
+
+function openPayment(id){
+
+
+
+document.getElementById("paymentLoanId").value = id;
+
+
+document.getElementById("paymentAmount").value="";
+
+
+document.getElementById("paymentDate").value =
+
+new Date().toISOString().split("T")[0];
+
+
+
+let modal = new bootstrap.Modal(
+
+document.getElementById("paymentModal")
+
+);
+
 
 modal.show();
 
 
 
 }
+
+
+
+
+
+
+
+
+
+// ===============================
+// SAVE PAYMENT
+// ===============================
+
+
+function savePayment(){
+
+
+
+let id = Number(
+
+document.getElementById("paymentLoanId").value
+
+);
+
+
+
+let amount = Number(
+
+document.getElementById("paymentAmount").value
+
+);
+
+
+
+let date = document.getElementById(
+"paymentDate"
+).value;
+
+
+
+let method = document.getElementById(
+"paymentMethod"
+).value;
+
+
+
+
+
+if(amount <= 0){
+
+alert("Enter valid payment amount");
+
+return;
+
+}
+
+
+
+
+
+
+
+let loans = DB.getLoans();
+
+
+let loan = loans.find(l=>l.id === id);
+
+
+
+
+
+if(!loan){
+
+return;
+
+}
+
+
+
+
+
+
+
+let balance = Number(
+
+loan.remainingPrincipal ||
+
+loan.originalPrincipal
+
+);
+
+
+
+
+
+
+let newBalance = balance - amount;
+
+
+
+
+
+if(newBalance < 0){
+
+newBalance = 0;
+
+}
+
+
+
+
+
+
+
+loan.remainingPrincipal = newBalance;
+
+
+
+
+
+
+// SAVE PAYMENT HISTORY
+
+
+if(!loan.payments){
+
+loan.payments=[];
+
+}
+
+
+
+loan.payments.push({
+
+
+date:date,
+
+
+amount:amount,
+
+
+method:method,
+
+
+balance:newBalance
+
+
+});
+
+
+
+
+
+
+// COMPLETE LOAN
+
+
+if(newBalance === 0){
+
+
+loan.status="COMPLETED";
+
+
+}
+
+
+
+
+
+
+
+
+localStorage.setItem(
+
+"loans",
+
+JSON.stringify(loans)
+
+);
+
+
+
+
+
+
+
+alert("Payment recorded successfully");
+
+
+
+loadActiveLoans();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// ===============================
+// PAYMENT HISTORY
+// ===============================
+
+
+function loadPaymentHistory(id){
+
+
+
+let loan = DB.getLoan(id);
+
+
+let table = document.getElementById(
+"paymentHistoryTable"
+);
+
+
+
+table.innerHTML="";
+
+
+
+
+
+if(!loan.payments || loan.payments.length===0){
+
+
+table.innerHTML=`
+
+<tr>
+
+<td colspan="3"
+
+class="text-center">
+
+No payments recorded
+
+</td>
+
+</tr>
+
+`;
+
+return;
+
+
+}
+
+
+
+
+
+loan.payments.forEach(p=>{
+
+
+table.innerHTML += `
+
+
+<tr>
+
+
+<td>
+
+${p.date}
+
+</td>
+
+
+<td>
+
+${money(p.amount)}
+
+</td>
+
+
+<td>
+
+${money(p.balance)}
+
+</td>
+
+
+
+</tr>
+
+
+`;
+
+
+});
+
+
+
+}
+
 
 
 
@@ -1906,12 +2317,4 @@ loadActiveLoans();
 
 
 
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-
-</body>
-
-
-</html>
+</div>
