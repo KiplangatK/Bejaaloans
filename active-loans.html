@@ -20,7 +20,6 @@
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
 
-
 <style>
 
 
@@ -37,7 +36,6 @@ body{
 background:#edf4ff;
 
 font-family:
-
 Segoe UI,
 Tahoma,
 Geneva,
@@ -95,7 +93,6 @@ margin-right:10px;
 
 
 
-
 .sidebar ul{
 
 list-style:none;
@@ -137,7 +134,6 @@ padding-left:35px;
 width:25px;
 
 }
-
 
 
 
@@ -197,6 +193,7 @@ font-size:28px;
 
 
 
+
 /*=========================
 CONTENT
 =========================*/
@@ -207,7 +204,6 @@ CONTENT
 padding:30px;
 
 }
-
 
 
 
@@ -239,7 +235,6 @@ font-weight:bold;
 padding:18px 25px;
 
 }
-
 
 
 
@@ -309,6 +304,7 @@ color:white;
 
 
 
+
 .btn-payment{
 
 background:#198754;
@@ -333,39 +329,14 @@ color:white;
 
 
 
-
-
-@media(max-width:768px){
-
-
-.sidebar{
-
-width:220px;
-
-}
-
-
-.main{
-
-margin-left:220px;
-
-width:calc(100% - 220px);
-
-}
-
-
-}
-
-
-
 </style>
-
 
 </head>
 
 
 
 <body>
+
 
 
 <div class="wrapper">
@@ -474,9 +445,6 @@ Logout
 
 
 
-
-
-
 <!-- =========================
 MAIN
 ========================= -->
@@ -512,9 +480,6 @@ Admin
 
 
 </div>
-
-
-
 
 
 
@@ -576,7 +541,7 @@ Balance
 
 
 <th>
-Monthly Interest (24%)
+Monthly Interest (20%)
 </th>
 
 
@@ -612,9 +577,8 @@ Action
 </table>
 
 
-
 </div>
-     <!-- =========================
+<!-- =========================
 LOAN DETAILS MODAL
 ========================= -->
 
@@ -657,9 +621,8 @@ data-bs-dismiss="modal">
 
 
 
-
-
 <!-- CLIENT INFORMATION -->
+
 
 <h5 class="section-title">
 
@@ -669,9 +632,7 @@ Client Information
 
 
 
-
 <div class="row mb-3">
-
 
 
 <div class="col-md-4 text-center">
@@ -703,7 +664,6 @@ id="clientName">
 <div class="col-md-8">
 
 
-
 <div class="detail-box">
 
 
@@ -716,7 +676,6 @@ id="clientName">
 </p>
 
 
-
 <p>
 
 <b>ID Number:</b>
@@ -724,7 +683,6 @@ id="clientName">
 <span id="clientId"></span>
 
 </p>
-
 
 
 <p>
@@ -736,7 +694,6 @@ id="clientName">
 </p>
 
 
-
 <p>
 
 <b>Address:</b>
@@ -746,131 +703,13 @@ id="clientName">
 </p>
 
 
-
-</div>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<!-- LOAN APPLICATION DETAILS -->
-
-
-<h5 class="section-title">
-
-Loan Application Details
-
-</h5>
-
-
-
-
-<div class="row">
-
-
-
-<div class="col-md-6">
-
-
-<div class="detail-box">
-
-
-<p>
-
-<b>Application ID:</b>
-
-<span id="applicationId"></span>
-
-</p>
-
-
-
-<p>
-
-<b>Date Applied:</b>
-
-<span id="applicationDate"></span>
-
-</p>
-
-
-
-<p>
-
-<b>Loan Purpose:</b>
-
-<span id="loanPurpose"></span>
-
-</p>
-
-
 </div>
 
 
 </div>
 
 
-
-
-
-
-
-<div class="col-md-6">
-
-
-<div class="detail-box">
-
-
-<p>
-
-<b>Requested Amount:</b>
-
-<span id="requestedAmount"></span>
-
-</p>
-
-
-
-<p>
-
-<b>Status:</b>
-
-<span id="applicationStatus"></span>
-
-</p>
-
-
-
-<p>
-
-<b>Approval Date:</b>
-
-<span id="approvalDate"></span>
-
-</p>
-
-
 </div>
-
-
-</div>
-
-
-
-</div>
-
-
 
 
 
@@ -882,7 +721,7 @@ Loan Application Details
 <!-- LOAN INFORMATION -->
 
 
-<h5 class="section-title mt-4">
+<h5 class="section-title">
 
 Loan Information
 
@@ -891,9 +730,7 @@ Loan Information
 
 
 
-
 <div class="row">
-
 
 
 <div class="col-md-6">
@@ -927,23 +764,19 @@ class="text-danger fw-bold">
 
 
 
-
 <p>
 
-<b>Approved Amount:</b>
+<b>Original Principal:</b>
 
 <span id="loanAmount"></span>
 
 </p>
 
 
-
 </div>
 
 
 </div>
-
-
 
 
 
@@ -970,9 +803,19 @@ class="text-danger fw-bold">
 
 <p>
 
-<b>Monthly Interest (24%):</b>
+<b>Monthly Interest (20%):</b>
 
 <span id="loanInterest"></span>
+
+</p>
+
+
+
+<p>
+
+<b>Status:</b>
+
+<span id="loanStatus"></span>
 
 </p>
 
@@ -995,6 +838,7 @@ class="text-danger fw-bold">
 
 
 
+
 <!-- PAYMENT HISTORY -->
 
 
@@ -1003,6 +847,7 @@ class="text-danger fw-bold">
 Payment History
 
 </h5>
+
 
 
 
@@ -1016,18 +861,43 @@ Payment History
 
 
 <th>
+
 Date
+
 </th>
+
 
 
 <th>
-Amount Paid
+
+Payment
+
 </th>
+
 
 
 <th>
-Balance
+
+Interest Paid
+
 </th>
+
+
+
+<th>
+
+Principal Paid
+
+</th>
+
+
+
+<th>
+
+Remaining Principal
+
+</th>
+
 
 
 </tr>
@@ -1041,7 +911,6 @@ Balance
 
 
 </tbody>
-
 
 
 </table>
@@ -1110,9 +979,7 @@ ID Number
 </tbody>
 
 
-
 </table>
-
 
 
 
@@ -1144,7 +1011,6 @@ Close
 
 
 
-
 </div>
 
 
@@ -1152,11 +1018,6 @@ Close
 
 
 </div>
-
-
-
-
-
 
 
 
@@ -1167,7 +1028,7 @@ Close
 
 
 <!-- =========================
-RECORD PAYMENT MODAL
+PAYMENT MODAL
 ========================= -->
 
 
@@ -1207,6 +1068,7 @@ data-bs-dismiss="modal">
 
 
 
+
 <div class="modal-body">
 
 
@@ -1235,7 +1097,7 @@ class="form-control"
 
 id="paymentAmount"
 
-placeholder="Enter amount paid">
+placeholder="Enter payment amount">
 
 
 </div>
@@ -1264,7 +1126,6 @@ id="paymentDate">
 
 
 </div>
-
 
 
 
@@ -1315,12 +1176,7 @@ Bank
 
 
 
-
-
-
 </div>
-
-
 
 
 
@@ -1350,6 +1206,7 @@ onclick="savePayment()">
 
 Save Payment
 
+
 </button>
 
 
@@ -1360,7 +1217,6 @@ Save Payment
 
 
 
-
 </div>
 
 
@@ -1368,7 +1224,14 @@ Save Payment
 
 
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
+
+
+
+<!-- DATABASE -->
 
 
 <script src="assets/js/database.js"></script>
@@ -1376,7 +1239,7 @@ Save Payment
 <script src="assets/js/auth.js"></script>
 
 
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 
 
@@ -1412,6 +1275,7 @@ admin.username;
 
 
 
+
 // ===============================
 // MONEY FORMAT
 // ===============================
@@ -1429,6 +1293,7 @@ Number(value || 0).toLocaleString();
 
 
 
+
 // ===============================
 // LOAD ACTIVE LOANS
 // ===============================
@@ -1440,9 +1305,8 @@ function loadActiveLoans(){
 let loans = DB.getLoans();
 
 
-let table = document.getElementById(
-"activeLoansTable"
-);
+let table =
+document.getElementById("activeLoansTable");
 
 
 table.innerHTML="";
@@ -1458,7 +1322,7 @@ loan.status === "ACTIVE"
 
 
 
-if(activeLoans.length === 0){
+if(activeLoans.length===0){
 
 
 table.innerHTML=`
@@ -1469,9 +1333,7 @@ table.innerHTML=`
 
 class="text-center p-4 text-muted">
 
-
 No active loans found
-
 
 </td>
 
@@ -1509,7 +1371,6 @@ return;
 
 
 
-
 let balance = Number(
 
 loan.remainingPrincipal ||
@@ -1524,17 +1385,9 @@ loan.originalPrincipal ||
 
 
 
-let interest = balance * 0.24;
+// 20% MONTHLY INTEREST
 
-
-
-
-
-let photo = client.profilePhoto ||
-
-"https://via.placeholder.com/120";
-
-
+let interest = balance * 0.20;
 
 
 
@@ -1543,16 +1396,25 @@ let photo = client.profilePhoto ||
 table.innerHTML += `
 
 
+
 <tr>
+
 
 
 <td>
 
-<img src="${photo}"
+<img src="${
+client.profilePhoto ||
+
+'https://via.placeholder.com/120'
+
+}"
 
 class="profile-img">
 
 </td>
+
+
 
 
 
@@ -1561,6 +1423,7 @@ class="profile-img">
 ${client.fullname || "-"}
 
 </td>
+
 
 
 
@@ -1574,11 +1437,13 @@ ${client.phone || "-"}
 
 
 
+
 <td>
 
 ${money(loan.originalPrincipal)}
 
 </td>
+
 
 
 
@@ -1592,6 +1457,7 @@ ${money(balance)}
 
 
 
+
 <td>
 
 ${money(interest)}
@@ -1601,11 +1467,13 @@ ${money(interest)}
 
 
 
+
 <td>
 
 ${loan.loanDate || "-"}
 
 </td>
+
 
 
 
@@ -1623,10 +1491,13 @@ ${loan.dueDate || "-"}
 
 
 
+
 <td>
 
 
-<button class="btn btn-view btn-sm"
+<button
+
+class="btn btn-view btn-sm"
 
 onclick="viewLoan(${loan.id})">
 
@@ -1635,13 +1506,15 @@ onclick="viewLoan(${loan.id})">
 
 View
 
-
 </button>
 
 
 
 
-<button class="btn btn-payment btn-sm"
+
+<button
+
+class="btn btn-payment btn-sm"
 
 onclick="openPayment(${loan.id})">
 
@@ -1650,11 +1523,12 @@ onclick="openPayment(${loan.id})">
 
 Payment
 
-
 </button>
 
 
+
 </td>
+
 
 
 </tr>
@@ -1665,7 +1539,6 @@ Payment
 
 
 });
-
 
 
 }
@@ -1686,7 +1559,6 @@ Payment
 function viewLoan(id){
 
 
-
 let loan = DB.getLoan(id);
 
 
@@ -1698,7 +1570,6 @@ return;
 
 
 
-
 let client = DB.getClientById(
 
 loan.clientId
@@ -1706,65 +1577,11 @@ loan.clientId
 );
 
 
-
 if(!client){
 
 return;
 
 }
-
-
-
-
-
-
-document.getElementById("clientPhoto").src =
-
-client.profilePhoto ||
-
-"https://via.placeholder.com/120";
-
-
-
-
-
-document.getElementById("clientName").innerHTML =
-
-client.fullname || "-";
-
-
-
-
-
-document.getElementById("clientPhone").innerHTML =
-
-client.phone || "-";
-
-
-
-
-
-document.getElementById("clientId").innerHTML =
-
-client.idNumber || "-";
-
-
-
-
-
-document.getElementById("clientEmail").innerHTML =
-
-client.email || "-";
-
-
-
-
-
-document.getElementById("clientAddress").innerHTML =
-
-client.address || "-";
-
-
 
 
 
@@ -1784,12 +1601,51 @@ loan.originalPrincipal ||
 
 
 
+document.getElementById("clientPhoto").src =
+
+client.profilePhoto ||
+
+"https://via.placeholder.com/120";
+
+
+
+document.getElementById("clientName").innerHTML =
+
+client.fullname || "-";
+
+
+
+document.getElementById("clientPhone").innerHTML =
+
+client.phone || "-";
+
+
+
+document.getElementById("clientId").innerHTML =
+
+client.idNumber || "-";
+
+
+
+document.getElementById("clientEmail").innerHTML =
+
+client.email || "-";
+
+
+
+document.getElementById("clientAddress").innerHTML =
+
+client.address || "-";
+
+
+
+
+
+
 
 document.getElementById("loanDate").innerHTML =
 
 loan.loanDate || "-";
-
-
 
 
 
@@ -1799,13 +1655,9 @@ loan.dueDate || "-";
 
 
 
-
-
 document.getElementById("loanAmount").innerHTML =
 
 money(loan.originalPrincipal);
-
-
 
 
 
@@ -1815,128 +1667,17 @@ money(balance);
 
 
 
-
-
 document.getElementById("loanInterest").innerHTML =
 
-money(balance * 0.24);
+money(balance * 0.20);
 
 
 
+document.getElementById("loanStatus").innerHTML =
 
+loan.status;
 
 
-
-
-// APPLICATION DETAILS
-
-
-let application = DB.getApplication(
-
-loan.applicationId
-
-);
-
-
-
-if(application){
-
-
-document.getElementById("applicationId").innerHTML =
-
-application.id || "-";
-
-
-
-document.getElementById("applicationDate").innerHTML =
-
-application.applicationDate || "-";
-
-
-
-document.getElementById("loanPurpose").innerHTML =
-
-application.purpose || "-";
-
-
-
-document.getElementById("requestedAmount").innerHTML =
-
-money(application.amount);
-
-
-
-document.getElementById("applicationStatus").innerHTML =
-
-application.status || "-";
-
-
-
-document.getElementById("approvalDate").innerHTML =
-
-application.approvedDate || "-";
-
-
-
-}
-
-
-
-
-
-
-// GUARANTORS
-
-
-let guarantorTable = document.getElementById(
-"guarantorTable"
-);
-
-
-guarantorTable.innerHTML="";
-
-
-
-if(application){
-
-
-
-let g1 = application.guarantor1 || {};
-
-let g2 = application.guarantor2 || {};
-
-
-
-
-
-guarantorTable.innerHTML += `
-
-
-<tr>
-
-<td>${g1.name || "-"}</td>
-
-<td>${g1.phone || "-"}</td>
-
-<td>${g1.idNumber || "-"}</td>
-
-</tr>
-
-
-<tr>
-
-<td>${g2.name || "-"}</td>
-
-<td>${g2.phone || "-"}</td>
-
-<td>${g2.idNumber || "-"}</td>
-
-</tr>
-
-
-`;
-
-}
 
 
 
@@ -1954,7 +1695,6 @@ document.getElementById("loanModal")
 
 
 modal.show();
-
 
 
 }
@@ -1975,8 +1715,7 @@ modal.show();
 function openPayment(id){
 
 
-
-document.getElementById("paymentLoanId").value = id;
+document.getElementById("paymentLoanId").value=id;
 
 
 document.getElementById("paymentAmount").value="";
@@ -1998,7 +1737,6 @@ document.getElementById("paymentModal")
 modal.show();
 
 
-
 }
 
 
@@ -2017,7 +1755,6 @@ modal.show();
 function savePayment(){
 
 
-
 let id = Number(
 
 document.getElementById("paymentLoanId").value
@@ -2034,23 +1771,21 @@ document.getElementById("paymentAmount").value
 
 
 
-let date = document.getElementById(
-"paymentDate"
-).value;
+let date = document.getElementById("paymentDate").value;
 
 
 
-let method = document.getElementById(
-"paymentMethod"
-).value;
+let method = document.getElementById("paymentMethod").value;
 
 
 
 
 
-if(amount <= 0){
+if(amount<=0){
 
-alert("Enter valid payment amount");
+
+alert("Enter valid amount");
+
 
 return;
 
@@ -2065,7 +1800,7 @@ return;
 let loans = DB.getLoans();
 
 
-let loan = loans.find(l=>l.id === id);
+let loan = loans.find(l=>l.id===id);
 
 
 
@@ -2082,12 +1817,13 @@ return;
 
 
 
-
-let balance = Number(
+let principal = Number(
 
 loan.remainingPrincipal ||
 
-loan.originalPrincipal
+loan.originalPrincipal ||
+
+0
 
 );
 
@@ -2095,16 +1831,52 @@ loan.originalPrincipal
 
 
 
+// calculate current interest
 
-let newBalance = balance - amount;
-
-
-
+let interestDue = principal * 0.20;
 
 
-if(newBalance < 0){
 
-newBalance = 0;
+
+
+let remainingPayment = amount;
+
+
+
+let interestPaid = 0;
+
+
+
+let principalPaid = 0;
+
+
+
+
+
+
+
+// PAY INTEREST FIRST
+
+
+if(remainingPayment >= interestDue){
+
+
+interestPaid = interestDue;
+
+
+remainingPayment -= interestDue;
+
+
+}
+
+else{
+
+
+interestPaid = remainingPayment;
+
+
+remainingPayment = 0;
+
 
 }
 
@@ -2114,14 +1886,51 @@ newBalance = 0;
 
 
 
-loan.remainingPrincipal = newBalance;
+// EXTRA PAYMENT REDUCES PRINCIPAL
+
+
+if(remainingPayment > 0){
+
+
+principalPaid = remainingPayment;
+
+
+principal -= principalPaid;
+
+
+}
 
 
 
 
 
 
-// SAVE PAYMENT HISTORY
+if(principal < 0){
+
+principal = 0;
+
+}
+
+
+
+
+
+
+
+loan.remainingPrincipal = principal;
+
+
+
+loan.currentInterest = principal * 0.20;
+
+
+
+
+
+
+
+
+// PAYMENT HISTORY
 
 
 if(!loan.payments){
@@ -2144,7 +1953,13 @@ amount:amount,
 method:method,
 
 
-balance:newBalance
+interestPaid:interestPaid,
+
+
+principalPaid:principalPaid,
+
+
+balance:principal
 
 
 });
@@ -2154,13 +1969,18 @@ balance:newBalance
 
 
 
+
+
 // COMPLETE LOAN
 
 
-if(newBalance === 0){
+if(principal===0){
 
 
 loan.status="COMPLETED";
+
+
+loan.currentInterest=0;
 
 
 }
@@ -2184,8 +2004,6 @@ JSON.stringify(loans)
 
 
 
-
-
 alert("Payment recorded successfully");
 
 
@@ -2195,6 +2013,8 @@ loadActiveLoans();
 
 
 }
+
+
 
 
 
@@ -2216,9 +2036,10 @@ function loadPaymentHistory(id){
 let loan = DB.getLoan(id);
 
 
-let table = document.getElementById(
-"paymentHistoryTable"
-);
+
+let table =
+
+document.getElementById("paymentHistoryTable");
 
 
 
@@ -2231,11 +2052,12 @@ table.innerHTML="";
 if(!loan.payments || loan.payments.length===0){
 
 
+
 table.innerHTML=`
 
 <tr>
 
-<td colspan="3"
+<td colspan="5"
 
 class="text-center">
 
@@ -2247,10 +2069,12 @@ No payments recorded
 
 `;
 
+
 return;
 
-
 }
+
+
 
 
 
@@ -2272,11 +2096,29 @@ ${p.date}
 </td>
 
 
+
 <td>
 
 ${money(p.amount)}
 
 </td>
+
+
+
+<td>
+
+${money(p.interestPaid)}
+
+</td>
+
+
+
+<td>
+
+${money(p.principalPaid)}
+
+</td>
+
 
 
 <td>
@@ -2293,13 +2135,12 @@ ${money(p.balance)}
 `;
 
 
+
 });
 
 
 
 }
-
-
 
 
 
@@ -2314,7 +2155,3 @@ loadActiveLoans();
 
 
 </script>
-
-
-
-</div>
