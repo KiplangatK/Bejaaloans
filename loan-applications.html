@@ -11,8 +11,12 @@
 <title>Loan Applications | Bejja Credit</title>
 
 
+<!-- BOOTSTRAP -->
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
+
+<!-- FONT AWESOME -->
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
 
@@ -25,17 +29,24 @@ body{
 
 background:#edf4ff;
 
-font-family:Segoe UI,Tahoma,sans-serif;
+font-family:'Segoe UI',Tahoma,sans-serif;
 
 }
 
 
 
-/* SIDEBAR */
+/* =========================
+SIDEBAR
+========================= */
+
 
 .sidebar{
 
 position:fixed;
+
+left:0;
+
+top:0;
 
 width:260px;
 
@@ -46,6 +57,7 @@ background:#0d47a1;
 color:white;
 
 }
+
 
 
 .logo{
@@ -62,6 +74,15 @@ border-bottom:1px solid rgba(255,255,255,.2);
 
 
 
+.logo i{
+
+margin-right:10px;
+
+}
+
+
+
+
 .sidebar a{
 
 display:block;
@@ -75,6 +96,7 @@ text-decoration:none;
 }
 
 
+
 .sidebar a:hover{
 
 background:#1565c0;
@@ -84,8 +106,19 @@ background:#1565c0;
 
 
 
+.sidebar i{
 
-/* MAIN */
+width:25px;
+
+}
+
+
+
+
+
+/* =========================
+MAIN
+========================= */
 
 
 .main{
@@ -93,6 +126,7 @@ background:#1565c0;
 margin-left:260px;
 
 }
+
 
 
 
@@ -113,7 +147,19 @@ justify-content:space-between;
 
 padding:0 30px;
 
+box-shadow:0 3px 10px rgba(0,0,0,.15);
+
 }
+
+
+
+.topbar h3{
+
+font-weight:700;
+
+}
+
+
 
 
 
@@ -125,31 +171,156 @@ padding:30px;
 
 
 
+
+
 .card-box{
 
 background:white;
 
-border-radius:15px;
-
 padding:25px;
 
-box-shadow:0 5px 15px rgba(0,0,0,.1);
+border-radius:20px;
+
+box-shadow:0 8px 25px rgba(0,0,0,.12);
 
 }
+
+
+
+
+
+.table thead th{
+
+background:#e3f2fd;
+
+color:#0d47a1;
+
+}
+
+
+
+.table td,
+.table th{
+
+padding:15px;
+
+vertical-align:middle;
+
+}
+
 
 
 
 .profile-img{
 
-width:50px;
+width:55px;
 
-height:50px;
+height:55px;
 
 border-radius:50%;
 
 object-fit:cover;
 
+border:2px solid #1976d2;
+
 }
+
+
+
+
+
+.btn-view{
+
+background:#1976d2;
+
+color:white;
+
+border-radius:20px;
+
+}
+
+
+
+.btn-view:hover{
+
+background:#0d47a1;
+
+color:white;
+
+}
+
+
+
+
+
+.section-title{
+
+background:#0d47a1;
+
+color:white;
+
+padding:10px 15px;
+
+border-radius:10px;
+
+margin-top:15px;
+
+}
+
+
+
+
+.detail-card{
+
+background:#f8fbff;
+
+border-radius:15px;
+
+padding:15px;
+
+margin-bottom:15px;
+
+border:1px solid #dbeafe;
+
+}
+
+
+
+
+
+.document-img{
+
+width:100%;
+
+height:160px;
+
+object-fit:contain;
+
+border-radius:10px;
+
+border:1px solid #ddd;
+
+}
+
+
+
+
+
+.guarantor-photo{
+
+width:120px;
+
+height:120px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+border:3px solid #2563eb;
+
+}
+
+
 
 
 
@@ -160,18 +331,29 @@ object-fit:cover;
 
 
 <body>
-    <!-- SIDEBAR -->
+
+
+
+<!-- =========================
+SIDEBAR
+========================= -->
+
 
 <div class="sidebar">
 
 
+
 <div class="logo">
+
 
 <i class="fa-solid fa-building-columns"></i>
 
+
 Bejja Credit
 
+
 </div>
+
 
 
 
@@ -187,6 +369,7 @@ Dashboard
 
 
 
+
 <a href="registered-clients.html">
 
 <i class="fa fa-users"></i>
@@ -198,13 +381,15 @@ Registered Clients
 
 
 
+
 <a href="active-loans.html">
 
-<i class="fa fa-money-bill"></i>
+<i class="fa fa-money-bill-wave"></i>
 
 Active Loans
 
 </a>
+
 
 
 
@@ -216,6 +401,8 @@ Active Loans
 Loan Applications
 
 </a>
+
+
 
 
 
@@ -237,8 +424,9 @@ Logout
 
 
 
-
-<!-- MAIN CONTENT -->
+<!-- =========================
+MAIN CONTENT
+========================= -->
 
 
 <div class="main">
@@ -258,18 +446,22 @@ Loan Applications
 
 
 
+
 <div>
 
 Welcome
 
-<strong id="adminName"></strong>
+<strong id="adminName">
+
+Admin
+
+</strong>
 
 </div>
 
 
 
 </div>
-
 
 
 
@@ -285,9 +477,7 @@ Welcome
 
 
 
-
-
-<h4 class="mb-4 text-primary">
+<h4 class="text-primary mb-4">
 
 
 <i class="fa fa-list"></i>
@@ -302,9 +492,11 @@ Loan Application Requests
 
 
 
+<div class="table-responsive">
 
 
 <table class="table table-hover align-middle">
+
 
 
 <thead>
@@ -313,28 +505,61 @@ Loan Application Requests
 <tr>
 
 
-<th>Photo</th>
+<th>
+
+Photo
+
+</th>
 
 
-<th>Client</th>
+<th>
+
+Client
+
+</th>
 
 
-<th>Phone</th>
+<th>
+
+Phone
+
+</th>
 
 
-<th>Amount</th>
+<th>
+
+Amount
+
+</th>
 
 
-<th>Purpose</th>
+<th>
+
+Purpose
+
+</th>
 
 
-<th>Date Applied</th>
+<th>
+
+Date Applied
+
+</th>
 
 
-<th>Status</th>
+<th>
+
+Status
+
+</th>
 
 
-<th>Action</th>
+<th>
+
+Action
+
+</th>
+
 
 
 </tr>
@@ -356,14 +581,7 @@ Loan Application Requests
 
 
 
-
-
-
 </div>
-
-
-</div>
-
 
 
 
@@ -371,17 +589,19 @@ Loan Application Requests
 
 
 
+</div>
 
 
+</div>
+<!-- =========================
+APPLICATION DETAILS MODAL
+========================= -->
 
 
-<!-- APPLICATION DETAILS MODAL -->
+<div class="modal fade" id="applicationModal" tabindex="-1">
 
 
-<div class="modal fade" id="applicationModal">
-
-
-<div class="modal-dialog modal-lg">
+<div class="modal-dialog modal-xl">
 
 
 <div class="modal-content">
@@ -392,6 +612,8 @@ Loan Application Requests
 
 
 <h5 class="modal-title">
+
+<i class="fa fa-file-circle-check"></i>
 
 Loan Application Details
 
@@ -412,12 +634,41 @@ data-bs-dismiss="modal">
 
 
 
-
 <div class="modal-body"
 
 id="applicationDetails">
 
 
+
+</div>
+
+
+
+
+
+<div class="modal-footer">
+
+
+<button class="btn btn-secondary"
+
+data-bs-dismiss="modal">
+
+Close
+
+</button>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
 </div>
 
 
@@ -425,13 +676,7 @@ id="applicationDetails">
 
 
 
-</div>
 
-
-</div>
-
-
-</div>
 <!-- DATABASE -->
 
 <script src="assets/js/database.js"></script>
@@ -440,14 +685,31 @@ id="applicationDetails">
 
 
 
+
+<!-- BOOTSTRAP JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
+
 <script>
 
 
-// CHECK ADMIN LOGIN
+
+
+
+// ===============================
+// ADMIN LOGIN CHECK
+// ===============================
+
 
 if(!AUTH.currentAdmin()){
 
-    window.location.href="admin-login.html";
+
+window.location.href="admin-login.html";
+
 
 }
 
@@ -455,17 +717,18 @@ if(!AUTH.currentAdmin()){
 
 
 
-// SHOW ADMIN NAME
-
 let admin = AUTH.currentAdmin();
 
 
+
 if(admin){
+
 
 document.getElementById("adminName").innerHTML =
 
 admin.username;
 
+
 }
 
 
@@ -473,10 +736,13 @@ admin.username;
 
 
 
+// ===============================
+// MONEY FORMAT
+// ===============================
 
-// FORMAT MONEY
 
 function money(value){
+
 
 return "KES " +
 
@@ -484,6 +750,7 @@ Number(value || 0)
 
 .toLocaleString();
 
+
 }
 
 
@@ -492,9 +759,9 @@ Number(value || 0)
 
 
 
-
-
+// ===============================
 // LOAD APPLICATIONS
+// ===============================
 
 
 function loadApplications(){
@@ -521,9 +788,12 @@ table.innerHTML="";
 
 let pending = applications.filter(app =>
 
+
 app.status === "PENDING"
 
+
 );
+
 
 
 
@@ -533,24 +803,23 @@ app.status === "PENDING"
 if(pending.length===0){
 
 
-
 table.innerHTML=`
-
 
 <tr>
 
+
 <td colspan="8"
 
-class="text-center p-4 text-muted">
+class="text-center text-muted p-4">
 
 
-No pending loan applications.
+No pending applications found
 
 
 </td>
 
-</tr>
 
+</tr>
 
 `;
 
@@ -566,7 +835,10 @@ return;
 
 
 
+
 pending.reverse().forEach(app=>{
+
+
 
 
 
@@ -579,9 +851,12 @@ app.clientId
 
 
 
+
 if(!client){
 
+
 return;
+
 
 }
 
@@ -600,12 +875,14 @@ table.innerHTML += `
 
 <td>
 
+
 <img src="${client.profilePhoto || 
 
 'https://via.placeholder.com/100'}"
 
 class="profile-img">
 
+
 </td>
 
 
@@ -613,9 +890,11 @@ class="profile-img">
 
 
 <td>
+
 
 ${client.fullname || "-"}
 
+
 </td>
 
 
@@ -623,9 +902,11 @@ ${client.fullname || "-"}
 
 
 <td>
+
 
 ${client.phone || "-"}
 
+
 </td>
 
 
@@ -634,19 +915,26 @@ ${client.phone || "-"}
 
 
 <td>
+
 
 ${money(app.amount)}
 
+
 <br>
+
 
 <small class="text-success">
 
+
 Interest:
 
-${money(app.amount*0.20)}
+${money(app.amount * 0.20)}
+
 
 </small>
 
+
+
 </td>
 
 
@@ -654,10 +942,13 @@ ${money(app.amount*0.20)}
 
 
 
+
 <td>
+
 
 ${app.purpose || "-"}
 
+
 </td>
 
 
@@ -667,9 +958,12 @@ ${app.purpose || "-"}
 
 <td>
 
+
 ${app.applicationDate || "-"}
 
+
 </td>
+
 
 
 
@@ -681,7 +975,9 @@ ${app.applicationDate || "-"}
 
 <span class="badge bg-warning">
 
+
 ${app.status}
+
 
 </span>
 
@@ -693,17 +989,22 @@ ${app.status}
 
 
 
+
+
 <td>
+
 
 
 <button
 
-class="btn btn-primary btn-sm mb-1"
+class="btn btn-view btn-sm"
+
 
 onclick="viewApplication(${app.id})">
 
 
 <i class="fa fa-eye"></i>
+
 
 View
 
@@ -720,7 +1021,6 @@ View
 
 
 </tr>
-
 
 
 `;
@@ -741,9 +1041,10 @@ View
 
 
 
-
-
+// ===============================
 // VIEW APPLICATION DETAILS
+// ===============================
+
 
 
 function viewApplication(id){
@@ -754,11 +1055,15 @@ let app = DB.getApplication(id);
 
 
 
+
 if(!app){
+
 
 return;
 
+
 }
+
 
 
 
@@ -774,6 +1079,20 @@ app.clientId
 
 
 
+if(!client){
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
 
 document.getElementById(
 
@@ -784,28 +1103,57 @@ document.getElementById(
 
 
 
+
+<!-- CLIENT INFORMATION -->
+
+
+<div class="section-title">
+
+
+<i class="fa fa-user"></i>
+
+
+Client Information
+
+
+</div>
+
+
+
+
+
+
+<div class="detail-card">
+
+
 <div class="row">
 
 
+
+
+
 <div class="col-md-4 text-center">
+
 
 
 <img src="${client.profilePhoto || 
 
 'https://via.placeholder.com/120'}"
 
-style="width:120px;height:120px;object-fit:cover;border-radius:50%;">
-
+class="guarantor-photo">
 
 
 <h5 class="mt-3">
 
-${client.fullname}
+
+${client.fullname || "-"}
+
 
 </h5>
 
 
 </div>
+
 
 
 
@@ -815,51 +1163,31 @@ ${client.fullname}
 <div class="col-md-8">
 
 
+<p><b>National ID:</b>
 
-<h5 class="text-primary">
-
-Client Details
-
-</h5>
-
-
-
-<p>
-
-<b>National ID:</b>
-
-${client.nationalID}
+${client.nationalID || "-"}
 
 </p>
 
 
 
+<p><b>Phone:</b>
 
-<p>
-
-<b>Phone:</b>
-
-${client.phone}
+${client.phone || "-"}
 
 </p>
 
 
 
+<p><b>Occupation:</b>
 
-<p>
-
-<b>Occupation:</b>
-
-${client.occupation}
+${client.occupation || "-"}
 
 </p>
 
 
 
-
-<p>
-
-<b>Employer:</b>
+<p><b>Employer:</b>
 
 ${client.employer || "-"}
 
@@ -867,59 +1195,134 @@ ${client.employer || "-"}
 
 
 
+<p><b>Monthly Income:</b>
+
+${money(client.monthlyIncome)}
+
+</p>
 
 
-<hr>
+
+<p><b>County:</b>
+
+${client.county || "-"}
+
+</p>
+
+
+
+<p><b>Address:</b>
+
+${client.address || "-"}
+
+</p>
+
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
 
 
 
 
-<h5 class="text-primary">
 
-Loan Details
 
-</h5>
 
+<!-- LOAN INFORMATION -->
+
+
+<div class="section-title">
+
+
+<i class="fa fa-money-bill"></i>
+
+
+Loan Information
+
+
+</div>
+
+
+
+
+
+<div class="detail-card">
+
+
+
+<div class="row">
+
+
+
+<div class="col-md-6">
 
 
 <p>
 
-<b>Amount:</b>
+
+<b>Amount Requested:</b>
+
 
 ${money(app.amount)}
 
+
 </p>
 
 
 
-
 <p>
+
 
 <b>Monthly Interest (20%):</b>
 
-${money(app.amount*0.20)}
+
+${money(app.amount * 0.20)}
+
 
 </p>
 
 
 
+</div>
+
+
+
+
+
+
+
+<div class="col-md-6">
+
 
 <p>
+
 
 <b>Purpose:</b>
 
-${app.purpose}
+
+${app.purpose || "-"}
+
 
 </p>
+
 
 
 
 
 <p>
 
-<b>Date Applied:</b>
 
-${app.applicationDate}
+<b>Status:</b>
+
+
+${app.status}
+
 
 </p>
 
@@ -928,113 +1331,42 @@ ${app.applicationDate}
 </div>
 
 
+
+</div>
+
+
+
 </div>
 
 
 
 
-<hr>
-
-
-
-<h5 class="text-primary">
-
-Guarantors
-
-</h5>
-
-
-
-<table class="table table-bordered">
-
-
-<tr>
-
-<th>Name</th>
-
-<th>ID</th>
-
-<th>Phone</th>
-
-<th>Relationship</th>
-
-</tr>
-
-
-
-<tr>
-
-<td>
-
-${app.guarantor1?.name || "-"}
-
-</td>
-
-
-<td>
-
-${app.guarantor1?.id || "-"}
-
-</td>
-
-
-<td>
-
-${app.guarantor1?.phone || "-"}
-
-</td>
-
-
-<td>
-
-${app.guarantor1?.relationship || "-"}
-
-</td>
-
-
-</tr>
 
 
 
 
+<!-- GUARANTORS -->
 
 
-<tr>
+<div class="section-title">
 
 
-<td>
-
-${app.guarantor2?.name || "-"}
-
-</td>
+<i class="fa fa-users"></i>
 
 
-<td>
-
-${app.guarantor2?.id || "-"}
-
-</td>
+Guarantor Details
 
 
-<td>
-
-${app.guarantor2?.phone || "-"}
-
-</td>
-
-
-<td>
-
-${app.guarantor2?.relationship || "-"}
-
-</td>
-
-
-</tr>
+</div>
 
 
 
-</table>
+
+${showGuarantor(app.guarantor1,"Guarantor 1")}
+
+
+${showGuarantor(app.guarantor2,"Guarantor 2")}
+
 
 
 
@@ -1044,14 +1376,14 @@ ${app.guarantor2?.relationship || "-"}
 <div class="text-center mt-4">
 
 
-<button
 
-class="btn btn-success me-2"
+<button class="btn btn-success me-2"
 
 onclick="approveApplication(${app.id})">
 
 
 <i class="fa fa-check"></i>
+
 
 Approve Loan
 
@@ -1063,14 +1395,13 @@ Approve Loan
 
 
 
-<button
-
-class="btn btn-danger"
+<button class="btn btn-danger"
 
 onclick="rejectApplication(${app.id})">
 
 
 <i class="fa fa-times"></i>
+
 
 Reject
 
@@ -1079,7 +1410,11 @@ Reject
 
 
 
+
 </div>
+
+
+
 
 
 
@@ -1107,6 +1442,7 @@ modal.show();
 
 
 
+
 }
 
 
@@ -1116,8 +1452,198 @@ modal.show();
 
 
 
+// ===============================
+// DISPLAY GUARANTOR
+// ===============================
 
-// APPROVE LOAN
+
+
+function showGuarantor(g,title){
+
+
+
+if(!g){
+
+
+return "";
+
+
+}
+
+
+
+
+
+return `
+
+
+
+<div class="detail-card">
+
+
+
+<h5 class="text-primary">
+
+
+${title}
+
+
+</h5>
+
+
+
+
+<div class="row">
+
+
+
+
+
+<div class="col-md-4 text-center">
+
+
+
+<img src="${g.photo || 
+
+'https://via.placeholder.com/120'}"
+
+class="guarantor-photo">
+
+
+
+</div>
+
+
+
+
+
+<div class="col-md-8">
+
+
+
+<p>
+
+<b>Name:</b>
+
+${g.name || "-"}
+
+</p>
+
+
+
+
+<p>
+
+<b>National ID:</b>
+
+${g.id || "-"}
+
+</p>
+
+
+
+
+<p>
+
+<b>Phone:</b>
+
+${g.phone || "-"}
+
+</p>
+
+
+
+
+<p>
+
+<b>Relationship:</b>
+
+${g.relationship || "-"}
+
+</p>
+
+
+
+
+<p>
+
+<b>Address:</b>
+
+${g.address || "-"}
+
+</p>
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+<div class="row mt-3">
+
+
+
+<div class="col-md-6">
+
+
+<h6>ID Front</h6>
+
+
+<img src="${g.idFront || ''}"
+
+class="document-img">
+
+
+</div>
+
+
+
+
+
+
+
+<div class="col-md-6">
+
+
+<h6>ID Back</h6>
+
+
+<img src="${g.idBack || ''}"
+
+class="document-img">
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+`;
+
+
+
+}
+
+
+
+// ===============================
+// APPROVE APPLICATION
+// ===============================
 
 
 function approveApplication(id){
@@ -1130,9 +1656,19 @@ let app = DB.getApplication(id);
 
 if(!app){
 
+
 return;
 
+
 }
+
+
+
+
+
+
+let admin = AUTH.currentAdmin();
+
 
 
 
@@ -1152,29 +1688,65 @@ DB.updateApplication(app);
 
 
 
-// CREATE ACTIVE LOAN
+
+// CREATE DUE DATE
 
 
 let approvalDate = new Date();
 
 
-// ADD ONE MONTH DUE DATE
 
 let due = new Date();
 
+
+
 due.setMonth(
-    due.getMonth()+1
+
+due.getMonth()+1
+
 );
 
 
 
+
+
+
+
+// CREATE ACTIVE LOAN RECORD
+
+
 let loan={
+
+
+
+
+
+// CONNECTION IDS
 
 
 clientId:app.clientId,
 
 
 applicationId:app.id,
+
+
+
+
+
+
+
+// SAVE CLIENT SNAPSHOT
+
+
+client:app.client,
+
+
+
+
+
+
+
+// LOAN INFORMATION
 
 
 amount:app.amount,
@@ -1187,11 +1759,54 @@ remainingPrincipal:app.amount,
 
 
 
+purpose:app.purpose,
+
+
+
 interestRate:20,
 
 
 
-// DATE LOAN WAS GIVEN
+currentInterest:
+
+app.amount * 0.20,
+
+
+
+
+
+
+
+// GUARANTORS
+
+
+guarantor1:app.guarantor1,
+
+
+
+guarantor2:app.guarantor2,
+
+
+
+
+
+
+
+
+// PAYMENT HISTORY
+
+
+payments:[],
+
+
+
+
+
+
+
+
+// DATES
+
 
 loanDate:
 
@@ -1199,12 +1814,18 @@ approvalDate.toLocaleDateString("en-KE"),
 
 
 
-// REPAYMENT DEADLINE
 
 dueDate:
 
 due.toLocaleDateString("en-KE"),
 
+
+
+
+
+
+
+// APPROVAL DETAILS
 
 
 approvedBy:
@@ -1213,7 +1834,10 @@ admin.username,
 
 
 
+
+
 status:"ACTIVE"
+
 
 
 
@@ -1224,7 +1848,14 @@ status:"ACTIVE"
 
 
 
+
+
+
+// SAVE ACTIVE LOAN
+
+
 DB.addLoan(loan);
+
 
 
 
@@ -1236,6 +1867,42 @@ alert(
 "Loan Approved Successfully"
 
 );
+
+
+
+
+
+
+
+// CLOSE MODAL
+
+
+let modalElement = document.getElementById(
+
+"applicationModal"
+
+);
+
+
+
+let modal = bootstrap.Modal.getInstance(
+
+modalElement
+
+);
+
+
+
+if(modal){
+
+
+modal.hide();
+
+
+}
+
+
+
 
 
 
@@ -1259,7 +1926,11 @@ loadApplications();
 
 
 
-// REJECT LOAN
+
+// ===============================
+// REJECT APPLICATION
+// ===============================
+
 
 
 function rejectApplication(id){
@@ -1272,7 +1943,9 @@ let app = DB.getApplication(id);
 
 if(!app){
 
+
 return;
+
 
 }
 
@@ -1290,11 +1963,42 @@ DB.updateApplication(app);
 
 
 
+
 alert(
 
 "Loan Application Rejected"
 
 );
+
+
+
+
+
+
+let modalElement = document.getElementById(
+
+"applicationModal"
+
+);
+
+
+
+let modal = bootstrap.Modal.getInstance(
+
+modalElement
+
+);
+
+
+
+if(modal){
+
+
+modal.hide();
+
+
+}
+
 
 
 
@@ -1314,7 +2018,14 @@ loadApplications();
 
 
 
+// ===============================
+// START PAGE
+// ===============================
+
+
 loadApplications();
+
+
 
 
 
@@ -1324,10 +2035,7 @@ loadApplications();
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-
-
 </body>
+
 
 </html>
