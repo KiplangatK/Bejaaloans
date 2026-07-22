@@ -573,11 +573,11 @@ Statistics
 
 <li>
 
-<a href="#">
+<a href="#" onclick="logout()">
 
-<i class="fa-solid fa-gear"></i>
+<i class="fa-solid fa-right-from-bracket"></i>
 
-Settings
+Logout
 
 </a>
 
@@ -637,6 +637,9 @@ Logout
 
 
 </div>
+
+
+
 <!-- PAGE CONTENT -->
 
 
@@ -903,7 +906,9 @@ No late loans found.
 
 
 <script>
-  /*================================
+
+
+/*================================
 ADMIN SECURITY
 ================================*/
 
@@ -941,10 +946,11 @@ LOAD LATE LOANS
 ================================*/
 
 
-function loadLateLoans(){
+async function loadLateLoans(){
 
 
-let loans = DB.getLoans();
+
+let loans = await DB.getLoans();
 
 
 
@@ -959,11 +965,8 @@ table.innerHTML = "";
 
 
 let lateCount = 0;
-
 let outstanding = 0;
-
 let expectedInterest = 0;
-
 let totalDue = 0;
 
 
@@ -974,254 +977,52 @@ let today = new Date();
 
 
 
-loans.forEach(loan=>{
-
-
-let amount = Number(loan.amount || 0);
-
-
-let interest = Number(loan.interest || 0);
-
-
-let paid = Number(loan.paidAmount || 0);
-
-
-
-let totalPayable = amount + interest;
-
-
-
-let balance = totalPayable - paid;
-
-
-
-
-let dueDate = new Date(
-loan.dueDate
-);
-
-
-
-
-
-if(
-
-loan.dueDate &&
-
-dueDate < today &&
-
-balance > 0 &&
-
-loan.status !== "COMPLETED"
-
-){
-
-
-
-lateCount++;
-
-
-outstanding += balance;
-
-
-expectedInterest += interest;
-
-
-totalDue += totalPayable;
-
-
-
-
-
-let client = DB.getClientById(
-loan.clientId
-);
-
-
-
-let clientName = client ?
-
-client.fullname :
-
-"Unknown";
-
-
-
-let phone = client ?
-
-client.phone :
-
-"-";
-
-
-
-
-
-let daysLate = Math.floor(
-
-(today - dueDate)
-
-/
-
-(1000 * 60 * 60 * 24)
-
-);
-
-
-
-
-
-table.innerHTML += `
-
-
-<tr class="table-danger">
-
-
-<td>
-
-${lateCount}
-
-</td>
-
-
-
-<td>
-
-${clientName}
-
-</td>
-
-
-
-<td>
-
-${phone}
-
-</td>
-
-
-
-<td>
-
-KES ${amount.toLocaleString()}
-
-</td>
-
-
-
-<td>
-
-KES ${interest.toLocaleString()}
-
-</td>
-
-
-
-<td class="text-danger fw-bold">
-
-KES ${balance.toLocaleString()}
-
-</td>
-
-
-
-<td>
-
-${loan.dueDate}
-
-</td>
-
-
-
-<td class="text-danger fw-bold">
-
-${daysLate} Days
-
-</td>
-
-
-
-<td>
-
-
-<span class="badge bg-danger">
-
-LATE
-
-</span>
-
-
-</td>
-
-
-
-<td>
-
-
-
-<a href="client-profile.html?id=${loan.clientId}"
-
-class="btn btn-primary btn-sm action-btn">
-
-
-<i class="fa-solid fa-user"></i>
-
-Client
-
-
-</a>
-
-
-
-
-<a href="active-loans.html?id=${loan.id}"
-
-class="btn btn-info btn-sm action-btn">
-
-
-<i class="fa-solid fa-file"></i>
-
-Loan
-
-
-</a>
-
-
-
-
-<a href="record-payment.html?id=${loan.id}"
-
-class="btn btn-success btn-sm action-btn">
-
-
-<i class="fa-solid fa-money-bill"></i>
-
-Payment
-
-
-</a>
-
-
-
-</td>
-
-
-</tr>
-
-
-`;
-
-
-
+for (let loan of loans) {
+
+    let amount = Number(loan.originalPrincipal || 0);
+    let rate = Number(loan.interestRate || 20);
+    let balance = Number(loan.remainingPrincipal || 0);
+    let interestAmount = (balance * rate) / 100;
+
+    if (!loan.dueDate || balance <= 0 || loan.status === "COMPLETED") continue;
+
+    const [day, month, year] = loan.dueDate.split("/");
+    const dueDate = new Date(year, month - 1, day);
+
+    if (dueDate >= today) continue;
+
+    lateCount++;
+    outstanding += balance;
+    expectedInterest += interestAmount;
+    totalDue += balance + interestAmount;
+
+    let client = await DB.getClientById(loan.clientId);
+    let clientName = client ? client.fullname : "Unknown";
+    let phone = client ? client.phone : "-";
+
+    let daysLate = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
+
+    table.innerHTML += `
+        <tr class="table-danger">
+            <td>${lateCount}</td>
+            <td>${clientName}</td>
+            <td>${phone}</td>
+            <td>KES ${amount.toLocaleString()}</td>
+            <td>KES ${interestAmount.toLocaleString()}</td>
+            <td class="text-danger fw-bold">KES ${balance.toLocaleString()}</td>
+            <td>${loan.dueDate}</td>
+            <td class="text-danger fw-bold">${daysLate} Days</td>
+            <td><span class="badge bg-danger">LATE</span></td>
+            <td>
+                <a href="registered-clients.html" class="btn btn-primary btn-sm action-btn">
+                    <i class="fa-solid fa-user"></i> Client
+                </a>
+                <a href="active-loans.html" class="btn btn-info btn-sm action-btn">
+                    <i class="fa-solid fa-file"></i> Loan
+                </a>
+            </td>
+        </tr>`;
 }
-
-
-
-});
-
-
-
-
 
 
 
@@ -1230,66 +1031,26 @@ UPDATE CARDS
 ================================*/
 
 
-document.getElementById(
-"totalLateLoans"
-).innerHTML = lateCount;
+document.getElementById("totalLateLoans").innerHTML = lateCount;
 
+document.getElementById("totalOutstanding").innerHTML =
+    "KES " + outstanding.toLocaleString();
 
+document.getElementById("expectedInterest").innerHTML =
+    "KES " + expectedInterest.toLocaleString();
 
-document.getElementById(
-"totalOutstanding"
-).innerHTML =
-
-"KES " + outstanding.toLocaleString();
-
-
-
-
-document.getElementById(
-"expectedInterest"
-).innerHTML =
-
-"KES " + expectedInterest.toLocaleString();
-
-
-
-
-document.getElementById(
-"totalDue"
-).innerHTML =
-
-"KES " + totalDue.toLocaleString();
-
-
-
+document.getElementById("totalDue").innerHTML =
+    "KES " + totalDue.toLocaleString();
 
 
 
 if(lateCount === 0){
-
-
-table.innerHTML = `
-
-
-<tr>
-
-
-<td colspan="10"
-
-class="text-center text-muted p-5">
-
-
-No late loans found.
-
-
-</td>
-
-
-</tr>
-
-
-`;
-
+    table.innerHTML = `
+        <tr>
+            <td colspan="10" class="text-center text-muted p-5">
+                No late loans found.
+            </td>
+        </tr>`;
 }
 
 
