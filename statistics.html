@@ -739,160 +739,104 @@ admin.username;
  LOAD STATISTICS
 =============================*/
 
+function loadStatistics() {
 
-function loadStatistics(){
+    let loans = DB.getLoans();
 
+    let totalLoanAmount = 0;
+    let expectedInterest = 0;
+    let totalRepaid = 0;
+    let outstanding = 0;
+    let completed = 0;
+    let active = 0;
+    let late = 0;
+    let interestCollected = 0;
 
+    loans.forEach(loan => {
 
-let loans = DB.getLoans();
+        let amount = Number(loan.amount || 0);
+        let interest = Number(loan.interest || 0);
+        let paid = Number(loan.paidAmount || 0);
 
+        /* ACTIVE / APPROVED LOANS */
 
+        if (loan.status === "APPROVED" || loan.status === "ACTIVE") {
 
-let totalLoanAmount = 0;
+            active++;
 
-let expectedInterest = 0;
+            totalLoanAmount += amount;
 
-let totalRepaid = 0;
+            expectedInterest += interest;
 
-let outstanding = 0;
+            totalRepaid += paid;
 
-let completed = 0;
+            outstanding += (amount + interest) - paid;
 
-let active = 0;
+            interestCollected += Number(loan.interestPaid || 0);
 
-let interestCollected = 0;
+        }
 
+        /* COMPLETED LOANS */
 
+        if (loan.status === "COMPLETED") {
 
+            completed++;
 
-loans.forEach(loan=>{
+            totalLoanAmount += amount;
 
+            expectedInterest += interest;
 
-let amount = Number(loan.amount || 0);
+            totalRepaid += (amount + interest);
 
+            interestCollected += interest;
 
-let interest = Number(loan.interest || 0);
+        }
 
+        /* LATE LOANS */
 
+        if (loan.status === "LATE") {
 
-totalLoanAmount += amount;
+            late++;
 
+            totalLoanAmount += amount;
 
+            expectedInterest += interest;
 
-expectedInterest += interest;
+            totalRepaid += paid;
 
+            outstanding += (amount + interest) - paid;
 
+            interestCollected += Number(loan.interestPaid || 0);
 
-let paid = Number(loan.paidAmount || 0);
+        }
 
+    });
 
+    document.getElementById("totalClients").innerHTML =
+        DB.totalClients();
 
-totalRepaid += paid;
+    document.getElementById("totalLoans").innerHTML =
+        "KES " + totalLoanAmount.toLocaleString();
 
+    document.getElementById("activeLoans").innerHTML =
+        active;
 
+    document.getElementById("completedLoans").innerHTML =
+        completed;
 
-outstanding += 
-(amount + interest) - paid;
+    document.getElementById("outstandingBalance").innerHTML =
+        "KES " + outstanding.toLocaleString();
 
+    document.getElementById("totalRepaid").innerHTML =
+        "KES " + totalRepaid.toLocaleString();
 
+    document.getElementById("expectedInterest").innerHTML =
+        "KES " + expectedInterest.toLocaleString();
 
-
-
-if(loan.status === "COMPLETED"){
-
-completed++;
+    document.getElementById("interestCollected").innerHTML =
+        "KES " + interestCollected.toLocaleString();
 
 }
-
-
-
-if(loan.status === "APPROVED" || loan.status === "ACTIVE"){
-
-active++;
-
-}
-
-
-
-interestCollected += Number(
-loan.interestPaid || 0
-);
-
-
-
-});
-
-
-
-
-
-
-document.getElementById("totalClients").innerHTML =
-
-DB.totalClients();
-
-
-
-
-
-document.getElementById("totalLoans").innerHTML =
-
-"KES " + totalLoanAmount.toLocaleString();
-
-
-
-
-
-document.getElementById("activeLoans").innerHTML =
-
-active;
-
-
-
-
-
-document.getElementById("completedLoans").innerHTML =
-
-completed;
-
-
-
-
-
-document.getElementById("outstandingBalance").innerHTML =
-
-"KES " + outstanding.toLocaleString();
-
-
-
-
-
-document.getElementById("totalRepaid").innerHTML =
-
-"KES " + totalRepaid.toLocaleString();
-
-
-
-
-
-document.getElementById("expectedInterest").innerHTML =
-
-"KES " + expectedInterest.toLocaleString();
-
-
-
-
-
-document.getElementById("interestCollected").innerHTML =
-
-"KES " + interestCollected.toLocaleString();
-
-
-
-
-
-}
-
 
 
 
