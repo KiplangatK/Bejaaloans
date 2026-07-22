@@ -542,6 +542,9 @@ KES 0
 
 
 </div>
+
+
+
 <!-- ===============================
      LOAN TABLE
 ================================ -->
@@ -660,566 +663,6 @@ Action
 
 
 
-<script>
-
-
-// ===============================
-// MONEY FORMAT
-// ===============================
-
-
-function money(value){
-
-
-return "KES " +
-
-Number(value || 0)
-
-.toLocaleString();
-
-
-}
-
-
-
-
-
-
-
-
-// ===============================
-// LOAD CLIENT LOANS
-// ===============================
-
-
-function loadMyLoans(){
-
-
-
-const client = AUTH.currentClient();
-
-
-
-
-
-if(!client){
-
-
-window.location.href="client-portal.html";
-
-
-return;
-
-
-}
-
-
-
-
-
-let loans = DB.getLoans();
-
-
-
-
-
-// ONLY LOGGED CLIENT LOANS
-
-
-let myLoans = loans.filter(loan =>
-
-
-
-String(loan.clientId) === String(client.id)
-
-
-
-);
-
-
-
-
-
-
-let table = document.getElementById(
-
-"myLoansTable"
-
-);
-
-
-
-
-
-table.innerHTML="";
-
-
-
-
-
-
-let totalBorrowed = 0;
-
-
-let outstanding = 0;
-
-
-let activeCount = 0;
-
-
-
-
-
-
-
-
-if(myLoans.length === 0){
-
-
-
-table.innerHTML = `
-
-
-<tr>
-
-
-<td colspan="6"
-
-class="text-center text-muted p-4">
-
-
-No loans found.
-
-
-</td>
-
-
-</tr>
-
-
-
-`;
-
-
-
-updateSummary(
-
-0,
-
-0,
-
-0,
-
-0
-
-);
-
-
-
-return;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-// NEWEST FIRST
-
-
-myLoans.reverse().forEach(loan=>{
-
-
-
-
-
-
-let amount = Number(
-
-
-loan.originalPrincipal ||
-
-
-loan.amount ||
-
-
-0
-
-
-);
-
-
-
-
-
-
-
-let balance = Number(
-
-
-loan.remainingPrincipal ||
-
-
-loan.balance ||
-
-
-0
-
-
-);
-
-
-
-
-
-
-
-totalBorrowed += amount;
-
-
-
-outstanding += balance;
-
-
-
-
-
-
-
-
-if(loan.status === "ACTIVE"){
-
-
-activeCount++;
-
-
-}
-
-
-
-
-
-
-
-
-let statusColor =
-
-loan.status === "ACTIVE"
-
-?
-
-"bg-success"
-
-:
-
-"bg-secondary";
-
-
-
-
-
-
-
-
-table.innerHTML += `
-
-
-
-<tr>
-
-
-
-
-
-<td>
-
-${loan.loanDate || "-"}
-
-</td>
-
-
-
-
-
-
-
-
-<td>
-
-${money(amount)}
-
-</td>
-
-
-
-
-
-
-
-<td>
-
-${money(balance)}
-
-</td>
-
-
-
-
-
-
-
-<td>
-
-
-<span class="text-danger fw-bold">
-
-${loan.dueDate || "-"}
-
-</span>
-
-
-</td>
-
-
-
-
-
-
-
-<td>
-
-
-<span class="badge ${statusColor}">
-
-
-${loan.status || "PENDING"}
-
-
-</span>
-
-
-</td>
-
-
-
-
-
-
-
-
-<td>
-
-
-
-
-
-<button
-
-class="btn btn-view btn-sm me-2"
-
-
-onclick="viewLoan(${loan.id})">
-
-
-
-<i class="fa fa-eye"></i>
-
-
-Details
-
-
-
-</button>
-
-
-
-
-
-
-
-<button
-
-class="btn btn-payment btn-sm"
-
-
-onclick="viewPayments(${loan.id})">
-
-
-
-<i class="fa fa-clock-rotate-left"></i>
-
-
-Payments
-
-
-
-</button>
-
-
-
-
-
-
-</td>
-
-
-
-
-
-</tr>
-
-
-
-
-`;
-
-
-
-
-
-
-});
-
-
-
-
-
-
-
-
-
-
-updateSummary(
-
-
-myLoans.length,
-
-
-activeCount,
-
-
-totalBorrowed,
-
-
-outstanding
-
-
-
-);
-
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-// ===============================
-// UPDATE SUMMARY CARDS
-// ===============================
-
-
-function updateSummary(
-
-
-total,
-
-
-active,
-
-
-borrowed,
-
-
-balance
-
-
-
-){
-
-
-
-
-
-document.getElementById(
-
-"totalLoans"
-
-).innerHTML = total;
-
-
-
-
-
-
-document.getElementById(
-
-"activeLoans"
-
-).innerHTML = active;
-
-
-
-
-
-
-document.getElementById(
-
-"totalBorrowed"
-
-).innerHTML = money(borrowed);
-
-
-
-
-
-
-
-document.getElementById(
-
-"outstanding"
-
-).innerHTML = money(balance);
-
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// START PAGE
-
-
-loadMyLoans();
-
-
-
-</script>
 <!-- ===============================
      LOAN DETAILS MODAL
 ================================ -->
@@ -1277,7 +720,7 @@ data-bs-dismiss="modal">
 
 class="profile-img"
 
-src="assets/images/user.png">
+src="https://via.placeholder.com/100">
 
 
 
@@ -1661,43 +1104,19 @@ Interest
 <script>
 
 
-
-
-
 // ===============================
-// VIEW LOAN DETAILS
+// MONEY FORMAT
 // ===============================
 
 
-function viewLoan(id){
+function money(value){
 
 
+return "KES " +
 
-let loans = DB.getLoans();
+Number(value || 0)
 
-
-
-
-
-let loan = loans.find(l =>
-
-
-Number(l.id) === Number(id)
-
-
-);
-
-
-
-
-
-if(!loan){
-
-
-alert("Loan not found");
-
-
-return;
+.toLocaleString();
 
 
 }
@@ -1707,36 +1126,83 @@ return;
 
 
 
-let client = AUTH.currentClient();
 
 
+// ===============================
+// LOAD CLIENT LOANS
+// ===============================
 
 
+async function loadMyLoans(){
 
 
-document.getElementById("loanClientName").innerHTML =
 
-client.fullName || client.name || "-";
+    const client = AUTH.currentClient();
 
+    if(!client){
+        window.location.href="client-portal.html";
+        return;
+    }
 
+    let loans = await DB.getLoans();
 
+    let myLoans = loans.filter(loan =>
+        String(loan.clientId) === String(client.id)
+    );
 
+    let table = document.getElementById("myLoansTable");
+    table.innerHTML="";
 
+    let totalBorrowed = 0;
+    let outstanding = 0;
+    let activeCount = 0;
 
+    if(myLoans.length === 0){
+        table.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-muted p-4">No loans found.</td>
+            </tr>`;
+        updateSummary(0, 0, 0, 0);
+        return;
+    }
 
-document.getElementById("loanClientPhoto").src =
+    myLoans.reverse().forEach(loan=>{
 
-client.photo || "assets/images/user.png";
+        let amount = Number(loan.originalPrincipal || 0);
+        let balance = Number(loan.remainingPrincipal || 0);
 
+        totalBorrowed += amount;
+        outstanding += balance;
 
+        if(loan.status === "ACTIVE"){
+            activeCount++;
+        }
 
+        let statusColor = loan.status === "ACTIVE" ? "bg-success" : "bg-secondary";
 
+        table.innerHTML += `
+            <tr>
+                <td>${loan.loanDate || "-"}</td>
+                <td>${money(amount)}</td>
+                <td>${money(balance)}</td>
+                <td><span class="text-danger fw-bold">${loan.dueDate || "-"}</span></td>
+                <td><span class="badge ${statusColor}">${loan.status || "PENDING"}</span></td>
+                <td>
+                    <button class="btn btn-view btn-sm me-2" onclick="viewLoan(${loan.id})">
+                        <i class="fa fa-eye"></i> Details
+                    </button>
+                    <button class="btn btn-payment btn-sm" onclick="viewPayments(${loan.id})">
+                        <i class="fa fa-clock-rotate-left"></i> Payments
+                    </button>
+                </td>
+            </tr>`;
+    });
 
+    updateSummary(myLoans.length, activeCount, totalBorrowed, outstanding);
 
+}
 
-document.getElementById("detailAmount").innerHTML =
 
-money(loan.amount || loan.originalPrincipal);
 
 
 
@@ -1745,93 +1211,56 @@ money(loan.amount || loan.originalPrincipal);
 
 
 
-document.getElementById("detailDate").innerHTML =
 
-loan.loanDate || "-";
+// ===============================
+// UPDATE SUMMARY CARDS
+// ===============================
 
 
+function updateSummary(total, active, borrowed, balance){
 
+    document.getElementById("totalLoans").innerHTML = total;
+    document.getElementById("activeLoans").innerHTML = active;
+    document.getElementById("totalBorrowed").innerHTML = money(borrowed);
+    document.getElementById("outstanding").innerHTML = money(balance);
 
+}
 
 
 
 
-document.getElementById("detailDue").innerHTML =
 
-loan.dueDate || "-";
 
 
+// ===============================
+// VIEW LOAN DETAILS
+// ===============================
 
 
+async function viewLoan(id){
 
+    let loan = await DB.getLoan(id);
 
+    if(!loan){
+        alert("Loan not found");
+        return;
+    }
 
+    let client = AUTH.currentClient();
 
-document.getElementById("detailStatus").innerHTML =
+    document.getElementById("loanClientName").innerHTML = client.fullname || "-";
+    document.getElementById("loanClientPhoto").src = client.profilePhoto || "https://via.placeholder.com/100";
+    document.getElementById("detailAmount").innerHTML = money(loan.originalPrincipal);
+    document.getElementById("detailDate").innerHTML = loan.loanDate || "-";
+    document.getElementById("detailDue").innerHTML = loan.dueDate || "-";
+    document.getElementById("detailStatus").innerHTML = loan.status || "-";
+    document.getElementById("detailPrincipal").innerHTML = money(loan.originalPrincipal);
+    document.getElementById("detailBalance").innerHTML = money(loan.remainingPrincipal);
+    document.getElementById("detailInterest").innerHTML = (loan.interestRate || 0) + "%";
+    document.getElementById("detailNextPayment").innerHTML = money(loan.currentInterest || 0);
 
-loan.status || "-";
-
-
-
-
-
-
-
-
-document.getElementById("detailPrincipal").innerHTML =
-
-money(loan.originalPrincipal || loan.amount);
-
-
-
-
-
-
-
-
-document.getElementById("detailBalance").innerHTML =
-
-money(loan.remainingPrincipal || loan.balance);
-
-
-
-
-
-
-
-
-document.getElementById("detailInterest").innerHTML =
-
-(loan.interest || 0)+"%";
-
-
-
-
-
-
-
-
-document.getElementById("detailNextPayment").innerHTML =
-
-money(loan.weeklyPayment || 0);
-
-
-
-
-
-
-
-let modal = new bootstrap.Modal(
-
-document.getElementById("loanDetailsModal")
-
-);
-
-
-
-modal.show();
-
-
+    let modal = new bootstrap.Modal(document.getElementById("loanDetailsModal"));
+    modal.show();
 
 }
 
@@ -1848,68 +1277,38 @@ modal.show();
 // ===============================
 
 
-function viewPayments(id){
+async function viewPayments(id){
 
+    let loan = await DB.getLoan(id);
 
+    if(!loan){
+        alert("Loan not found");
+        return;
+    }
 
-let loans = DB.getLoans();
+    document.getElementById("paymentLoanTitle").innerHTML = "Payments For Loan: " + money(loan.originalPrincipal);
 
+    let payments = await DB.getLoanPayments(id);
 
+    let table = document.getElementById("paymentTable");
+    table.innerHTML="";
 
+    if(payments.length === 0){
+        table.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No payments recorded yet</td></tr>`;
+    } else {
+        payments.forEach(payment=>{
+            table.innerHTML += `
+                <tr>
+                    <td>${payment.date || "-"}</td>
+                    <td>${money(payment.amount)}</td>
+                    <td>${money(payment.principalPaid)}</td>
+                    <td>${money(payment.interestPaid)}</td>
+                </tr>`;
+        });
+    }
 
-
-let loan = loans.find(l =>
-
-
-Number(l.id) === Number(id)
-
-
-);
-
-
-
-
-
-
-
-if(!loan){
-
-
-alert("Loan not found");
-
-
-return;
-
-
-}
-
-
-
-
-
-
-document.getElementById("paymentLoanTitle").innerHTML =
-
-
-"Payments For Loan: "+money(loan.amount);
-
-
-
-
-
-
-
-
-
-let payments = [];
-
-
-
-if(typeof DB.getPayments === "function"){
-
-
-payments = DB.getPayments();
-
+    let modal = new bootstrap.Modal(document.getElementById("paymentModal"));
+    modal.show();
 
 }
 
@@ -1917,159 +1316,13 @@ payments = DB.getPayments();
 
 
 
-
-
-let loanPayments = payments.filter(p =>
-
-
-Number(p.loanId) === Number(id)
-
-
-);
-
-
-
-
-
-
-
-let table = document.getElementById(
-
-"paymentTable"
-
-);
-
-
-
-
-
-table.innerHTML="";
-
-
-
-
-
-
-
-if(loanPayments.length === 0){
-
-
-
-table.innerHTML = `
-
-
-<tr>
-
-
-<td colspan="4"
-
-class="text-center text-muted">
-
-
-No payments recorded yet
-
-
-</td>
-
-
-</tr>
-
-
-`;
-
-
-
-}
-
-else{
-
-
-
-
-
-loanPayments.forEach(payment=>{
-
-
-
-table.innerHTML += `
-
-
-<tr>
-
-
-
-<td>
-
-${payment.date || "-"}
-
-</td>
-
-
-
-
-<td>
-
-${money(payment.amount)}
-
-</td>
-
-
-
-
-<td>
-
-${money(payment.principal || 0)}
-
-</td>
-
-
-
-
-<td>
-
-${money(payment.interest || 0)}
-
-</td>
-
-
-
-</tr>
-
-
-
-`;
-
-
-
-});
-
-
-
-}
-
-
-
-
-
-
-
-let modal = new bootstrap.Modal(
-
-document.getElementById("paymentModal")
-
-);
-
-
-
-modal.show();
-
-
-
-
-
-}
-
-
+// ===============================
+// START PAGE — wait for DB
+// ===============================
+
+setTimeout(() => {
+    loadMyLoans();
+}, 500);
 
 
 
