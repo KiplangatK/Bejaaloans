@@ -11,8 +11,12 @@
 <title>My Loans | Bejja Credit</title>
 
 
+<!-- Bootstrap -->
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
+
+<!-- Font Awesome -->
 
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
@@ -31,6 +35,7 @@ box-sizing:border-box;
 }
 
 
+
 body{
 
 background:#edf4ff;
@@ -38,6 +43,8 @@ background:#edf4ff;
 font-family:'Segoe UI',Tahoma,sans-serif;
 
 }
+
+
 
 
 
@@ -69,7 +76,7 @@ font-weight:700;
 
 
 
-/* CONTENT */
+
 
 
 .container{
@@ -78,20 +85,6 @@ max-width:1200px;
 
 }
 
-
-
-
-.card-box{
-
-background:white;
-
-border-radius:20px;
-
-padding:25px;
-
-box-shadow:0 8px 25px rgba(0,0,0,.12);
-
-}
 
 
 
@@ -131,11 +124,13 @@ background:#1565c0;
 }
 
 
+
 .active{
 
 background:#198754;
 
 }
+
 
 
 .borrowed{
@@ -145,11 +140,14 @@ background:#6f42c1;
 }
 
 
+
 .balance{
 
 background:#dc3545;
 
 }
+
+
 
 
 
@@ -247,6 +245,7 @@ border-radius:20px;
 
 
 
+
 .btn-view:hover{
 
 background:#0F4C81;
@@ -254,6 +253,7 @@ background:#0F4C81;
 color:white;
 
 }
+
 
 
 .btn-payment:hover{
@@ -270,7 +270,8 @@ color:white;
 
 
 
-/* MODAL */
+
+/* MODALS */
 
 
 .section-title{
@@ -303,7 +304,6 @@ margin-bottom:10px;
 
 
 
-
 .profile-img{
 
 width:100px;
@@ -320,7 +320,6 @@ border:3px solid #2563EB;
 
 
 
-
 </style>
 
 
@@ -331,6 +330,8 @@ border:3px solid #2563EB;
 <body>
 
 
+
+
 <!-- DATABASE -->
 
 <script src="assets/js/database.js"></script>
@@ -339,7 +340,11 @@ border:3px solid #2563EB;
 
 
 
+
 <script>
+
+
+// CLIENT LOGIN CHECK
 
 
 if(!AUTH.currentClient()){
@@ -352,6 +357,8 @@ window.location.href="client-portal.html";
 
 
 </script>
+
+
 
 
 
@@ -385,14 +392,23 @@ My Loans
 
 
 
+
+
+
 <div class="container py-4">
 
 
 
-<!-- SUMMARY -->
+
+
+
+<!-- SUMMARY CARDS -->
 
 
 <div class="row g-4 mb-4">
+
+
+
 
 
 
@@ -420,6 +436,10 @@ Total Loans
 
 
 </div>
+
+
+
+
 
 
 
@@ -454,6 +474,10 @@ Active Loans
 
 
 
+
+
+
+
 <div class="col-md-3">
 
 
@@ -478,6 +502,10 @@ KES 0
 
 
 </div>
+
+
+
+
 
 
 
@@ -510,14 +538,13 @@ KES 0
 
 
 
+
+
+
 </div>
-
-
-
-
-
-
-<!-- LOAN TABLE -->
+<!-- ===============================
+     LOAN TABLE
+================================ -->
 
 
 <div class="table-card">
@@ -534,10 +561,12 @@ My Loan History
 
 
 
+
 <div class="table-responsive">
 
 
 <table class="table table-hover mb-0">
+
 
 
 <thead>
@@ -545,11 +574,13 @@ My Loan History
 
 <tr>
 
+
 <th>
 
 Loan Date
 
 </th>
+
 
 
 <th>
@@ -559,11 +590,13 @@ Amount
 </th>
 
 
+
 <th>
 
 Balance
 
 </th>
+
 
 
 <th>
@@ -573,11 +606,13 @@ Due Date
 </th>
 
 
+
 <th>
 
 Status
 
 </th>
+
 
 
 <th>
@@ -587,10 +622,12 @@ Action
 </th>
 
 
+
 </tr>
 
 
 </thead>
+
 
 
 
@@ -602,6 +639,7 @@ Action
 
 
 
+
 </table>
 
 
@@ -609,6 +647,19 @@ Action
 
 
 </div>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
 <script>
 
 
@@ -616,7 +667,9 @@ Action
 // MONEY FORMAT
 // ===============================
 
+
 function money(value){
+
 
 return "KES " +
 
@@ -624,7 +677,11 @@ Number(value || 0)
 
 .toLocaleString();
 
+
 }
+
+
+
 
 
 
@@ -643,13 +700,19 @@ const client = AUTH.currentClient();
 
 
 
+
+
 if(!client){
+
 
 window.location.href="client-portal.html";
 
+
 return;
 
+
 }
+
 
 
 
@@ -660,17 +723,18 @@ let loans = DB.getLoans();
 
 
 
-// ONLY THIS CLIENT LOANS
+// ONLY LOGGED CLIENT LOANS
 
 
 let myLoans = loans.filter(loan =>
 
 
+
 String(loan.clientId) === String(client.id)
 
 
-);
 
+);
 
 
 
@@ -678,8 +742,12 @@ String(loan.clientId) === String(client.id)
 
 
 let table = document.getElementById(
+
 "myLoansTable"
+
 );
+
+
 
 
 
@@ -690,14 +758,14 @@ table.innerHTML="";
 
 
 
-// SUMMARY VARIABLES
-
-
 let totalBorrowed = 0;
+
 
 let outstanding = 0;
 
+
 let activeCount = 0;
+
 
 
 
@@ -714,6 +782,7 @@ table.innerHTML = `
 
 <tr>
 
+
 <td colspan="6"
 
 class="text-center text-muted p-4">
@@ -724,7 +793,9 @@ No loans found.
 
 </td>
 
+
 </tr>
+
 
 
 `;
@@ -732,14 +803,21 @@ No loans found.
 
 
 updateSummary(
+
 0,
+
 0,
+
 0,
+
 0
+
 );
 
 
+
 return;
+
 
 
 }
@@ -750,7 +828,15 @@ return;
 
 
 
+
+
+
+
+// NEWEST FIRST
+
+
 myLoans.reverse().forEach(loan=>{
+
 
 
 
@@ -758,13 +844,19 @@ myLoans.reverse().forEach(loan=>{
 
 let amount = Number(
 
+
 loan.originalPrincipal ||
+
 
 loan.amount ||
 
+
 0
 
+
 );
+
+
 
 
 
@@ -772,11 +864,18 @@ loan.amount ||
 
 let balance = Number(
 
+
 loan.remainingPrincipal ||
+
+
+loan.balance ||
+
 
 0
 
+
 );
+
 
 
 
@@ -793,7 +892,10 @@ outstanding += balance;
 
 
 
-if(loan.status==="ACTIVE"){
+
+
+
+if(loan.status === "ACTIVE"){
 
 
 activeCount++;
@@ -807,9 +909,10 @@ activeCount++;
 
 
 
+
 let statusColor =
 
-loan.status==="ACTIVE"
+loan.status === "ACTIVE"
 
 ?
 
@@ -829,7 +932,10 @@ loan.status==="ACTIVE"
 table.innerHTML += `
 
 
+
 <tr>
+
+
 
 
 
@@ -843,11 +949,16 @@ ${loan.loanDate || "-"}
 
 
 
+
+
+
 <td>
 
 ${money(amount)}
 
 </td>
+
+
 
 
 
@@ -864,13 +975,16 @@ ${money(balance)}
 
 
 
+
 <td>
+
 
 <span class="text-danger fw-bold">
 
 ${loan.dueDate || "-"}
 
 </span>
+
 
 </td>
 
@@ -885,7 +999,9 @@ ${loan.dueDate || "-"}
 
 <span class="badge ${statusColor}">
 
-${loan.status}
+
+${loan.status || "PENDING"}
+
 
 </span>
 
@@ -898,19 +1014,27 @@ ${loan.status}
 
 
 
+
 <td>
+
+
+
 
 
 <button
 
 class="btn btn-view btn-sm me-2"
 
+
 onclick="viewLoan(${loan.id})">
+
 
 
 <i class="fa fa-eye"></i>
 
+
 Details
+
 
 
 </button>
@@ -925,15 +1049,22 @@ Details
 
 class="btn btn-payment btn-sm"
 
+
 onclick="viewPayments(${loan.id})">
+
 
 
 <i class="fa fa-clock-rotate-left"></i>
 
+
 Payments
 
 
+
 </button>
+
+
+
 
 
 
@@ -942,11 +1073,14 @@ Payments
 
 
 
+
 </tr>
 
 
 
+
 `;
+
 
 
 
@@ -961,22 +1095,31 @@ Payments
 
 
 
+
+
 updateSummary(
+
 
 myLoans.length,
 
+
 activeCount,
+
 
 totalBorrowed,
 
+
 outstanding
+
+
 
 );
 
 
 
-}
 
+
+}
 
 
 
@@ -995,49 +1138,72 @@ outstanding
 
 function updateSummary(
 
+
 total,
+
 
 active,
 
+
 borrowed,
 
+
 balance
+
+
 
 ){
 
 
 
+
+
 document.getElementById(
+
 "totalLoans"
+
 ).innerHTML = total;
 
 
 
 
 
+
 document.getElementById(
+
 "activeLoans"
+
 ).innerHTML = active;
 
 
 
 
 
+
 document.getElementById(
+
 "totalBorrowed"
+
 ).innerHTML = money(borrowed);
 
 
 
 
 
+
+
 document.getElementById(
+
 "outstanding"
+
 ).innerHTML = money(balance);
 
 
 
+
+
 }
+
 
 
 
@@ -1079,6 +1245,7 @@ Loan Details
 </h5>
 
 
+
 <button class="btn-close"
 
 data-bs-dismiss="modal">
@@ -1100,14 +1267,19 @@ data-bs-dismiss="modal">
 
 
 
+
+
 <div class="col-md-4 text-center">
+
 
 
 <img id="loanClientPhoto"
 
 class="profile-img"
 
-src="">
+src="assets/images/user.png">
+
+
 
 
 
@@ -1118,7 +1290,11 @@ id="loanClientName">
 </h5>
 
 
+
 </div>
+
+
+
 
 
 
@@ -1131,6 +1307,7 @@ id="loanClientName">
 <div class="detail-box">
 
 
+
 <p>
 
 <b>Loan Amount:</b>
@@ -1138,6 +1315,7 @@ id="loanClientName">
 <span id="detailAmount"></span>
 
 </p>
+
 
 
 
@@ -1190,7 +1368,11 @@ class="text-danger fw-bold"></span>
 
 
 
+
+
 <hr>
+
+
 
 
 
@@ -1205,14 +1387,20 @@ Financial Details
 
 
 
+
+
 <div class="row">
+
+
 
 
 
 <div class="col-md-6">
 
 
+
 <div class="detail-box">
+
 
 
 <p>
@@ -1222,6 +1410,8 @@ Financial Details
 <span id="detailPrincipal"></span>
 
 </p>
+
+
 
 
 
@@ -1244,10 +1434,15 @@ Financial Details
 
 
 
+
+
+
 <div class="col-md-6">
 
 
+
 <div class="detail-box">
+
 
 
 <p>
@@ -1257,6 +1452,8 @@ Financial Details
 <span id="detailInterest"></span>
 
 </p>
+
+
 
 
 
@@ -1277,14 +1474,15 @@ Financial Details
 
 
 
+
+
+
 </div>
 
 
 
 
 
-</div>
-
 
 </div>
 
@@ -1293,6 +1491,11 @@ Financial Details
 
 
 </div>
+
+
+</div>
+
+
 
 
 
@@ -1306,17 +1509,23 @@ Financial Details
 ================================ -->
 
 
+
 <div class="modal fade" id="paymentModal">
 
 
+
 <div class="modal-dialog modal-lg">
+
 
 
 <div class="modal-content">
 
 
 
+
+
 <div class="modal-header bg-success text-white">
+
 
 
 <h5 class="modal-title">
@@ -1324,6 +1533,7 @@ Financial Details
 Payment History
 
 </h5>
+
 
 
 
@@ -1341,6 +1551,8 @@ data-bs-dismiss="modal">
 
 
 
+
+
 <div class="modal-body">
 
 
@@ -1350,10 +1562,14 @@ data-bs-dismiss="modal">
 
 
 
+
+
 <table class="table table-bordered">
 
 
+
 <thead class="table-success">
+
 
 
 <tr>
@@ -1366,11 +1582,13 @@ Date
 </th>
 
 
+
 <th>
 
 Amount Paid
 
 </th>
+
 
 
 <th>
@@ -1380,6 +1598,7 @@ Principal
 </th>
 
 
+
 <th>
 
 Interest
@@ -1387,10 +1606,13 @@ Interest
 </th>
 
 
+
 </tr>
 
 
 </thead>
+
+
 
 
 
@@ -1402,10 +1624,22 @@ Interest
 
 
 
+
+
 </table>
 
 
 
+
+
+
+</div>
+
+
+
+
+
+
 </div>
 
 
@@ -1415,4 +1649,448 @@ Interest
 </div>
 
 
-</div>
+
+
+
+
+
+
+
+
+
+<script>
+
+
+
+
+
+// ===============================
+// VIEW LOAN DETAILS
+// ===============================
+
+
+function viewLoan(id){
+
+
+
+let loans = DB.getLoans();
+
+
+
+
+
+let loan = loans.find(l =>
+
+
+Number(l.id) === Number(id)
+
+
+);
+
+
+
+
+
+if(!loan){
+
+
+alert("Loan not found");
+
+
+return;
+
+
+}
+
+
+
+
+
+
+let client = AUTH.currentClient();
+
+
+
+
+
+
+document.getElementById("loanClientName").innerHTML =
+
+client.fullName || client.name || "-";
+
+
+
+
+
+
+
+document.getElementById("loanClientPhoto").src =
+
+client.photo || "assets/images/user.png";
+
+
+
+
+
+
+
+document.getElementById("detailAmount").innerHTML =
+
+money(loan.amount || loan.originalPrincipal);
+
+
+
+
+
+
+
+
+document.getElementById("detailDate").innerHTML =
+
+loan.loanDate || "-";
+
+
+
+
+
+
+
+
+document.getElementById("detailDue").innerHTML =
+
+loan.dueDate || "-";
+
+
+
+
+
+
+
+
+document.getElementById("detailStatus").innerHTML =
+
+loan.status || "-";
+
+
+
+
+
+
+
+
+document.getElementById("detailPrincipal").innerHTML =
+
+money(loan.originalPrincipal || loan.amount);
+
+
+
+
+
+
+
+
+document.getElementById("detailBalance").innerHTML =
+
+money(loan.remainingPrincipal || loan.balance);
+
+
+
+
+
+
+
+
+document.getElementById("detailInterest").innerHTML =
+
+(loan.interest || 0)+"%";
+
+
+
+
+
+
+
+
+document.getElementById("detailNextPayment").innerHTML =
+
+money(loan.weeklyPayment || 0);
+
+
+
+
+
+
+
+let modal = new bootstrap.Modal(
+
+document.getElementById("loanDetailsModal")
+
+);
+
+
+
+modal.show();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// ===============================
+// VIEW PAYMENT HISTORY
+// ===============================
+
+
+function viewPayments(id){
+
+
+
+let loans = DB.getLoans();
+
+
+
+
+
+let loan = loans.find(l =>
+
+
+Number(l.id) === Number(id)
+
+
+);
+
+
+
+
+
+
+
+if(!loan){
+
+
+alert("Loan not found");
+
+
+return;
+
+
+}
+
+
+
+
+
+
+document.getElementById("paymentLoanTitle").innerHTML =
+
+
+"Payments For Loan: "+money(loan.amount);
+
+
+
+
+
+
+
+
+
+let payments = [];
+
+
+
+if(typeof DB.getPayments === "function"){
+
+
+payments = DB.getPayments();
+
+
+}
+
+
+
+
+
+
+
+let loanPayments = payments.filter(p =>
+
+
+Number(p.loanId) === Number(id)
+
+
+);
+
+
+
+
+
+
+
+let table = document.getElementById(
+
+"paymentTable"
+
+);
+
+
+
+
+
+table.innerHTML="";
+
+
+
+
+
+
+
+if(loanPayments.length === 0){
+
+
+
+table.innerHTML = `
+
+
+<tr>
+
+
+<td colspan="4"
+
+class="text-center text-muted">
+
+
+No payments recorded yet
+
+
+</td>
+
+
+</tr>
+
+
+`;
+
+
+
+}
+
+else{
+
+
+
+
+
+loanPayments.forEach(payment=>{
+
+
+
+table.innerHTML += `
+
+
+<tr>
+
+
+
+<td>
+
+${payment.date || "-"}
+
+</td>
+
+
+
+
+<td>
+
+${money(payment.amount)}
+
+</td>
+
+
+
+
+<td>
+
+${money(payment.principal || 0)}
+
+</td>
+
+
+
+
+<td>
+
+${money(payment.interest || 0)}
+
+</td>
+
+
+
+</tr>
+
+
+
+`;
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+let modal = new bootstrap.Modal(
+
+document.getElementById("paymentModal")
+
+);
+
+
+
+modal.show();
+
+
+
+
+
+}
+
+
+
+
+
+</script>
+
+
+
+
+
+
+
+<!-- Bootstrap JS -->
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
+
+</body>
+
+
+</html>
