@@ -915,12 +915,23 @@ Number(value || 0).toLocaleString();
 async function loadActiveLoans(){
 
     // Wait for DB
+    let dbReady = false;
     let retries = 0;
-    while (!window.DB || !window.DB.getLoans || typeof window.DB.getLoans !== "function") {
-        await new Promise(r => setTimeout(r, 300));
+    while (!dbReady && retries < 50) {
+        try {
+            if (window.DB && typeof DB.getLoans === "function") {
+                const test = await DB.getLoans();
+                if (Array.isArray(test)) {
+                    dbReady = true;
+                    break;
+                }
+            }
+        } catch(e) {}
+        await new Promise(r => setTimeout(r, 100));
         retries++;
-        if (retries > 50) return;
     }
+
+    if (!dbReady) return;
 
     let loans = await DB.getLoans();
 
@@ -939,20 +950,24 @@ async function loadActiveLoans(){
         return;
     }
 
-    active.reverse().forEach(async loan => {
+    const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
+    for (let loan of active.reverse()) {
         let client = await DB.getClientById(loan.clientId);
-        if (!client) return;
+        if (!client) continue;
 
         let balance = Number(loan.remainingPrincipal || 0);
+        let rate = Number(loan.interestRate || 20);
+        let interestAmount = (balance * rate) / 100;
 
         table.innerHTML += `
             <tr>
-                <td><img src="${client.profilePhoto || 'https://via.placeholder.com/100'}" class="profile-img"></td>
+                <td><img src="${client.profilePhoto || DEFAULT_IMG}" class="profile-img"></td>
                 <td>${client.fullname || "-"}</td>
                 <td>${client.phone || "-"}</td>
                 <td>${money(loan.originalPrincipal)}</td>
                 <td class="fw-bold text-danger">${money(balance)}</td>
-                <td>${loan.interestRate || 0}%</td>
+                <td>${money(interestAmount)} (${rate}%)</td>
                 <td>${loan.loanDate || "-"}</td>
                 <td><span class="badge bg-danger">${loan.dueDate || "-"}</span></td>
                 <td>
@@ -964,7 +979,7 @@ async function loadActiveLoans(){
                     </button>
                 </td>
             </tr>`;
-    });
+    }
 
 }
 
@@ -990,7 +1005,9 @@ return;
 
 let client = await DB.getClientById(loan.clientId);
 
-
+let balance = Number(loan.remainingPrincipal || 0);
+let rate = Number(loan.interestRate || 20);
+let currentInterest = (balance * rate) / 100;
 
 document.getElementById("loanDetails").innerHTML = `
 
@@ -1021,11 +1038,13 @@ Loan Information
 <hr>
 
 
-<p><b>Loan Amount:</b> ${money(loan.originalPrincipal)}</p>
+<p><b>Original Loan Amount:</b> ${money(loan.originalPrincipal)}</p>
 
-<p><b>Balance:</b> ${money(loan.remainingPrincipal)}</p>
+<p><b>Remaining Principal:</b> ${money(balance)}</p>
 
-<p><b>Interest Rate:</b> ${loan.interestRate}%</p>
+<p><b>Current Interest Owed:</b> ${money(currentInterest)}</p>
+
+<p><b>Interest Rate:</b> ${rate}%</p>
 
 <p><b>Status:</b> <span class="badge bg-success">${loan.status}</span></p>
 
@@ -1034,7 +1053,7 @@ Loan Information
 <h5 class="text-primary mt-4">Payment History</h5>
 
 <table class="table table-bordered">
-    <tr><th>Date</th><th>Amount</th><th>Principal</th><th>Balance</th></tr>
+    <tr><th>Date</th><th>Amount</th><th>Principal Paid</th><th>Interest Paid</th><th>Balance</th></tr>
     ${await loadPaymentRows(loan)}
 </table>
 
@@ -1065,7 +1084,7 @@ let payments = await DB.getLoanPayments(loan.id);
 if(payments.length===0){
 
 
-return `<tr><td colspan="4" class="text-center">No payments</td></tr>`;
+return `<tr><td colspan="5" class="text-center">No payments yet</td></tr>`;
 
 }
 
@@ -1091,6 +1110,9 @@ rows += `
 
 
 <td>${money(p.principalPaid)}</td>
+
+
+<td>${money(p.interestPaid)}</td>
 
 
 <td>${money(p.balance)}</td>
@@ -1141,53 +1163,30 @@ modal.show();
 
 async function savePayment(){
 
+    let loanId = Number(document.getElementById("paymentLoanId").value);
+    let amount = Number(document.getElementById("paymentAmount").value);
+    let date = document.getElementById("paymentDate").value;
+    let method = document.getElementById("paymentMethod").value;
 
+    if(amount <= 0){
+        alert("Enter payment amount");
+        return;
+    }
 
-let loanId = Number(document.getElementById("paymentLoanId").value);
-let amount = Number(document.getElementById("paymentAmount").value);
-let date = document.getElementById("paymentDate").value;
-let method = document.getElementById("paymentMethod").value;
+    let payment = {
+        loanId: loanId,
+        amount: amount,
+        date: date,
+        method: method
+    };
 
+    // DB.addPayment now handles all interest/principal math
+    await DB.addPayment(payment);
 
-if(amount<=0){
-    alert("Enter payment amount");
-    return;
-}
+    alert("Payment recorded successfully");
+    loadActiveLoans();
 
-
-let loan = await DB.getLoan(loanId);
-
-if(!loan) return;
-
-let balance = Number(loan.remainingPrincipal || 0);
-let principalPaid = amount;
-
-if(principalPaid > balance){
-    principalPaid = balance;
-}
-
-let newBalance = balance - principalPaid;
-
-
-let payment = {
-    loanId: loanId,
-    amount: amount,
-    principalPaid: principalPaid,
-    interestPaid: 0,
-    balance: newBalance,
-    date: date,
-    method: method
-};
-
-
-// DB.addPayment handles loan update internally
-await DB.addPayment(payment);
-
-
-alert("Payment recorded successfully");
-loadActiveLoans();
-
-bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
+    bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
 
 }
 
@@ -1211,9 +1210,7 @@ function logout(){
 // START
 // ===============================
 
-setTimeout(() => {
-    loadActiveLoans();
-}, 800);
+loadActiveLoans();
 
 
 
