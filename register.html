@@ -150,6 +150,7 @@ margin-top:10px;
 
 border-radius:10px;
 
+
 }
 
 
@@ -687,6 +688,9 @@ class="id-preview">
 
 
 </div>
+
+
+
 <!-- PASSWORD -->
 
 <div class="col-md-6 mb-3">
@@ -1418,16 +1422,20 @@ const back = await compressImage(
 idBack.files[0]
 
 );
+
+
+
+
+
+
+
+
 // ============================
 // CLIENT OBJECT
 // ============================
 
 
 const client={
-
-
-
-id:Date.now(),
 
 
 
@@ -1469,14 +1477,7 @@ idBack:back,
 
 
 
-password:password,
-
-
-
-// IMPORTANT
-// New registered clients are active
-
-status:"ACTIVE"
+password:password
 
 
 
@@ -1495,7 +1496,7 @@ status:"ACTIVE"
 
 
 
-const result = AUTH.registerClient(client);
+const result = await AUTH.registerClient(client);
 
 
 
