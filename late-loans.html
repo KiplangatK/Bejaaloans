@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Bejja Credit | Late Loans</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    background:#edf4ff;
+
+    font-family:
+    Segoe UI,
+    Tahoma,
+    Geneva,
+    Verdana,
+    sans-serif;
+
+}
+
+.wrapper{
+
+    display:flex;
+
+}
+
+/*==========================
+SIDEBAR
+===========================*/
+
+.sidebar{
+
+    width:260px;
+
+    min-height:100vh;
+
+    background:#0d47a1;
+
+    color:white;
+
+    position:fixed;
+
+}
+
+.logo{
+
+    padding:25px;
+
+    font-size:28px;
+
+    font-weight:bold;
+
+    border-bottom:
+    1px solid rgba(255,255,255,.15);
+
+}
+
+.logo i{
+
+    margin-right:10px;
+
+}
+
+.sidebar ul{
+
+    list-style:none;
+
+    padding:15px 0;
+
+}
+
+.sidebar ul li a{
+
+    display:block;
+
+    color:white;
+
+    padding:15px 25px;
+
+    text-decoration:none;
+
+    transition:.3s;
+
+}
+
+.sidebar ul li a:hover{
+
+    background:#1565c0;
+
+    padding-left:35px;
+
+}
+
+.sidebar ul li i{
+
+    width:25px;
+
+}
+
+/*==========================
+MAIN
+===========================*/
+
+.main{
+
+    margin-left:260px;
+
+    width:100%;
+
+}
+
+/*==========================
+TOPBAR
+===========================*/
+
+.topbar{
+
+    height:70px;
+
+    background:#1976d2;
+
+    color:white;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 30px;
+
+    box-shadow:
+    0 2px 10px rgba(0,0,0,.15);
+
+}
+
+.topbar h2{
+
+    font-size:28px;
+
+}
+
+.topbar a{
+
+    color:white;
+
+    text-decoration:none;
+
+}
+
+/*==========================
+CONTENT
+===========================*/
+
+.content{
+
+    padding:30px;
+
+}
+
+.dashboard-cards{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(220px,1fr));
+
+    gap:25px;
+
+}
+
+.card-box{
+
+    background:white;
+
+    border-radius:12px;
+
+    padding:25px;
+
+    box-shadow:
+    0 5px 15px rgba(0,0,0,.1);
+
+    transition:.3s;
+
+}
+
+.card-box:hover{
+
+    transform:translateY(-5px);
+
+}
+
+.card-box i{
+
+    color:#d32f2f;
+
+    font-size:32px;
+
+}
+
+.card-title{
+
+    margin-top:15px;
+
+    font-size:20px;
+
+    font-weight:bold;
+
+}
+
+.card-number{
+
+    font-size:38px;
+
+    font-weight:bold;
+
+    color:#d32f2f;
+
+    margin-top:10px;
+
+}
+
+/*==========================
+TABLE
+===========================*/
+
+.table-card{
+
+    margin-top:40px;
+
+    background:white;
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+    box-shadow:
+    0 5px 15px rgba(0,0,0,.1);
+
+}
+
+.table-header{
+
+    background:#1976d2;
+
+    color:white;
+
+    padding:18px 25px;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+}
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+th{
+
+    background:#e3f2fd;
+
+    color:#0d47a1;
+
+}
+
+th,td{
+
+    padding:16px;
+
+    border-bottom:1px solid #eee;
+
+    vertical-align:middle;
+
+}
+
+.table-danger{
+
+    background:#ffebee !important;
+
+}
+
+.action-btn{
+
+    margin:2px;
+
+}
+
+@media(max-width:768px){
+
+.sidebar{
+
+    width:220px;
+
+}
+
+.main{
+
+    margin-left:220px;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="wrapper">
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+<div class="logo">
+
+<i class="fa-solid fa-building-columns"></i>
+
+Bejja Credit
+
+</div>
+
+<ul>
+
+<li>
+
+<a href="admin-dashboard.html">
+
+<i class="fa-solid fa-gauge"></i>
+
+Dashboard
+
+</a>
+
+</li>
+
+<li>
+
+<a href="registered-clients.html">
+
+<i class="fa-solid fa-users"></i>
+
+Registered Clients
+
+</a>
+
+</li>
+
+<li>
+
+<a href="active-loans.html">
+
+<i class="fa-solid fa-money-bill-wave"></i>
+
+Active Loans
+
+</a>
+
+</li>
+
+<li>
+
+<a href="late-loans.html">
+
+<i class="fa-solid fa-triangle-exclamation"></i>
+
+Late Loans
+
+</a>
+
+</li>
+
+<li>
+
+<a href="loan-applications.html">
+
+<i class="fa-solid fa-file-circle-check"></i>
+
+Pending Applications
+
+</a>
+
+</li>
+
+<li>
+
+<a href="statistics.html">
+
+<i class="fa-solid fa-chart-column"></i>
+
+Statistics
+
+</a>
+
+</li>
+
+<li>
+
+<a href="#">
+
+<i class="fa-solid fa-gear"></i>
+
+Settings
+
+</a>
+
+</li>
+
+</ul>
+
+</div>
+
+<!-- MAIN -->
+
+<div class="main">
+
+<div class="topbar">
+
+<h2>
+
+<i class="fa-solid fa-triangle-exclamation text-warning"></i>
+
+Late Loans
+
+</h2>
+
+<div>
+
+Welcome,
+
+<strong id="adminName">
+
+Admin
+
+</strong>
+
+|
+
+<a href="#" onclick="logout()">
+
+Logout
+
+</a>
+
+</div>
+  <!-- CONTENT -->
+
+<div class="content">
+
+
+<!-- SUMMARY CARDS -->
+
+<div class="dashboard-cards">
+
+
+<!-- TOTAL LATE LOANS -->
+
+<div class="card-box">
+
+<i class="fa-solid fa-triangle-exclamation"></i>
+
+<div class="card-title">
+
+Total Late Loans
+
+</div>
+
+<div class="card-number" id="totalLateLoans">
+
+0
+
+</div>
+
+</div>
+
+
+
+<!-- OUTSTANDING BALANCE -->
+
+<div class="card-box">
+
+<i class="fa-solid fa-wallet"></i>
+
+<div class="card-title">
+
+Outstanding Balance
+
+</div>
+
+<div class="card-number" id="totalOutstanding">
+
+KES 0
+
+</div>
+
+</div>
+
+
+
+<!-- EXPECTED INTEREST -->
+
+<div class="card-box">
+
+<i class="fa-solid fa-percent"></i>
+
+<div class="card-title">
+
+Expected Interest
+
+</div>
+
+<div class="card-number" id="expectedInterest">
+
+KES 0
+
+</div>
+
+</div>
+
+
+
+<!-- TOTAL DUE -->
+
+<div class="card-box">
+
+<i class="fa-solid fa-money-bill-wave"></i>
+
+<div class="card-title">
+
+Total Amount Due
+
+</div>
+
+<div class="card-number" id="totalDue">
+
+KES 0
+
+</div>
+
+</div>
+
+
+</div>
+
+
+
+<!-- LATE LOANS TABLE -->
+
+<div class="table-card">
+
+<div class="table-header">
+
+Late Loan Clients
+
+</div>
+
+
+<div class="table-responsive">
+
+<table class="table table-hover align-middle mb-0">
+
+<thead>
+
+<tr>
+
+<th>#</th>
+
+<th>Client Name</th>
+
+<th>Phone</th>
+
+<th>Loan Amount</th>
+
+<th>Interest</th>
+
+<th>Balance</th>
+
+<th>Due Date</th>
+
+<th>Days Late</th>
+
+<th>Status</th>
+
+<th width="230">
+
+Action
+
+</th>
+
+</tr>
+
+</thead>
+
+<tbody id="lateLoansTable">
+
+<tr>
+
+<td colspan="10"
+
+class="text-center text-muted p-5">
+
+No late loans found.
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- DATABASE -->
+
+<script src="assets/js/database.js"></script>
+
+<script src="assets/js/auth.js"></script>
+
+
+<script>
+
+
+/*==============================
+ADMIN SECURITY
+===============================*/
+
+if(!AUTH.currentAdmin()){
+
+window.location.href="admin-login.html";
+
+}
+
+
+
+const admin = AUTH.currentAdmin();
+
+if(admin){
+
+document.getElementById("adminName").innerHTML =
+
+admin.username;
+
+}
+<script>
+
+
+/*==============================
+LOAD LATE LOANS
+===============================*/
+
+
+function loadLateLoans(){
+
+
+let loans = DB.getLoans();
+
+
+let table = document.getElementById(
+"lateLoansTable"
+);
+
+
+
+table.innerHTML="";
+
+
+
+let lateCount = 0;
+
+let outstanding = 0;
+
+let expectedInterest = 0;
+
+let totalDue = 0;
+
+
+
+let today = new Date();
+
+
+
+
+
+loans.forEach((loan,index)=>{
+
+
+
+let amount = Number(loan.amount || 0);
+
+let interest = Number(loan.interest || 0);
+
+let paid = Number(loan.paidAmount || 0);
+
+
+
+let balance = 
+(amount + interest) - paid;
+
+
+
+
+
+/*
+CHECK IF LOAN IS LATE
+
+Only unpaid loans
+with passed due date
+*/
+
+let dueDate = new Date(
+loan.dueDate
+);
+
+
+
+if(
+
+dueDate < today &&
+
+balance > 0 &&
+
+loan.status !== "COMPLETED"
+
+){
+
+
+
+lateCount++;
+
+
+
+outstanding += balance;
+
+
+expectedInterest += interest;
+
+
+totalDue += amount + interest;
+
+
+
+
+let client = DB.getClientById(
+
+loan.clientId
+
+);
+
+
+
+let clientName = client ?
+
+client.fullname :
+
+"Unknown";
+
+
+
+let phone = client ?
+
+client.phone :
+
+"-";
+
+
+
+
+
+
+// DAYS LATE
+
+let difference =
+
+today - dueDate;
+
+
+let daysLate = Math.floor(
+
+difference /
+
+(1000 * 60 * 60 * 24)
+
+);
+
+
+
+
+
+
+
+table.innerHTML += `
+
+
+
+<tr class="table-danger">
+
+
+<td>
+
+${lateCount}
+
+</td>
+
+
+
+<td>
+
+${clientName}
+
+</td>
+
+
+
+
+<td>
+
+${phone}
+
+</td>
+
+
+
+
+<td>
+
+KES ${amount.toLocaleString()}
+
+</td>
+
+
+
+
+<td>
+
+KES ${interest.toLocaleString()}
+
+</td>
+
+
+
+
+<td class="text-danger fw-bold">
+
+KES ${balance.toLocaleString()}
+
+</td>
+
+
+
+
+<td>
+
+${loan.dueDate || "-"}
+
+</td>
+
+
+
+
+<td class="text-danger fw-bold">
+
+${daysLate} Days
+
+</td>
+
+
+
+
+<td>
+
+<span class="badge bg-danger">
+
+LATE
+
+</span>
+
+</td>
+
+
+
+
+<td>
+
+
+<a href="client-profile.html?id=${loan.clientId}"
+
+class="btn btn-primary btn-sm action-btn">
+
+<i class="fa-solid fa-user"></i>
+
+Client
+
+</a>
+
+
+
+<a href="active-loans.html?id=${loan.id}"
+
+class="btn btn-info btn-sm action-btn">
+
+<i class="fa-solid fa-file"></i>
+
+Loan
+
+</a>
+
+
+
+
+<a href="record-payment.html?id=${loan.id}"
+
+class="btn btn-success btn-sm action-btn">
+
+<i class="fa-solid fa-money-bill"></i>
+
+Payment
+
+</a>
+
+
+
+</td>
+
+
+
+</tr>
+
+
+`;
+
+
+
+}
+
+
+
+});
+
+
+
+
+
+
+
+/*==============================
+UPDATE CARDS
+===============================*/
+
+
+
+document.getElementById(
+"totalLateLoans"
+).innerHTML = lateCount;
+
+
+
+
+
+document.getElementById(
+"totalOutstanding"
+).innerHTML =
+
+"KES " + outstanding.toLocaleString();
+
+
+
+
+
+document.getElementById(
+"expectedInterest"
+).innerHTML =
+
+"KES " + expectedInterest.toLocaleString();
+
+
+
+
+
+document.getElementById(
+"totalDue"
+).innerHTML =
+
+"KES " + totalDue.toLocaleString();
+
+
+
+
+
+if(lateCount === 0){
+
+
+table.innerHTML = `
+
+<tr>
+
+<td colspan="10"
+
+class="text-center text-muted p-5">
+
+No late loans found.
+
+</td>
+
+</tr>
+
+`;
+
+
+
+}
+
+
+
+
+}
+
+
+
+
+
+/*==============================
+LOGOUT
+===============================*/
+
+
+function logout(){
+
+AUTH.adminLogout();
+
+}
+
+
+
+
+
+/*==============================
+START PAGE
+===============================*/
+
+
+loadLateLoans();
+
+
+
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+</body>
+
+</html>
+
+</div>
