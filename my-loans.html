@@ -637,6 +637,7 @@ Action
 
 <tbody id="myLoansTable">
 
+<tr><td colspan="6" class="text-center text-muted p-4">Loading loans...</td></tr>
 
 </tbody>
 
@@ -720,7 +721,7 @@ data-bs-dismiss="modal">
 
 class="profile-img"
 
-src="https://via.placeholder.com/100">
+src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
 
 
 
@@ -1103,6 +1104,8 @@ Interest
 
 <script>
 
+const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
 
 // ===============================
 // MONEY FORMAT
@@ -1135,7 +1138,13 @@ Number(value || 0)
 
 async function loadMyLoans(){
 
-
+    // Wait for DB
+    let retries = 0;
+    while (!window.DB || !window.DB.getLoans || typeof window.DB.getLoans !== "function") {
+        await new Promise(r => setTimeout(r, 300));
+        retries++;
+        if (retries > 50) return;
+    }
 
     const client = AUTH.currentClient();
 
@@ -1145,6 +1154,10 @@ async function loadMyLoans(){
     }
 
     let loans = await DB.getLoans();
+
+    if (!Array.isArray(loans)) {
+        loans = [];
+    }
 
     let myLoans = loans.filter(loan =>
         String(loan.clientId) === String(client.id)
@@ -1249,7 +1262,7 @@ async function viewLoan(id){
     let client = AUTH.currentClient();
 
     document.getElementById("loanClientName").innerHTML = client.fullname || "-";
-    document.getElementById("loanClientPhoto").src = client.profilePhoto || "https://via.placeholder.com/100";
+    document.getElementById("loanClientPhoto").src = client.profilePhoto || DEFAULT_IMG;
     document.getElementById("detailAmount").innerHTML = money(loan.originalPrincipal);
     document.getElementById("detailDate").innerHTML = loan.loanDate || "-";
     document.getElementById("detailDue").innerHTML = loan.dueDate || "-";
@@ -1322,7 +1335,7 @@ async function viewPayments(id){
 
 setTimeout(() => {
     loadMyLoans();
-}, 500);
+}, 800);
 
 
 
