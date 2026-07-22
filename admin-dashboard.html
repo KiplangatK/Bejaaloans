@@ -460,6 +460,43 @@ th,td{
 
 }
 
+.dashboard-cards{
+
+    grid-template-columns:1fr;
+
+}
+
+.topbar{
+
+    padding:0 15px;
+
+}
+
+.topbar h2{
+
+    font-size:20px;
+
+}
+
+.topbar .topbar-right{
+
+    gap:10px;
+
+}
+
+.topbar .btn-home{
+
+    padding:6px 10px;
+
+    font-size:12px;
+
+}
+
+.card-number{
+
+    font-size:32px;
+
+}
 
 }
 
@@ -690,7 +727,7 @@ Registered Clients
 
 <div class="card-number" id="totalClients">
 
-0
+...
 
 </div>
 
@@ -734,7 +771,7 @@ Active Loans
 
 <div class="card-number" id="activeLoans">
 
-0
+...
 
 </div>
 
@@ -778,7 +815,7 @@ Late Loans
 
 <div class="card-number" id="lateLoans">
 
-0
+...
 
 </div>
 
@@ -822,7 +859,7 @@ Pending Applications
 
 <div class="card-number" id="pendingApplications">
 
-0
+...
 
 </div>
 
@@ -1006,41 +1043,59 @@ admin.username;
 
 
 /*====================================
+ WAIT FOR DB — runs actual query
+====================================*/
+
+async function waitForDB() {
+    let retries = 0;
+    while (retries < 60) {
+        try {
+            if (window.DB && typeof DB.totalClients === "function") {
+                const test = await DB.totalClients();
+                if (typeof test === "number") {
+                    return true;
+                }
+            }
+        } catch(e) {
+            console.log("Waiting for DB... attempt " + retries);
+        }
+        await new Promise(r => setTimeout(r, 200));
+        retries++;
+    }
+    return false;
+}
+
+
+
+
+
+
+/*====================================
  LOAD DASHBOARD DATA
 ====================================*/
 
 
 async function loadDashboard(){
 
-    // Wait for DB to be FULLY ready
-    let dbReady = false;
-    let retries = 0;
-    while (!dbReady && retries < 50) {
-        try {
-            if (window.DB && typeof DB.getLoans === "function") {
-                const test = await DB.getLoans();
-                if (Array.isArray(test)) {
-                    dbReady = true;
-                    break;
-                }
-            }
-        } catch(e) {}
-        await new Promise(r => setTimeout(r, 100));
-        retries++;
+    const ready = await waitForDB();
+    if (!ready) {
+        console.error("Database failed to load");
+        return;
     }
-
-    if (!dbReady) return;
 
     try {
 
         // REGISTERED CLIENTS
-        document.getElementById("totalClients").innerHTML = await DB.totalClients();
+        const clients = await DB.totalClients();
+        document.getElementById("totalClients").innerHTML = clients;
 
         // ACTIVE LOANS
-        document.getElementById("activeLoans").innerHTML = await DB.approvedLoans();
+        const active = await DB.approvedLoans();
+        document.getElementById("activeLoans").innerHTML = active;
 
         // PENDING APPLICATIONS
-        document.getElementById("pendingApplications").innerHTML = await DB.pendingApplications();
+        const pending = await DB.pendingApplications();
+        document.getElementById("pendingApplications").innerHTML = pending;
 
         // LATE LOANS
         let today = new Date();
