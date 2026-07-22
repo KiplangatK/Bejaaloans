@@ -19,8 +19,6 @@
 
 
 
-
-
 <style>
 
 
@@ -155,7 +153,6 @@ border-radius:10px;
 }
 
 
-
 </style>
 
 
@@ -221,6 +218,7 @@ Create Client Account
 
 
 
+
 <form id="registerForm">
 
 
@@ -261,6 +259,8 @@ required>
 
 
 
+
+
 <!-- NATIONAL ID -->
 
 <div class="col-md-6 mb-3">
@@ -286,6 +286,8 @@ required>
 
 
 </div>
+
+
 
 
 
@@ -325,6 +327,8 @@ required>
 
 
 
+
+
 <!-- EMAIL -->
 
 <div class="col-md-6 mb-3">
@@ -348,6 +352,8 @@ class="form-control">
 
 
 </div>
+
+
 
 
 
@@ -385,6 +391,8 @@ required>
 
 
 
+
+
 <!-- EMPLOYER -->
 
 <div class="col-md-6 mb-3">
@@ -408,6 +416,8 @@ class="form-control">
 
 
 </div>
+
+
 
 
 
@@ -445,6 +455,8 @@ required>
 
 
 
+
+
 <!-- COUNTY -->
 
 <div class="col-md-6 mb-3">
@@ -470,6 +482,8 @@ required>
 
 
 </div>
+
+
 
 
 
@@ -506,7 +520,7 @@ required></textarea>
 
 
 
-<!-- DOCUMENT UPLOAD TITLE -->
+<!-- DOCUMENT TITLE -->
 
 <div class="col-12 mb-3">
 
@@ -579,7 +593,6 @@ class="preview">
 
 
 
-
 <!-- ID FRONT -->
 
 <div class="col-md-4 mb-3">
@@ -631,7 +644,6 @@ class="id-preview">
 
 
 
-
 <!-- ID BACK -->
 
 <div class="col-md-4 mb-3">
@@ -675,15 +687,6 @@ class="id-preview">
 
 
 </div>
-
-
-
-
-
-
-
-
-
 <!-- PASSWORD -->
 
 <div class="col-md-6 mb-3">
@@ -760,8 +763,6 @@ required>
 
 
 
-
-
 <!-- CREATE ACCOUNT BUTTON -->
 
 <button
@@ -783,8 +784,8 @@ Create Account
 
 
 
-</form>
 
+</form>
 
 
 
@@ -815,13 +816,20 @@ Login Here
 
 
 
-</div>
 
 </div>
 
+</div>
 
 
 
+
+
+
+
+
+
+<!-- DATABASE -->
 
 <script src="assets/js/database.js"></script>
 
@@ -831,21 +839,32 @@ Login Here
 
 
 
+
+
+
 <script>
 
 
 /* ============================
-   IMAGE PREVIEW
+ IMAGE PREVIEW
 ============================ */
+
 
 
 function previewImage(input,target){
 
 
+
 const file=input.files[0];
 
 
-if(file){
+
+if(!file){
+
+return;
+
+}
+
 
 
 const reader=new FileReader();
@@ -855,10 +874,12 @@ const reader=new FileReader();
 reader.onload=function(e){
 
 
+
 target.src=e.target.result;
 
 
 target.style.display="block";
+
 
 
 }
@@ -872,15 +893,15 @@ reader.readAsDataURL(file);
 }
 
 
-}
 
 
 
 
 
+document
 
+.getElementById("profilePhoto")
 
-document.getElementById("profilePhoto")
 .addEventListener("change",function(){
 
 
@@ -900,7 +921,11 @@ document.getElementById("profilePreview")
 
 
 
-document.getElementById("idFront")
+
+document
+
+.getElementById("idFront")
+
 .addEventListener("change",function(){
 
 
@@ -920,7 +945,11 @@ document.getElementById("frontPreview")
 
 
 
-document.getElementById("idBack")
+
+document
+
+.getElementById("idBack")
+
 .addEventListener("change",function(){
 
 
@@ -943,18 +972,24 @@ document.getElementById("backPreview")
 
 
 
+
+
+
 /* ============================
-   IMAGE COMPRESSION
+ IMAGE COMPRESSION
 ============================ */
 
 
 function compressImage(file){
 
 
+
 return new Promise(resolve=>{
 
 
+
 const reader=new FileReader();
+
 
 
 
@@ -966,14 +1001,12 @@ const img=new Image();
 
 
 
+
 img.onload=function(){
 
 
 
 const canvas=document.createElement("canvas");
-
-
-const maxWidth=800;
 
 
 
@@ -983,14 +1016,22 @@ let height=img.height;
 
 
 
+const maxWidth=800;
+
+
+
+
 
 if(width>maxWidth){
+
 
 
 height = height * maxWidth / width;
 
 
+
 width=maxWidth;
+
 
 
 }
@@ -998,9 +1039,12 @@ width=maxWidth;
 
 
 
+
 canvas.width=width;
 
+
 canvas.height=height;
+
 
 
 
@@ -1008,13 +1052,22 @@ canvas.height=height;
 const ctx=canvas.getContext("2d");
 
 
+
 ctx.drawImage(
+
 img,
+
 0,
+
 0,
+
 width,
+
 height
+
 );
+
+
 
 
 
@@ -1023,8 +1076,11 @@ height
 resolve(
 
 canvas.toDataURL(
+
 "image/jpeg",
+
 0.7
+
 )
 
 );
@@ -1037,11 +1093,14 @@ canvas.toDataURL(
 
 
 
+
 img.src=e.target.result;
 
 
 
 }
+
+
 
 
 
@@ -1063,8 +1122,12 @@ reader.readAsDataURL(file);
 
 
 
+
+
+
+
 /* ============================
-   CREATE CLIENT ACCOUNT
+ CREATE CLIENT ACCOUNT
 ============================ */
 
 
@@ -1082,7 +1145,10 @@ e.preventDefault();
 
 
 
+
+
 const errorBox=document.getElementById("errorBox");
+
 
 const successBox=document.getElementById("successBox");
 
@@ -1090,6 +1156,7 @@ const successBox=document.getElementById("successBox");
 
 
 errorBox.style.display="none";
+
 
 successBox.style.display="none";
 
@@ -1099,60 +1166,80 @@ successBox.style.display="none";
 
 
 
-// GET DETAILS
+// GET VALUES
 
 
-const fullname=
+const fullname =
+
 document.getElementById("fullname").value.trim();
 
 
 
-const nationalID=
+
+const nationalID =
+
 document.getElementById("nationalID").value.trim();
 
 
 
-const phone=
+
+const phone =
+
 document.getElementById("phone").value.trim();
 
 
 
-const email=
+
+const email =
+
 document.getElementById("email").value.trim();
 
 
 
-const occupation=
+
+const occupation =
+
 document.getElementById("occupation").value.trim();
 
 
 
-const employer=
+
+const employer =
+
 document.getElementById("employer").value.trim();
 
 
 
-const income=
+
+const income =
+
 document.getElementById("income").value.trim();
 
 
 
-const county=
+
+const county =
+
 document.getElementById("county").value.trim();
 
 
 
-const address=
+
+const address =
+
 document.getElementById("address").value.trim();
 
 
 
-const password=
+
+const password =
+
 document.getElementById("password").value;
 
 
 
-const confirmPassword=
+const confirmPassword =
+
 document.getElementById("confirmPassword").value;
 
 
@@ -1162,7 +1249,10 @@ document.getElementById("confirmPassword").value;
 
 
 
-// CHECK REQUIRED FIELDS
+
+
+
+// VALIDATION
 
 
 if(
@@ -1189,6 +1279,7 @@ confirmPassword===""
 
 
 errorBox.innerHTML=
+
 "Please fill all required fields.";
 
 
@@ -1207,13 +1298,13 @@ return;
 
 
 
-// CHECK PASSWORD
-
 
 if(password !== confirmPassword){
 
 
+
 errorBox.innerHTML=
+
 "Passwords do not match.";
 
 
@@ -1232,20 +1323,24 @@ return;
 
 
 
-// CHECK PHONE
 
 
 if(!/^07\d{8}$/.test(phone)){
 
 
+
 errorBox.innerHTML=
+
 "Invalid phone number format.";
+
 
 
 errorBox.style.display="block";
 
 
+
 return;
+
 
 
 }
@@ -1257,7 +1352,9 @@ return;
 
 
 
-// CHECK DOCUMENTS
+
+
+
 
 
 if(
@@ -1271,14 +1368,19 @@ idBack.files.length===0
 ){
 
 
+
 errorBox.innerHTML=
+
 "Please upload all verification documents.";
+
 
 
 errorBox.style.display="block";
 
 
+
 return;
+
 
 
 }
@@ -1290,13 +1392,10 @@ return;
 
 
 
+// COMPRESS IMAGES
 
-// COMPRESS FILES
 
-
-const profile=
-
-await compressImage(
+const profile = await compressImage(
 
 profilePhoto.files[0]
 
@@ -1304,9 +1403,8 @@ profilePhoto.files[0]
 
 
 
-const front=
 
-await compressImage(
+const front = await compressImage(
 
 idFront.files[0]
 
@@ -1314,29 +1412,23 @@ idFront.files[0]
 
 
 
-const back=
 
-await compressImage(
+const back = await compressImage(
 
 idBack.files[0]
 
 );
-
-
-
-
-
-
-
-
-
-// CLIENT DATA
+// ============================
+// CLIENT OBJECT
+// ============================
 
 
 const client={
 
 
+
 id:Date.now(),
+
 
 
 fullname:fullname,
@@ -1366,6 +1458,7 @@ county:county,
 address:address,
 
 
+
 profilePhoto:profile,
 
 
@@ -1375,10 +1468,16 @@ idFront:front,
 idBack:back,
 
 
+
 password:password,
 
 
-status:"Pending"
+
+// IMPORTANT
+// New registered clients are active
+
+status:"ACTIVE"
+
 
 
 };
@@ -1390,40 +1489,34 @@ status:"Pending"
 
 
 
-
 // ============================
-// CHECK EXISTING PHONE NUMBER
+// SAVE USING AUTH ENGINE
 // ============================
 
 
-let clients = JSON.parse(
 
-localStorage.getItem("bejja_clients")
-
-) || [];
+const result = AUTH.registerClient(client);
 
 
 
-const existingClient = clients.find(
-
-c => c.phone === phone
-
-);
 
 
 
-if(existingClient){
+
+if(!result.success){
 
 
-errorBox.innerHTML =
 
-"Phone number already registered. Please login.";
+errorBox.innerHTML=result.message;
+
 
 
 errorBox.style.display="block";
 
 
+
 return;
+
 
 
 }
@@ -1432,33 +1525,19 @@ return;
 
 
 
+
+
+
+
 // ============================
-// SAVE NEW CLIENT
-// ============================
-
-
-clients.push(client);
-
-
-
-localStorage.setItem(
-
-"bejja_clients",
-
-JSON.stringify(clients)
-
-);
-
-
-
-
-
-
-
 // SUCCESS MESSAGE
+// ============================
+
 
 
 successBox.innerHTML=`
+
+
 
 <h4>
 
@@ -1469,6 +1548,7 @@ Account Created Successfully
 </h4>
 
 
+
 <p>
 
 Your Bejja Credit account has been created successfully.
@@ -1476,16 +1556,26 @@ Your Bejja Credit account has been created successfully.
 </p>
 
 
+
+
 <a href="client-portal.html"
+
 class="btn btn-primary">
+
 
 <i class="fa fa-right-to-bracket"></i>
 
+
 Login Now
+
 
 </a>
 
+
+
 `;
+
+
 
 
 
@@ -1496,7 +1586,9 @@ successBox.style.display="block";
 
 
 
+
 // RESET FORM
+
 
 
 document
@@ -1508,13 +1600,14 @@ document
 
 
 
+
 });
 
 
 
-
-
 </script>
+
+
 
 
 
