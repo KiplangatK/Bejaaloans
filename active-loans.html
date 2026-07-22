@@ -392,7 +392,7 @@ Statistics
 
 
 
-<a href="admin-login.html">
+<a href="#" onclick="logout()">
 
 <i class="fa fa-right-from-bracket"></i>
 
@@ -442,6 +442,9 @@ Admin
 
 
 </div>
+
+
+
 <!-- CONTENT -->
 
 
@@ -902,11 +905,11 @@ Number(value || 0).toLocaleString();
 /* LOAD ACTIVE LOANS */
 
 
-function loadActiveLoans(){
+async function loadActiveLoans(){
 
 
 
-let loans = DB.getLoans();
+let loans = await DB.getLoans();
 
 
 
@@ -972,10 +975,10 @@ return;
 
 
 
-active.reverse().forEach(loan=>{
+active.reverse().forEach(async loan=>{
 
 
-let client = DB.getClientById(
+let client = await DB.getClientById(
 
 loan.clientId
 
@@ -999,16 +1002,6 @@ loan.remainingPrincipal || 0
 
 
 
-let interest =
-
-(balance * Number(loan.interestRate || 20))
-
-/100;
-
-
-
-
-
 table.innerHTML += `
 
 
@@ -1024,262 +1017,6 @@ table.innerHTML += `
 
 class="profile-img">
 
-
-</td>
-
-
-
-
-<td>
-
-${client.fullname}
-
-</td>
-
-
-
-
-<td>
-
-${client.phone || "-"}
-
-</td>
-
-
-
-
-<td>
-
-${money(loan.originalPrincipal)}
-
-</td>
-
-
-
-
-<td class="fw-bold text-danger">
-
-${money(balance)}
-
-</td>
-
-
-
-
-<td>
-
-${money(interest)}
-
-</td>
-
-
-
-
-<td>
-
-${loan.loanDate || "-"}
-
-</td>
-
-
-
-
-<td>
-
-<span class="badge bg-danger">
-
-${loan.dueDate || "-"}
-
-</span>
-
-</td>
-
-
-
-
-<td>
-
-
-<button class="btn btn-view btn-sm"
-
-onclick="viewLoan(${loan.id})">
-
-
-<i class="fa fa-eye"></i>
-
-Details
-
-
-</button>
-
-
-
-
-<button class="btn btn-payment btn-sm"
-
-onclick="openPayment(${loan.id})">
-
-
-<i class="fa fa-money-bill"></i>
-
-Payment
-
-
-</button>
-
-
-
-</td>
-
-
-
-</tr>
-
-
-`;
-
-
-
-});
-
-
-}
-  <script>
-
-
-// ===============================
-// ADMIN CHECK
-// ===============================
-
-if(!AUTH.currentAdmin()){
-
-window.location.href="admin-login.html";
-
-}
-
-
-let admin = AUTH.currentAdmin();
-
-
-if(admin){
-
-document.getElementById("adminName").innerHTML =
-admin.username;
-
-}
-
-
-
-// ===============================
-// MONEY FORMAT
-// ===============================
-
-
-function money(value){
-
-return "KES " +
-
-Number(value || 0)
-
-.toLocaleString();
-
-}
-
-
-
-// ===============================
-// LOAD ACTIVE LOANS
-// ===============================
-
-
-function loadActiveLoans(){
-
-
-let loans = DB.getLoans();
-
-
-let table = document.getElementById(
-"activeLoansTable"
-);
-
-
-table.innerHTML="";
-
-
-
-let activeLoans = loans.filter(loan =>
-
-loan.status==="ACTIVE"
-
-);
-
-
-
-if(activeLoans.length===0){
-
-
-table.innerHTML=`
-
-<tr>
-
-<td colspan="9"
-
-class="text-center text-muted p-4">
-
-No active loans found
-
-</td>
-
-</tr>
-
-`;
-
-return;
-
-}
-
-
-
-
-
-activeLoans.reverse().forEach(loan=>{
-
-
-let client = DB.getClientById(
-loan.clientId
-);
-
-
-if(!client){
-
-return;
-
-}
-
-
-
-let balance = Number(
-
-loan.remainingPrincipal || 0
-
-);
-
-
-
-
-table.innerHTML += `
-
-
-<tr>
-
-
-<td>
-
-<img src="${client.profilePhoto ||
-
-'https://via.placeholder.com/100'}"
-
-class="profile-img">
 
 </td>
 
@@ -1356,9 +1093,7 @@ ${loan.dueDate || "-"}
 <td>
 
 
-<button
-
-class="btn btn-view btn-sm mb-1"
+<button class="btn btn-view btn-sm mb-1"
 
 onclick="viewLoan(${loan.id})">
 
@@ -1372,9 +1107,8 @@ Details
 
 
 
-<button
 
-class="btn btn-payment btn-sm"
+<button class="btn btn-payment btn-sm"
 
 onclick="openPayment(${loan.id})">
 
@@ -1398,10 +1132,12 @@ Payment
 `;
 
 
+
 });
 
 
 }
+
 
 
 
@@ -1410,10 +1146,10 @@ Payment
 // ===============================
 
 
-function viewLoan(id){
+async function viewLoan(id){
 
 
-let loan = DB.getLoan(id);
+let loan = await DB.getLoan(id);
 
 
 if(!loan){
@@ -1424,7 +1160,7 @@ return;
 
 
 
-let client = DB.getClientById(
+let client = await DB.getClientById(
 loan.clientId
 );
 
@@ -1477,7 +1213,7 @@ ${money(loan.remainingPrincipal)}
 
 
 
-<p><b>Interest:</b>
+<p><b>Interest Rate:</b>
 
 ${loan.interestRate}%
 
@@ -1521,14 +1257,8 @@ Payment History
 </tr>
 
 
-${
-loadPaymentRows(loan)
-}
-
-
+${await loadPaymentRows(loan)}
 </table>
-
-
 
 `;
 
@@ -1555,10 +1285,10 @@ modal.show();
 // ===============================
 
 
-function loadPaymentRows(loan){
+async function loadPaymentRows(loan){
 
 
-let payments = DB.getLoanPayments(loan.id);
+let payments = await DB.getLoanPayments(loan.id);
 
 
 
@@ -1700,7 +1430,7 @@ modal.show();
 // ===============================
 
 
-function savePayment(){
+async function savePayment(){
 
 
 
@@ -1751,7 +1481,7 @@ return;
 
 
 
-let loan = DB.getLoan(loanId);
+let loan = await DB.getLoan(loanId);
 
 
 
@@ -1816,37 +1546,9 @@ method:method
 
 
 
-// SAVE PAYMENT
+// SAVE PAYMENT — DB.addPayment handles loan update internally
 
-DB.addPayment(payment);
-
-
-
-
-
-
-// UPDATE LOAN
-
-
-loan.remainingPrincipal = newBalance;
-
-
-
-if(newBalance<=0){
-
-
-loan.remainingPrincipal=0;
-
-
-loan.status="COMPLETED";
-
-
-}
-
-
-
-DB.updateLoan(loan);
-
+await DB.addPayment(payment);
 
 
 
@@ -1906,3 +1608,11 @@ loadActiveLoans();
 
 
 </script>
+
+
+
+
+
+</body>
+
+</html>
