@@ -1112,6 +1112,8 @@ data-bs-dismiss="modal">
 <script>
 
 
+const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
 // ===============================
 // MONEY FORMAT
 // ===============================
@@ -1122,7 +1124,7 @@ function money(value){
 
 
 // ===============================
-// WAIT FOR DB
+// WAIT FOR DB — fast check
 // ===============================
 
 function waitForDB() {
@@ -1142,16 +1144,16 @@ function waitForDB() {
                 clearInterval(check);
                 resolve();
             }
-        }, 100);
+        }, 50);
     });
 }
 
 
 // ===============================
-// LOAD CLIENT DASHBOARD DATA
+// LOAD ALL DATA AT ONCE
 // ===============================
 
-async function loadClientDashboard() {
+async function loadAllData() {
 
     await waitForDB();
 
@@ -1162,15 +1164,21 @@ async function loadClientDashboard() {
         return;
     }
 
-    // PROFILE HEADER — instant
+    // PROFILE — instant from session
     document.getElementById("clientName").innerHTML = client.fullname || "-";
     document.getElementById("clientNameTop").innerHTML = client.fullname || "-";
-    document.getElementById("clientPhoto").src = client.profilePhoto || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+    document.getElementById("clientPhoto").src = client.profilePhoto || DEFAULT_IMG;
 
-    // GET LOANS
-    let loans = await DB.getLoans();
+    // FETCH LOANS & APPLICATIONS IN PARALLEL
+    let [loans, applications] = await Promise.all([
+        DB.getLoans(),
+        DB.getApplications()
+    ]);
+
     if (!Array.isArray(loans)) loans = [];
+    if (!Array.isArray(applications)) applications = [];
 
+    // LOAN STATUS
     let loan = loans.find(l => String(l.clientId) === String(client.id) && l.status === "ACTIVE");
 
     if (!loan) {
@@ -1184,46 +1192,60 @@ async function loadClientDashboard() {
         document.getElementById("paid").innerHTML = "KES 0";
         document.getElementById("progressBar").style.width = "0%";
         document.getElementById("progressBar").innerHTML = "0%";
-        return;
+    } else {
+        document.getElementById("activeLoan").innerHTML = money(loan.originalPrincipal);
+
+        let balance = Number(loan.remainingPrincipal || loan.originalPrincipal || 0);
+        document.getElementById("balance").innerHTML = money(balance);
+        document.getElementById("dueDate").innerHTML = loan.dueDate || "-";
+
+        // Payments
+        let payments = await DB.getLoanPayments(loan.id);
+        let totalPaid = 0;
+        if (Array.isArray(payments)) {
+            payments.forEach(p => { totalPaid += Number(p.amount || 0); });
+        }
+        document.getElementById("paid").innerHTML = money(totalPaid);
+
+        let percentage = 0;
+        if (Number(loan.originalPrincipal) > 0) {
+            percentage = Math.round((totalPaid / Number(loan.originalPrincipal)) * 100);
+        }
+        document.getElementById("progressBar").style.width = percentage + "%";
+        document.getElementById("progressBar").innerHTML = percentage + "%";
+
+        document.getElementById("loanStatus").innerHTML = `
+            <div class="detail-box">
+                <p><b>Loan Amount:</b> ${money(loan.originalPrincipal)}</p>
+                <p><b>Outstanding:</b> ${money(balance)}</p>
+                <p><b>Loan Date:</b> ${loan.loanDate || "-"}</p>
+                <p><b>Due Date:</b> ${loan.dueDate || "-"}</p>
+                <span class="badge bg-success">ACTIVE</span>
+            </div>`;
     }
 
-    // ACTIVE LOAN CARD
-    document.getElementById("activeLoan").innerHTML = money(loan.originalPrincipal);
+    // APPLICATIONS
+    let myApplications = applications.filter(app => String(app.clientId) === String(client.id));
+    let appBox = document.getElementById("applicationStatus");
+    appBox.innerHTML = "";
 
-    // BALANCE
-    let balance = Number(loan.remainingPrincipal || loan.originalPrincipal || 0);
-    document.getElementById("balance").innerHTML = money(balance);
-
-    // DUE DATE
-    document.getElementById("dueDate").innerHTML = loan.dueDate || "-";
-
-    // PAYMENT CALCULATION
-    let payments = await DB.getLoanPayments(loan.id);
-    let totalPaid = 0;
-    if (Array.isArray(payments)) {
-        payments.forEach(p => {
-            totalPaid += Number(p.amount || 0);
+    if (myApplications.length === 0) {
+        appBox.innerHTML = `<div class="alert alert-info">No loan applications found.</div>`;
+    } else {
+        myApplications.reverse().forEach(app => {
+            let badge = "bg-warning";
+            if (app.status === "APPROVED") badge = "bg-success";
+            if (app.status === "REJECTED") badge = "bg-danger";
+            appBox.innerHTML += `
+                <div class="detail-box mb-3">
+                    <h6>Application #${app.id}</h6>
+                    <p><b>Amount:</b> ${money(app.amount)}</p>
+                    <p><b>Date:</b> ${app.applicationDate}</p>
+                    <span class="badge ${badge}">${app.status}</span>
+                </div>`;
         });
     }
-    document.getElementById("paid").innerHTML = money(totalPaid);
 
-    // PROGRESS
-    let percentage = 0;
-    if (Number(loan.originalPrincipal) > 0) {
-        percentage = Math.round((totalPaid / Number(loan.originalPrincipal)) * 100);
-    }
-    document.getElementById("progressBar").style.width = percentage + "%";
-    document.getElementById("progressBar").innerHTML = percentage + "%";
-
-    // LOAN STATUS BOX
-    document.getElementById("loanStatus").innerHTML = `
-        <div class="detail-box">
-            <p><b>Loan Amount:</b> ${money(loan.originalPrincipal)}</p>
-            <p><b>Outstanding:</b> ${money(balance)}</p>
-            <p><b>Loan Date:</b> ${loan.loanDate || "-"}</p>
-            <p><b>Due Date:</b> ${loan.dueDate || "-"}</p>
-            <span class="badge bg-success">ACTIVE</span>
-        </div>`;
 }
 
 
@@ -1277,57 +1299,11 @@ async function showPaymentHistory() {
 
 
 
-
-
-
-
-
 // ===============================
-// LOAD APPLICATION STATUS
+// START — single call loads everything
 // ===============================
 
-async function loadApplications() {
-
-    let client = AUTH.currentClient();
-    let applications = await DB.getApplications();
-    if (!Array.isArray(applications)) applications = [];
-
-    let myApplications = applications.filter(app => String(app.clientId) === String(client.id));
-
-    let box = document.getElementById("applicationStatus");
-    box.innerHTML = "";
-
-    if (myApplications.length === 0) {
-        box.innerHTML = `<div class="alert alert-info">No loan applications found.</div>`;
-        return;
-    }
-
-    myApplications.reverse().forEach(app => {
-        let badge = "bg-warning";
-        if (app.status === "APPROVED") badge = "bg-success";
-        if (app.status === "REJECTED") badge = "bg-danger";
-
-        box.innerHTML += `
-            <div class="detail-box mb-3">
-                <h6>Application #${app.id}</h6>
-                <p><b>Amount:</b> ${money(app.amount)}</p>
-                <p><b>Date:</b> ${app.applicationDate}</p>
-                <span class="badge ${badge}">${app.status}</span>
-            </div>`;
-    });
-}
-
-
-
-
-
-
-// ===============================
-// START EVERYTHING
-// ===============================
-
-loadClientDashboard();
-loadApplications();
+loadAllData();
 
 
 </script>
