@@ -1,11 +1,13 @@
 /*=========================================================
     BEJJA LOAN CREDIT
     DATABASE ENGINE — IndexedDB
-    Version: 4.0
+    Version: 4.1
 
     - Unlimited storage for thousands of clients
     - Indexed queries by phone, clientId, loanId, status
     - Async operations with same DB.* API
+    - Interest calculated on remaining balance
+    - Interest paid first, remainder reduces principal
 =========================================================*/
 
 (function(){
@@ -318,6 +320,7 @@ async function deleteLoan(id) {
 
 /*=========================================================
     PAYMENT MANAGEMENT
+    Interest paid first, remainder reduces principal
 =========================================================*/
 
 async function getPayments() {
@@ -325,31 +328,47 @@ async function getPayments() {
 }
 
 async function addPayment(payment) {
+    const loan = await getLoan(Number(payment.loanId));
+    if (!loan) return null;
+
+    let amount = Number(payment.amount || 0);
+    let balance = Number(loan.remainingPrincipal || 0);
+    let rate = Number(loan.interestRate || 20);
+    
+    // Calculate interest owed on current remaining balance
+    let interestOwed = (balance * rate) / 100;
+    
+    // Interest is paid first
+    let interestPaid = Math.min(amount, interestOwed);
+    
+    // Remaining amount goes to principal
+    let principalPaid = amount - interestPaid;
+    if (principalPaid > balance) principalPaid = balance;
+    
+    let newBalance = balance - principalPaid;
+
     const newPayment = {
         loanId: Number(payment.loanId),
-        amount: Number(payment.amount || 0),
-        principalPaid: Number(payment.principalPaid || 0),
-        interestPaid: Number(payment.interestPaid || 0),
-        balance: Number(payment.balance || 0),
+        amount: amount,
+        principalPaid: principalPaid,
+        interestPaid: interestPaid,
+        balance: newBalance,
         date: payment.date || today(),
         method: payment.method || "Cash"
     };
 
     const savedPayment = await add("payments", newPayment);
 
-    const loan = await getLoan(payment.loanId);
-    if (loan) {
-        loan.remainingPrincipal = Math.max(0,
-            Number(loan.remainingPrincipal) - Number(payment.principalPaid || payment.amount || 0)
-        );
+    // Update loan
+    loan.remainingPrincipal = Math.max(0, newBalance);
+    loan.currentInterest = (loan.remainingPrincipal * rate) / 100;
 
-        if (loan.remainingPrincipal <= 0) {
-            loan.remainingPrincipal = 0;
-            loan.status = "COMPLETED";
-        }
-
-        await updateLoan(loan);
+    if (loan.remainingPrincipal <= 0) {
+        loan.remainingPrincipal = 0;
+        loan.status = "COMPLETED";
     }
+
+    await updateLoan(loan);
 
     return savedPayment;
 }
@@ -458,7 +477,7 @@ async function exportDatabase() {
 =========================================================*/
 
 openDB().then(() => {
-    console.log("BEJJA DATABASE ENGINE V4.0 (IndexedDB) LOADED");
+    console.log("BEJJA DATABASE ENGINE V4.1 (IndexedDB) LOADED");
 }).catch(err => {
     console.error("Database initialization failed:", err);
 });
