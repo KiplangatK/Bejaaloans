@@ -293,7 +293,6 @@ display:none;
 }
 
 
-
 </style>
 
 
@@ -368,6 +367,25 @@ My Profile
 
 
 <div class="container py-4">
+
+
+<!-- NAVIGATION -->
+
+<div class="mb-4">
+
+<a href="client-dashboard.html" class="btn btn-primary">
+
+<i class="fa fa-arrow-left"></i> Back to Dashboard
+
+</a>
+
+<a href="#" onclick="AUTH.clientLogout()" class="btn btn-danger float-end">
+
+<i class="fa fa-right-from-bracket"></i> Logout
+
+</a>
+
+</div>
 
 
 
@@ -582,6 +600,9 @@ class="form-control">
 
 
 </div>
+
+
+
 <!-- =========================
      MORE CLIENT DETAILS
 ========================= -->
@@ -920,6 +941,125 @@ Save Profile Changes
 
 
 
+<!-- =========================
+     CHANGE PASSWORD SECTION
+========================= -->
+
+
+<h5 class="section-title mt-4">
+
+<i class="fa fa-lock"></i>
+
+Change Password
+
+</h5>
+
+
+
+
+<div class="row">
+
+
+
+<div class="col-md-6">
+
+
+<div class="detail-box">
+
+
+<label>
+
+New Password
+
+</label>
+
+
+
+<input
+
+type="password"
+
+id="newPassword"
+
+class="form-control"
+
+placeholder="Enter new password">
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<div class="col-md-6">
+
+
+<div class="detail-box">
+
+
+<label>
+
+Confirm Password
+
+</label>
+
+
+
+<input
+
+type="password"
+
+id="confirmPassword"
+
+class="form-control"
+
+placeholder="Confirm password">
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+<div class="text-center mt-3 mb-4">
+
+
+<button
+
+onclick="changePassword()"
+
+class="btn btn-warning"
+
+style="height:50px;border-radius:12px;font-weight:bold;">
+
+
+
+<i class="fa fa-key"></i>
+
+Update Password
+
+
+</button>
+
+
+</div>
+
+
+
+
+
+
 
 
 </div>
@@ -1182,161 +1322,6 @@ client.idBack ||
 
 
 </script>
-<!-- =========================
-     CHANGE PASSWORD SECTION
-========================= -->
-
-
-<h5 class="section-title mt-4">
-
-<i class="fa fa-lock"></i>
-
-Change Password
-
-</h5>
-
-
-
-
-<div class="row">
-
-
-
-<div class="col-md-6">
-
-
-<div class="detail-box">
-
-
-<label>
-
-New Password
-
-</label>
-
-
-
-<input
-
-type="password"
-
-id="newPassword"
-
-class="form-control"
-
-placeholder="Enter new password">
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-<div class="col-md-6">
-
-
-<div class="detail-box">
-
-
-<label>
-
-Confirm Password
-
-</label>
-
-
-
-<input
-
-type="password"
-
-id="confirmPassword"
-
-class="form-control"
-
-placeholder="Confirm password">
-
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-<div class="row mt-3">
-
-
-<div class="col-md-6">
-
-
-<button
-
-onclick="changePassword()"
-
-class="btn btn-warning w-100"
-
-style="height:50px;border-radius:12px;font-weight:bold;">
-
-
-
-<i class="fa fa-key"></i>
-
-Update Password
-
-
-</button>
-
-
-</div>
-
-
-
-
-
-
-<div class="col-md-6">
-
-
-<a href="client-portal.html"
-
-class="btn btn-danger w-100"
-
-style="height:50px;border-radius:12px;font-weight:bold;">
-
-
-
-<i class="fa fa-right-from-bracket"></i>
-
-Logout
-
-
-</a>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
 
 
 
@@ -1349,7 +1334,7 @@ Logout
 
 
 
-function saveProfile(){
+async function saveProfile(){
 
 
 
@@ -1429,7 +1414,7 @@ document.getElementById("address").value.trim();
 // UPDATE DATABASE
 
 
-DB.updateClient(client);
+await DB.updateClient(client);
 
 
 
@@ -1438,13 +1423,7 @@ DB.updateClient(client);
 // UPDATE SESSION
 
 
-localStorage.setItem(
-
-"bejja_current_client",
-
-JSON.stringify(client)
-
-);
+await AUTH.refreshClientSession();
 
 
 
@@ -1507,7 +1486,7 @@ success.style.display="none";
 
 
 
-function changePassword(){
+async function changePassword(){
 
 
 
@@ -1600,20 +1579,14 @@ client.password = pass;
 
 
 
-DB.updateClient(client);
+await DB.updateClient(client);
 
 
 
 
 
 
-localStorage.setItem(
-
-"bejja_current_client",
-
-JSON.stringify(client)
-
-);
+await AUTH.refreshClientSession();
 
 
 
