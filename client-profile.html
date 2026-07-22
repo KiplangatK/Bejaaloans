@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Profile | Bejja Credit</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+background:#edf4ff;
+font-family:'Segoe UI',Tahoma,sans-serif;
+}
+
+
+/* ===========================
+   SIDEBAR
+=========================== */
+
+.sidebar{
+position:fixed;
+left:0;
+top:0;
+width:260px;
+height:100vh;
+background:#0F4C81;
+color:white;
+}
+
+.logo{
+padding:25px;
+font-size:25px;
+font-weight:bold;
+border-bottom:1px solid rgba(255,255,255,.2);
+}
+
+.logo i{
+margin-right:10px;
+}
+
+.sidebar a{
+display:block;
+padding:15px 25px;
+color:white;
+text-decoration:none;
+transition:.3s;
+}
+
+.sidebar a:hover{
+background:#2563EB;
+padding-left:35px;
+}
+
+.sidebar i{
+width:25px;
+}
+
+
+/* ===========================
+   MAIN
+=========================== */
+
+.main{
+margin-left:260px;
+}
+
+
+/* ===========================
+   TOPBAR
+=========================== */
+
+.topbar{
+height:70px;
+background:#2563EB;
+color:white;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 30px;
+box-shadow:0 4px 15px rgba(0,0,0,.15);
+}
+
+
+/* ===========================
+   CONTENT
+=========================== */
+
+.content{
+padding:30px;
+}
+
+
+/* ===========================
+   PROFILE HEADER
+=========================== */
+
+.profile-card{
+background:#fff;
+border-radius:20px;
+padding:30px;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+text-align:center;
+margin-bottom:30px;
+}
+
+.profile-card img{
+width:150px;
+height:150px;
+border-radius:50%;
+object-fit:cover;
+border:5px solid #2563EB;
+margin-bottom:15px;
+}
+
+.profile-card h3{
+font-weight:bold;
+color:#0F4C81;
+}
+
+.profile-card p{
+color:#777;
+margin-bottom:5px;
+}
+
+.status-badge{
+padding:8px 20px;
+border-radius:25px;
+font-size:14px;
+}
+
+
+/* ===========================
+   DETAILS CARD
+=========================== */
+
+.info-card{
+background:#fff;
+border-radius:20px;
+padding:25px;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+
+.section-title{
+font-size:22px;
+font-weight:bold;
+color:#0F4C81;
+margin-bottom:25px;
+border-bottom:2px solid #2563EB;
+padding-bottom:10px;
+}
+
+.info-row{
+padding:12px 0;
+border-bottom:1px solid #eee;
+}
+
+.info-label{
+font-weight:bold;
+color:#0F4C81;
+}
+
+.info-value{
+color:#444;
+}
+
+
+/* ===========================
+   BUTTONS
+=========================== */
+
+.action-btn{
+height:50px;
+border-radius:12px;
+font-weight:bold;
+font-size:16px;
+}
+
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media(max-width:768px){
+
+.sidebar{
+width:220px;
+}
+
+.main{
+margin-left:220px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<script src="assets/js/database.js"></script>
+<script src="assets/js/auth.js"></script>
+
+<script>
+
+if(!AUTH.currentClient()){
+
+window.location.href="client-portal.html";
+
+}
+
+</script>
+
+
+<!-- ===========================
+     SIDEBAR
+=========================== -->
+
+<div class="sidebar">
+
+<div class="logo">
+
+<i class="fa-solid fa-building-columns"></i>
+
+Bejja Credit
+
+</div>
+
+<a href="client-dashboard.html">
+
+<i class="fa fa-home"></i>
+
+Dashboard
+
+</a>
+
+<a href="apply-loan.html">
+
+<i class="fa fa-hand-holding-dollar"></i>
+
+Apply Loan
+
+</a>
+
+<a href="my-loans.html">
+
+<i class="fa fa-money-bill-wave"></i>
+
+My Loans
+
+</a>
+
+<a href="client-profile.html">
+
+<i class="fa fa-user"></i>
+
+My Profile
+
+</a>
+
+<a href="client-portal.html">
+
+<i class="fa fa-right-from-bracket"></i>
+
+Logout
+
+</a>
+
+</div>
+
+
+<!-- ===========================
+     MAIN
+=========================== -->
+
+<div class="main">
+
+<div class="topbar">
+
+<h3>
+
+<i class="fa fa-user-circle"></i>
+
+My Profile
+
+</h3>
+
+<div>
+
+Welcome,
+
+<strong id="topClientName"></strong>
+
+</div>
+
+</div>
+
+
+<div class="content">
+
+
+<!-- PROFILE CARD -->
+
+<div class="profile-card">
+
+<img id="profilePhoto"
+src="https://via.placeholder.com/150">
+
+<h3 id="clientName"></h3>
+
+<p id="clientPhone"></p>
+
+<span class="badge bg-success status-badge">
+
+ACTIVE CLIENT
+
+</span>
+
+</div>
+
+
+<!-- DETAILS -->
+
+<div class="info-card">
+
+<h4 class="section-title">
+
+<i class="fa fa-address-card"></i>
+
+Personal Information
+
+</h4>
+
+<div class="row">
+
+<div class="col-md-6">
+
+<div class="info-row">
+
+<div class="info-label">Full Name</div>
+
+<div class="info-value" id="fullname"></div>
+
+</div>
+
+<div class="info-row">
+
+<div class="info-label">National ID</div>
+
+<div class="info-value" id="nationalID"></div>
+
+</div>
+
+<div class="info-row">
+
+<div class="info-label">Phone Number</div>
+
+<div class="info-value" id="phone"></div>
+
+</div>
+
+<div class="info-row">
+
+<div class="info-label">Email Address</div>
+
+<div class="info-value" id="email"></div>
+
+</div>
+
+<div class="info-row">
+
+<div class="info-label">Occupation</div>
+
+<div class="info-value" id="occupation"></div>
+
+</div>
+
+</div>
+
+
+<div class="col-md-6">
+
+<div class="info-row">
+
+<div class="info-label">Employer / Business</div>
+
+<div class="info-value" id="employer"></div>
+
+</div>
+
+<div class="info-row">
+
+<div class="info-label">Monthly Income</div>
+
+<div class="info-value" id="income"></div>
+
+</div>
+
+<div class="info-row">
+
+<div class="info-label">County</div>
+
+<div class="info-value" id="county"></div>
+
+</div>
+
+<div class="info-row">
+
+<div class="info-label">Physical Address</div>
+
+<div class="info-value" id="address"></div>
+
+</div>
+
+<div class="info-row">
+
+<div class="info-label">Account Created</div>
+
+<div class="info-value" id="createdDate"></div>
+
+</div>
+
+</div>
+
+</div>
+
+<hr class="my-4">
+
+<div class="text-center">
+
+<button
+class="btn btn-primary action-btn me-2"
+id="editProfileBtn">
+
+<i class="fa fa-user-pen"></i>
+
+Edit Profile
+
+</button>
+
+<button
+class="btn btn-warning action-btn me-2"
+id="changePasswordBtn">
+
+<i class="fa fa-key"></i>
+
+Change Password
+
+</button>
+
+<a href="client-dashboard.html"
+class="btn btn-success action-btn">
+
+<i class="fa fa-home"></i>
+
+Home
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+<script>
+
+// ===============================
+// MONEY FORMAT
+// ===============================
+
+function money(value){
+
+return "KES " +
+
+Number(value || 0)
+
+.toLocaleString();
+
+}
+
+
+
+// ===============================
+// LOAD CLIENT PROFILE
+// ===============================
+
+document.addEventListener("DOMContentLoaded",function(){
+
+const client = AUTH.currentClient();
+
+if(!client){
+
+window.location.href="client-portal.html";
+
+return;
+
+}
+
+
+
+// TOP BAR
+
+document.getElementById("topClientName").innerHTML=
+
+client.fullname || "-";
+
+
+
+// PROFILE HEADER
+
+document.getElementById("profilePhoto").src=
+
+client.profilePhoto ||
+
+"https://via.placeholder.com/150";
+
+document.getElementById("clientName").innerHTML=
+
+client.fullname || "-";
+
+document.getElementById("clientPhone").innerHTML=
+
+client.phone || "-";
+
+
+
+// PERSONAL DETAILS
+
+document.getElementById("fullname").innerHTML=
+
+client.fullname || "-";
+
+document.getElementById("nationalID").innerHTML=
+
+client.nationalID || "-";
+
+document.getElementById("phone").innerHTML=
+
+client.phone || "-";
+
+document.getElementById("email").innerHTML=
+
+client.email || "Not Provided";
+
+document.getElementById("occupation").innerHTML=
+
+client.occupation || "-";
+
+document.getElementById("employer").innerHTML=
+
+client.employer || "Not Provided";
+
+document.getElementById("income").innerHTML=
+
+money(client.monthlyIncome);
+
+document.getElementById("county").innerHTML=
+
+client.county || "-";
+
+document.getElementById("address").innerHTML=
+
+client.address || "-";
+
+document.getElementById("createdDate").innerHTML=
+
+client.createdAt ||
+
+client.registrationDate ||
+
+"Not Available";
+
+});
+
+
+
+// ===============================
+// EDIT PROFILE BUTTON
+// ===============================
+
+document.getElementById("editProfileBtn")
+
+.addEventListener("click",function(){
+
+let modal = new bootstrap.Modal(
+
+document.getElementById("editProfileModal")
+
+);
+
+modal.show();
+
+});
+
+
+
+// ===============================
+// CHANGE PASSWORD BUTTON
+// ===============================
+
+document.getElementById("changePasswordBtn")
+
+.addEventListener("click",function(){
+
+let modal = new bootstrap.Modal(
+
+document.getElementById("passwordModal")
+
+);
+
+modal.show();
+
+});
+
+</script>
+<!-- ==========================================
+EDIT PROFILE MODAL
+========================================== -->
+
+<div class="modal fade" id="editProfileModal">
+
+<div class="modal-dialog">
+
+<div class="modal-content">
+
+<div class="modal-header bg-primary text-white">
+
+<h5 class="modal-title">
+
+Edit Profile
+
+</h5>
+
+<button class="btn-close"
+data-bs-dismiss="modal"></button>
+
+</div>
+
+<div class="modal-body">
+
+<div class="mb-3">
+
+<label>Full Name</label>
+
+<input
+type="text"
+id="editFullname"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Email</label>
+
+<input
+type="email"
+id="editEmail"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Occupation</label>
+
+<input
+type="text"
+id="editOccupation"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Employer</label>
+
+<input
+type="text"
+id="editEmployer"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Monthly Income</label>
+
+<input
+type="number"
+id="editIncome"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>County</label>
+
+<input
+type="text"
+id="editCounty"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Address</label>
+
+<textarea
+id="editAddress"
+class="form-control"
+rows="3"></textarea>
+
+</div>
+
+</div>
+
+<div class="modal-footer">
+
+<button
+class="btn btn-secondary"
+data-bs-dismiss="modal">
+
+Cancel
+
+</button>
+
+<button
+class="btn btn-primary"
+onclick="saveProfile()">
+
+Save Changes
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- ==========================================
+CHANGE PASSWORD MODAL
+========================================== -->
+
+<div class="modal fade" id="passwordModal">
+
+<div class="modal-dialog">
+
+<div class="modal-content">
+
+<div class="modal-header bg-warning">
+
+<h5 class="modal-title">
+
+Change Password
+
+</h5>
+
+<button
+class="btn-close"
+data-bs-dismiss="modal"></button>
+
+</div>
+
+<div class="modal-body">
+
+<div class="mb-3">
+
+<label>Current Password</label>
+
+<input
+type="password"
+id="currentPassword"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>New Password</label>
+
+<input
+type="password"
+id="newPassword"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Confirm Password</label>
+
+<input
+type="password"
+id="confirmPassword"
+class="form-control">
+
+</div>
+
+</div>
+
+<div class="modal-footer">
+
+<button
+class="btn btn-secondary"
+data-bs-dismiss="modal">
+
+Cancel
+
+</button>
+
+<button
+class="btn btn-warning"
+onclick="changePassword()">
+
+Update Password
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<script>
+
+// ================================
+// OPEN EDIT MODAL
+// ================================
+
+document.getElementById("editProfileBtn")
+
+.addEventListener("click",function(){
+
+let client = AUTH.currentClient();
+
+document.getElementById("editFullname").value =
+client.fullname || "";
+
+document.getElementById("editEmail").value =
+client.email || "";
+
+document.getElementById("editOccupation").value =
+client.occupation || "";
+
+document.getElementById("editEmployer").value =
+client.employer || "";
+
+document.getElementById("editIncome").value =
+client.monthlyIncome || "";
+
+document.getElementById("editCounty").value =
+client.county || "";
+
+document.getElementById("editAddress").value =
+client.address || "";
+
+new bootstrap.Modal(
+
+document.getElementById("editProfileModal")
+
+).show();
+
+});
+
+
+
+// ================================
+// SAVE PROFILE
+// ================================
+
+function saveProfile(){
+
+let client = AUTH.currentClient();
+
+client.fullname =
+document.getElementById("editFullname").value;
+
+client.email =
+document.getElementById("editEmail").value;
+
+client.occupation =
+document.getElementById("editOccupation").value;
+
+client.employer =
+document.getElementById("editEmployer").value;
+
+client.monthlyIncome =
+document.getElementById("editIncome").value;
+
+client.county =
+document.getElementById("editCounty").value;
+
+client.address =
+document.getElementById("editAddress").value;
+
+DB.updateClient(client);
+
+// keep logged in user updated
+localStorage.setItem(
+"currentClient",
+JSON.stringify(client)
+);
+
+alert("Profile updated successfully.");
+
+location.reload();
+
+}
+
+
+
+// ================================
+// CHANGE PASSWORD
+// ================================
+
+function changePassword(){
+
+let client = AUTH.currentClient();
+
+let current =
+document.getElementById("currentPassword").value;
+
+let pass1 =
+document.getElementById("newPassword").value;
+
+let pass2 =
+document.getElementById("confirmPassword").value;
+
+if(current!==client.password){
+
+alert("Current password is incorrect.");
+
+return;
+
+}
+
+if(pass1!==pass2){
+
+alert("Passwords do not match.");
+
+return;
+
+}
+
+if(pass1.length<4){
+
+alert("Password must be at least 4 characters.");
+
+return;
+
+}
+
+client.password=pass1;
+
+DB.updateClient(client);
+
+localStorage.setItem(
+"currentClient",
+JSON.stringify(client)
+);
+
+alert("Password changed successfully.");
+
+bootstrap.Modal.getInstance(
+
+document.getElementById("passwordModal")
+
+).hide();
+
+document.getElementById("currentPassword").value="";
+document.getElementById("newPassword").value="";
+document.getElementById("confirmPassword").value="";
+
+}
+
+</script>
