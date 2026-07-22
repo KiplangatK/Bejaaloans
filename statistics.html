@@ -340,7 +340,7 @@ Active Loans
 
 
 <li>
-<a href="#">
+<a href="late-loans.html">
 <i class="fa-solid fa-triangle-exclamation"></i>
 Late Loans
 </a>
@@ -358,38 +358,19 @@ Pending Applications
 
 
 <li>
-<a href="#">
-<i class="fa-solid fa-user-tie"></i>
-Staff
-</a>
-</li>
-
-
-
-<li>
-
 <a href="statistics.html">
-
 <i class="fa-solid fa-chart-column"></i>
-
 Statistics
-
 </a>
-
 </li>
 
 
 
 <li>
-
-<a href="#">
-
-<i class="fa-solid fa-gear"></i>
-
-Settings
-
+<a href="#" onclick="logout()">
+<i class="fa-solid fa-right-from-bracket"></i>
+Logout
 </a>
-
 </li>
 
 
@@ -438,6 +419,9 @@ Logout
 
 
 </div>
+
+
+
 <!-- CONTENT -->
 
 <div class="content">
@@ -739,9 +723,10 @@ admin.username;
  LOAD STATISTICS
 =============================*/
 
-function loadStatistics() {
+async function loadStatistics() {
 
-    let loans = DB.getLoans();
+    let loans = await DB.getLoans();
+    let payments = await DB.getPayments();
 
     let totalLoanAmount = 0;
     let expectedInterest = 0;
@@ -749,80 +734,44 @@ function loadStatistics() {
     let outstanding = 0;
     let completed = 0;
     let active = 0;
-    let late = 0;
     let interestCollected = 0;
 
     loans.forEach(loan => {
 
-        let amount = Number(loan.amount || 0);
-        let interest = Number(loan.interest || 0);
-        let paid = Number(loan.paidAmount || 0);
+        let amount = Number(loan.originalPrincipal || 0);
+        let rate = Number(loan.interestRate || 20);
+        let balance = Number(loan.remainingPrincipal || 0);
+        let expectedInt = (amount * rate) / 100;
 
-        /* ACTIVE / APPROVED LOANS */
+        let loanPayments = payments.filter(p => String(p.loanId) === String(loan.id));
+        let paidPrincipal = loanPayments.reduce((sum, p) => sum + Number(p.principalPaid || 0), 0);
+        let paidInterest = loanPayments.reduce((sum, p) => sum + Number(p.interestPaid || 0), 0);
+        let totalPaid = paidPrincipal + paidInterest;
 
-        if (loan.status === "APPROVED" || loan.status === "ACTIVE") {
+        totalLoanAmount += amount;
+        expectedInterest += expectedInt;
+        totalRepaid += totalPaid;
+        interestCollected += paidInterest;
 
+        if (loan.status === "ACTIVE") {
             active++;
-
-            totalLoanAmount += amount;
-
-            expectedInterest += interest;
-
-            totalRepaid += paid;
-
-            outstanding += (amount + interest) - paid;
-
-            interestCollected += Number(loan.interestPaid || 0);
-
+            outstanding += balance;
         }
-
-        /* COMPLETED LOANS */
 
         if (loan.status === "COMPLETED") {
-
             completed++;
-
-            totalLoanAmount += amount;
-
-            expectedInterest += interest;
-
-            totalRepaid += (amount + interest);
-
-            interestCollected += interest;
-
-        }
-
-        /* LATE LOANS */
-
-        if (loan.status === "LATE") {
-
-            late++;
-
-            totalLoanAmount += amount;
-
-            expectedInterest += interest;
-
-            totalRepaid += paid;
-
-            outstanding += (amount + interest) - paid;
-
-            interestCollected += Number(loan.interestPaid || 0);
-
         }
 
     });
 
-    document.getElementById("totalClients").innerHTML =
-        DB.totalClients();
+    document.getElementById("totalClients").innerHTML = await DB.totalClients();
 
     document.getElementById("totalLoans").innerHTML =
         "KES " + totalLoanAmount.toLocaleString();
 
-    document.getElementById("activeLoans").innerHTML =
-        active;
+    document.getElementById("activeLoans").innerHTML = active;
 
-    document.getElementById("completedLoans").innerHTML =
-        completed;
+    document.getElementById("completedLoans").innerHTML = completed;
 
     document.getElementById("outstandingBalance").innerHTML =
         "KES " + outstanding.toLocaleString();
@@ -855,8 +804,10 @@ AUTH.adminLogout();
 
 
 
-
-loadStatistics();
+// START — wait for DB
+setTimeout(() => {
+    loadStatistics();
+}, 500);
 
 
 
