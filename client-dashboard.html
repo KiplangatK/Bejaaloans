@@ -444,7 +444,7 @@ My Profile
 
 
 
-<a href="client-portal.html">
+<a href="#" onclick="AUTH.clientLogout()">
 
 <i class="fa fa-right-from-bracket"></i>
 
@@ -703,14 +703,12 @@ KES 0
 
 
 </div>
-  <a href="index.html">
 
-<i class="fa fa-home"></i>
+</div>
 
-Home
 
-</a>
-  <!-- =========================
+
+<!-- =========================
      LOAN STATUS SECTION
 ========================= -->
 
@@ -900,420 +898,7 @@ style="width:0%">
 
 
 
-
-<script>
-
-
-// ===============================
-// LOAD CLIENT DASHBOARD DATA
-// ===============================
-
-
-
-document.addEventListener(
-
-"DOMContentLoaded",
-
-()=>{
-
-
-
-let client = AUTH.currentClient();
-
-
-
-
-if(!client){
-
-
-window.location.href="client-portal.html";
-
-
-return;
-
-
-}
-
-
-
-
-
-
-// PROFILE HEADER
-
-
-document.getElementById(
-
-"clientName"
-
-).innerHTML =
-
-client.fullname;
-
-
-
-
-document.getElementById(
-
-"clientNameTop"
-
-).innerHTML =
-
-client.fullname;
-
-
-
-
-
-
-document.getElementById(
-
-"clientPhoto"
-
-).src =
-
-client.profilePhoto ||
-
-"https://via.placeholder.com/100";
-
-
-
-
-
-
-
-// GET LOANS
-
-
-let loans = DB.getLoans();
-
-
-
-
-let loan = loans.find(l=>
-
-
-String(l.clientId)===String(client.id)
-
-&&
-
-l.status==="ACTIVE"
-
-
-);
-
-
-
-
-
-
-
-if(!loan){
-
-
-
-document.getElementById(
-
-"loanStatus"
-
-).innerHTML=`
-
-
-<div class="alert alert-warning">
-
-
-<i class="fa fa-info-circle"></i>
-
-
-You currently have no active loan.
-
-
-</div>
-
-
-`;
-
-
-
-return;
-
-
-}
-
-
-
-
-
-
-
-// ACTIVE LOAN CARD
-
-
-document.getElementById(
-
-"activeLoan"
-
-).innerHTML =
-
-money(loan.originalPrincipal);
-
-
-
-
-
-
-
-// BALANCE
-
-
-let balance = Number(
-
-loan.remainingPrincipal ||
-
-loan.originalPrincipal ||
-
-0
-
-);
-
-
-
-
-document.getElementById(
-
-"balance"
-
-).innerHTML =
-
-money(balance);
-
-
-
-
-
-
-
-
-// DUE DATE
-
-
-document.getElementById(
-
-"dueDate"
-
-).innerHTML =
-
-loan.dueDate || "-";
-
-
-
-
-
-
-
-// PAYMENT CALCULATION
-
-
-let payments = DB.getLoanPayments(
-
-loan.id
-
-);
-
-
-
-let totalPaid=0;
-
-
-
-payments.forEach(p=>{
-
-
-totalPaid += Number(
-
-p.amount || 0
-
-);
-
-
-});
-
-
-
-
-
-
-document.getElementById(
-
-"paid"
-
-).innerHTML =
-
-money(totalPaid);
-
-
-
-
-
-
-
-// PROGRESS
-
-
-let percentage = 0;
-
-
-
-if(Number(loan.originalPrincipal)>0){
-
-
-
-percentage = Math.round(
-
-(totalPaid /
-
-Number(loan.originalPrincipal))
-
-*100
-
-);
-
-
-}
-
-
-
-
-
-
-document.getElementById(
-
-"progressBar"
-
-).style.width =
-
-percentage+"%";
-
-
-
-
-
-document.getElementById(
-
-"progressBar"
-
-).innerHTML =
-
-percentage+"%";
-
-
-
-
-
-
-
-
-// LOAN STATUS BOX
-
-
-document.getElementById(
-
-"loanStatus"
-
-).innerHTML=`
-
-
-
-<div class="detail-box">
-
-
-<p>
-
-<b>Loan Amount:</b>
-
-${money(loan.originalPrincipal)}
-
-</p>
-
-
-
-<p>
-
-<b>Outstanding:</b>
-
-${money(balance)}
-
-</p>
-
-
-
-
-<p>
-
-<b>Loan Date:</b>
-
-${loan.loanDate || "-"}
-
-</p>
-
-
-
-
-<p>
-
-<b>Due Date:</b>
-
-${loan.dueDate || "-"}
-
-</p>
-
-
-
-
-<span class="badge bg-success">
-
-ACTIVE
-
-</span>
-
-
-
-</div>
-
-
-`;
-
-
-
-
-
-
-});
-
-
-
-
-
-
-
-
-
-function money(value){
-
-
-return "KES "+
-
-Number(value||0)
-
-.toLocaleString();
-
-
-}
-
-
-
-</script>
-  <!-- =========================
+<!-- =========================
      PAYMENT HISTORY BUTTON
 ========================= -->
 
@@ -1524,20 +1109,29 @@ data-bs-dismiss="modal">
 
 
 
-
-
-
-
 <script>
 
 
 // ===============================
-// SHOW PAYMENT HISTORY
+// MONEY FORMAT
+// ===============================
+
+function money(value){
+    return "KES " + Number(value || 0).toLocaleString();
+}
+
+
+// ===============================
+// LOAD CLIENT DASHBOARD DATA
 // ===============================
 
 
 
-function showPaymentHistory(){
+document.addEventListener(
+
+"DOMContentLoaded",
+
+async ()=>{
 
 
 
@@ -1546,7 +1140,397 @@ let client = AUTH.currentClient();
 
 
 
-let loans = DB.getLoans();
+if(!client){
+
+
+window.location.href="client-portal.html";
+
+
+return;
+
+
+}
+
+
+
+
+
+
+// PROFILE HEADER
+
+
+document.getElementById(
+
+"clientName"
+
+).innerHTML =
+
+client.fullname;
+
+
+
+
+document.getElementById(
+
+"clientNameTop"
+
+).innerHTML =
+
+client.fullname;
+
+
+
+
+
+
+document.getElementById(
+
+"clientPhoto"
+
+).src =
+
+client.profilePhoto ||
+
+"https://via.placeholder.com/100";
+
+
+
+
+
+
+
+// GET LOANS
+
+
+let loans = await DB.getLoans();
+
+
+
+
+let loan = loans.find(l=>
+
+
+String(l.clientId)===String(client.id)
+
+&&
+
+l.status==="ACTIVE"
+
+
+);
+
+
+
+
+
+
+
+if(!loan){
+
+
+
+document.getElementById(
+
+"loanStatus"
+
+).innerHTML=`
+
+
+<div class="alert alert-warning">
+
+
+<i class="fa fa-info-circle"></i>
+
+
+You currently have no active loan.
+
+
+</div>
+
+
+`;
+
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+// ACTIVE LOAN CARD
+
+
+document.getElementById(
+
+"activeLoan"
+
+).innerHTML =
+
+money(loan.originalPrincipal);
+
+
+
+
+
+
+
+// BALANCE
+
+
+let balance = Number(
+
+loan.remainingPrincipal ||
+
+loan.originalPrincipal ||
+
+0
+
+);
+
+
+
+
+document.getElementById(
+
+"balance"
+
+).innerHTML =
+
+money(balance);
+
+
+
+
+
+
+
+
+// DUE DATE
+
+
+document.getElementById(
+
+"dueDate"
+
+).innerHTML =
+
+loan.dueDate || "-";
+
+
+
+
+
+
+
+// PAYMENT CALCULATION
+
+
+let payments = await DB.getLoanPayments(
+
+loan.id
+
+);
+
+
+
+let totalPaid=0;
+
+
+
+payments.forEach(p=>{
+
+
+totalPaid += Number(
+
+p.amount || 0
+
+);
+
+
+});
+
+
+
+
+
+
+document.getElementById(
+
+"paid"
+
+).innerHTML =
+
+money(totalPaid);
+
+
+
+
+
+
+
+// PROGRESS
+
+
+let percentage = 0;
+
+
+
+if(Number(loan.originalPrincipal)>0){
+
+
+
+percentage = Math.round(
+
+(totalPaid /
+
+Number(loan.originalPrincipal))
+
+*100
+
+);
+
+
+}
+
+
+
+
+
+
+document.getElementById(
+
+"progressBar"
+
+).style.width =
+
+percentage+"%";
+
+
+
+
+
+document.getElementById(
+
+"progressBar"
+
+).innerHTML =
+
+percentage+"%";
+
+
+
+
+
+
+
+
+// LOAN STATUS BOX
+
+
+document.getElementById(
+
+"loanStatus"
+
+).innerHTML=`
+
+
+
+<div class="detail-box">
+
+
+<p>
+
+<b>Loan Amount:</b>
+
+${money(loan.originalPrincipal)}
+
+</p>
+
+
+
+<p>
+
+<b>Outstanding:</b>
+
+${money(balance)}
+
+</p>
+
+
+
+
+<p>
+
+<b>Loan Date:</b>
+
+${loan.loanDate || "-"}
+
+</p>
+
+
+
+
+<p>
+
+<b>Due Date:</b>
+
+${loan.dueDate || "-"}
+
+</p>
+
+
+
+
+<span class="badge bg-success">
+
+ACTIVE
+
+</span>
+
+
+
+</div>
+
+
+`;
+
+
+
+
+
+
+});
+
+
+
+
+
+
+
+
+
+// ===============================
+// SHOW PAYMENT HISTORY
+// ===============================
+
+
+
+async function showPaymentHistory(){
+
+
+
+let client = AUTH.currentClient();
+
+
+
+
+let loans = await DB.getLoans();
 
 
 
@@ -1614,7 +1598,7 @@ else{
 
 
 
-let payments = DB.getLoanPayments(
+let payments = await DB.getLoanPayments(
 
 loan.id
 
@@ -1760,7 +1744,7 @@ modal.show();
 
 
 
-function loadApplications(){
+async function loadApplications(){
 
 
 
@@ -1769,7 +1753,7 @@ let client = AUTH.currentClient();
 
 
 
-let applications = DB.getApplications();
+let applications = await DB.getApplications();
 
 
 
@@ -1936,29 +1920,6 @@ ${app.status}
 
 
 
-
-
-
-// MONEY FORMAT
-
-
-function money(value){
-
-
-return "KES "+
-
-Number(value||0)
-
-.toLocaleString();
-
-
-}
-
-
-
-
-
-
 // RUN
 
 
@@ -1978,9 +1939,3 @@ loadApplications();
 </body>
 
 </html>
-
-
-
-
-
-</div>
