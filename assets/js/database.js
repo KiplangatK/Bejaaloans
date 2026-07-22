@@ -1,7 +1,12 @@
 /*=========================================================
     BEJJA LOAN CREDIT
     DATABASE ENGINE
-    Version: 2.0
+    Version: 3.0
+
+    Optimized Storage Engine
+    - Reduced duplication
+    - Prevents storage overflow
+    - Ready for future MySQL migration
 =========================================================*/
 
 
@@ -19,73 +24,81 @@
 function initializeDatabase(){
 
 
-    const tables=[
+const tables=[
 
-        "clients",
-        "loanApplications",
-        "loans",
-        "payments",
-        "staff"
+"clients",
 
-    ];
+"loanApplications",
 
+"loans",
 
+"payments",
 
-    tables.forEach(table=>{
+"staff"
 
-
-        if(!localStorage.getItem(table)){
-
-
-            localStorage.setItem(
-                table,
-                JSON.stringify([])
-            );
-
-
-        }
-
-
-    });
+];
 
 
 
-    // Default Admin
+
+tables.forEach(table=>{
 
 
-    if(
-        JSON.parse(
-            localStorage.getItem("staff")
-        ).length===0
-    ){
+if(!localStorage.getItem(table)){
 
 
-        localStorage.setItem(
+localStorage.setItem(
 
-            "staff",
+table,
 
-            JSON.stringify([
+JSON.stringify([])
 
-                {
-
-                    id:1,
-
-                    username:"admin",
-
-                    password:"admin123",
-
-                    role:"Administrator",
-
-                    active:true
-
-                }
-
-            ])
-
-        );
+);
 
 
-    }
+}
+
+
+});
+
+
+
+
+
+// DEFAULT ADMIN
+
+
+let staff = read("staff");
+
+
+
+if(staff.length===0){
+
+
+
+write(
+
+"staff",
+
+[
+
+{
+
+id:1,
+
+username:"admin",
+
+password:"admin123",
+
+role:"Administrator",
+
+active:true
+
+}
+
+]
+
+);
 
 
 
@@ -93,9 +106,7 @@ function initializeDatabase(){
 
 
 
-initializeDatabase();
-
-
+}
 
 
 
@@ -108,6 +119,9 @@ initializeDatabase();
 function read(key){
 
 
+try{
+
+
 return JSON.parse(
 
 localStorage.getItem(key)
@@ -117,10 +131,23 @@ localStorage.getItem(key)
 
 }
 
+catch(error){
+
+
+return [];
+
+
+}
+
+
+}
+
+
 
 
 
 function write(key,value){
+
 
 
 localStorage.setItem(
@@ -132,9 +159,15 @@ JSON.stringify(value)
 );
 
 
+
 }
 
 
+
+
+
+
+initializeDatabase();
 
 
 
@@ -174,6 +207,8 @@ data
 
 
 
+
+
 function addClient(client){
 
 
@@ -182,17 +217,22 @@ let clients=getClients();
 
 
 
+
 client.id=nextId(clients);
 
 
+
 client.createdAt=today();
+
 
 
 client.status="ACTIVE";
 
 
 
+
 clients.push(client);
+
 
 
 
@@ -210,22 +250,6 @@ return client;
 
 
 
-function getClientByPhone(phone){
-
-
-
-return getClients().find(
-
-c=>c.phone===phone
-
-);
-
-
-}
-
-
-
-
 
 
 function getClientById(id){
@@ -234,12 +258,39 @@ function getClientById(id){
 
 return getClients().find(
 
+
 c=>String(c.id)===String(id)
+
 
 );
 
 
+
 }
+
+
+
+
+
+
+
+
+function getClientByPhone(phone){
+
+
+
+return getClients().find(
+
+
+c=>c.phone===phone
+
+
+);
+
+
+
+}
+
 
 
 
@@ -251,6 +302,7 @@ function updateClient(client){
 
 
 let clients=getClients();
+
 
 
 
@@ -268,6 +320,7 @@ client
 c
 
 
+
 );
 
 
@@ -277,6 +330,7 @@ saveClients(clients);
 
 
 }
+
 
 
 
@@ -304,27 +358,52 @@ saveClients(clients);
 
 
 }
+
+
+
+
+
+
+
+
+
 /*=========================================================
-    LOAN APPLICATIONS
+ LOAN APPLICATION MANAGEMENT
 =========================================================*/
+
+
+
 
 
 function getApplications(){
 
-    return read("loanApplications");
+
+return read("loanApplications");
+
 
 }
+
+
 
 
 
 function saveApplications(data){
 
-    write(
-        "loanApplications",
-        data
-    );
+
+write(
+
+"loanApplications",
+
+data
+
+);
+
 
 }
+
+
+
+
 
 
 
@@ -333,33 +412,52 @@ function saveApplications(data){
 function addApplication(application){
 
 
-    let applications=getApplications();
+
+let applications=getApplications();
 
 
 
-    application.id=nextId(applications);
 
-
-    application.applicationDate=today();
-
-
-    application.status="PENDING";
+application.id=nextId(applications);
 
 
 
-    applications.push(application);
+application.applicationDate=today();
 
 
 
-    saveApplications(applications);
+application.status="PENDING";
 
 
 
-    return application;
+
+
+/*
+ IMPORTANT:
+
+ Documents stay here only.
+ They will NOT be copied into loans.
+*/
+
+
+
+
+applications.push(application);
+
+
+
+saveApplications(applications);
+
+
+
+return application;
 
 
 
 }
+
+
+
 
 
 
@@ -369,14 +467,20 @@ function addApplication(application){
 function getApplication(id){
 
 
-    return getApplications().find(
 
-        a=>String(a.id)===String(id)
+return getApplications().find(
 
-    );
+
+a=>String(a.id)===String(id)
+
+
+);
+
 
 
 }
+
+
 
 
 
@@ -386,33 +490,37 @@ function getApplication(id){
 function updateApplication(application){
 
 
-    let applications=getApplications();
+
+let applications=getApplications();
 
 
 
-    applications=applications.map(a=>
+applications=applications.map(a=>
 
 
-        String(a.id)===String(application.id)
+String(a.id)===String(application.id)
 
-        ?
+?
 
-        application
+application
 
-        :
+:
 
-        a
-
-
-    );
+a
 
 
 
-    saveApplications(applications);
+);
+
+
+
+
+saveApplications(applications);
 
 
 
 }
+
 
 
 
@@ -423,19 +531,21 @@ function deleteApplication(id){
 
 
 
-    let applications=getApplications();
+let applications=getApplications();
 
 
 
-    applications=applications.filter(a=>
-
-        String(a.id)!==String(id)
-
-    );
+applications=applications.filter(a=>
 
 
+String(a.id)!==String(id)
 
-    saveApplications(applications);
+
+);
+
+
+
+saveApplications(applications);
 
 
 
@@ -445,6 +555,13 @@ function deleteApplication(id){
 
 
 
+
+/*=========================================================
+ END PART 1
+=========================================================*/
+
+
+window.BEJJA_DB_PART1=true;
 
 
 /*=========================================================
@@ -459,7 +576,6 @@ return read("loans");
 
 
 }
-
 
 
 
@@ -485,11 +601,14 @@ data
 
 
 
+
+
 function addLoan(loan){
 
 
 
 let loans=getLoans();
+
 
 
 
@@ -501,7 +620,102 @@ loan.createdAt=today();
 
 
 
-loans.push(loan);
+
+
+/*
+ IMPORTANT OPTIMIZATION
+
+ We only store financial data here.
+
+ No photos.
+ No ID images.
+ No duplicated documents.
+
+*/
+
+
+
+
+let cleanLoan={
+
+
+
+id:loan.id,
+
+
+clientId:loan.clientId,
+
+
+applicationId:loan.applicationId,
+
+
+
+amount:Number(loan.amount||0),
+
+
+
+originalPrincipal:Number(
+
+loan.originalPrincipal||loan.amount||0
+
+),
+
+
+
+remainingPrincipal:Number(
+
+loan.remainingPrincipal||loan.amount||0
+
+),
+
+
+
+purpose:loan.purpose || "",
+
+
+
+interestRate:Number(
+
+loan.interestRate||20
+
+),
+
+
+
+currentInterest:Number(
+
+loan.currentInterest||0
+
+),
+
+
+
+loanDate:loan.loanDate || today(),
+
+
+
+dueDate:loan.dueDate || "",
+
+
+
+approvedBy:loan.approvedBy || "",
+
+
+
+status:loan.status || "ACTIVE",
+
+
+
+payments:[]
+
+};
+
+
+
+
+
+loans.push(cleanLoan);
+
 
 
 
@@ -509,11 +723,13 @@ saveLoans(loans);
 
 
 
-return loan;
+return cleanLoan;
 
 
 
 }
+
+
 
 
 
@@ -526,12 +742,18 @@ function getLoan(id){
 
 return getLoans().find(
 
+
 l=>String(l.id)===String(id)
+
 
 );
 
 
+
 }
+
+
+
 
 
 
@@ -544,12 +766,19 @@ function getLoanByClient(clientId){
 
 return getLoans().find(
 
+
+
 l=>
+
 
 
 String(l.clientId)===String(clientId)
 
+
+
 &&
+
+
 
 l.status==="ACTIVE"
 
@@ -567,11 +796,13 @@ l.status==="ACTIVE"
 
 
 
+
 function updateLoan(loan){
 
 
 
 let loans=getLoans();
+
 
 
 
@@ -589,7 +820,10 @@ loan
 l
 
 
+
 );
+
+
 
 
 
@@ -598,6 +832,8 @@ saveLoans(loans);
 
 
 }
+
+
 
 
 
@@ -614,7 +850,9 @@ let loans=getLoans();
 
 loans=loans.filter(l=>
 
+
 String(l.id)!==String(id)
+
 
 );
 
@@ -633,9 +871,13 @@ saveLoans(loans);
 
 
 
+
 /*=========================================================
-    PAYMENTS
+ PAYMENT MANAGEMENT
 =========================================================*/
+
+
+
 
 
 function getPayments(){
@@ -645,7 +887,6 @@ return read("payments");
 
 
 }
-
 
 
 
@@ -671,11 +912,15 @@ data
 
 
 
+
+
+
 function addPayment(payment){
 
 
 
 let payments=getPayments();
+
 
 
 
@@ -687,11 +932,66 @@ payment.date=today();
 
 
 
+
+
 payments.push(payment);
 
 
 
+
 savePayments(payments);
+
+
+
+
+
+
+
+// UPDATE LOAN BALANCE
+
+
+let loan=getLoan(payment.loanId);
+
+
+
+if(loan){
+
+
+
+loan.remainingPrincipal =
+
+Number(loan.remainingPrincipal)
+
+-
+
+Number(payment.principalPaid || payment.amount || 0);
+
+
+
+
+
+if(loan.remainingPrincipal<=0){
+
+
+loan.remainingPrincipal=0;
+
+
+loan.status="COMPLETED";
+
+
+}
+
+
+
+updateLoan(loan);
+
+
+
+}
+
+
+
+
 
 
 
@@ -706,15 +1006,23 @@ return payment;
 
 
 
+
+
+
 function getLoanPayments(loanId){
 
 
 
-return getPayments().filter(p=>
+return getPayments().filter(
 
-String(p.loanId)===String(loanId)
+
+
+p=>String(p.loanId)===String(loanId)
+
+
 
 );
+
 
 
 }
@@ -725,9 +1033,14 @@ String(p.loanId)===String(loanId)
 
 
 
+
+
 /*=========================================================
-    STAFF MANAGEMENT
+ STAFF MANAGEMENT
 =========================================================*/
+
+
+
 
 
 function getStaff(){
@@ -737,6 +1050,9 @@ return read("staff");
 
 
 }
+
+
+
 
 
 
@@ -761,9 +1077,16 @@ data
 
 
 
+
+
+
 /*=========================================================
-    DASHBOARD STATISTICS
+ DASHBOARD STATISTICS
 =========================================================*/
+
+
+
+
 
 
 function totalClients(){
@@ -779,18 +1102,25 @@ return getClients().length;
 
 
 
+
+
 function pendingApplications(){
 
 
 
-return getApplications().filter(a=>
+return getApplications().filter(
 
-a.status==="PENDING"
+
+a=>a.status==="PENDING"
+
 
 ).length;
 
 
+
 }
+
+
 
 
 
@@ -801,14 +1131,18 @@ function approvedLoans(){
 
 
 
-return getLoans().filter(l=>
+return getLoans().filter(
 
-l.status==="ACTIVE"
+
+l=>l.status==="ACTIVE"
+
 
 ).length;
 
 
+
 }
+
 
 
 
@@ -820,14 +1154,18 @@ function rejectedLoans(){
 
 
 
-return getApplications().filter(a=>
+return getApplications().filter(
 
-a.status==="REJECTED"
+
+a=>a.status==="REJECTED"
+
 
 ).length;
 
 
+
 }
+
 
 
 
@@ -846,9 +1184,9 @@ let total=0;
 getLoans().forEach(l=>{
 
 
-total+=Number(
+total += Number(
 
-l.originalPrincipal||0
+l.originalPrincipal || 0
 
 );
 
@@ -861,7 +1199,9 @@ l.originalPrincipal||0
 return total;
 
 
+
 }
+
 
 
 
@@ -880,9 +1220,9 @@ let total=0;
 getLoans().forEach(l=>{
 
 
-total+=Number(
+total += Number(
 
-l.remainingPrincipal||0
+l.remainingPrincipal || 0
 
 );
 
@@ -895,7 +1235,9 @@ l.remainingPrincipal||0
 return total;
 
 
+
 }
+
 
 
 
@@ -914,9 +1256,9 @@ let total=0;
 getPayments().forEach(p=>{
 
 
-total+=Number(
+total += Number(
 
-p.interestPaid||0
+p.interestPaid || 0
 
 );
 
@@ -929,7 +1271,9 @@ p.interestPaid||0
 return total;
 
 
+
 }
+
 
 
 
@@ -948,9 +1292,9 @@ let total=0;
 getPayments().forEach(p=>{
 
 
-total+=Number(
+total += Number(
 
-p.principalPaid||0
+p.principalPaid || 0
 
 );
 
@@ -963,8 +1307,17 @@ p.principalPaid||0
 return total;
 
 
+
 }
-  /*=========================================================
+
+
+
+
+
+/*=========================================================
+ END PART 2
+=========================================================*/
+ /*=========================================================
     HELPERS
 =========================================================*/
 
@@ -972,26 +1325,35 @@ return total;
 function nextId(array){
 
 
-    if(array.length===0){
-
-        return 1;
-
-    }
+if(array.length===0){
 
 
-
-    return Math.max(
-
-        ...array.map(item=>
-
-            Number(item.id)||0
-
-        )
-
-    )+1;
+return 1;
 
 
 }
+
+
+
+return Math.max(
+
+
+...array.map(item=>
+
+
+Number(item.id)||0
+
+
+)
+
+
+)+1;
+
+
+
+}
+
+
 
 
 
@@ -1002,12 +1364,14 @@ function nextId(array){
 function today(){
 
 
-    return new Date()
+return new Date()
 
-    .toLocaleDateString("en-KE");
+.toLocaleDateString("en-KE");
 
 
 }
+
+
 
 
 
@@ -1018,18 +1382,22 @@ function today(){
 function nextMonthDate(){
 
 
-    let d=new Date();
 
-
-    d.setMonth(
-
-        d.getMonth()+1
-
-    );
+let d=new Date();
 
 
 
-    return d.toLocaleDateString("en-KE");
+d.setMonth(
+
+d.getMonth()+1
+
+);
+
+
+
+
+return d.toLocaleDateString("en-KE");
+
 
 
 }
@@ -1040,14 +1408,111 @@ function nextMonthDate(){
 
 
 
+
+
 function formatMoney(value){
 
 
-    return "KES " +
 
-    Number(value||0)
+return "KES " +
 
-    .toLocaleString();
+
+Number(value||0)
+
+.toLocaleString();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/*=========================================================
+ DATABASE CLEANUP TOOL
+
+ Removes old oversized duplicate loans
+=========================================================*/
+
+
+function optimizeDatabase(){
+
+
+
+let loans=getLoans();
+
+
+
+let cleaned=loans.map(l=>{
+
+
+return {
+
+
+id:l.id,
+
+
+clientId:l.clientId,
+
+
+applicationId:l.applicationId,
+
+
+amount:l.amount,
+
+
+originalPrincipal:l.originalPrincipal,
+
+
+remainingPrincipal:l.remainingPrincipal,
+
+
+purpose:l.purpose,
+
+
+interestRate:l.interestRate,
+
+
+currentInterest:l.currentInterest,
+
+
+loanDate:l.loanDate,
+
+
+dueDate:l.dueDate,
+
+
+approvedBy:l.approvedBy,
+
+
+status:l.status,
+
+
+payments:[]
+
+
+
+};
+
+
+
+});
+
+
+
+
+
+saveLoans(cleaned);
+
+
+
+
+return cleaned.length;
 
 
 
@@ -1061,7 +1526,7 @@ function formatMoney(value){
 
 
 /*=========================================================
-    PUBLIC DATABASE API
+ PUBLIC DATABASE API
 =========================================================*/
 
 
@@ -1069,122 +1534,186 @@ window.DB={
 
 
 
-    /* CLIENTS */
+/* CLIENTS */
 
-    getClients,
 
-    saveClients,
+getClients,
 
-    addClient,
 
-    getClientByPhone,
+saveClients,
 
-    getClientById,
 
-    updateClient,
+addClient,
 
-    deleteClient,
 
+getClientById,
 
 
+getClientByPhone,
 
 
-    /* APPLICATIONS */
+updateClient,
 
-    getApplications,
 
-    saveApplications,
+deleteClient,
 
-    addApplication,
 
-    getApplication,
 
-    updateApplication,
 
-    deleteApplication,
 
+/* APPLICATIONS */
 
 
+getApplications,
 
 
-    /* LOANS */
+saveApplications,
 
-    getLoans,
 
-    saveLoans,
+addApplication,
 
-    addLoan,
 
-    getLoan,
+getApplication,
 
-    getLoanByClient,
 
-    updateLoan,
+updateApplication,
 
-    deleteLoan,
 
+deleteApplication,
 
 
 
 
-    /* PAYMENTS */
 
-    getPayments,
 
-    savePayments,
+/* LOANS */
 
-    addPayment,
 
-    getLoanPayments,
+getLoans,
 
 
+saveLoans,
 
 
+addLoan,
 
-    /* STAFF */
 
-    getStaff,
+getLoan,
 
-    saveStaff,
 
+getLoanByClient,
 
 
+updateLoan,
 
 
-    /* STATISTICS */
+deleteLoan,
 
-    totalClients,
 
-    pendingApplications,
 
-    approvedLoans,
 
-    rejectedLoans,
 
-    totalPrincipalIssued,
 
-    outstandingPrincipal,
+/* PAYMENTS */
 
-    totalInterestCollected,
 
-    totalPrincipalCollected,
+getPayments,
 
 
+savePayments,
 
 
+addPayment,
 
-    /* HELPERS */
 
-    today,
+getLoanPayments,
 
-    nextMonthDate,
 
-    formatMoney
+
+
+
+
+/* STAFF */
+
+
+getStaff,
+
+
+saveStaff,
+
+
+
+
+
+
+
+/* STATISTICS */
+
+
+totalClients,
+
+
+pendingApplications,
+
+
+approvedLoans,
+
+
+rejectedLoans,
+
+
+totalPrincipalIssued,
+
+
+outstandingPrincipal,
+
+
+totalInterestCollected,
+
+
+totalPrincipalCollected,
+
+
+
+
+
+
+/* HELPERS */
+
+
+today,
+
+
+nextMonthDate,
+
+
+formatMoney,
+
+
+
+
+
+
+/* MAINTENANCE */
+
+
+optimizeDatabase
 
 
 
 };
 
+
+
+
+
+
+
+console.log(
+
+"BEJJA DATABASE ENGINE V3.0 LOADED"
+
+);
 
 
 
