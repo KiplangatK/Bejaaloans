@@ -14,7 +14,8 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
 
 
@@ -22,13 +23,9 @@
 
 
 *{
-
 margin:0;
-
 padding:0;
-
 box-sizing:border-box;
-
 }
 
 
@@ -48,17 +45,9 @@ sans-serif;
 
 
 
-.wrapper{
-
-display:flex;
-
-}
-
-
-
-
-
-/* SIDEBAR */
+/* ==========================
+SIDEBAR
+========================== */
 
 
 .sidebar{
@@ -73,6 +62,10 @@ color:white;
 
 position:fixed;
 
+left:0;
+
+top:0;
+
 }
 
 
@@ -85,7 +78,7 @@ font-size:28px;
 
 font-weight:bold;
 
-border-bottom:1px solid rgba(255,255,255,.15);
+border-bottom:1px solid rgba(255,255,255,.2);
 
 }
 
@@ -113,9 +106,9 @@ padding:15px 0;
 
 display:block;
 
-color:white;
-
 padding:15px 25px;
+
+color:white;
 
 text-decoration:none;
 
@@ -145,22 +138,26 @@ width:25px;
 
 
 
-/* MAIN */
+
+/* ==========================
+MAIN
+========================== */
 
 
 .main{
 
 margin-left:260px;
 
-width:100%;
+width:calc(100% - 260px);
 
 }
 
 
 
 
-
-/* TOPBAR */
+/* ==========================
+TOP BAR
+========================== */
 
 
 .topbar{
@@ -173,14 +170,13 @@ color:white;
 
 display:flex;
 
-justify-content:space-between;
-
 align-items:center;
+
+justify-content:space-between;
 
 padding:0 30px;
 
-box-shadow:
-0 2px 10px rgba(0,0,0,.15);
+box-shadow:0 3px 10px rgba(0,0,0,.15);
 
 }
 
@@ -194,19 +190,12 @@ font-size:28px;
 
 
 
-.topbar a{
-
-color:white;
-
-text-decoration:none;
-
-}
 
 
 
-
-
-/* CONTENT */
+/* ==========================
+CONTENT
+========================== */
 
 
 .content{
@@ -218,22 +207,18 @@ padding:30px;
 
 
 
-
-/* TABLE CARD */
-
-
 .table-card{
 
 background:white;
 
-border-radius:12px;
-
-box-shadow:
-0 5px 15px rgba(0,0,0,.1);
+border-radius:15px;
 
 overflow:hidden;
 
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+
 }
+
 
 
 
@@ -254,17 +239,16 @@ font-weight:bold;
 
 
 
+
 table{
 
 width:100%;
-
-border-collapse:collapse;
 
 }
 
 
 
-th{
+.table th{
 
 background:#e3f2fd;
 
@@ -274,11 +258,12 @@ color:#0d47a1;
 
 
 
-th,td{
+.table td,
+.table th{
 
 padding:15px;
 
-border-bottom:1px solid #eee;
+vertical-align:middle;
 
 }
 
@@ -288,21 +273,73 @@ border-bottom:1px solid #eee;
 
 .profile-img{
 
-width:45px;
+width:50px;
 
-height:45px;
+height:50px;
 
 border-radius:50%;
 
 object-fit:cover;
+
+border:2px solid #1976d2;
 
 }
 
 
 
 
-</style>
 
+.status-active{
+
+background:#198754;
+
+color:white;
+
+padding:6px 12px;
+
+border-radius:20px;
+
+}
+
+
+
+.status-suspended{
+
+background:#dc3545;
+
+color:white;
+
+padding:6px 12px;
+
+border-radius:20px;
+
+}
+
+
+
+.btn-view{
+
+background:#1976d2;
+
+color:white;
+
+border-radius:20px;
+
+}
+
+
+
+.btn-view:hover{
+
+background:#0d47a1;
+
+color:white;
+
+}
+
+
+
+</style>
 
 </head>
 
@@ -316,9 +353,9 @@ object-fit:cover;
 
 
 
-
-
-<!-- SIDEBAR -->
+<!-- ==========================
+SIDEBAR
+========================== -->
 
 
 <div class="sidebar">
@@ -354,7 +391,6 @@ Dashboard
 
 
 
-
 <li>
 
 <a href="registered-clients.html">
@@ -366,7 +402,6 @@ Registered Clients
 </a>
 
 </li>
-
 
 
 
@@ -386,30 +421,13 @@ Active Loans
 
 
 
-
-<li>
-
-<a href="#">
-
-<i class="fa-solid fa-triangle-exclamation"></i>
-
-Late Loans
-
-</a>
-
-</li>
-
-
-
-
-
 <li>
 
 <a href="loan-applications.html">
 
 <i class="fa-solid fa-file-circle-check"></i>
 
-Pending Applications
+Loan Applications
 
 </a>
 
@@ -418,46 +436,13 @@ Pending Applications
 
 
 
-
 <li>
 
-<a href="#">
+<a href="admin-login.html">
 
-<i class="fa-solid fa-user-tie"></i>
+<i class="fa-solid fa-right-from-bracket"></i>
 
-Staff
-
-</a>
-
-</li>
-
-
-
-
-
-<li>
-
-<a href="#">
-
-<i class="fa-solid fa-chart-column"></i>
-
-Reports
-
-</a>
-
-</li>
-
-
-
-
-
-<li>
-
-<a href="#">
-
-<i class="fa-solid fa-gear"></i>
-
-Settings
+Logout
 
 </a>
 
@@ -474,12 +459,12 @@ Settings
 
 
 
-<!-- MAIN CONTENT -->
+<!-- ==========================
+MAIN CONTENT
+========================== -->
 
 
 <div class="main">
-
-
 
 
 
@@ -494,8 +479,8 @@ Registered Clients
 
 
 
-<div>
 
+<div>
 
 Welcome,
 
@@ -506,24 +491,16 @@ Admin
 </strong>
 
 
-
-|
-
-
-<a href="#" onclick="logout()">
-
-Logout
-
-</a>
-
-
-
 </div>
 
 
 
 </div>
-<!-- CONTENT -->
+
+
+
+
+
 
 <div class="content">
 
@@ -537,7 +514,7 @@ Logout
 
 <i class="fa-solid fa-users"></i>
 
- Registered Clients List
+Registered Clients List
 
 </div>
 
@@ -548,7 +525,7 @@ Logout
 <div class="table-responsive">
 
 
-<table>
+<table class="table table-hover mb-0">
 
 
 <thead>
@@ -556,59 +533,44 @@ Logout
 
 <tr>
 
-<th>
 
+<th>
 #
-
 </th>
 
 
 <th>
-
-Profile
-
+Photo
 </th>
 
 
 <th>
-
 Full Name
-
 </th>
 
 
 <th>
-
-Phone Number
-
+Phone
 </th>
 
 
 <th>
-
 ID Number
-
 </th>
 
 
 <th>
-
 Registration Date
-
 </th>
 
 
 <th>
-
 Status
-
 </th>
 
 
 <th>
-
 Action
-
 </th>
 
 
@@ -636,33 +598,15 @@ Action
 </div>
 
 
-
-</div>
-
-
-
+ <!-- ================================
+     CLIENT DETAILS MODAL
+================================ -->
 
 
-</div>
+<div class="modal fade" id="clientModal" tabindex="-1">
 
 
-</div>
-
-
-
-
-
-
-
-
-
-<!-- CLIENT DETAILS MODAL -->
-
-
-<div class="modal fade" id="clientModal">
-
-
-<div class="modal-dialog modal-lg">
+<div class="modal-dialog modal-xl">
 
 
 <div class="modal-content">
@@ -675,6 +619,8 @@ Action
 
 
 <h5 class="modal-title">
+
+<i class="fa fa-user"></i>
 
 Client Full Details
 
@@ -703,22 +649,40 @@ data-bs-dismiss="modal">
 
 
 
-<div class="row">
 
 
+<!-- CLIENT INFORMATION -->
+
+
+<div class="row mb-4">
 
 
 
 <div class="col-md-4 text-center">
 
 
+
 <img id="viewPhoto"
 
 src=""
 
-class="img-fluid rounded-circle mb-3"
+class="rounded-circle"
 
-style="width:150px;height:150px;object-fit:cover;">
+style="width:160px;height:160px;object-fit:cover;border:4px solid #1976d2;">
+
+
+
+
+
+<h4 class="mt-3"
+
+id="viewName">
+
+</h4>
+
+
+
+<span id="viewStatus"></span>
 
 
 
@@ -735,25 +699,26 @@ style="width:150px;height:150px;object-fit:cover;">
 
 
 
-<table class="table">
+<h5 class="text-primary">
+
+Client Information
+
+</h5>
 
 
 
-<tr>
 
-<th>Name</th>
-
-<td id="viewName"></td>
-
-</tr>
-
-
-
+<table class="table table-bordered">
 
 
 <tr>
 
-<th>Phone</th>
+<th>
+
+Phone Number
+
+</th>
+
 
 <td id="viewPhone"></td>
 
@@ -762,10 +727,14 @@ style="width:150px;height:150px;object-fit:cover;">
 
 
 
-
 <tr>
 
-<th>ID Number</th>
+<th>
+
+National ID
+
+</th>
+
 
 <td id="viewId"></td>
 
@@ -777,7 +746,12 @@ style="width:150px;height:150px;object-fit:cover;">
 
 <tr>
 
-<th>Email</th>
+<th>
+
+Email
+
+</th>
+
 
 <td id="viewEmail"></td>
 
@@ -789,7 +763,80 @@ style="width:150px;height:150px;object-fit:cover;">
 
 <tr>
 
-<th>Address</th>
+<th>
+
+Occupation
+
+</th>
+
+
+<td id="viewOccupation"></td>
+
+</tr>
+
+
+
+
+
+<tr>
+
+<th>
+
+Employer / Business
+
+</th>
+
+
+<td id="viewEmployer"></td>
+
+</tr>
+
+
+
+
+
+<tr>
+
+<th>
+
+Monthly Income
+
+</th>
+
+
+<td id="viewIncome"></td>
+
+</tr>
+
+
+
+
+
+<tr>
+
+<th>
+
+County
+
+</th>
+
+
+<td id="viewCounty"></td>
+
+</tr>
+
+
+
+
+
+<tr>
+
+<th>
+
+Address
+
+</th>
+
 
 <td id="viewAddress"></td>
 
@@ -801,21 +848,14 @@ style="width:150px;height:150px;object-fit:cover;">
 
 <tr>
 
-<th>Registered</th>
+<th>
+
+Registered Date
+
+</th>
+
 
 <td id="viewDate"></td>
-
-</tr>
-
-
-
-
-
-<tr>
-
-<th>Status</th>
-
-<td id="viewStatus"></td>
 
 </tr>
 
@@ -824,12 +864,13 @@ style="width:150px;height:150px;object-fit:cover;">
 </table>
 
 
+</div>
+
 
 </div>
 
 
 
-</div>
 
 
 
@@ -842,7 +883,114 @@ style="width:150px;height:150px;object-fit:cover;">
 
 
 
-<h5>
+
+<!-- DOCUMENTS -->
+
+
+<h5 class="text-primary">
+
+<i class="fa fa-file"></i>
+
+Verification Documents
+
+</h5>
+
+
+
+<div class="row mb-4">
+
+
+
+<div class="col-md-4 text-center">
+
+
+<h6>
+
+National ID Front
+
+</h6>
+
+
+<img id="viewIdFront"
+
+class="img-fluid rounded shadow"
+
+style="height:180px;width:100%;object-fit:contain;">
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="col-md-4 text-center">
+
+
+<h6>
+
+National ID Back
+
+</h6>
+
+
+<img id="viewIdBack"
+
+class="img-fluid rounded shadow"
+
+style="height:180px;width:100%;object-fit:contain;">
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="col-md-4 text-center">
+
+
+<h6>
+
+Profile Photo
+
+</h6>
+
+
+<img id="viewProfile"
+
+class="img-fluid rounded shadow"
+
+style="height:180px;width:100%;object-fit:contain;">
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- GUARANTORS -->
+
+
+<h5 class="text-primary">
+
+<i class="fa fa-users"></i>
 
 Guarantor Details
 
@@ -850,19 +998,42 @@ Guarantor Details
 
 
 
+
 <table class="table table-bordered">
 
 
-<thead>
+<thead class="table-primary">
 
 
 <tr>
 
-<th>Name</th>
 
-<th>Phone</th>
+<th>
 
-<th>ID Number</th>
+Name
+
+</th>
+
+
+<th>
+
+Phone
+
+</th>
+
+
+<th>
+
+ID Number
+
+</th>
+
+
+<th>
+
+Relationship
+
+</th>
 
 
 </tr>
@@ -878,6 +1049,7 @@ Guarantor Details
 </tbody>
 
 
+
 </table>
 
 
@@ -885,13 +1057,17 @@ Guarantor Details
 
 
 
-<hr>
 
 
 
 
 
-<h5>
+<!-- LOAN HISTORY -->
+
+
+<h5 class="text-primary mt-4">
+
+<i class="fa fa-money-bill"></i>
 
 Loan History
 
@@ -899,13 +1075,15 @@ Loan History
 
 
 
+
 <table class="table table-bordered">
 
 
-<thead>
+<thead class="table-primary">
 
 
 <tr>
+
 
 <th>
 
@@ -941,31 +1119,104 @@ Date
 </tbody>
 
 
+
 </table>
 
 
 
 
 
-</div>
+
+
+
+
+<!-- ADMIN ACTIONS -->
+
+
+<div class="text-center mt-4">
 
 
 
 
 
-<div class="modal-footer">
+<button
+
+class="btn btn-success me-2"
+
+onclick="activateClient()">
 
 
-<button class="btn btn-secondary"
 
-data-bs-dismiss="modal">
+<i class="fa fa-check"></i>
 
-Close
+Activate Client
+
 
 </button>
 
 
-</div>
+
+
+
+
+
+<button
+
+class="btn btn-warning text-white me-2"
+
+onclick="suspendClient()">
+
+
+
+<i class="fa fa-ban"></i>
+
+Suspend Client
+
+
+</button>
+
+
+
+
+
+
+
+
+<button
+
+class="btn btn-danger me-2"
+
+onclick="deleteClient()">
+
+
+
+<i class="fa fa-trash"></i>
+
+Delete Client
+
+
+</button>
+
+
+
+
+
+
+
+<button
+
+class="btn btn-secondary"
+
+data-bs-dismiss="modal">
+
+
+
+<i class="fa fa-arrow-left"></i>
+
+Back
+
+
+</button>
 
 
 
@@ -974,29 +1225,49 @@ Close
 </div>
 
 
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
 </div>
 
 
 </div>
+
+
+</div>
+
+
+
+
+
+
 <!-- DATABASE -->
 
+
 <script src="assets/js/database.js"></script>
+
+
 <script src="assets/js/auth.js"></script>
 
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+ <script>
 
 
-
-
-
-<script>
-
-
-/*====================================
- ADMIN SECURITY
-====================================*/
+// =====================================
+// ADMIN SECURITY
+// =====================================
 
 
 if(!AUTH.currentAdmin()){
@@ -1011,14 +1282,12 @@ window.location.href="admin-login.html";
 
 
 
+// =====================================
+// SHOW ADMIN NAME
+// =====================================
 
 
-/*====================================
- ADMIN NAME
-====================================*/
-
-
-const admin = AUTH.currentAdmin();
+let admin = AUTH.currentAdmin();
 
 
 
@@ -1038,11 +1307,46 @@ admin.username;
 
 
 
+// =====================================
+// CURRENT SELECTED CLIENT
+// =====================================
 
 
-/*====================================
- LOAD CLIENTS
-====================================*/
+let selectedClientId = null;
+
+
+
+
+
+
+
+
+
+// =====================================
+// MONEY FORMAT
+// =====================================
+
+
+function money(value){
+
+
+return "KES " +
+
+Number(value || 0).toLocaleString();
+
+
+}
+
+
+
+
+
+
+
+
+// =====================================
+// LOAD CLIENTS TABLE
+// =====================================
 
 
 function loadClients(){
@@ -1054,7 +1358,9 @@ let clients = DB.getClients();
 
 
 let table = document.getElementById(
+
 "clientsTable"
+
 );
 
 
@@ -1068,8 +1374,8 @@ table.innerHTML="";
 if(clients.length===0){
 
 
-
 table.innerHTML=`
+
 
 <tr>
 
@@ -1085,7 +1391,9 @@ No registered clients found.
 
 </tr>
 
+
 `;
+
 
 return;
 
@@ -1098,21 +1406,39 @@ return;
 
 
 
-
-
-
 clients.forEach((client,index)=>{
 
 
 
-
-
-
-let photo = client.profilePhoto ?
-
-client.profilePhoto :
+let photo = client.profilePhoto || 
 
 "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
+
+
+
+
+let status = client.status || "ACTIVE";
+
+
+
+let badge = status==="ACTIVE"
+
+?
+
+`<span class="status-active">
+
+ACTIVE
+
+</span>`
+
+:
+
+`<span class="status-suspended">
+
+SUSPENDED
+
+</span>`;
 
 
 
@@ -1123,7 +1449,9 @@ client.profilePhoto :
 table.innerHTML += `
 
 
+
 <tr>
+
 
 
 <td>
@@ -1131,6 +1459,7 @@ table.innerHTML += `
 ${index+1}
 
 </td>
+
 
 
 
@@ -1146,11 +1475,13 @@ class="profile-img">
 
 
 
+
 <td>
 
 ${client.fullname || "-"}
 
 </td>
+
 
 
 
@@ -1166,11 +1497,13 @@ ${client.phone || "-"}
 
 
 
+
 <td>
 
-${client.idNumber || "-"}
+${client.nationalID || "-"}
 
 </td>
+
 
 
 
@@ -1186,15 +1519,10 @@ ${client.createdAt || "-"}
 
 
 
+
 <td>
 
-
-<span class="badge bg-success">
-
-${client.status || "ACTIVE"}
-
-</span>
-
+${badge}
 
 </td>
 
@@ -1206,11 +1534,13 @@ ${client.status || "ACTIVE"}
 <td>
 
 
+
 <button
 
-class="btn btn-primary btn-sm"
+class="btn btn-view btn-sm"
 
 onclick="viewClient(${client.id})">
+
 
 
 <i class="fa fa-eye"></i>
@@ -1221,10 +1551,8 @@ View Details
 </button>
 
 
+
 </td>
-
-
-
 
 
 
@@ -1236,12 +1564,7 @@ View Details
 
 
 
-
-
-
 });
-
-
 
 
 
@@ -1255,9 +1578,9 @@ View Details
 
 
 
-/*====================================
- VIEW CLIENT DETAILS
-====================================*/
+// =====================================
+// VIEW CLIENT DETAILS
+// =====================================
 
 
 function viewClient(id){
@@ -1278,12 +1601,44 @@ return;
 
 
 
+selectedClientId=id;
+
+
+
+
+
 
 document.getElementById("viewPhoto").src =
 
 client.profilePhoto ||
 
 "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
+
+
+
+
+document.getElementById("viewProfile").src =
+
+client.profilePhoto || "";
+
+
+
+
+
+document.getElementById("viewIdFront").src =
+
+client.idFront || "";
+
+
+
+
+
+document.getElementById("viewIdBack").src =
+
+client.idBack || "";
+
+
 
 
 
@@ -1297,6 +1652,7 @@ client.fullname || "-";
 
 
 
+
 document.getElementById("viewPhone").innerHTML =
 
 client.phone || "-";
@@ -1305,9 +1661,11 @@ client.phone || "-";
 
 
 
+
 document.getElementById("viewId").innerHTML =
 
-client.idNumber || "-";
+client.nationalID || "-";
+
 
 
 
@@ -1321,9 +1679,47 @@ client.email || "-";
 
 
 
+
+document.getElementById("viewOccupation").innerHTML =
+
+client.occupation || "-";
+
+
+
+
+
+
+document.getElementById("viewEmployer").innerHTML =
+
+client.employer || "-";
+
+
+
+
+
+
+document.getElementById("viewIncome").innerHTML =
+
+money(client.monthlyIncome);
+
+
+
+
+
+
+document.getElementById("viewCounty").innerHTML =
+
+client.county || "-";
+
+
+
+
+
+
 document.getElementById("viewAddress").innerHTML =
 
 client.address || "-";
+
 
 
 
@@ -1337,9 +1733,30 @@ client.createdAt || "-";
 
 
 
+
+
+// STATUS
+
+
 document.getElementById("viewStatus").innerHTML =
 
-client.status || "-";
+client.status==="SUSPENDED"
+
+?
+
+`<span class="status-suspended">
+
+SUSPENDED
+
+</span>`
+
+:
+
+`<span class="status-active">
+
+ACTIVE
+
+</span>`;
 
 
 
@@ -1349,16 +1766,15 @@ client.status || "-";
 
 
 
-
+// =================================
 // GUARANTORS
-
-
-let guarantors = client.guarantors || [];
-
+// =================================
 
 
 let gTable = document.getElementById(
+
 "guarantorDetails"
+
 );
 
 
@@ -1369,28 +1785,31 @@ gTable.innerHTML="";
 
 
 
-if(guarantors.length===0){
 
+let guarantors = client.guarantors || [];
+
+
+
+
+
+if(guarantors.length===0){
 
 
 gTable.innerHTML=`
 
 <tr>
 
-<td colspan="3"
+<td colspan="4"
 
 class="text-center">
 
-
-No guarantor details found.
-
+No guarantor details available.
 
 </td>
 
 </tr>
 
 `;
-
 
 
 }
@@ -1406,18 +1825,15 @@ gTable.innerHTML += `
 
 <tr>
 
-
 <td>${g.name || "-"}</td>
-
 
 <td>${g.phone || "-"}</td>
 
+<td>${g.idNumber || g.id || "-"}</td>
 
-<td>${g.idNumber || "-"}</td>
-
+<td>${g.relationship || "-"}</td>
 
 </tr>
-
 
 
 `;
@@ -1425,7 +1841,6 @@ gTable.innerHTML += `
 
 
 });
-
 
 
 }
@@ -1437,24 +1852,16 @@ gTable.innerHTML += `
 
 
 
-
+// =================================
 // LOAN HISTORY
-
-
-let loans = DB.getLoans().filter(loan=>{
-
-
-return String(loan.clientId)===String(client.id);
-
-
-});
-
-
+// =================================
 
 
 
 let loanTable = document.getElementById(
+
 "loanHistory"
+
 );
 
 
@@ -1464,9 +1871,21 @@ loanTable.innerHTML="";
 
 
 
+let loans = DB.getLoans().filter(loan=>
+
+
+String(loan.clientId)===String(client.id)
+
+
+);
+
+
+
+
 
 
 if(loans.length===0){
+
 
 
 loanTable.innerHTML=`
@@ -1477,14 +1896,11 @@ loanTable.innerHTML=`
 
 class="text-center">
 
-
 No loan history.
-
 
 </td>
 
 </tr>
-
 
 `;
 
@@ -1494,9 +1910,7 @@ No loan history.
 else{
 
 
-
 loans.forEach(loan=>{
-
 
 
 loanTable.innerHTML += `
@@ -1504,15 +1918,17 @@ loanTable.innerHTML += `
 
 <tr>
 
-
 <td>
 
-KES ${Number(loan.originalPrincipal || loan.amount || 0)
+${money(
 
-.toLocaleString()}
+loan.originalPrincipal ||
+
+loan.amount
+
+)}
 
 </td>
-
 
 
 <td>
@@ -1522,7 +1938,6 @@ ${loan.status}
 </td>
 
 
-
 <td>
 
 ${loan.createdAt || "-"}
@@ -1530,17 +1945,13 @@ ${loan.createdAt || "-"}
 </td>
 
 
-
 </tr>
-
 
 
 `;
 
 
-
 });
-
 
 
 }
@@ -1551,9 +1962,6 @@ ${loan.createdAt || "-"}
 
 
 
-
-
-// OPEN MODAL
 
 
 let modal = new bootstrap.Modal(
@@ -1568,6 +1976,7 @@ modal.show();
 
 
 
+
 }
 
 
@@ -1578,10 +1987,227 @@ modal.show();
 
 
 
+// =====================================
+// SUSPEND CLIENT
+// =====================================
 
-/*====================================
- LOGOUT
-====================================*/
+
+function suspendClient(){
+
+
+
+let client = DB.getClientById(
+
+selectedClientId
+
+);
+
+
+
+if(!client){
+
+return;
+
+}
+
+
+
+
+if(!confirm(
+
+"Suspend this client account?"
+
+)){
+
+
+return;
+
+
+}
+
+
+
+
+client.status="SUSPENDED";
+
+
+
+DB.updateClient(client);
+
+
+
+alert(
+
+"Client suspended successfully."
+
+);
+
+
+
+loadClients();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================
+// ACTIVATE CLIENT
+// =====================================
+
+
+function activateClient(){
+
+
+
+let client = DB.getClientById(
+
+selectedClientId
+
+);
+
+
+
+if(!client){
+
+return;
+
+}
+
+
+
+
+client.status="ACTIVE";
+
+
+
+DB.updateClient(client);
+
+
+
+alert(
+
+"Client activated successfully."
+
+);
+
+
+
+loadClients();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================
+// DELETE CLIENT
+// =====================================
+
+
+function deleteClient(){
+
+
+
+let client = DB.getClientById(
+
+selectedClientId
+
+);
+
+
+
+if(!client){
+
+return;
+
+}
+
+
+
+
+
+if(!confirm(
+
+"WARNING: Delete this client permanently?"
+
+)){
+
+
+return;
+
+
+}
+
+
+
+
+
+
+DB.deleteClient(selectedClientId);
+
+
+
+
+
+alert(
+
+"Client deleted successfully."
+
+);
+
+
+
+
+
+loadClients();
+
+
+
+
+let modal = bootstrap.Modal.getInstance(
+
+document.getElementById("clientModal")
+
+);
+
+
+
+if(modal){
+
+modal.hide();
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================
+// LOGOUT
+// =====================================
 
 
 function logout(){
@@ -1599,10 +2225,7 @@ AUTH.adminLogout();
 
 
 
-/*====================================
- START
-====================================*/
-
+// START
 
 loadClients();
 
@@ -1610,6 +2233,6 @@ loadClients();
 
 </script>
 
-</body>
 
-</html>
+
+</div>
