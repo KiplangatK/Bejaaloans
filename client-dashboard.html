@@ -1122,21 +1122,38 @@ function money(value){
 
 
 // ===============================
+// WAIT FOR DB
+// ===============================
+
+function waitForDB() {
+    return new Promise((resolve) => {
+        if (window.DB && typeof DB.getLoans === "function") {
+            resolve();
+            return;
+        }
+        let retries = 0;
+        const check = setInterval(() => {
+            if (window.DB && typeof DB.getLoans === "function") {
+                clearInterval(check);
+                resolve();
+            }
+            retries++;
+            if (retries > 50) {
+                clearInterval(check);
+                resolve();
+            }
+        }, 100);
+    });
+}
+
+
+// ===============================
 // LOAD CLIENT DASHBOARD DATA
 // ===============================
 
-document.addEventListener("DOMContentLoaded", async () => {
+async function loadClientDashboard() {
 
-    // Wait for DB to be ready
-    let retries = 0;
-    while (!window.DB || typeof DB.getLoans !== "function") {
-        await new Promise(r => setTimeout(r, 200));
-        retries++;
-        if (retries > 25) {
-            console.error("Database failed to load");
-            return;
-        }
-    }
+    await waitForDB();
 
     let client = AUTH.currentClient();
 
@@ -1145,13 +1162,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // PROFILE HEADER
-    document.getElementById("clientName").innerHTML = client.fullname;
-    document.getElementById("clientNameTop").innerHTML = client.fullname;
-    document.getElementById("clientPhoto").src = client.profilePhoto || "https://via.placeholder.com/100";
+    // PROFILE HEADER — instant
+    document.getElementById("clientName").innerHTML = client.fullname || "-";
+    document.getElementById("clientNameTop").innerHTML = client.fullname || "-";
+    document.getElementById("clientPhoto").src = client.profilePhoto || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
     // GET LOANS
     let loans = await DB.getLoans();
+    if (!Array.isArray(loans)) loans = [];
+
     let loan = loans.find(l => String(l.clientId) === String(client.id) && l.status === "ACTIVE");
 
     if (!loan) {
@@ -1159,6 +1178,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             <div class="alert alert-warning">
                 <i class="fa fa-info-circle"></i> You currently have no active loan.
             </div>`;
+        document.getElementById("activeLoan").innerHTML = "KES 0";
+        document.getElementById("balance").innerHTML = "KES 0";
+        document.getElementById("dueDate").innerHTML = "-";
+        document.getElementById("paid").innerHTML = "KES 0";
+        document.getElementById("progressBar").style.width = "0%";
+        document.getElementById("progressBar").innerHTML = "0%";
         return;
     }
 
@@ -1175,9 +1200,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     // PAYMENT CALCULATION
     let payments = await DB.getLoanPayments(loan.id);
     let totalPaid = 0;
-    payments.forEach(p => {
-        totalPaid += Number(p.amount || 0);
-    });
+    if (Array.isArray(payments)) {
+        payments.forEach(p => {
+            totalPaid += Number(p.amount || 0);
+        });
+    }
     document.getElementById("paid").innerHTML = money(totalPaid);
 
     // PROGRESS
@@ -1197,7 +1224,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             <p><b>Due Date:</b> ${loan.dueDate || "-"}</p>
             <span class="badge bg-success">ACTIVE</span>
         </div>`;
-});
+}
 
 
 
@@ -1214,6 +1241,8 @@ async function showPaymentHistory() {
 
     let client = AUTH.currentClient();
     let loans = await DB.getLoans();
+    if (!Array.isArray(loans)) loans = [];
+
     let loan = loans.find(l => String(l.clientId) === String(client.id) && l.status === "ACTIVE");
 
     let table = document.getElementById("paymentTable");
@@ -1224,7 +1253,7 @@ async function showPaymentHistory() {
     } else {
         let payments = await DB.getLoanPayments(loan.id);
 
-        if (payments.length === 0) {
+        if (!Array.isArray(payments) || payments.length === 0) {
             table.innerHTML = `<tr><td colspan="4" class="text-center">No payments made yet.</td></tr>`;
         } else {
             payments.reverse().forEach(p => {
@@ -1261,6 +1290,8 @@ async function loadApplications() {
 
     let client = AUTH.currentClient();
     let applications = await DB.getApplications();
+    if (!Array.isArray(applications)) applications = [];
+
     let myApplications = applications.filter(app => String(app.clientId) === String(client.id));
 
     let box = document.getElementById("applicationStatus");
@@ -1291,10 +1322,12 @@ async function loadApplications() {
 
 
 
-// RUN — wait for DB
-setTimeout(() => {
-    loadApplications();
-}, 500);
+// ===============================
+// START EVERYTHING
+// ===============================
+
+loadClientDashboard();
+loadApplications();
 
 
 </script>
