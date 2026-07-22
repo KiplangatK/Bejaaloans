@@ -45,7 +45,6 @@ border-radius:0 0 25px 25px;
 
 
 
-
 .container{
 
 max-width:1100px;
@@ -181,6 +180,7 @@ display:none;
 }
 
 
+
 </style>
 
 
@@ -191,14 +191,11 @@ display:none;
 <body>
 
 
-
-
 <!-- DATABASE -->
 
 <script src="assets/js/database.js"></script>
+
 <script src="assets/js/auth.js"></script>
-
-
 
 
 
@@ -207,17 +204,12 @@ display:none;
 
 if(!AUTH.currentClient()){
 
-
 window.location.href="client-portal.html";
-
 
 }
 
 
 </script>
-
-
-
 
 
 
@@ -248,16 +240,10 @@ Loan Application
 
 
 
-
-
-
 <div class="container py-4">
 
 
-
 <div class="card p-4">
-
-
 
 
 
@@ -281,8 +267,6 @@ class="alert alert-success">
 
 
 
-
-
 <h4 class="section-title">
 
 <i class="fa fa-user"></i>
@@ -297,26 +281,23 @@ Client Details
 
 
 
-
-
 <div class="row">
-
-
 
 
 
 <div class="col-md-3 text-center mb-3">
 
 
-<img id="clientPhoto"
+<img
+
+id="clientPhoto"
 
 class="profile-img"
 
-src="">
+src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
 
 
 </div>
-
 
 
 
@@ -333,10 +314,7 @@ src="">
 
 
 
-
-
 <div class="col-md-6 mb-3">
-
 
 <label>
 
@@ -353,19 +331,13 @@ class="form-control"
 
 readonly>
 
-
 </div>
 
 
 
 
 
-
-
-
-
 <div class="col-md-6 mb-3">
-
 
 <label>
 
@@ -382,19 +354,13 @@ class="form-control"
 
 readonly>
 
-
 </div>
 
 
 
 
 
-
-
-
-
 <div class="col-md-6 mb-3">
-
 
 <label>
 
@@ -411,19 +377,13 @@ class="form-control"
 
 readonly>
 
-
 </div>
 
 
 
 
 
-
-
-
-
 <div class="col-md-6 mb-3">
-
 
 <label>
 
@@ -440,19 +400,13 @@ class="form-control"
 
 readonly>
 
-
 </div>
 
 
 
 
 
-
-
-
-
 <div class="col-md-6 mb-3">
-
 
 <label>
 
@@ -469,19 +423,13 @@ class="form-control"
 
 readonly>
 
-
 </div>
 
 
 
 
 
-
-
-
-
 <div class="col-md-6 mb-3">
-
 
 <label>
 
@@ -498,19 +446,13 @@ class="form-control"
 
 readonly>
 
-
 </div>
 
 
 
 
 
-
-
-
-
 <div class="col-md-6 mb-3">
-
 
 <label>
 
@@ -527,19 +469,13 @@ class="form-control"
 
 readonly>
 
-
 </div>
 
 
 
 
 
-
-
-
-
 <div class="col-md-6 mb-3">
-
 
 <label>
 
@@ -556,12 +492,7 @@ class="form-control"
 
 readonly>
 
-
 </div>
-
-
-
-
 
 
 
@@ -573,141 +504,6 @@ readonly>
 
 
 </div>
-
-
-
-
-
-
-
-
-
-<hr>
-
-
-
-
-
-
-
-
-<h4 class="section-title">
-
-<i class="fa fa-money-bill"></i>
-
-Loan Details
-
-</h4>
-
-
-
-
-
-
-
-
-
-<div class="row">
-
-
-
-
-
-<div class="col-md-6 mb-3">
-
-
-<label>
-
-Loan Amount (KES)
-
-</label>
-
-
-<input
-
-type="number"
-
-id="loanAmount"
-
-class="form-control"
-
-placeholder="Enter amount"
-
-oninput="calculateInterest()"
-
-required>
-
-
-</div>
-
-
-
-
-
-
-
-
-<div class="col-md-6 mb-3">
-
-
-<label>
-
-Loan Purpose
-
-</label>
-
-
-<input
-
-type="text"
-
-id="purpose"
-
-class="form-control"
-
-placeholder="Business / Emergency / Other"
-
-required>
-
-
-</div>
-
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<div class="interest-box mb-4">
-
-
-<h5>
-
-Monthly Interest (20%)
-
-</h5>
-
-
-
-<h2 id="monthlyInterest">
-
-KES 0
-
-</h2>
-
-
-</div>
-
 
 
 
@@ -716,9 +512,6 @@ KES 0
 
 
 <script>
-
-
-// AUTO LOAD CLIENT DETAILS
 
 
 document.addEventListener("DOMContentLoaded",()=>{
@@ -730,14 +523,11 @@ const client = AUTH.currentClient();
 
 if(!client){
 
-
 window.location.href="client-portal.html";
 
 return;
 
-
 }
-
 
 
 
@@ -783,19 +573,123 @@ client.address || "";
 
 
 
-
 if(client.profilePhoto){
-
 
 document.getElementById("clientPhoto").src =
 client.profilePhoto;
-
 
 }
 
 
 
 });
+<!-- ================================
+     LOAN DETAILS
+================================ -->
+
+
+<hr>
+
+
+<h4 class="section-title">
+
+<i class="fa fa-money-bill"></i>
+
+Loan Details
+
+</h4>
+
+
+
+
+<div class="row">
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>
+
+Loan Amount (KES)
+
+</label>
+
+
+<input
+
+type="number"
+
+id="loanAmount"
+
+class="form-control"
+
+placeholder="Enter amount"
+
+oninput="calculateInterest()"
+
+required>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-6 mb-3">
+
+
+<label>
+
+Loan Purpose
+
+</label>
+
+
+<input
+
+type="text"
+
+id="purpose"
+
+class="form-control"
+
+placeholder="Business / Emergency / Other"
+
+required>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="interest-box mb-4">
+
+
+<h5>
+
+Monthly Interest (20%)
+
+</h5>
+
+
+
+<h2 id="monthlyInterest">
+
+KES 0
+
+</h2>
+
+
+
+</div>
 
 
 
@@ -804,12 +698,10 @@ client.profilePhoto;
 
 
 
-
-// INTEREST CALCULATOR
+<script>
 
 
 function calculateInterest(){
-
 
 
 let amount = Number(
@@ -835,16 +727,27 @@ document.getElementById("monthlyInterest").innerHTML =
 
 
 </script>
+
+
+
+
+
+
+
 <!-- ================================
      GUARANTOR SECTION
 ================================ -->
 
 
+
 <h4 class="section-title mt-4">
+
 
 <i class="fa fa-users"></i>
 
+
 Guarantor Details (Required)
+
 
 </h4>
 
@@ -852,14 +755,17 @@ Guarantor Details (Required)
 
 
 
-<!-- ================================
-     GUARANTOR ONE
-================================ -->
+
+
+
+
+<!-- GUARANTOR ONE -->
+
 
 <div class="card p-4 mb-4">
 
 
-<h5 class="mb-3 text-primary">
+<h5 class="text-primary">
 
 Guarantor 1
 
@@ -873,6 +779,7 @@ Guarantor 1
 
 <div class="col-md-6 mb-3">
 
+
 <label>
 
 Full Name
@@ -882,13 +789,9 @@ Full Name
 
 <input
 
-type="text"
-
 id="g1_name"
 
 class="form-control"
-
-placeholder="Guarantor full name"
 
 required>
 
@@ -899,9 +802,8 @@ required>
 
 
 
-
-
 <div class="col-md-6 mb-3">
+
 
 <label>
 
@@ -912,13 +814,9 @@ National ID
 
 <input
 
-type="text"
-
 id="g1_id"
 
 class="form-control"
-
-placeholder="National ID number"
 
 required>
 
@@ -929,10 +827,8 @@ required>
 
 
 
-
-
-
 <div class="col-md-6 mb-3">
+
 
 <label>
 
@@ -942,8 +838,6 @@ Phone Number
 
 
 <input
-
-type="tel"
 
 id="g1_phone"
 
@@ -960,10 +854,8 @@ required>
 
 
 
-
-
-
 <div class="col-md-6 mb-3">
+
 
 <label>
 
@@ -974,13 +866,9 @@ Relationship
 
 <input
 
-type="text"
-
 id="g1_relationship"
 
 class="form-control"
-
-placeholder="Friend / Relative / Colleague"
 
 required>
 
@@ -991,14 +879,12 @@ required>
 
 
 
+<div class="col-12 mb-3">
 
-
-
-<div class="col-md-12 mb-3">
 
 <label>
 
-Address
+Physical Address
 
 </label>
 
@@ -1009,16 +895,15 @@ id="g1_address"
 
 class="form-control"
 
-placeholder="Physical address"
-
 required></textarea>
 
 
 </div>
 
 
-
 </div>
+
+
 
 
 
@@ -1030,6 +915,7 @@ required></textarea>
 
 
 <div class="col-md-4">
+
 
 <div class="document-box">
 
@@ -1045,15 +931,13 @@ Guarantor Photo
 
 type="file"
 
+id="g1_photo"
+
 class="form-control"
 
 accept="image/*"
 
-onchange="previewImage(this,'g1_photo_preview')"
-
-id="g1_photo"
-
-required>
+onchange="previewImage(this,'g1_photo_preview')">
 
 
 <img
@@ -1065,8 +949,8 @@ class="document-img mt-2">
 
 </div>
 
-</div>
 
+</div>
 
 
 
@@ -1091,16 +975,13 @@ ID Front
 
 type="file"
 
+id="g1_idfront"
+
 class="form-control"
 
 accept="image/*"
 
-onchange="previewImage(this,'g1_idfront_preview')"
-
-id="g1_idfront"
-
-required>
-
+onchange="previewImage(this,'g1_idfront_preview')">
 
 
 <img
@@ -1139,16 +1020,13 @@ ID Back
 
 type="file"
 
+id="g1_idback"
+
 class="form-control"
 
 accept="image/*"
 
-onchange="previewImage(this,'g1_idback_preview')"
-
-id="g1_idback"
-
-required>
-
+onchange="previewImage(this,'g1_idback_preview')">
 
 
 <img
@@ -1164,36 +1042,30 @@ class="document-img mt-2">
 </div>
 
 
+</div>
+
 
 </div>
 
 
 
-</div>
 
 
 
 
 
 
-
-
-
-<!-- ================================
-     GUARANTOR TWO
-================================ -->
+<!-- GUARANTOR TWO -->
 
 
 <div class="card p-4 mb-4">
 
 
-<h5 class="mb-3 text-primary">
+<h5 class="text-primary">
 
 Guarantor 2
 
 </h5>
-
-
 
 
 
@@ -1202,6 +1074,7 @@ Guarantor 2
 
 
 <div class="col-md-6 mb-3">
+
 
 <label>
 
@@ -1212,13 +1085,9 @@ Full Name
 
 <input
 
-type="text"
-
 id="g2_name"
 
 class="form-control"
-
-placeholder="Guarantor full name"
 
 required>
 
@@ -1229,9 +1098,8 @@ required>
 
 
 
-
-
 <div class="col-md-6 mb-3">
+
 
 <label>
 
@@ -1242,13 +1110,9 @@ National ID
 
 <input
 
-type="text"
-
 id="g2_id"
 
 class="form-control"
-
-placeholder="National ID number"
 
 required>
 
@@ -1259,10 +1123,8 @@ required>
 
 
 
-
-
-
 <div class="col-md-6 mb-3">
+
 
 <label>
 
@@ -1272,8 +1134,6 @@ Phone Number
 
 
 <input
-
-type="tel"
 
 id="g2_phone"
 
@@ -1290,10 +1150,8 @@ required>
 
 
 
-
-
-
 <div class="col-md-6 mb-3">
+
 
 <label>
 
@@ -1304,13 +1162,9 @@ Relationship
 
 <input
 
-type="text"
-
 id="g2_relationship"
 
 class="form-control"
-
-placeholder="Friend / Relative / Colleague"
 
 required>
 
@@ -1321,14 +1175,12 @@ required>
 
 
 
+<div class="col-12 mb-3">
 
-
-
-<div class="col-md-12 mb-3">
 
 <label>
 
-Address
+Physical Address
 
 </label>
 
@@ -1339,8 +1191,6 @@ id="g2_address"
 
 class="form-control"
 
-placeholder="Physical address"
-
 required></textarea>
 
 
@@ -1349,7 +1199,6 @@ required></textarea>
 
 
 </div>
-
 
 
 
@@ -1378,15 +1227,13 @@ Guarantor Photo
 
 type="file"
 
+id="g2_photo"
+
 class="form-control"
 
 accept="image/*"
 
-onchange="previewImage(this,'g2_photo_preview')"
-
-id="g2_photo"
-
-required>
+onchange="previewImage(this,'g2_photo_preview')">
 
 
 <img
@@ -1400,8 +1247,6 @@ class="document-img mt-2">
 
 
 </div>
-
-
 
 
 
@@ -1426,16 +1271,13 @@ ID Front
 
 type="file"
 
+id="g2_idfront"
+
 class="form-control"
 
 accept="image/*"
 
-onchange="previewImage(this,'g2_idfront_preview')"
-
-id="g2_idfront"
-
-required>
-
+onchange="previewImage(this,'g2_idfront_preview')">
 
 
 <img
@@ -1449,7 +1291,6 @@ class="document-img mt-2">
 
 
 </div>
-
 
 
 
@@ -1475,16 +1316,13 @@ ID Back
 
 type="file"
 
+id="g2_idback"
+
 class="form-control"
 
 accept="image/*"
 
-onchange="previewImage(this,'g2_idback_preview')"
-
-id="g2_idback"
-
-required>
-
+onchange="previewImage(this,'g2_idback_preview')">
 
 
 <img
@@ -1500,9 +1338,7 @@ class="document-img mt-2">
 </div>
 
 
-
 </div>
-
 
 
 </div>
@@ -1517,15 +1353,10 @@ class="document-img mt-2">
 <script>
 
 
-// IMAGE PREVIEW FUNCTION
-
-
 function previewImage(input,target){
 
 
-
 const file=input.files[0];
-
 
 
 if(!file){
@@ -1543,13 +1374,10 @@ const reader=new FileReader();
 reader.onload=function(e){
 
 
-
 let img=document.getElementById(target);
 
 
-
 img.src=e.target.result;
-
 
 
 img.style.display="block";
@@ -1562,14 +1390,13 @@ img.style.display="block";
 reader.readAsDataURL(file);
 
 
-
 }
 
 
 
 </script>
-<!-- ================================
-     SUBMIT APPLICATION
+     <!-- ================================
+     SUBMIT BUTTON
 ================================ -->
 
 
@@ -1578,12 +1405,15 @@ reader.readAsDataURL(file);
 
 <button
 
+type="button"
+
 onclick="submitLoanApplication()"
 
 class="btn btn-primary btn-submit w-100">
 
 
 <i class="fa fa-paper-plane"></i>
+
 
 Submit Loan Application
 
@@ -1597,10 +1427,33 @@ Submit Loan Application
 
 
 
-</div>
+
+<div class="text-center mt-3">
+
+
+<a href="client-dashboard.html"
+
+class="btn btn-outline-primary">
+
+
+<i class="fa fa-arrow-left"></i>
+
+
+Back To Dashboard
+
+
+</a>
+
 
 </div>
 
+
+
+
+
+</div>
+
+</div>
 
 
 
@@ -1612,8 +1465,9 @@ Submit Loan Application
 <script>
 
 
-
-// IMAGE COMPRESSION
+/* =====================================
+   IMAGE COMPRESSION
+===================================== */
 
 
 function compressImage(file){
@@ -1639,7 +1493,6 @@ img.onload=function(){
 
 
 const canvas=document.createElement("canvas");
-
 
 
 let width=img.width;
@@ -1738,8 +1591,10 @@ reader.readAsDataURL(file);
 
 
 
-// SUBMIT LOAN APPLICATION
 
+/* =====================================
+   SUBMIT LOAN APPLICATION
+===================================== */
 
 
 async function submitLoanApplication(){
@@ -1755,6 +1610,7 @@ const successBox=document.getElementById("successBox");
 errorBox.style.display="none";
 
 successBox.style.display="none";
+
 
 
 
@@ -1782,7 +1638,6 @@ return;
 
 
 
-// LOAN DETAILS
 
 
 const amount=Number(
@@ -1793,9 +1648,14 @@ document.getElementById("loanAmount").value
 
 
 
-const purpose=
+const purpose=document
 
-document.getElementById("purpose").value.trim();
+.getElementById("purpose")
+
+.value
+
+.trim();
+
 
 
 
@@ -1825,11 +1685,31 @@ return;
 
 
 
+if(purpose===""){
 
-// GUARANTOR VALIDATION
+
+errorBox.innerHTML=
+
+"Please enter loan purpose.";
 
 
-const required=[
+errorBox.style.display="block";
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+
+
+const requiredFields=[
 
 
 "g1_name",
@@ -1841,7 +1721,6 @@ const required=[
 "g1_relationship",
 
 "g1_address",
-
 
 
 "g2_name",
@@ -1862,7 +1741,7 @@ const required=[
 
 
 
-for(let id of required){
+for(let id of requiredFields){
 
 
 
@@ -1883,7 +1762,6 @@ return;
 }
 
 
-
 }
 
 
@@ -1893,11 +1771,8 @@ return;
 
 
 
-// CHECK UPLOADS
 
-
-
-const files=[
+const uploads=[
 
 
 "g1_photo",
@@ -1920,11 +1795,12 @@ const files=[
 
 
 
-for(let f of files){
 
 
+for(let file of uploads){
 
-if(document.getElementById(f).files.length===0){
+
+if(document.getElementById(file).files.length===0){
 
 
 errorBox.innerHTML=
@@ -1951,13 +1827,12 @@ return;
 
 
 
-// COMPRESS IMAGES
+
+// COMPRESS DOCUMENTS
 
 
 
-const g1Photo=
-
-await compressImage(
+const g1Photo = await compressImage(
 
 document.getElementById("g1_photo").files[0]
 
@@ -1965,9 +1840,7 @@ document.getElementById("g1_photo").files[0]
 
 
 
-const g1Front=
-
-await compressImage(
+const g1Front = await compressImage(
 
 document.getElementById("g1_idfront").files[0]
 
@@ -1975,9 +1848,7 @@ document.getElementById("g1_idfront").files[0]
 
 
 
-const g1Back=
-
-await compressImage(
+const g1Back = await compressImage(
 
 document.getElementById("g1_idback").files[0]
 
@@ -1988,10 +1859,7 @@ document.getElementById("g1_idback").files[0]
 
 
 
-
-const g2Photo=
-
-await compressImage(
+const g2Photo = await compressImage(
 
 document.getElementById("g2_photo").files[0]
 
@@ -1999,9 +1867,7 @@ document.getElementById("g2_photo").files[0]
 
 
 
-const g2Front=
-
-await compressImage(
+const g2Front = await compressImage(
 
 document.getElementById("g2_idfront").files[0]
 
@@ -2009,9 +1875,7 @@ document.getElementById("g2_idfront").files[0]
 
 
 
-const g2Back=
-
-await compressImage(
+const g2Back = await compressImage(
 
 document.getElementById("g2_idback").files[0]
 
@@ -2025,11 +1889,15 @@ document.getElementById("g2_idback").files[0]
 
 
 
-// CREATE APPLICATION OBJECT
-
+// APPLICATION OBJECT
 
 
 const application={
+
+
+applicationNo:
+
+"BJ"+Date.now(),
 
 
 
@@ -2037,25 +1905,29 @@ clientId:client.id,
 
 
 
-// CLIENT DETAILS FROM REGISTRATION
-
-
 client:{
 
 
 fullname:client.fullname,
 
+
 nationalID:client.nationalID,
+
 
 phone:client.phone,
 
+
 occupation:client.occupation,
+
 
 employer:client.employer,
 
+
 monthlyIncome:client.monthlyIncome,
 
+
 county:client.county,
+
 
 address:client.address
 
@@ -2066,22 +1938,16 @@ address:client.address
 
 
 
-// LOAN DETAILS
-
-
 amount:amount,
 
 
-monthlyInterest:amount*0.20,
+monthlyInterest:
+
+amount*0.20,
 
 
 purpose:purpose,
 
-
-
-
-
-// GUARANTOR ONE
 
 
 guarantor1:{
@@ -2096,11 +1962,14 @@ id:document.getElementById("g1_id").value,
 phone:document.getElementById("g1_phone").value,
 
 
-relationship:document.getElementById("g1_relationship").value,
+relationship:
+
+document.getElementById("g1_relationship").value,
 
 
-address:document.getElementById("g1_address").value,
+address:
 
+document.getElementById("g1_address").value,
 
 
 photo:g1Photo,
@@ -2117,10 +1986,6 @@ idBack:g1Back
 
 
 
-// GUARANTOR TWO
-
-
-
 guarantor2:{
 
 
@@ -2133,11 +1998,14 @@ id:document.getElementById("g2_id").value,
 phone:document.getElementById("g2_phone").value,
 
 
-relationship:document.getElementById("g2_relationship").value,
+relationship:
+
+document.getElementById("g2_relationship").value,
 
 
-address:document.getElementById("g2_address").value,
+address:
 
+document.getElementById("g2_address").value,
 
 
 photo:g2Photo,
@@ -2150,8 +2018,6 @@ idBack:g2Back
 }
 
 
-
-
 };
 
 
@@ -2162,12 +2028,42 @@ idBack:g2Back
 
 
 
-// SAVE TO DATABASE
+// SAVE APPLICATION
 
 
 
-const saved = DB.addApplication(application);
+let saved;
 
+
+
+try{
+
+
+saved = DB.addApplication(application);
+
+
+
+}
+
+catch(error){
+
+
+console.log(error);
+
+
+
+errorBox.innerHTML=
+
+"Application failed: "+error.message;
+
+
+errorBox.style.display="block";
+
+
+return;
+
+
+}
 
 
 
@@ -2192,7 +2088,20 @@ Application Submitted Successfully
 
 <p>
 
-Your loan request has been sent for approval.
+Application Number:
+
+<strong>
+
+${saved.applicationNo}
+
+</strong>
+
+</p>
+
+
+<p>
+
+Your loan application has been sent for approval.
 
 </p>
 
@@ -2201,7 +2110,12 @@ Your loan request has been sent for approval.
 
 class="btn btn-success">
 
+
+<i class="fa fa-dashboard"></i>
+
+
 Go To Dashboard
+
 
 </a>
 
@@ -2223,6 +2137,7 @@ successBox.style.display="block";
 
 
 
+
 </script>
 
 
@@ -2230,7 +2145,12 @@ successBox.style.display="block";
 
 
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 
 </body>
 
 </html>
+
+
+</script>
