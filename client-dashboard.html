@@ -170,6 +170,72 @@ box-shadow:0 4px 15px rgba(0,0,0,.2);
 
 
 
+.topbar .topbar-right{
+
+display:flex;
+
+align-items:center;
+
+gap:20px;
+
+}
+
+
+
+.topbar .btn-home{
+
+background:rgba(255,255,255,0.2);
+
+color:white;
+
+padding:8px 16px;
+
+border-radius:20px;
+
+font-size:14px;
+
+font-weight:600;
+
+text-decoration:none;
+
+transition:.3s;
+
+}
+
+
+
+.topbar .btn-home:hover{
+
+background:rgba(255,255,255,0.35);
+
+color:white;
+
+}
+
+
+
+.topbar .btn-logout{
+
+color:#ffc107;
+
+font-weight:600;
+
+cursor:pointer;
+
+text-decoration:none;
+
+}
+
+
+
+.topbar .btn-logout:hover{
+
+color:#fff;
+
+}
+
+
+
 
 
 
@@ -487,13 +553,21 @@ Client Dashboard
 
 
 
-<div>
+<div class="topbar-right">
 
-Welcome,
+<a href="index.html" class="btn-home">
 
-<strong id="clientNameTop">
+<i class="fa fa-home"></i> Home
 
-</strong>
+</a>
+
+<span>Welcome, <strong id="clientNameTop"></strong></span>
+
+<a href="#" class="btn-logout" onclick="AUTH.clientLogout()">
+
+<i class="fa-solid fa-right-from-bracket"></i> Logout
+
+</a>
 
 </div>
 
