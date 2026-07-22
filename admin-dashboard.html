@@ -509,22 +509,6 @@ Pending Applications
 
 <li>
 
-<a href="#">
-
-<i class="fa-solid fa-user-tie"></i>
-
-Staff
-
-</a>
-
-</li>
-
-
-
-
-
-<li>
-
 <a href="statistics.html">
 
 <i class="fa-solid fa-chart-column"></i>
@@ -540,11 +524,11 @@ Statistics
 
 <li>
 
-<a href="#">
+<a href="#" onclick="logout()">
 
-<i class="fa-solid fa-gear"></i>
+<i class="fa-solid fa-right-from-bracket"></i>
 
-Settings
+Logout
 
 </a>
 
@@ -556,6 +540,9 @@ Settings
 
 
 </div>
+
+
+
 <!-- MAIN CONTENT -->
 
 
@@ -732,7 +719,7 @@ Late Loans
 
 
 
-<a href="#">
+<a href="late-loans.html">
 
 View overdue loans
 
@@ -893,6 +880,9 @@ Status
 
 
 </div>
+
+
+
 <!-- DATABASE -->
 
 <script src="assets/js/database.js"></script>
@@ -949,73 +939,55 @@ admin.username;
 
 
 
-
-
 /*====================================
  LOAD DASHBOARD DATA
 ====================================*/
 
 
-function loadDashboard(){
+async function loadDashboard(){
 
+    // Wait for DB to be fully ready
+    let retries = 0;
+    while (!window.DB || !window.DB.getLoans || typeof window.DB.getLoans !== "function") {
+        await new Promise(r => setTimeout(r, 300));
+        retries++;
+        if (retries > 50) {
+            console.error("Database failed to load");
+            return;
+        }
+    }
 
+    try {
 
-// REGISTERED CLIENTS
+        // REGISTERED CLIENTS
+        document.getElementById("totalClients").innerHTML = await DB.totalClients();
 
-document.getElementById("totalClients").innerHTML =
+        // ACTIVE LOANS
+        document.getElementById("activeLoans").innerHTML = await DB.approvedLoans();
 
-DB.totalClients();
+        // PENDING APPLICATIONS
+        document.getElementById("pendingApplications").innerHTML = await DB.pendingApplications();
 
+        // LATE LOANS
+        let today = new Date();
+        let loans = await DB.getLoans();
+        let lateLoans = 0;
 
+        if (Array.isArray(loans)) {
+            lateLoans = loans.filter(loan => {
+                if (loan.status !== "ACTIVE" || !loan.dueDate) return false;
+                const parts = loan.dueDate.split("/");
+                if (parts.length !== 3) return false;
+                const due = new Date(parts[2], parts[1] - 1, parts[0]);
+                return due < today && Number(loan.remainingPrincipal || 0) > 0;
+            }).length;
+        }
 
+        document.getElementById("lateLoans").innerHTML = lateLoans;
 
-
-
-
-// ACTIVE LOANS
-
-document.getElementById("activeLoans").innerHTML =
-
-DB.approvedLoans();
-
-
-
-
-
-
-
-// PENDING APPLICATIONS
-
-document.getElementById("pendingApplications").innerHTML =
-
-DB.pendingApplications();
-
-
-
-
-
-
-
-
-// LATE LOANS
-
-
-let lateLoans = DB.getLoans().filter(loan=>{
-
-
-return loan.status === "LATE";
-
-
-}).length;
-
-
-
-
-document.getElementById("lateLoans").innerHTML =
-
-lateLoans;
-
-
+    } catch (err) {
+        console.error("Dashboard load error:", err);
+    }
 
 }
 
@@ -1032,156 +1004,43 @@ lateLoans;
 ====================================*/
 
 
-function loadRecentApplications(){
-
-
-
-let applications = DB.getApplications();
-
-
-
-let table = document.getElementById(
-
-"recentApplications"
-
-);
-
-
-
-table.innerHTML="";
-
-
-
-
-
-
-
-
-if(applications.length===0){
-
-
-
-table.innerHTML=`
-
-<tr>
-
-<td colspan="4"
-
-class="text-center text-muted p-4">
-
-
-No recent loan applications found.
-
-
-</td>
-
-</tr>
-
-`;
-
-return;
-
-
-}
-
-
-
-
-
-
-
-
-
-
-applications
-
-.slice(-5)
-
-.reverse()
-
-.forEach(application=>{
-
-
-
-
-
-
-
-let client = DB.getClientById(
-
-application.clientId
-
-);
-
-
-
-
-
-
-
-table.innerHTML += `
-
-
-<tr>
-
-
-<td>
-
-${client ? client.fullname : "Unknown"}
-
-</td>
-
-
-
-<td>
-
-KES ${Number(application.amount || 0)
-
-.toLocaleString()}
-
-</td>
-
-
-
-
-<td>
-
-${application.applicationDate || "-"}
-
-</td>
-
-
-
-
-<td>
-
-<span class="badge bg-warning">
-
-${application.status}
-
-</span>
-
-</td>
-
-
-
-</tr>
-
-
-
-`;
-
-
-
-
-
-
-
-});
-
-
-
-
+async function loadRecentApplications(){
+
+    try {
+
+        let applications = await DB.getApplications();
+
+        let table = document.getElementById("recentApplications");
+        table.innerHTML = "";
+
+        if (!Array.isArray(applications) || applications.length === 0) {
+            table.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center text-muted p-4">
+                        No recent loan applications found.
+                    </td>
+                </tr>`;
+            return;
+        }
+
+        applications.slice(-5).reverse().forEach(app => {
+            let clientName = "Unknown";
+            if (app.client && app.client.fullname) {
+                clientName = app.client.fullname;
+            }
+
+            table.innerHTML += `
+                <tr>
+                    <td>${clientName}</td>
+                    <td>KES ${Number(app.amount || 0).toLocaleString()}</td>
+                    <td>${app.applicationDate || "-"}</td>
+                    <td><span class="badge bg-warning">${app.status || "PENDING"}</span></td>
+                </tr>`;
+        });
+
+    } catch (err) {
+        console.error("Recent applications load error:", err);
+    }
 
 }
 
@@ -1214,16 +1073,15 @@ AUTH.adminLogout();
 
 
 
-
 /*====================================
  START DASHBOARD
 ====================================*/
 
 
-loadDashboard();
-
-
-loadRecentApplications();
+setTimeout(() => {
+    loadDashboard();
+    loadRecentApplications();
+}, 800);
 
 
 
