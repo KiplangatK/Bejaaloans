@@ -706,7 +706,7 @@ Total Late Loans
 
 <div class="card-title">
 
-Outstanding Balance
+Outstanding Principal
 
 </div>
 
@@ -732,7 +732,7 @@ KES 0
 
 <div class="card-title">
 
-Expected Interest
+Interest Owed
 
 </div>
 
@@ -820,15 +820,15 @@ Late Loan Clients
 
 <th>Loan Amount</th>
 
-<th>Interest</th>
+<th>Remaining Principal</th>
 
-<th>Balance</th>
+<th>Interest Owed</th>
+
+<th>Total Due</th>
 
 <th>Due Date</th>
 
 <th>Days Late</th>
-
-<th>Status</th>
 
 <th>Action</th>
 
@@ -942,12 +942,23 @@ LOAD LATE LOANS
 async function loadLateLoans(){
 
     // Wait for DB
+    let dbReady = false;
     let retries = 0;
-    while (!window.DB || !window.DB.getLoans || typeof window.DB.getLoans !== "function") {
-        await new Promise(r => setTimeout(r, 300));
+    while (!dbReady && retries < 50) {
+        try {
+            if (window.DB && typeof DB.getLoans === "function") {
+                const test = await DB.getLoans();
+                if (Array.isArray(test)) {
+                    dbReady = true;
+                    break;
+                }
+            }
+        } catch(e) {}
+        await new Promise(r => setTimeout(r, 100));
         retries++;
-        if (retries > 50) return;
     }
+
+    if (!dbReady) return;
 
     let loans = await DB.getLoans();
 
@@ -955,23 +966,23 @@ async function loadLateLoans(){
     table.innerHTML = "";
 
     let lateCount = 0;
-    let outstanding = 0;
-    let expectedInterest = 0;
+    let outstandingPrincipal = 0;
+    let totalInterestOwed = 0;
     let totalDue = 0;
 
     let today = new Date();
 
     if (!Array.isArray(loans)) {
         table.innerHTML = `<tr><td colspan="10" class="text-center text-muted p-5">No late loans found.</td></tr>`;
+        updateCards(0, 0, 0, 0);
         return;
     }
 
     for (let loan of loans) {
 
-        let amount = Number(loan.originalPrincipal || 0);
+        let originalAmount = Number(loan.originalPrincipal || 0);
         let rate = Number(loan.interestRate || 20);
         let balance = Number(loan.remainingPrincipal || 0);
-        let interestAmount = (balance * rate) / 100;
 
         if (!loan.dueDate || balance <= 0 || loan.status === "COMPLETED") continue;
 
@@ -981,10 +992,14 @@ async function loadLateLoans(){
 
         if (dueDate >= today) continue;
 
+        // Interest on remaining principal
+        let interestAmount = (balance * rate) / 100;
+        let amountDue = balance + interestAmount;
+
         lateCount++;
-        outstanding += balance;
-        expectedInterest += interestAmount;
-        totalDue += balance + interestAmount;
+        outstandingPrincipal += balance;
+        totalInterestOwed += interestAmount;
+        totalDue += amountDue;
 
         let client = await DB.getClientById(loan.clientId);
         let clientName = client ? client.fullname : "Unknown";
@@ -997,12 +1012,12 @@ async function loadLateLoans(){
                 <td>${lateCount}</td>
                 <td>${clientName}</td>
                 <td>${phone}</td>
-                <td>KES ${amount.toLocaleString()}</td>
+                <td>KES ${originalAmount.toLocaleString()}</td>
+                <td>KES ${balance.toLocaleString()}</td>
                 <td>KES ${interestAmount.toLocaleString()}</td>
-                <td class="text-danger fw-bold">KES ${balance.toLocaleString()}</td>
+                <td class="fw-bold">KES ${amountDue.toLocaleString()}</td>
                 <td>${loan.dueDate}</td>
                 <td class="text-danger fw-bold">${daysLate} Days</td>
-                <td><span class="badge bg-danger">LATE</span></td>
                 <td>
                     <a href="registered-clients.html" class="btn btn-primary btn-sm action-btn">
                         <i class="fa-solid fa-user"></i> Client
@@ -1014,10 +1029,7 @@ async function loadLateLoans(){
             </tr>`;
     }
 
-    document.getElementById("totalLateLoans").innerHTML = lateCount;
-    document.getElementById("totalOutstanding").innerHTML = "KES " + outstanding.toLocaleString();
-    document.getElementById("expectedInterest").innerHTML = "KES " + expectedInterest.toLocaleString();
-    document.getElementById("totalDue").innerHTML = "KES " + totalDue.toLocaleString();
+    updateCards(lateCount, outstandingPrincipal, totalInterestOwed, totalDue);
 
     if (lateCount === 0) {
         table.innerHTML = `<tr><td colspan="10" class="text-center text-muted p-5">No late loans found.</td></tr>`;
@@ -1025,6 +1037,13 @@ async function loadLateLoans(){
 
 }
 
+
+function updateCards(count, principal, interest, due) {
+    document.getElementById("totalLateLoans").innerHTML = count;
+    document.getElementById("totalOutstanding").innerHTML = "KES " + principal.toLocaleString();
+    document.getElementById("expectedInterest").innerHTML = "KES " + interest.toLocaleString();
+    document.getElementById("totalDue").innerHTML = "KES " + due.toLocaleString();
+}
 
 
 
@@ -1050,9 +1069,7 @@ START PAGE
 ================================*/
 
 
-setTimeout(() => {
-    loadLateLoans();
-}, 800);
+loadLateLoans();
 
 
 
