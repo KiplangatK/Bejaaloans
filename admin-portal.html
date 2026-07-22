@@ -939,6 +939,29 @@ admin.username;
 
 
 
+/*====================================
+ WAIT FOR DB
+====================================*/
+
+function waitForDB() {
+    return new Promise((resolve) => {
+        let retries = 0;
+        const check = setInterval(() => {
+            if (window.DB && typeof DB.getLoans === "function") {
+                clearInterval(check);
+                resolve();
+            }
+            retries++;
+            if (retries > 50) {
+                clearInterval(check);
+                resolve();
+            }
+        }, 200);
+    });
+}
+
+
+
 
 
 /*====================================
@@ -948,6 +971,8 @@ admin.username;
 
 async function loadDashboard(){
 
+
+await waitForDB();
 
 
 // REGISTERED CLIENTS
@@ -1027,6 +1052,8 @@ lateLoans;
 async function loadRecentApplications(){
 
 
+await waitForDB();
+
 
 let applications = await DB.getApplications();
 
@@ -1091,79 +1118,20 @@ applications
 
 .reverse()
 
-.forEach(application=>{
+.forEach(application => {
 
+    let clientName = "Unknown";
+    if (application.client && application.client.fullname) {
+        clientName = application.client.fullname;
+    }
 
-
-
-
-
-
-let client = application.client || {};
-
-
-
-
-
-
-
-table.innerHTML += `
-
-
-<tr>
-
-
-<td>
-
-${client.fullname || "Unknown"}
-
-</td>
-
-
-
-<td>
-
-KES ${Number(application.amount || 0)
-
-.toLocaleString()}
-
-</td>
-
-
-
-
-<td>
-
-${application.applicationDate || "-"}
-
-</td>
-
-
-
-
-<td>
-
-<span class="badge bg-warning">
-
-${application.status}
-
-</span>
-
-</td>
-
-
-
-</tr>
-
-
-
-`;
-
-
-
-
-
-
+    table.innerHTML += `
+        <tr>
+            <td>${clientName}</td>
+            <td>KES ${Number(application.amount || 0).toLocaleString()}</td>
+            <td>${application.applicationDate || "-"}</td>
+            <td><span class="badge bg-warning">${application.status}</span></td>
+        </tr>`;
 
 });
 
