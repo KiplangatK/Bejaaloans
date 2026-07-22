@@ -1,1720 +1,510 @@
 /*=========================================================
     BEJJA LOAN CREDIT
-    DATABASE ENGINE
-    Version: 3.0
+    DATABASE ENGINE — IndexedDB
+    Version: 4.0
 
-    Optimized Storage Engine
-    - Reduced duplication
-    - Prevents storage overflow
-    - Ready for future MySQL migration
+    - Unlimited storage for thousands of clients
+    - Indexed queries by phone, clientId, loanId, status
+    - Async operations with same DB.* API
 =========================================================*/
-
 
 (function(){
 
 "use strict";
 
+const DB_NAME = "BejjaDB";
+const DB_VERSION = 1;
 
+let db = null;
 
 /*=========================================================
     INITIALIZATION
 =========================================================*/
 
+function openDB() {
+    return new Promise((resolve, reject) => {
+        if (db) {
+            resolve(db);
+            return;
+        }
 
-function initializeDatabase(){
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
 
+        request.onupgradeneeded = function(e) {
+            const database = e.target.result;
 
-const tables=[
+            if (!database.objectStoreNames.contains("clients")) {
+                const clientStore = database.createObjectStore("clients", {
+                    keyPath: "id",
+                    autoIncrement: true
+                });
+                clientStore.createIndex("phone", "phone", { unique: true });
+                clientStore.createIndex("status", "status", { unique: false });
+            }
 
-"clients",
+            if (!database.objectStoreNames.contains("loanApplications")) {
+                const appStore = database.createObjectStore("loanApplications", {
+                    keyPath: "id",
+                    autoIncrement: true
+                });
+                appStore.createIndex("clientId", "clientId", { unique: false });
+                appStore.createIndex("status", "status", { unique: false });
+            }
 
-"loanApplications",
+            if (!database.objectStoreNames.contains("loans")) {
+                const loanStore = database.createObjectStore("loans", {
+                    keyPath: "id",
+                    autoIncrement: true
+                });
+                loanStore.createIndex("clientId", "clientId", { unique: false });
+                loanStore.createIndex("status", "status", { unique: false });
+                loanStore.createIndex("applicationId", "applicationId", { unique: false });
+            }
 
-"loans",
+            if (!database.objectStoreNames.contains("payments")) {
+                const paymentStore = database.createObjectStore("payments", {
+                    keyPath: "id",
+                    autoIncrement: true
+                });
+                paymentStore.createIndex("loanId", "loanId", { unique: false });
+            }
 
-"payments",
+            if (!database.objectStoreNames.contains("staff")) {
+                const staffStore = database.createObjectStore("staff", {
+                    keyPath: "id",
+                    autoIncrement: true
+                });
+                staffStore.createIndex("username", "username", { unique: true });
+            }
+        };
 
-"staff"
+        request.onsuccess = function(e) {
+            db = e.target.result;
+            seedDefaultAdmin().then(() => resolve(db)).catch(() => resolve(db));
+        };
 
-];
-
-
-
-
-tables.forEach(table=>{
-
-
-if(!localStorage.getItem(table)){
-
-
-localStorage.setItem(
-
-table,
-
-JSON.stringify([])
-
-);
-
-
+        request.onerror = function(e) {
+            console.error("IndexedDB error:", e.target.error);
+            reject(e.target.error);
+        };
+    });
 }
 
-
-});
-
-
-
-
-
-// DEFAULT ADMIN
-
-
-let staff = read("staff");
-
-
-
-if(staff.length===0){
-
-
-
-write(
-
-"staff",
-
-[
-
-{
-
-id:1,
-
-username:"admin",
-
-password:"admin123",
-
-role:"Administrator",
-
-active:true
-
+async function seedDefaultAdmin() {
+    const staff = await getAll("staff");
+    if (staff.length === 0) {
+        await add("staff", {
+            username: "admin",
+            password: "admin123",
+            role: "Administrator",
+            active: true
+        });
+    }
 }
-
-]
-
-);
-
-
-
-}
-
-
-
-}
-
-
-
 
 /*=========================================================
- STORAGE ENGINE
+    CORE STORAGE OPERATIONS
 =========================================================*/
 
-
-function read(key){
-
-
-try{
-
-
-return JSON.parse(
-
-localStorage.getItem(key)
-
-)||[];
-
-
+function getStore(storeName, mode) {
+    const transaction = db.transaction(storeName, mode);
+    return transaction.objectStore(storeName);
 }
 
-catch(error){
-
-
-return [];
-
-
+function getAll(storeName) {
+    return new Promise((resolve, reject) => {
+        const store = getStore(storeName, "readonly");
+        const request = store.getAll();
+        request.onsuccess = () => resolve(request.result || []);
+        request.onerror = () => reject(request.error);
+    });
 }
 
-
+function getById(storeName, id) {
+    return new Promise((resolve, reject) => {
+        const store = getStore(storeName, "readonly");
+        const request = store.get(Number(id));
+        request.onsuccess = () => resolve(request.result || null);
+        request.onerror = () => reject(request.error);
+    });
 }
 
-
-
-
-
-function write(key,value){
-
-
-
-localStorage.setItem(
-
-key,
-
-JSON.stringify(value)
-
-);
-
-
-
+function getByIndex(storeName, indexName, value) {
+    return new Promise((resolve, reject) => {
+        const store = getStore(storeName, "readonly");
+        const index = store.index(indexName);
+        const request = index.getAll(value);
+        request.onsuccess = () => resolve(request.result || []);
+        request.onerror = () => reject(request.error);
+    });
 }
 
+function getFirstByIndex(storeName, indexName, value) {
+    return new Promise((resolve, reject) => {
+        const store = getStore(storeName, "readonly");
+        const index = store.index(indexName);
+        const request = index.get(value);
+        request.onsuccess = () => resolve(request.result || null);
+        request.onerror = () => reject(request.error);
+    });
+}
 
+function add(storeName, item) {
+    return new Promise((resolve, reject) => {
+        const store = getStore(storeName, "readwrite");
+        const request = store.add(item);
+        request.onsuccess = () => {
+            item.id = request.result;
+            resolve(item);
+        };
+        request.onerror = () => reject(request.error);
+    });
+}
 
+function update(storeName, item) {
+    return new Promise((resolve, reject) => {
+        const store = getStore(storeName, "readwrite");
+        const request = store.put(item);
+        request.onsuccess = () => resolve(item);
+        request.onerror = () => reject(request.error);
+    });
+}
 
+function remove(storeName, id) {
+    return new Promise((resolve, reject) => {
+        const store = getStore(storeName, "readwrite");
+        const request = store.delete(Number(id));
+        request.onsuccess = () => resolve(true);
+        request.onerror = () => reject(request.error);
+    });
+}
 
-
-initializeDatabase();
-
-
-
-
+function count(storeName) {
+    return new Promise((resolve, reject) => {
+        const store = getStore(storeName, "readonly");
+        const request = store.count();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
 
 /*=========================================================
- CLIENT MANAGEMENT
+    CLIENT MANAGEMENT
 =========================================================*/
 
-
-function getClients(){
-
-
-return read("clients");
-
-
+async function getClients() {
+    return await getAll("clients");
 }
 
+async function addClient(client) {
+    const existing = await getFirstByIndex("clients", "phone", client.phone);
+    if (existing) return null;
 
+    const newClient = {
+        fullname: client.fullname || "",
+        nationalID: client.nationalID || "",
+        phone: client.phone || "",
+        email: client.email || "",
+        occupation: client.occupation || "",
+        employer: client.employer || "",
+        monthlyIncome: client.monthlyIncome || "",
+        county: client.county || "",
+        address: client.address || "",
+        profilePhoto: client.profilePhoto || "",
+        idFront: client.idFront || "",
+        idBack: client.idBack || "",
+        password: client.password || "",
+        status: "ACTIVE",
+        createdAt: today()
+    };
 
-
-function saveClients(data){
-
-
-write(
-
-"clients",
-
-data
-
-);
-
-
+    return await add("clients", newClient);
 }
 
-
-
-
-
-
-
-function addClient(client){
-
-
-
-let clients=getClients();
-
-
-
-
-client.id=nextId(clients);
-
-
-
-client.createdAt=today();
-
-
-
-client.status="ACTIVE";
-
-
-
-
-clients.push(client);
-
-
-
-
-saveClients(clients);
-
-
-
-return client;
-
-
-
+async function getClientById(id) {
+    return await getById("clients", id);
 }
 
-
-
-
-
-
-
-function getClientById(id){
-
-
-
-return getClients().find(
-
-
-c=>String(c.id)===String(id)
-
-
-);
-
-
-
+async function getClientByPhone(phone) {
+    return await getFirstByIndex("clients", "phone", phone);
 }
 
-
-
-
-
-
-
-
-function getClientByPhone(phone){
-
-
-
-return getClients().find(
-
-
-c=>c.phone===phone
-
-
-);
-
-
-
+async function updateClient(client) {
+    return await update("clients", client);
 }
 
-
-
-
-
-
-
-function updateClient(client){
-
-
-
-let clients=getClients();
-
-
-
-
-clients=clients.map(c=>
-
-
-String(c.id)===String(client.id)
-
-?
-
-client
-
-:
-
-c
-
-
-
-);
-
-
-
-saveClients(clients);
-
-
-
+async function deleteClient(id) {
+    return await remove("clients", id);
 }
-
-
-
-
-
-
-
-function deleteClient(id){
-
-
-
-let clients=getClients();
-
-
-
-clients=clients.filter(c=>
-
-String(c.id)!==String(id)
-
-);
-
-
-
-saveClients(clients);
-
-
-
-}
-
-
-
-
-
-
-
-
 
 /*=========================================================
- LOAN APPLICATION MANAGEMENT
+    LOAN APPLICATION MANAGEMENT
 =========================================================*/
 
-
-
-
-
-function getApplications(){
-
-
-return read("loanApplications");
-
-
+async function getApplications() {
+    return await getAll("loanApplications");
 }
 
+async function addApplication(application) {
+    const newApp = {
+        clientId: application.clientId,
+        amount: Number(application.amount || 0),
+        purpose: application.purpose || "",
+        monthlyInterest: Number(application.monthlyInterest || 0),
+        client: application.client || {},
+        guarantor1: application.guarantor1 || {},
+        guarantor2: application.guarantor2 || {},
+        status: "PENDING",
+        applicationDate: today()
+    };
 
-
-
-
-function saveApplications(data){
-
-
-write(
-
-"loanApplications",
-
-data
-
-);
-
-
+    return await add("loanApplications", newApp);
 }
 
-
-
-
-
-
-
-
-
-function addApplication(application){
-
-
-
-let applications=getApplications();
-
-
-
-
-application.id=nextId(applications);
-
-
-
-application.applicationDate=today();
-
-
-
-application.status="PENDING";
-
-
-
-
-
-/*
- IMPORTANT:
-
- Documents stay here only.
- They will NOT be copied into loans.
-*/
-
-
-
-
-applications.push(application);
-
-
-
-saveApplications(applications);
-
-
-
-return application;
-
-
-
+async function getApplication(id) {
+    return await getById("loanApplications", id);
 }
 
-
-
-
-
-
-
-
-
-function getApplication(id){
-
-
-
-return getApplications().find(
-
-
-a=>String(a.id)===String(id)
-
-
-);
-
-
-
+async function updateApplication(application) {
+    return await update("loanApplications", application);
 }
 
-
-
-
-
-
-
-
-function updateApplication(application){
-
-
-
-let applications=getApplications();
-
-
-
-applications=applications.map(a=>
-
-
-String(a.id)===String(application.id)
-
-?
-
-application
-
-:
-
-a
-
-
-
-);
-
-
-
-
-saveApplications(applications);
-
-
-
+async function deleteApplication(id) {
+    return await remove("loanApplications", id);
 }
-
-
-
-
-
-
-
-function deleteApplication(id){
-
-
-
-let applications=getApplications();
-
-
-
-applications=applications.filter(a=>
-
-
-String(a.id)!==String(id)
-
-
-);
-
-
-
-saveApplications(applications);
-
-
-
-}
-
-
-
-
-
-
-/*=========================================================
- END PART 1
-=========================================================*/
-
-
-window.BEJJA_DB_PART1=true;
-
 
 /*=========================================================
     LOANS MANAGEMENT
 =========================================================*/
 
-
-function getLoans(){
-
-
-return read("loans");
-
-
+async function getLoans() {
+    return await getAll("loans");
 }
 
+async function addLoan(loan) {
+    const newLoan = {
+        clientId: loan.clientId,
+        applicationId: loan.applicationId || null,
+        originalPrincipal: Number(loan.originalPrincipal || loan.amount || 0),
+        remainingPrincipal: Number(loan.remainingPrincipal || loan.amount || 0),
+        purpose: loan.purpose || "",
+        interestRate: Number(loan.interestRate || 20),
+        currentInterest: Number(loan.currentInterest || 0),
+        loanDate: loan.loanDate || today(),
+        dueDate: loan.dueDate || "",
+        approvedBy: loan.approvedBy || "",
+        status: loan.status || "ACTIVE",
+        createdAt: today()
+    };
 
-
-
-
-function saveLoans(data){
-
-
-write(
-
-"loans",
-
-data
-
-);
-
-
+    return await add("loans", newLoan);
 }
 
-
-
-
-
-
-
-
-
-function addLoan(loan){
-
-
-
-let loans=getLoans();
-
-
-
-
-loan.id=nextId(loans);
-
-
-
-loan.createdAt=today();
-
-
-
-
-
-/*
- IMPORTANT OPTIMIZATION
-
- We only store financial data here.
-
- No photos.
- No ID images.
- No duplicated documents.
-
-*/
-
-
-
-
-let cleanLoan={
-
-
-
-id:loan.id,
-
-
-clientId:loan.clientId,
-
-
-applicationId:loan.applicationId,
-
-
-
-amount:Number(loan.amount||0),
-
-
-
-originalPrincipal:Number(
-
-loan.originalPrincipal||loan.amount||0
-
-),
-
-
-
-remainingPrincipal:Number(
-
-loan.remainingPrincipal||loan.amount||0
-
-),
-
-
-
-purpose:loan.purpose || "",
-
-
-
-interestRate:Number(
-
-loan.interestRate||20
-
-),
-
-
-
-currentInterest:Number(
-
-loan.currentInterest||0
-
-),
-
-
-
-loanDate:loan.loanDate || today(),
-
-
-
-dueDate:loan.dueDate || "",
-
-
-
-approvedBy:loan.approvedBy || "",
-
-
-
-status:loan.status || "ACTIVE",
-
-
-
-payments:[]
-
-};
-
-
-
-
-
-loans.push(cleanLoan);
-
-
-
-
-saveLoans(loans);
-
-
-
-return cleanLoan;
-
-
-
+async function getLoan(id) {
+    return await getById("loans", id);
 }
 
-
-
-
-
-
-
-
-function getLoan(id){
-
-
-
-return getLoans().find(
-
-
-l=>String(l.id)===String(id)
-
-
-);
-
-
-
+async function getLoanByClient(clientId) {
+    return await getByIndex("loans", "clientId", Number(clientId));
 }
 
-
-
-
-
-
-
-
-
-function getLoanByClient(clientId){
-
-
-
-return getLoans().find(
-
-
-
-l=>
-
-
-
-String(l.clientId)===String(clientId)
-
-
-
-&&
-
-
-
-l.status==="ACTIVE"
-
-
-
-);
-
-
-
+async function updateLoan(loan) {
+    return await update("loans", loan);
 }
 
-
-
-
-
-
-
-
-function updateLoan(loan){
-
-
-
-let loans=getLoans();
-
-
-
-
-loans=loans.map(l=>
-
-
-String(l.id)===String(loan.id)
-
-?
-
-loan
-
-:
-
-l
-
-
-
-);
-
-
-
-
-
-saveLoans(loans);
-
-
-
+async function deleteLoan(id) {
+    return await remove("loans", id);
 }
-
-
-
-
-
-
-
-
-function deleteLoan(id){
-
-
-
-let loans=getLoans();
-
-
-
-loans=loans.filter(l=>
-
-
-String(l.id)!==String(id)
-
-
-);
-
-
-
-saveLoans(loans);
-
-
-
-}
-
-
-
-
-
-
-
-
 
 /*=========================================================
- PAYMENT MANAGEMENT
+    PAYMENT MANAGEMENT
 =========================================================*/
 
-
-
-
-
-function getPayments(){
-
-
-return read("payments");
-
-
+async function getPayments() {
+    return await getAll("payments");
 }
 
+async function addPayment(payment) {
+    const newPayment = {
+        loanId: Number(payment.loanId),
+        amount: Number(payment.amount || 0),
+        principalPaid: Number(payment.principalPaid || 0),
+        interestPaid: Number(payment.interestPaid || 0),
+        balance: Number(payment.balance || 0),
+        date: payment.date || today(),
+        method: payment.method || "Cash"
+    };
 
+    const savedPayment = await add("payments", newPayment);
 
+    const loan = await getLoan(payment.loanId);
+    if (loan) {
+        loan.remainingPrincipal = Math.max(0,
+            Number(loan.remainingPrincipal) - Number(payment.principalPaid || payment.amount || 0)
+        );
 
+        if (loan.remainingPrincipal <= 0) {
+            loan.remainingPrincipal = 0;
+            loan.status = "COMPLETED";
+        }
 
+        await updateLoan(loan);
+    }
 
-function savePayments(data){
-
-
-write(
-
-"payments",
-
-data
-
-);
-
-
+    return savedPayment;
 }
 
-
-
-
-
-
-
-
-
-function addPayment(payment){
-
-
-
-let payments=getPayments();
-
-
-
-
-payment.id=nextId(payments);
-
-
-
-payment.date=today();
-
-
-
-
-
-payments.push(payment);
-
-
-
-
-savePayments(payments);
-
-
-
-
-
-
-
-// UPDATE LOAN BALANCE
-
-
-let loan=getLoan(payment.loanId);
-
-
-
-if(loan){
-
-
-
-loan.remainingPrincipal =
-
-Number(loan.remainingPrincipal)
-
--
-
-Number(payment.principalPaid || payment.amount || 0);
-
-
-
-
-
-if(loan.remainingPrincipal<=0){
-
-
-loan.remainingPrincipal=0;
-
-
-loan.status="COMPLETED";
-
-
+async function getLoanPayments(loanId) {
+    return await getByIndex("payments", "loanId", Number(loanId));
 }
-
-
-
-updateLoan(loan);
-
-
-
-}
-
-
-
-
-
-
-
-return payment;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-function getLoanPayments(loanId){
-
-
-
-return getPayments().filter(
-
-
-
-p=>String(p.loanId)===String(loanId)
-
-
-
-);
-
-
-
-}
-
-
-
-
-
-
-
-
 
 /*=========================================================
- STAFF MANAGEMENT
+    STAFF MANAGEMENT
 =========================================================*/
 
-
-
-
-
-function getStaff(){
-
-
-return read("staff");
-
-
+async function getStaff() {
+    return await getAll("staff");
 }
-
-
-
-
-
-
-
-
-function saveStaff(data){
-
-
-write(
-
-"staff",
-
-data
-
-);
-
-
-}
-
-
-
-
-
-
-
-
 
 /*=========================================================
- DASHBOARD STATISTICS
+    DASHBOARD STATISTICS
 =========================================================*/
 
-
-
-
-
-
-function totalClients(){
-
-
-return getClients().length;
-
-
+async function totalClients() {
+    return await count("clients");
 }
 
-
-
-
-
-
-
-
-function pendingApplications(){
-
-
-
-return getApplications().filter(
-
-
-a=>a.status==="PENDING"
-
-
-).length;
-
-
-
+async function pendingApplications() {
+    const apps = await getByIndex("loanApplications", "status", "PENDING");
+    return apps.length;
 }
 
-
-
-
-
-
-
-
-function approvedLoans(){
-
-
-
-return getLoans().filter(
-
-
-l=>l.status==="ACTIVE"
-
-
-).length;
-
-
-
+async function approvedLoans() {
+    const loans = await getByIndex("loans", "status", "ACTIVE");
+    return loans.length;
 }
 
-
-
-
-
-
-
-
-function rejectedLoans(){
-
-
-
-return getApplications().filter(
-
-
-a=>a.status==="REJECTED"
-
-
-).length;
-
-
-
+async function rejectedLoans() {
+    const apps = await getByIndex("loanApplications", "status", "REJECTED");
+    return apps.length;
 }
 
-
-
-
-
-
-
-
-function totalPrincipalIssued(){
-
-
-
-let total=0;
-
-
-
-getLoans().forEach(l=>{
-
-
-total += Number(
-
-l.originalPrincipal || 0
-
-);
-
-
-
-});
-
-
-
-return total;
-
-
-
+async function totalPrincipalIssued() {
+    const loans = await getAll("loans");
+    return loans.reduce((total, l) => total + Number(l.originalPrincipal || 0), 0);
 }
 
-
-
-
-
-
-
-
-function outstandingPrincipal(){
-
-
-
-let total=0;
-
-
-
-getLoans().forEach(l=>{
-
-
-total += Number(
-
-l.remainingPrincipal || 0
-
-);
-
-
-
-});
-
-
-
-return total;
-
-
-
+async function outstandingPrincipal() {
+    const loans = await getByIndex("loans", "status", "ACTIVE");
+    return loans.reduce((total, l) => total + Number(l.remainingPrincipal || 0), 0);
 }
 
-
-
-
-
-
-
-
-function totalInterestCollected(){
-
-
-
-let total=0;
-
-
-
-getPayments().forEach(p=>{
-
-
-total += Number(
-
-p.interestPaid || 0
-
-);
-
-
-
-});
-
-
-
-return total;
-
-
-
+async function totalInterestCollected() {
+    const payments = await getAll("payments");
+    return payments.reduce((total, p) => total + Number(p.interestPaid || 0), 0);
 }
 
-
-
-
-
-
-
-
-function totalPrincipalCollected(){
-
-
-
-let total=0;
-
-
-
-getPayments().forEach(p=>{
-
-
-total += Number(
-
-p.principalPaid || 0
-
-);
-
-
-
-});
-
-
-
-return total;
-
-
-
+async function totalPrincipalCollected() {
+    const payments = await getAll("payments");
+    return payments.reduce((total, p) => total + Number(p.principalPaid || 0), 0);
 }
-
-
-
-
 
 /*=========================================================
- END PART 2
-=========================================================*/
- /*=========================================================
     HELPERS
 =========================================================*/
 
-
-function nextId(array){
-
-
-if(array.length===0){
-
-
-return 1;
-
-
+function today() {
+    const d = new Date();
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
 }
 
-
-
-return Math.max(
-
-
-...array.map(item=>
-
-
-Number(item.id)||0
-
-
-)
-
-
-)+1;
-
-
-
+function nextMonthDate() {
+    const d = new Date();
+    d.setMonth(d.getMonth() + 1);
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
 }
 
-
-
-
-
-
-
-
-
-function today(){
-
-
-return new Date()
-
-.toLocaleDateString("en-KE");
-
-
+function formatMoney(value) {
+    return "KES " + Number(value || 0).toLocaleString();
 }
-
-
-
-
-
-
-
-
-
-function nextMonthDate(){
-
-
-
-let d=new Date();
-
-
-
-d.setMonth(
-
-d.getMonth()+1
-
-);
-
-
-
-
-return d.toLocaleDateString("en-KE");
-
-
-
-}
-
-
-
-
-
-
-
-
-
-function formatMoney(value){
-
-
-
-return "KES " +
-
-
-Number(value||0)
-
-.toLocaleString();
-
-
-
-}
-
-
-
-
-
-
-
-
 
 /*=========================================================
- DATABASE CLEANUP TOOL
-
- Removes old oversized duplicate loans
+    MAINTENANCE
 =========================================================*/
 
+async function optimizeDatabase() {
+    const loans = await getLoans();
+    return loans.length;
+}
 
-function optimizeDatabase(){
+async function exportDatabase() {
+    return {
+        clients: await getClients(),
+        loanApplications: await getApplications(),
+        loans: await getLoans(),
+        payments: await getPayments(),
+        staff: await getStaff()
+    };
+}
 
+/*=========================================================
+    INITIALIZE & EXPORT
+=========================================================*/
 
-
-let loans=getLoans();
-
-
-
-let cleaned=loans.map(l=>{
-
-
-return {
-
-
-id:l.id,
-
-
-clientId:l.clientId,
-
-
-applicationId:l.applicationId,
-
-
-amount:l.amount,
-
-
-originalPrincipal:l.originalPrincipal,
-
-
-remainingPrincipal:l.remainingPrincipal,
-
-
-purpose:l.purpose,
-
-
-interestRate:l.interestRate,
-
-
-currentInterest:l.currentInterest,
-
-
-loanDate:l.loanDate,
-
-
-dueDate:l.dueDate,
-
-
-approvedBy:l.approvedBy,
-
-
-status:l.status,
-
-
-payments:[]
-
-
-
-};
-
-
-
+openDB().then(() => {
+    console.log("BEJJA DATABASE ENGINE V4.0 (IndexedDB) LOADED");
+}).catch(err => {
+    console.error("Database initialization failed:", err);
 });
 
-
-
-
-
-saveLoans(cleaned);
-
-
-
-
-return cleaned.length;
-
-
-
-}
-
-
-
-
-
-
-
-
-/*=========================================================
- PUBLIC DATABASE API
-=========================================================*/
-
-
-window.DB={
-
-
-
-/* CLIENTS */
-
-
-getClients,
-
-
-saveClients,
-
-
-addClient,
-
-
-getClientById,
-
-
-getClientByPhone,
-
-
-updateClient,
-
-
-deleteClient,
-
-
-
-
-
-/* APPLICATIONS */
-
-
-getApplications,
-
-
-saveApplications,
-
-
-addApplication,
-
-
-getApplication,
-
-
-updateApplication,
-
-
-deleteApplication,
-
-
-
-
-
-
-/* LOANS */
-
-
-getLoans,
-
-
-saveLoans,
-
-
-addLoan,
-
-
-getLoan,
-
-
-getLoanByClient,
-
-
-updateLoan,
-
-
-deleteLoan,
-
-
-
-
-
-
-/* PAYMENTS */
-
-
-getPayments,
-
-
-savePayments,
-
-
-addPayment,
-
-
-getLoanPayments,
-
-
-
-
-
-
-/* STAFF */
-
-
-getStaff,
-
-
-saveStaff,
-
-
-
-
-
-
-
-/* STATISTICS */
-
-
-totalClients,
-
-
-pendingApplications,
-
-
-approvedLoans,
-
-
-rejectedLoans,
-
-
-totalPrincipalIssued,
-
-
-outstandingPrincipal,
-
-
-totalInterestCollected,
-
-
-totalPrincipalCollected,
-
-
-
-
-
-
-/* HELPERS */
-
-
-today,
-
-
-nextMonthDate,
-
-
-formatMoney,
-
-
-
-
-
-
-/* MAINTENANCE */
-
-
-optimizeDatabase
-
-
-
+window.DB = {
+    getClients,
+    addClient,
+    getClientById,
+    getClientByPhone,
+    updateClient,
+    deleteClient,
+
+    getApplications,
+    addApplication,
+    getApplication,
+    updateApplication,
+    deleteApplication,
+
+    getLoans,
+    addLoan,
+    getLoan,
+    getLoanByClient,
+    updateLoan,
+    deleteLoan,
+
+    getPayments,
+    addPayment,
+    getLoanPayments,
+
+    getStaff,
+
+    totalClients,
+    pendingApplications,
+    approvedLoans,
+    rejectedLoans,
+    totalPrincipalIssued,
+    outstandingPrincipal,
+    totalInterestCollected,
+    totalPrincipalCollected,
+
+    today,
+    nextMonthDate,
+    formatMoney,
+
+    optimizeDatabase,
+    exportDatabase
 };
-
-
-
-
-
-
-
-console.log(
-
-"BEJJA DATABASE ENGINE V3.0 LOADED"
-
-);
-
-
 
 })();
