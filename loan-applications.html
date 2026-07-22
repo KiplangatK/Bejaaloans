@@ -407,7 +407,7 @@ Loan Applications
 
 
 
-<a href="admin-login.html">
+<a href="#" onclick="logout()">
 
 <i class="fa fa-right-from-bracket"></i>
 
@@ -593,6 +593,9 @@ Action
 
 
 </div>
+
+
+
 <!-- =========================
 APPLICATION DETAILS MODAL
 ========================= -->
@@ -764,11 +767,11 @@ Number(value || 0)
 // ===============================
 
 
-function loadApplications(){
+async function loadApplications(){
 
 
 
-let applications = DB.getApplications();
+let applications = await DB.getApplications();
 
 
 
@@ -836,197 +839,32 @@ return;
 
 
 
-pending.reverse().forEach(app=>{
-
-
-
-
-
-let client = DB.getClientById(
-
-app.clientId
-
-);
-
-
-
-
-
-if(!client){
-
-
-return;
-
-
-}
-
-
-
-
-
-
-table.innerHTML += `
-
-
-
-<tr>
-
-
-
-<td>
-
-
-<img src="${client.profilePhoto || 
-
-'https://via.placeholder.com/100'}"
-
-class="profile-img">
-
-
-</td>
-
-
-
-
-
-<td>
-
-
-${client.fullname || "-"}
-
-
-</td>
-
-
-
-
-
-<td>
-
-
-${client.phone || "-"}
-
-
-</td>
-
-
-
-
-
-
-<td>
-
-
-${money(app.amount)}
-
-
-<br>
-
-
-<small class="text-success">
-
-
-Interest:
-
-${money(app.amount * 0.20)}
-
-
-</small>
-
-
-
-</td>
-
-
-
-
-
-
-
-<td>
-
-
-${app.purpose || "-"}
-
-
-</td>
-
-
-
-
-
-
-<td>
-
-
-${app.applicationDate || "-"}
-
-
-</td>
-
-
-
-
-
-
-
-<td>
-
-
-<span class="badge bg-warning">
-
-
-${app.status}
-
-
-</span>
-
-
-</td>
-
-
-
-
-
-
-
-
-<td>
-
-
-
-<button
-
-class="btn btn-view btn-sm"
-
-
-onclick="viewApplication(${app.id})">
-
-
-<i class="fa fa-eye"></i>
-
-
-View
-
-
-</button>
-
-
-
-</td>
-
-
-
-
-
-
-</tr>
-
-
-`;
-
-
-
+pending.reverse().forEach(async app => {
+
+    let client = app.client || {};
+
+    table.innerHTML += `
+        <tr>
+            <td>
+                <img src="${client.profilePhoto || 'https://via.placeholder.com/100'}"
+                class="profile-img">
+            </td>
+            <td>${client.fullname || "-"}</td>
+            <td>${client.phone || "-"}</td>
+            <td>
+                ${money(app.amount)}
+                <br>
+                <small class="text-success">Interest: ${money(app.amount * 0.20)}</small>
+            </td>
+            <td>${app.purpose || "-"}</td>
+            <td>${app.applicationDate || "-"}</td>
+            <td><span class="badge bg-warning">${app.status}</span></td>
+            <td>
+                <button class="btn btn-view btn-sm" onclick="viewApplication(${app.id})">
+                    <i class="fa fa-eye"></i> View
+                </button>
+            </td>
+        </tr>`;
 });
 
 
@@ -1047,11 +885,11 @@ View
 
 
 
-function viewApplication(id){
+async function viewApplication(id){
 
 
 
-let app = DB.getApplication(id);
+let app = await DB.getApplication(id);
 
 
 
@@ -1069,23 +907,7 @@ return;
 
 
 
-let client = DB.getClientById(
-
-app.clientId
-
-);
-
-
-
-
-
-if(!client){
-
-
-return;
-
-
-}
+let client = app.client || {};
 
 
 
@@ -1136,9 +958,7 @@ Client Information
 
 
 
-<img src="${client.profilePhoto || 
-
-'https://via.placeholder.com/120'}"
+<img src="${client.profilePhoto || 'https://via.placeholder.com/120'}"
 
 class="guarantor-photo">
 
@@ -1503,9 +1323,7 @@ ${title}
 
 
 
-<img src="${g.photo || 
-
-'https://via.placeholder.com/120'}"
+<img src="${g.photo || 'https://via.placeholder.com/120'}"
 
 class="guarantor-photo">
 
@@ -1646,274 +1464,45 @@ class="document-img">
 // ===============================
 
 
-function approveApplication(id){
+async function approveApplication(id){
 
+    if (!confirm("Approve this loan application?")) return;
 
+    let app = await DB.getApplication(id);
+    if (!app) return;
 
-let app = DB.getApplication(id);
+    let admin = AUTH.currentAdmin();
 
+    app.status = "APPROVED";
+    await DB.updateApplication(app);
 
+    let approvalDate = new Date();
+    let due = new Date();
+    due.setMonth(due.getMonth() + 1);
 
-if(!app){
+    let loan = {
+        clientId: app.clientId,
+        applicationId: app.id,
+        originalPrincipal: app.amount,
+        remainingPrincipal: app.amount,
+        purpose: app.purpose,
+        interestRate: 20,
+        currentInterest: app.amount * 0.20,
+        loanDate: approvalDate.toLocaleDateString("en-KE"),
+        dueDate: due.toLocaleDateString("en-KE"),
+        approvedBy: admin.username,
+        status: "ACTIVE"
+    };
 
+    await DB.addLoan(loan);
 
-return;
+    alert("Loan Approved Successfully");
 
+    let modalElement = document.getElementById("applicationModal");
+    let modal = bootstrap.Modal.getInstance(modalElement);
+    if (modal) modal.hide();
 
-}
-
-
-
-
-
-
-let admin = AUTH.currentAdmin();
-
-
-
-
-
-
-
-// CHANGE APPLICATION STATUS
-
-
-app.status="APPROVED";
-
-
-DB.updateApplication(app);
-
-
-
-
-
-
-
-// CREATE DUE DATE
-
-
-let approvalDate = new Date();
-
-
-
-let due = new Date();
-
-
-
-due.setMonth(
-
-due.getMonth()+1
-
-);
-
-
-
-
-
-
-
-// CREATE ACTIVE LOAN RECORD
-
-
-let loan={
-
-
-
-
-
-// CONNECTION IDS
-
-
-clientId:app.clientId,
-
-
-applicationId:app.id,
-
-
-
-
-
-
-
-// SAVE CLIENT SNAPSHOT
-
-
-client:app.client,
-
-
-
-
-
-
-
-// LOAN INFORMATION
-
-
-amount:app.amount,
-
-
-originalPrincipal:app.amount,
-
-
-remainingPrincipal:app.amount,
-
-
-
-purpose:app.purpose,
-
-
-
-interestRate:20,
-
-
-
-currentInterest:
-
-app.amount * 0.20,
-
-
-
-
-
-
-
-// GUARANTORS
-
-
-guarantor1:app.guarantor1,
-
-
-
-guarantor2:app.guarantor2,
-
-
-
-
-
-
-
-
-// PAYMENT HISTORY
-
-
-payments:[],
-
-
-
-
-
-
-
-
-// DATES
-
-
-loanDate:
-
-approvalDate.toLocaleDateString("en-KE"),
-
-
-
-
-dueDate:
-
-due.toLocaleDateString("en-KE"),
-
-
-
-
-
-
-
-// APPROVAL DETAILS
-
-
-approvedBy:
-
-admin.username,
-
-
-
-
-
-status:"ACTIVE"
-
-
-
-
-};
-
-
-
-
-
-
-
-
-
-// SAVE ACTIVE LOAN
-
-
-DB.addLoan(loan);
-
-
-
-
-
-
-
-alert(
-
-"Loan Approved Successfully"
-
-);
-
-
-
-
-
-
-
-// CLOSE MODAL
-
-
-let modalElement = document.getElementById(
-
-"applicationModal"
-
-);
-
-
-
-let modal = bootstrap.Modal.getInstance(
-
-modalElement
-
-);
-
-
-
-if(modal){
-
-
-modal.hide();
-
-
-}
-
-
-
-
-
-
-
-
-loadApplications();
-
-
-
-
-
+    loadApplications();
 }
 
 
@@ -1933,81 +1522,23 @@ loadApplications();
 
 
 
-function rejectApplication(id){
+async function rejectApplication(id){
 
+    if (!confirm("Reject this loan application?")) return;
 
+    let app = await DB.getApplication(id);
+    if (!app) return;
 
-let app = DB.getApplication(id);
+    app.status = "REJECTED";
+    await DB.updateApplication(app);
 
+    alert("Loan Application Rejected");
 
+    let modalElement = document.getElementById("applicationModal");
+    let modal = bootstrap.Modal.getInstance(modalElement);
+    if (modal) modal.hide();
 
-if(!app){
-
-
-return;
-
-
-}
-
-
-
-
-
-app.status="REJECTED";
-
-
-
-DB.updateApplication(app);
-
-
-
-
-
-
-alert(
-
-"Loan Application Rejected"
-
-);
-
-
-
-
-
-
-let modalElement = document.getElementById(
-
-"applicationModal"
-
-);
-
-
-
-let modal = bootstrap.Modal.getInstance(
-
-modalElement
-
-);
-
-
-
-if(modal){
-
-
-modal.hide();
-
-
-}
-
-
-
-
-
-
-loadApplications();
-
-
-
+    loadApplications();
 }
 
 
@@ -2016,6 +1547,15 @@ loadApplications();
 
 
 
+
+
+// ===============================
+// LOGOUT
+// ===============================
+
+function logout(){
+    AUTH.adminLogout();
+}
 
 
 // ===============================
