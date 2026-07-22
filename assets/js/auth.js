@@ -1,7 +1,7 @@
 /*=========================================================
     BEJJA LOAN CREDIT
     AUTHENTICATION ENGINE
-    Version 2.2 — IndexedDB Ready
+    Version 2.3 — IndexedDB Ready
 =========================================================*/
 
 (function(){
@@ -135,7 +135,7 @@ async function adminLogin(username, password){
 
 function adminLogout(){
     sessionStorage.removeItem(ADMIN_SESSION);
-    window.location.href = "../index.html";
+    window.location.href = "index.html";
 }
 
 /*=========================================================
@@ -160,7 +160,7 @@ function requireClient(){
 
 function requireAdmin(){
     if(!currentAdmin()){
-        window.location.href = "../index.html";
+        window.location.href = "admin-login.html";
     }
 }
 
