@@ -205,6 +205,76 @@ body{
 
 
 
+.topbar a:hover{
+
+    color:#ffc107;
+
+}
+
+
+
+.topbar .topbar-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+}
+
+
+
+.topbar .btn-home{
+
+    background:rgba(255,255,255,0.2);
+
+    color:white;
+
+    padding:8px 16px;
+
+    border-radius:20px;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+
+
+.topbar .btn-home:hover{
+
+    background:rgba(255,255,255,0.35);
+
+    color:white;
+
+}
+
+
+
+.topbar .btn-logout{
+
+    color:#ffc107;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+}
+
+
+
+.topbar .btn-logout:hover{
+
+    color:#fff;
+
+}
+
+
+
 
 
 /*========================
@@ -560,25 +630,21 @@ Admin Dashboard
 </h2>
 
 
-<div>
+<div class="topbar-right">
 
-Welcome,
+<a href="index.html" class="btn-home">
 
-<strong id="adminName">
-
-Admin
-
-</strong>
-
-
-|
-
-<a href="#" onclick="logout()">
-
-Logout
+<i class="fa fa-home"></i> Home
 
 </a>
 
+<span>Welcome, <strong id="adminName">Admin</strong></span>
+
+<a href="#" class="btn-logout" onclick="logout()">
+
+<i class="fa-solid fa-right-from-bracket"></i> Logout
+
+</a>
 
 </div>
 
@@ -854,7 +920,7 @@ Status
 
 <tbody id="recentApplications">
 
-
+<tr><td colspan="4" class="text-center text-muted p-4">Loading...</td></tr>
 
 </tbody>
 
@@ -946,16 +1012,24 @@ admin.username;
 
 async function loadDashboard(){
 
-    // Wait for DB to be fully ready
+    // Wait for DB to be FULLY ready
+    let dbReady = false;
     let retries = 0;
-    while (!window.DB || !window.DB.getLoans || typeof window.DB.getLoans !== "function") {
-        await new Promise(r => setTimeout(r, 300));
+    while (!dbReady && retries < 50) {
+        try {
+            if (window.DB && typeof DB.getLoans === "function") {
+                const test = await DB.getLoans();
+                if (Array.isArray(test)) {
+                    dbReady = true;
+                    break;
+                }
+            }
+        } catch(e) {}
+        await new Promise(r => setTimeout(r, 100));
         retries++;
-        if (retries > 50) {
-            console.error("Database failed to load");
-            return;
-        }
     }
+
+    if (!dbReady) return;
 
     try {
 
@@ -1059,11 +1133,7 @@ async function loadRecentApplications(){
 
 
 function logout(){
-
-
-AUTH.adminLogout();
-
-
+    AUTH.adminLogout();
 }
 
 
@@ -1078,10 +1148,8 @@ AUTH.adminLogout();
 ====================================*/
 
 
-setTimeout(() => {
-    loadDashboard();
-    loadRecentApplications();
-}, 800);
+loadDashboard();
+loadRecentApplications();
 
 
 
