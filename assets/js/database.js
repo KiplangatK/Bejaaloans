@@ -8,6 +8,7 @@
     - Async operations with same DB.* API
     - Interest calculated on remaining balance
     - Interest paid first, remainder reduces principal
+    - Auto-migrates from localStorage
 =========================================================*/
 
 (function(){
@@ -101,6 +102,46 @@ async function seedDefaultAdmin() {
             role: "Administrator",
             active: true
         });
+    }
+}
+
+/*=========================================================
+    MIGRATION FROM LOCALSTORAGE
+=========================================================*/
+
+async function migrateFromLocalStorage() {
+    try {
+        const clients = await getAll("clients");
+        if (clients.length > 0) return;
+
+        const oldTables = ["clients", "loanApplications", "loans", "payments", "staff"];
+        let migrated = false;
+
+        for (const table of oldTables) {
+            const oldData = localStorage.getItem(table);
+            if (oldData) {
+                try {
+                    const parsed = JSON.parse(oldData);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        for (const item of parsed) {
+                            try {
+                                await add(table, item);
+                            } catch(e) {
+                                // Skip duplicates
+                            }
+                        }
+                        migrated = true;
+                        console.log("Migrated " + parsed.length + " records from localStorage." + table);
+                    }
+                } catch(e) {}
+            }
+        }
+
+        if (migrated) {
+            console.log("Migration from localStorage complete!");
+        }
+    } catch(e) {
+        console.log("Migration skipped");
     }
 }
 
@@ -335,13 +376,8 @@ async function addPayment(payment) {
     let balance = Number(loan.remainingPrincipal || 0);
     let rate = Number(loan.interestRate || 20);
     
-    // Calculate interest owed on current remaining balance
     let interestOwed = (balance * rate) / 100;
-    
-    // Interest is paid first
     let interestPaid = Math.min(amount, interestOwed);
-    
-    // Remaining amount goes to principal
     let principalPaid = amount - interestPaid;
     if (principalPaid > balance) principalPaid = balance;
     
@@ -359,7 +395,6 @@ async function addPayment(payment) {
 
     const savedPayment = await add("payments", newPayment);
 
-    // Update loan
     loan.remainingPrincipal = Math.max(0, newBalance);
     loan.currentInterest = (loan.remainingPrincipal * rate) / 100;
 
@@ -476,7 +511,8 @@ async function exportDatabase() {
     INITIALIZE & EXPORT
 =========================================================*/
 
-openDB().then(() => {
+openDB().then(async () => {
+    await migrateFromLocalStorage();
     console.log("BEJJA DATABASE ENGINE V4.1 (IndexedDB) LOADED");
 }).catch(err => {
     console.error("Database initialization failed:", err);
