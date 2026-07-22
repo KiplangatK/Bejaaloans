@@ -393,7 +393,17 @@ return;
 }
 
 
-
+// Wait for DB to be ready
+let retries = 0;
+while (!window.DB || typeof DB.getClientByPhone !== "function") {
+    await new Promise(r => setTimeout(r, 200));
+    retries++;
+    if (retries > 25) {
+        errorBox.innerHTML = "System is loading. Please try again.";
+        errorBox.style.display = "block";
+        return;
+    }
+}
 
 
 
