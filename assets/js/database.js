@@ -1,13 +1,14 @@
 /*=========================================================
     BEJJA LOAN CREDIT
     DATABASE ENGINE — IndexedDB
-    Version: 4.2
+    Version: 4.3
 
     - Unlimited storage for thousands of clients
     - Indexed queries by phone, clientId, loanId, status
     - Async operations with same DB.* API
     - Interest calculated on remaining balance
-    - Interest paid first, remainder reduces principal
+    - Payment clears ALL outstanding interest first (multi-month)
+    - Then remainder reduces principal
     - Auto-migrates from localStorage
     - Stores payment notes/comments
 =========================================================*/
@@ -127,9 +128,7 @@ async function migrateFromLocalStorage() {
                         for (const item of parsed) {
                             try {
                                 await add(table, item);
-                            } catch(e) {
-                                // Skip duplicates
-                            }
+                            } catch(e) {}
                         }
                         migrated = true;
                         console.log("Migrated " + parsed.length + " records from localStorage." + table);
@@ -362,7 +361,8 @@ async function deleteLoan(id) {
 
 /*=========================================================
     PAYMENT MANAGEMENT
-    Interest paid first, remainder reduces principal
+    Payment clears ALL outstanding interest first (multi-month)
+    Then remainder reduces principal
 =========================================================*/
 
 async function getPayments() {
@@ -377,9 +377,45 @@ async function addPayment(payment) {
     let balance = Number(loan.remainingPrincipal || 0);
     let rate = Number(loan.interestRate || 20);
     
-    let interestOwed = (balance * rate) / 100;
-    let interestPaid = Math.min(amount, interestOwed);
-    let principalPaid = amount - interestPaid;
+    // Calculate total outstanding interest (all overdue months)
+    let totalOutstandingInterest = 0;
+    let monthsOverdue = 0;
+    
+    if (loan.dueDate) {
+        const parts = loan.dueDate.split("/");
+        if (parts.length === 3) {
+            const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
+            dueDate.setHours(0, 0, 0, 0);
+            let today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (today > dueDate) {
+                let checkDate = new Date(dueDate);
+                while (true) {
+                    let nextMonth = new Date(checkDate);
+                    nextMonth.setMonth(nextMonth.getMonth() + 1);
+                    if (today < nextMonth) break;
+                    monthsOverdue++;
+                    checkDate = nextMonth;
+                }
+                if (monthsOverdue < 1) monthsOverdue = 1;
+                
+                let monthlyInterest = (balance * rate) / 100;
+                totalOutstandingInterest = monthlyInterest * monthsOverdue;
+            } else {
+                totalOutstandingInterest = (balance * rate) / 100;
+            }
+        }
+    } else {
+        totalOutstandingInterest = (balance * rate) / 100;
+    }
+    
+    // 1. Pay total outstanding interest first
+    let interestPaid = Math.min(amount, totalOutstandingInterest);
+    let remainingAfterInterest = amount - interestPaid;
+    
+    // 2. Remaining reduces principal
+    let principalPaid = remainingAfterInterest;
     if (principalPaid > balance) principalPaid = balance;
     
     let newBalance = balance - principalPaid;
@@ -397,12 +433,38 @@ async function addPayment(payment) {
 
     const savedPayment = await add("payments", newPayment);
 
+    // Update loan
     loan.remainingPrincipal = Math.max(0, newBalance);
     loan.currentInterest = (loan.remainingPrincipal * rate) / 100;
 
     if (loan.remainingPrincipal <= 0) {
         loan.remainingPrincipal = 0;
         loan.status = "COMPLETED";
+    }
+    
+    // If all outstanding interest is paid and principal remains, push due date forward
+    if (interestPaid >= totalOutstandingInterest && newBalance > 0) {
+        let loanDay = 15;
+        if (loan.loanDate) {
+            const loanParts = loan.loanDate.split("/");
+            if (loanParts.length === 3) {
+                loanDay = parseInt(loanParts[0]);
+            }
+        }
+        
+        let newDue = new Date();
+        newDue.setMonth(newDue.getMonth() + 1);
+        newDue.setDate(loanDay);
+        
+        if (newDue.getDate() < loanDay) {
+            newDue.setDate(0);
+        }
+        
+        const newDay = String(newDue.getDate()).padStart(2, "0");
+        const newMonth = String(newDue.getMonth() + 1).padStart(2, "0");
+        const newYear = newDue.getFullYear();
+        
+        loan.dueDate = `${newDay}/${newMonth}/${newYear}`;
     }
 
     await updateLoan(loan);
@@ -515,7 +577,7 @@ async function exportDatabase() {
 
 openDB().then(async () => {
     await migrateFromLocalStorage();
-    console.log("BEJJA DATABASE ENGINE V4.2 (IndexedDB) LOADED");
+    console.log("BEJJA DATABASE ENGINE V4.3 (IndexedDB) LOADED");
 }).catch(err => {
     console.error("Database initialization failed:", err);
 });
