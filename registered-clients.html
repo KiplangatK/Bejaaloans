@@ -190,6 +190,50 @@ font-size:28px;
 
 
 
+.topbar .topbar-right{
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+}
+
+
+
+.topbar .btn-back{
+
+background:rgba(255,255,255,0.2);
+
+color:white;
+
+padding:8px 16px;
+
+border-radius:20px;
+
+text-decoration:none;
+
+font-size:14px;
+
+font-weight:600;
+
+transition:.3s;
+
+}
+
+
+
+.topbar .btn-back:hover{
+
+background:rgba(255,255,255,0.35);
+
+color:white;
+
+}
+
+
+
 
 
 
@@ -480,16 +524,15 @@ Registered Clients
 
 
 
-<div>
+<div class="topbar-right">
 
-Welcome,
+<a href="admin-dashboard.html" class="btn-back">
 
-<strong id="adminName">
+<i class="fa fa-arrow-left"></i> Back
 
-Admin
+</a>
 
-</strong>
-
+<span>Welcome, <strong id="adminName">Admin</strong></span>
 
 </div>
 
@@ -583,6 +626,7 @@ Action
 
 <tbody id="clientsTable">
 
+<tr><td colspan="8" class="text-center text-muted p-4">Loading clients...</td></tr>
 
 </tbody>
 
@@ -1287,222 +1331,56 @@ Number(value || 0).toLocaleString();
 
 async function loadClients(){
 
-
-
-let clients = await DB.getClients();
-
-
-
-let table = document.getElementById(
-
-"clientsTable"
-
-);
-
-
-
-table.innerHTML="";
-
-
-
-
-
-if(clients.length===0){
-
-
-table.innerHTML=`
-
-
-<tr>
-
-<td colspan="8"
-
-class="text-center text-muted p-4">
-
-
-No registered clients found.
-
-
-</td>
-
-</tr>
-
-
-`;
-
-
-return;
-
-
-}
-
-
-
-
-
-
-
-clients.forEach((client,index)=>{
-
-
-
-let photo = client.profilePhoto || 
-
-"https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-
-
-
-
-
-let status = client.status || "ACTIVE";
-
-
-
-let badge = status==="ACTIVE"
-
-?
-
-`<span class="status-active">
-
-ACTIVE
-
-</span>`
-
-:
-
-`<span class="status-suspended">
-
-SUSPENDED
-
-</span>`;
-
-
-
-
-
-
-
-table.innerHTML += `
-
-
-
-<tr>
-
-
-
-<td>
-
-${index+1}
-
-</td>
-
-
-
-
-<td>
-
-<img src="${photo}"
-
-class="profile-img">
-
-</td>
-
-
-
-
-
-
-<td>
-
-${client.fullname || "-"}
-
-</td>
-
-
-
-
-
-
-<td>
-
-${client.phone || "-"}
-
-</td>
-
-
-
-
-
-
-<td>
-
-${client.nationalID || "-"}
-
-</td>
-
-
-
-
-
-
-<td>
-
-${client.createdAt || "-"}
-
-</td>
-
-
-
-
-
-
-<td>
-
-${badge}
-
-</td>
-
-
-
-
-
-
-<td>
-
-
-
-<button
-
-class="btn btn-view btn-sm"
-
-onclick="viewClient(${client.id})">
-
-
-
-<i class="fa fa-eye"></i>
-
-View Details
-
-
-</button>
-
-
-
-</td>
-
-
-
-</tr>
-
-
-
-`;
-
-
-
-});
-
-
+    // Wait for DB
+    let dbReady = false;
+    let retries = 0;
+    while (!dbReady && retries < 50) {
+        try {
+            if (window.DB && typeof DB.getClients === "function") {
+                const test = await DB.getClients();
+                if (Array.isArray(test)) {
+                    dbReady = true;
+                    break;
+                }
+            }
+        } catch(e) {}
+        await new Promise(r => setTimeout(r, 100));
+        retries++;
+    }
+
+    if (!dbReady) return;
+
+    let clients = await DB.getClients();
+
+    let table = document.getElementById("clientsTable");
+    table.innerHTML="";
+
+    if(!Array.isArray(clients) || clients.length===0){
+        table.innerHTML=`<tr><td colspan="8" class="text-center text-muted p-4">No registered clients found.</td></tr>`;
+        return;
+    }
+
+    const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
+    clients.forEach((client,index)=>{
+        let photo = client.profilePhoto || DEFAULT_IMG;
+        let status = client.status || "ACTIVE";
+        let badge = status==="ACTIVE"
+            ? `<span class="status-active">ACTIVE</span>`
+            : `<span class="status-suspended">SUSPENDED</span>`;
+
+        table.innerHTML += `
+            <tr>
+                <td>${index+1}</td>
+                <td><img src="${photo}" class="profile-img"></td>
+                <td>${client.fullname || "-"}</td>
+                <td>${client.phone || "-"}</td>
+                <td>${client.nationalID || "-"}</td>
+                <td>${client.createdAt || "-"}</td>
+                <td>${badge}</td>
+                <td><button class="btn btn-view btn-sm" onclick="viewClient(${client.id})"><i class="fa fa-eye"></i> View Details</button></td>
+            </tr>`;
+    });
 
 }
 
@@ -1521,304 +1399,55 @@ View Details
 
 async function viewClient(id){
 
-
-
-let client = await DB.getClientById(id);
-
-
-
-if(!client){
-
-return;
-
-}
-
-
-
-
-
-selectedClientId = id;
-
-
-
-
-
-
-document.getElementById("viewPhoto").src =
-
-client.profilePhoto ||
-
-"https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-
-
-
-
-
-document.getElementById("viewProfile").src =
-
-client.profilePhoto || "";
-
-
-
-
-
-document.getElementById("viewIdFront").src =
-
-client.idFront || "";
-
-
-
-
-
-document.getElementById("viewIdBack").src =
-
-client.idBack || "";
-
-
-
-
-
-
-
-document.getElementById("viewName").innerHTML =
-
-client.fullname || "-";
-
-
-
-
-
-
-document.getElementById("viewPhone").innerHTML =
-
-client.phone || "-";
-
-
-
-
-
-
-document.getElementById("viewId").innerHTML =
-
-client.nationalID || "-";
-
-
-
-
-
-
-document.getElementById("viewEmail").innerHTML =
-
-client.email || "-";
-
-
-
-
-
-
-document.getElementById("viewOccupation").innerHTML =
-
-client.occupation || "-";
-
-
-
-
-
-
-document.getElementById("viewEmployer").innerHTML =
-
-client.employer || "-";
-
-
-
-
-
-
-document.getElementById("viewIncome").innerHTML =
-
-money(client.monthlyIncome);
-
-
-
-
-
-
-document.getElementById("viewCounty").innerHTML =
-
-client.county || "-";
-
-
-
-
-
-
-document.getElementById("viewAddress").innerHTML =
-
-client.address || "-";
-
-
-
-
-
-
-document.getElementById("viewDate").innerHTML =
-
-client.createdAt || "-";
-
-
-
-
-
-
-
-// STATUS
-
-
-document.getElementById("viewStatus").innerHTML =
-
-client.status==="SUSPENDED"
-
-?
-
-`<span class="status-suspended">
-
-SUSPENDED
-
-</span>`
-
-:
-
-`<span class="status-active">
-
-ACTIVE
-
-</span>`;
-
-
-
-
-
-
-
-
-// =================================
-// LOAN HISTORY
-// =================================
-
-
-
-let loanTable = document.getElementById(
-
-"loanHistory"
-
-);
-
-
-
-loanTable.innerHTML="";
-
-
-
-
-let loans = await DB.getLoans();
-
-let clientLoans = loans.filter(loan =>
-
-String(loan.clientId) === String(client.id)
-
-);
-
-
-
-
-
-
-if(clientLoans.length===0){
-
-
-
-loanTable.innerHTML=`
-
-<tr>
-
-<td colspan="3"
-
-class="text-center">
-
-No loan history.
-
-</td>
-
-</tr>
-
-`;
-
-
-}
-
-else{
-
-
-clientLoans.forEach(loan=>{
-
-
-loanTable.innerHTML += `
-
-
-<tr>
-
-<td>
-
-${money(loan.originalPrincipal)}
-
-</td>
-
-
-<td>
-
-${loan.status}
-
-</td>
-
-
-<td>
-
-${loan.createdAt || loan.loanDate || "-"}
-
-</td>
-
-
-</tr>
-
-
-`;
-
-
-});
-
-
-}
-
-
-
-
-
-
-
-
-
-let modal = new bootstrap.Modal(
-
-document.getElementById("clientModal")
-
-);
-
-
-
-modal.show();
-
-
-
+    let client = await DB.getClientById(id);
+
+    if(!client) return;
+
+    const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
+    selectedClientId = id;
+
+    document.getElementById("viewPhoto").src = client.profilePhoto || DEFAULT_IMG;
+    document.getElementById("viewProfile").src = client.profilePhoto || "";
+    document.getElementById("viewIdFront").src = client.idFront || "";
+    document.getElementById("viewIdBack").src = client.idBack || "";
+    document.getElementById("viewName").innerHTML = client.fullname || "-";
+    document.getElementById("viewPhone").innerHTML = client.phone || "-";
+    document.getElementById("viewId").innerHTML = client.nationalID || "-";
+    document.getElementById("viewEmail").innerHTML = client.email || "-";
+    document.getElementById("viewOccupation").innerHTML = client.occupation || "-";
+    document.getElementById("viewEmployer").innerHTML = client.employer || "-";
+    document.getElementById("viewIncome").innerHTML = money(client.monthlyIncome);
+    document.getElementById("viewCounty").innerHTML = client.county || "-";
+    document.getElementById("viewAddress").innerHTML = client.address || "-";
+    document.getElementById("viewDate").innerHTML = client.createdAt || "-";
+
+    document.getElementById("viewStatus").innerHTML = client.status==="SUSPENDED"
+        ? `<span class="status-suspended">SUSPENDED</span>`
+        : `<span class="status-active">ACTIVE</span>`;
+
+    // LOAN HISTORY
+    let loanTable = document.getElementById("loanHistory");
+    loanTable.innerHTML="";
+
+    let loans = await DB.getLoans();
+    let clientLoans = loans.filter(loan => String(loan.clientId) === String(client.id));
+
+    if(clientLoans.length===0){
+        loanTable.innerHTML=`<tr><td colspan="3" class="text-center">No loan history.</td></tr>`;
+    } else {
+        clientLoans.forEach(loan=>{
+            loanTable.innerHTML += `
+                <tr>
+                    <td>${money(loan.originalPrincipal)}</td>
+                    <td>${loan.status}</td>
+                    <td>${loan.createdAt || loan.loanDate || "-"}</td>
+                </tr>`;
+        });
+    }
+
+    let modal = new bootstrap.Modal(document.getElementById("clientModal"));
+    modal.show();
 
 }
 
@@ -1837,60 +1466,20 @@ modal.show();
 
 async function suspendClient(){
 
+    let client = await DB.getClientById(selectedClientId);
 
+    if(!client) return;
 
-let client = await DB.getClientById(selectedClientId);
+    if(!confirm("Suspend this client account?")) return;
 
+    client.status="SUSPENDED";
+    await DB.updateClient(client);
 
+    alert("Client suspended successfully.");
+    loadClients();
 
-if(!client){
-
-return;
-
-}
-
-
-
-
-if(!confirm(
-
-"Suspend this client account?"
-
-)){
-
-
-return;
-
-
-}
-
-
-
-
-client.status="SUSPENDED";
-
-
-
-await DB.updateClient(client);
-
-
-
-alert(
-
-"Client suspended successfully."
-
-);
-
-
-
-loadClients();
-
-
-// Close modal
-let modal = bootstrap.Modal.getInstance(document.getElementById("clientModal"));
-if(modal) modal.hide();
-
-
+    let modal = bootstrap.Modal.getInstance(document.getElementById("clientModal"));
+    if(modal) modal.hide();
 
 }
 
@@ -1909,45 +1498,18 @@ if(modal) modal.hide();
 
 async function activateClient(){
 
+    let client = await DB.getClientById(selectedClientId);
 
+    if(!client) return;
 
-let client = await DB.getClientById(selectedClientId);
+    client.status="ACTIVE";
+    await DB.updateClient(client);
 
+    alert("Client activated successfully.");
+    loadClients();
 
-
-if(!client){
-
-return;
-
-}
-
-
-
-
-client.status="ACTIVE";
-
-
-
-await DB.updateClient(client);
-
-
-
-alert(
-
-"Client activated successfully."
-
-);
-
-
-
-loadClients();
-
-
-// Close modal
-let modal = bootstrap.Modal.getInstance(document.getElementById("clientModal"));
-if(modal) modal.hide();
-
-
+    let modal = bootstrap.Modal.getInstance(document.getElementById("clientModal"));
+    if(modal) modal.hide();
 
 }
 
@@ -1966,75 +1528,19 @@ if(modal) modal.hide();
 
 async function deleteClient(){
 
+    let client = await DB.getClientById(selectedClientId);
 
+    if(!client) return;
 
-let client = await DB.getClientById(selectedClientId);
+    if(!confirm("WARNING: Delete this client permanently?")) return;
 
+    await DB.deleteClient(selectedClientId);
 
+    alert("Client deleted successfully.");
+    loadClients();
 
-if(!client){
-
-return;
-
-}
-
-
-
-
-
-if(!confirm(
-
-"WARNING: Delete this client permanently?"
-
-)){
-
-
-return;
-
-
-}
-
-
-
-
-
-
-await DB.deleteClient(selectedClientId);
-
-
-
-
-
-alert(
-
-"Client deleted successfully."
-
-);
-
-
-
-
-
-loadClients();
-
-
-
-
-let modal = bootstrap.Modal.getInstance(
-
-document.getElementById("clientModal")
-
-);
-
-
-
-if(modal){
-
-modal.hide();
-
-}
-
-
+    let modal = bootstrap.Modal.getInstance(document.getElementById("clientModal"));
+    if(modal) modal.hide();
 
 }
 
@@ -2052,11 +1558,7 @@ modal.hide();
 
 
 function logout(){
-
-
-AUTH.adminLogout();
-
-
+    AUTH.adminLogout();
 }
 
 
@@ -2066,11 +1568,9 @@ AUTH.adminLogout();
 
 
 
-// START — wait for DB
+// START
 
-setTimeout(() => {
-    loadClients();
-}, 500);
+loadClients();
 
 
 
