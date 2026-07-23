@@ -870,7 +870,7 @@ KES 0
 
 <div class="card-title">
 
-Total Amount Due
+Total Overdue
 
 </div>
 
@@ -936,7 +936,7 @@ Late Loan Clients
 
 <th>Interest Owed</th>
 
-<th>Total Due</th>
+<th>Overdue Amount</th>
 
 <th>Due Date</th>
 
@@ -1157,13 +1157,34 @@ async function loadLateLoans(){
 
         if (dueDate >= today) continue;
 
+        // Check if any payment was made AFTER the due date
+        let payments = await DB.getLoanPayments(loan.id);
+        let hasRecentPayment = false;
+        
+        if (Array.isArray(payments)) {
+            for (let p of payments) {
+                if (!p.date) continue;
+                const pParts = p.date.split("/");
+                if (pParts.length !== 3) continue;
+                const paymentDate = new Date(pParts[2], pParts[1] - 1, pParts[0]);
+                if (paymentDate >= dueDate) {
+                    hasRecentPayment = true;
+                    break;
+                }
+            }
+        }
+
+        // Skip if a payment was made after due date (loan is current)
+        if (hasRecentPayment) continue;
+
+        // This loan is truly late - overdue amount is just the interest
         let interestAmount = (balance * rate) / 100;
-        let amountDue = balance + interestAmount;
+        let overdueAmount = interestAmount;
 
         lateCount++;
         outstandingPrincipal += balance;
         totalInterestOwed += interestAmount;
-        totalDue += amountDue;
+        totalDue += overdueAmount;
 
         let client = await DB.getClientById(loan.clientId);
         let clientName = client ? client.fullname : "Unknown";
@@ -1178,8 +1199,8 @@ async function loadLateLoans(){
                 <td>${phone}</td>
                 <td>KES ${originalAmount.toLocaleString()}</td>
                 <td>KES ${balance.toLocaleString()}</td>
-                <td>KES ${interestAmount.toLocaleString()}</td>
-                <td class="fw-bold">KES ${amountDue.toLocaleString()}</td>
+                <td class="fw-bold text-danger">KES ${interestAmount.toLocaleString()}</td>
+                <td class="fw-bold">KES ${overdueAmount.toLocaleString()}</td>
                 <td>${loan.dueDate}</td>
                 <td class="text-danger fw-bold">${daysLate} Days</td>
                 <td>
