@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cleanup Orphaned Data | Bejja Credit</title>
+<title>Reset Database | Bejja Credit</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body style="background:#edf4ff; font-family:'Segoe UI',sans-serif;">
@@ -12,16 +12,17 @@
     <div class="card shadow-lg mx-auto" style="max-width:600px; border-radius:20px;">
         <div class="card-body p-5 text-center">
             
-            <i class="fa-solid fa-broom fa-3x text-primary mb-3"></i>
-            <h3>Data Cleanup Tool</h3>
-            <p class="text-muted">Removes orphaned loans and applications for deleted clients.</p>
+            <i class="fa-solid fa-triangle-exclamation fa-3x text-danger mb-3"></i>
+            <h3>Reset Database</h3>
+            <p class="text-muted">This will delete ALL clients, loans, applications, and payments.</p>
+            <p class="text-danger fw-bold">This cannot be undone!</p>
             
-            <div id="status" class="alert alert-info">
-                <i class="fa fa-spinner fa-spin"></i> Scanning database...
+            <div id="status" class="alert alert-info mt-3">
+                Ready to reset. Click the button below.
             </div>
             
-            <button id="cleanBtn" class="btn btn-warning btn-lg w-100" onclick="cleanData()" disabled>
-                <i class="fa fa-broom"></i> Clean Orphaned Data
+            <button id="resetBtn" class="btn btn-danger btn-lg w-100" onclick="resetDatabase()">
+                <i class="fa fa-trash"></i> Delete All Data
             </button>
             
             <div id="result" class="mt-3"></div>
@@ -37,85 +38,44 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-const statusEl = document.getElementById("status");
-const cleanBtn = document.getElementById("cleanBtn");
-const resultEl = document.getElementById("result");
-
-let orphanedLoans = [];
-let orphanedApps = [];
-
-// Wait for DB then scan
-setTimeout(async () => {
+async function resetDatabase() {
+    if (!confirm("WARNING: This will permanently delete ALL data!\n\nClients, loans, applications, and payments will be gone forever.\n\nThe default admin account will be recreated.\n\nAre you sure?")) return;
+    
+    if (!confirm("FINAL WARNING: This cannot be undone.\n\nClick OK to proceed.")) return;
+    
+    document.getElementById("resetBtn").disabled = true;
+    document.getElementById("resetBtn").innerHTML = '<i class="fa fa-spinner fa-spin"></i> Deleting...';
+    document.getElementById("status").className = "alert alert-warning";
+    document.getElementById("status").innerHTML = "Deleting all data...";
+    
     try {
-        const clients = await DB.getClients();
-        const clientIds = clients.map(c => String(c.id));
+        // Delete and recreate the database
+        indexedDB.deleteDatabase("BejjaDB");
         
-        const loans = await DB.getLoans();
-        const applications = await DB.getApplications();
+        await new Promise(r => setTimeout(r, 1000));
         
-        orphanedLoans = loans.filter(l => !clientIds.includes(String(l.clientId)));
-        orphanedApps = applications.filter(a => !clientIds.includes(String(a.clientId)));
+        // Reload the page to reinitialize
+        document.getElementById("status").className = "alert alert-success";
+        document.getElementById("status").innerHTML = "✅ All data deleted! Default admin recreated.<br>Username: admin<br>Password: admin123";
+        document.getElementById("resetBtn").style.display = "none";
         
-        if (orphanedLoans.length === 0 && orphanedApps.length === 0) {
-            statusEl.className = "alert alert-success";
-            statusEl.innerHTML = '<i class="fa fa-check-circle"></i> No orphaned data found. Your database is clean!';
-        } else {
-            statusEl.className = "alert alert-warning";
-            statusEl.innerHTML = `
-                <i class="fa fa-exclamation-triangle"></i> Found:<br>
-                <b>${orphanedLoans.length}</b> orphaned loans (clients deleted)<br>
-                <b>${orphanedApps.length}</b> orphaned applications<br><br>
-                Click "Clean Orphaned Data" to remove them.
-            `;
-            cleanBtn.disabled = false;
-        }
+        document.getElementById("result").innerHTML = `
+            <div class="alert alert-success mt-3">
+                <h5>✅ Reset Complete!</h5>
+                <p>All client data has been cleared.</p>
+                <p><b>Admin login:</b> admin / admin123</p>
+                <a href="index.html" class="btn btn-success mt-2">Go to Homepage</a>
+            </div>
+        `;
+        
     } catch(e) {
-        statusEl.className = "alert alert-danger";
-        statusEl.innerHTML = "Error scanning database. Try refreshing.";
+        document.getElementById("status").className = "alert alert-danger";
+        document.getElementById("status").innerHTML = "Error: " + e.message;
+        document.getElementById("resetBtn").disabled = false;
     }
-}, 1000);
-
-async function cleanData() {
-    if (!confirm(`Delete ${orphanedLoans.length} loans and ${orphanedApps.length} applications?`)) return;
-    
-    cleanBtn.disabled = true;
-    cleanBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Cleaning...';
-    
-    let removedLoans = 0;
-    let removedApps = 0;
-    
-    for (const loan of orphanedLoans) {
-        try {
-            await DB.deleteLoan(loan.id);
-            removedLoans++;
-        } catch(e) {}
-    }
-    
-    for (const app of orphanedApps) {
-        try {
-            await DB.deleteApplication(app.id);
-            removedApps++;
-        } catch(e) {}
-    }
-    
-    statusEl.className = "alert alert-success";
-    statusEl.innerHTML = `
-        <i class="fa fa-check-circle"></i> Cleanup complete!<br>
-        Removed: <b>${removedLoans}</b> loans, <b>${removedApps}</b> applications
-    `;
-    
-    resultEl.innerHTML = `
-        <div class="alert alert-success">
-            <h5>✅ Done!</h5>
-            <p>Your dashboard should now show correct numbers.</p>
-        </div>
-    `;
-    
-    cleanBtn.style.display = "none";
 }
 </script>
 
-<!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </body>
 </html>
