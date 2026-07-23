@@ -8,9 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-<title>
-Bejja Credit | Statistics
-</title>
+<title>Bejja Credit | Statistics</title>
 
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -23,307 +21,38 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 <style>
 
 
-*{
+*{margin:0;padding:0;box-sizing:border-box;}
 
-margin:0;
-padding:0;
-box-sizing:border-box;
+body{background:#edf4ff;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;}
 
-}
+.wrapper{display:flex;}
 
+.sidebar{width:260px;min-height:100vh;background:#0d47a1;color:white;position:fixed;}
+.logo{padding:25px;font-size:28px;font-weight:bold;border-bottom:1px solid rgba(255,255,255,.15);}
+.logo i{margin-right:10px;}
+.sidebar ul{list-style:none;padding:15px 0;}
+.sidebar ul li a{display:block;color:white;padding:15px 25px;text-decoration:none;transition:.3s;}
+.sidebar ul li a:hover{background:#1565c0;padding-left:35px;}
+.sidebar ul li i{width:25px;}
 
-body{
+.main{margin-left:260px;width:100%;}
 
-background:#edf4ff;
+.topbar{height:70px;background:#1976d2;color:white;display:flex;justify-content:space-between;align-items:center;padding:0 30px;box-shadow:0 2px 10px rgba(0,0,0,.15);}
+.topbar h2{font-size:28px;}
+.topbar a{color:white;text-decoration:none;}
+.topbar .topbar-right{display:flex;align-items:center;gap:15px;}
+.topbar .btn-back{background:rgba(255,255,255,0.2);color:white;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:14px;font-weight:600;transition:.3s;}
+.topbar .btn-back:hover{background:rgba(255,255,255,0.35);color:white;}
 
-font-family:
-Segoe UI,
-Tahoma,
-Geneva,
-Verdana,
-sans-serif;
+.content{padding:30px;}
 
-}
+.statistics-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:25px;}
 
-
-
-.wrapper{
-
-display:flex;
-
-}
-
-
-
-/* SIDEBAR */
-
-
-.sidebar{
-
-width:260px;
-
-min-height:100vh;
-
-background:#0d47a1;
-
-color:white;
-
-position:fixed;
-
-}
-
-
-
-.logo{
-
-padding:25px;
-
-font-size:28px;
-
-font-weight:bold;
-
-border-bottom:
-1px solid rgba(255,255,255,.15);
-
-}
-
-
-
-.logo i{
-
-margin-right:10px;
-
-}
-
-
-
-.sidebar ul{
-
-list-style:none;
-
-padding:15px 0;
-
-}
-
-
-
-.sidebar ul li a{
-
-display:block;
-
-color:white;
-
-padding:15px 25px;
-
-text-decoration:none;
-
-transition:.3s;
-
-}
-
-
-
-.sidebar ul li a:hover{
-
-background:#1565c0;
-
-padding-left:35px;
-
-}
-
-
-
-.sidebar ul li i{
-
-width:25px;
-
-}
-
-
-
-/* MAIN */
-
-
-.main{
-
-margin-left:260px;
-
-width:100%;
-
-}
-
-
-
-/* TOPBAR */
-
-
-.topbar{
-
-height:70px;
-
-background:#1976d2;
-
-color:white;
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-padding:0 30px;
-
-box-shadow:
-0 2px 10px rgba(0,0,0,.15);
-
-}
-
-
-.topbar h2{
-
-font-size:28px;
-
-}
-
-
-.topbar a{
-
-color:white;
-
-text-decoration:none;
-
-}
-
-
-
-.topbar .topbar-right{
-
-display:flex;
-
-align-items:center;
-
-gap:15px;
-
-}
-
-
-
-.topbar .btn-back{
-
-background:rgba(255,255,255,0.2);
-
-color:white;
-
-padding:8px 16px;
-
-border-radius:20px;
-
-text-decoration:none;
-
-font-size:14px;
-
-font-weight:600;
-
-transition:.3s;
-
-}
-
-
-
-.topbar .btn-back:hover{
-
-background:rgba(255,255,255,0.35);
-
-color:white;
-
-}
-
-
-
-/* CONTENT */
-
-
-.content{
-
-padding:30px;
-
-}
-
-
-
-.statistics-cards{
-
-display:grid;
-
-grid-template-columns:
-repeat(auto-fit,minmax(230px,1fr));
-
-gap:25px;
-
-}
-
-
-
-.card-box{
-
-background:white;
-
-padding:25px;
-
-border-radius:12px;
-
-box-shadow:
-0 5px 15px rgba(0,0,0,.1);
-
-transition:.3s;
-
-}
-
-
-
-.card-box:hover{
-
-transform:translateY(-5px);
-
-}
-
-
-
-.card-box i{
-
-font-size:35px;
-
-color:#1976d2;
-
-}
-
-
-
-.card-title{
-
-margin-top:15px;
-
-font-size:20px;
-
-font-weight:bold;
-
-}
-
-
-
-.card-number{
-
-font-size:32px;
-
-font-weight:bold;
-
-color:#0d47a1;
-
-margin-top:10px;
-
-}
-
-
+.card-box{background:white;padding:25px;border-radius:12px;box-shadow:0 5px 15px rgba(0,0,0,.1);transition:.3s;}
+.card-box:hover{transform:translateY(-5px);}
+.card-box i{font-size:35px;color:#1976d2;}
+.card-title{margin-top:15px;font-size:20px;font-weight:bold;}
+.card-number{font-size:32px;font-weight:bold;color:#0d47a1;margin-top:10px;}
 
 </style>
 
@@ -333,551 +62,92 @@ margin-top:10px;
 
 <body>
 
-
-
 <div class="wrapper">
 
-
-<!-- SIDEBAR -->
-
 <div class="sidebar">
-
-
-<div class="logo">
-
-<i class="fa-solid fa-building-columns"></i>
-
-Bejja Credit
-
-</div>
-
-
-
+<div class="logo"><i class="fa-solid fa-building-columns"></i>Bejja Credit</div>
 <ul>
-
-
-<li>
-<a href="admin-dashboard.html">
-<i class="fa-solid fa-gauge"></i>
-Dashboard
-</a>
-</li>
-
-
-
-<li>
-<a href="registered-clients.html">
-<i class="fa-solid fa-users"></i>
-Registered Clients
-</a>
-</li>
-
-
-
-<li>
-<a href="active-loans.html">
-<i class="fa-solid fa-money-bill-wave"></i>
-Active Loans
-</a>
-</li>
-
-
-
-<li>
-<a href="late-loans.html">
-<i class="fa-solid fa-triangle-exclamation"></i>
-Late Loans
-</a>
-</li>
-
-
-
-<li>
-<a href="loan-applications.html">
-<i class="fa-solid fa-file-circle-check"></i>
-Pending Applications
-</a>
-</li>
-
-
-
-<li>
-<a href="statistics.html">
-<i class="fa-solid fa-chart-column"></i>
-Statistics
-</a>
-</li>
-
-
-
-<li>
-<a href="#" onclick="logout()">
-<i class="fa-solid fa-right-from-bracket"></i>
-Logout
-</a>
-</li>
-
-
+<li><a href="admin-dashboard.html"><i class="fa-solid fa-gauge"></i>Dashboard</a></li>
+<li><a href="registered-clients.html"><i class="fa-solid fa-users"></i>Registered Clients</a></li>
+<li><a href="active-loans.html"><i class="fa-solid fa-money-bill-wave"></i>Active Loans</a></li>
+<li><a href="late-loans.html"><i class="fa-solid fa-triangle-exclamation"></i>Late Loans</a></li>
+<li><a href="loan-applications.html"><i class="fa-solid fa-file-circle-check"></i>Pending Applications</a></li>
+<li><a href="statistics.html"><i class="fa-solid fa-chart-column"></i>Statistics</a></li>
+<li><a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i>Logout</a></li>
 </ul>
-
-
 </div>
-
-
-
-<!-- MAIN -->
 
 <div class="main">
-
-
 <div class="topbar">
-
-
-<h2>
-
-Loan Statistics
-
-</h2>
-
-
-
+<h2>Loan Statistics</h2>
 <div class="topbar-right">
-
-<a href="admin-dashboard.html" class="btn-back">
-
-<i class="fa fa-arrow-left"></i> Back
-
-</a>
-
+<a href="admin-dashboard.html" class="btn-back"><i class="fa fa-arrow-left"></i> Back</a>
 <span>Welcome, <strong id="adminName">Admin</strong></span>
-
 </div>
-
-
 </div>
-
-
-
-<!-- CONTENT -->
 
 <div class="content">
-
-
 <div class="statistics-cards">
 
+<div class="card-box"><i class="fa-solid fa-users"></i><div class="card-title">Total Clients</div><div class="card-number" id="totalClients">0</div></div>
+<div class="card-box"><i class="fa-solid fa-money-bill-transfer"></i><div class="card-title">Total Loans Issued</div><div class="card-number" id="totalLoans">KES 0</div></div>
+<div class="card-box"><i class="fa-solid fa-chart-line"></i><div class="card-title">Active Loans</div><div class="card-number" id="activeLoans">0</div></div>
+<div class="card-box"><i class="fa-solid fa-circle-check"></i><div class="card-title">Completed Loans</div><div class="card-number" id="completedLoans">0</div></div>
+<div class="card-box"><i class="fa-solid fa-wallet"></i><div class="card-title">Outstanding Balance</div><div class="card-number" id="outstandingBalance">KES 0</div></div>
+<div class="card-box"><i class="fa-solid fa-hand-holding-dollar"></i><div class="card-title">Total Repaid</div><div class="card-number" id="totalRepaid">KES 0</div></div>
+<div class="card-box"><i class="fa-solid fa-percent"></i><div class="card-title">Expected Interest</div><div class="card-number" id="expectedInterest">KES 0</div></div>
+<div class="card-box"><i class="fa-solid fa-coins"></i><div class="card-title">Interest Collected</div><div class="card-number" id="interestCollected">KES 0</div></div>
 
-
-<!-- TOTAL CLIENTS -->
-
-<div class="card-box">
-
-<i class="fa-solid fa-users"></i>
-
-<div class="card-title">
-
-Total Clients
-
+</div>
+</div>
+</div>
 </div>
 
 
-<div class="card-number" id="totalClients">
-
-...
-
-</div>
-
-
-</div>
-
-
-
-
-
-<!-- TOTAL LOANS -->
-
-<div class="card-box">
-
-<i class="fa-solid fa-money-bill-transfer"></i>
-
-<div class="card-title">
-
-Total Loans Issued
-
-</div>
-
-
-<div class="card-number" id="totalLoans">
-
-KES 0
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-<!-- ACTIVE LOANS -->
-
-<div class="card-box">
-
-<i class="fa-solid fa-chart-line"></i>
-
-
-<div class="card-title">
-
-Active Loans
-
-</div>
-
-
-<div class="card-number" id="activeLoans">
-
-...
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<!-- COMPLETED LOANS -->
-
-<div class="card-box">
-
-<i class="fa-solid fa-circle-check"></i>
-
-
-<div class="card-title">
-
-Completed Loans
-
-</div>
-
-
-<div class="card-number" id="completedLoans">
-
-...
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<!-- OUTSTANDING BALANCE -->
-
-<div class="card-box">
-
-<i class="fa-solid fa-wallet"></i>
-
-
-<div class="card-title">
-
-Outstanding Balance
-
-</div>
-
-
-<div class="card-number" id="outstandingBalance">
-
-KES 0
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<!-- TOTAL REPAID -->
-
-<div class="card-box">
-
-<i class="fa-solid fa-hand-holding-dollar"></i>
-
-
-<div class="card-title">
-
-Total Repaid
-
-</div>
-
-
-<div class="card-number" id="totalRepaid">
-
-KES 0
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<!-- EXPECTED INTEREST -->
-
-<div class="card-box">
-
-<i class="fa-solid fa-percent"></i>
-
-
-<div class="card-title">
-
-Expected Interest
-
-</div>
-
-
-<div class="card-number" id="expectedInterest">
-
-KES 0
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<!-- INTEREST COLLECTED -->
-
-<div class="card-box">
-
-<i class="fa-solid fa-coins"></i>
-
-
-<div class="card-title">
-
-Interest Collected
-
-</div>
-
-
-<div class="card-number" id="interestCollected">
-
-KES 0
-
-</div>
-
-
-</div>
-
-
-
-
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-<!-- DATABASE -->
 
 <script src="assets/js/database.js"></script>
-
 <script src="assets/js/auth.js"></script>
-
-
-
-
 
 <script>
 
+if(!AUTH.currentAdmin()){window.location.href="admin-login.html";}
+const admin=AUTH.currentAdmin();if(admin){document.getElementById("adminName").innerHTML=admin.username;}
 
-/*=============================
- ADMIN SECURITY
-=============================*/
+async function loadStatistics(){
+    let loans=await DB.getLoans();let payments=await DB.getPayments();
+    if(!Array.isArray(loans))loans=[];if(!Array.isArray(payments))payments=[];
 
+    let totalLoanAmount=0,expectedInterest=0,totalRepaid=0,outstanding=0,completed=0,active=0,interestCollected=0;
 
-if(!AUTH.currentAdmin()){
-
-window.location.href="admin-login.html";
-
-}
-
-
-
-
-/*=============================
- ADMIN NAME
-=============================*/
-
-
-const admin = AUTH.currentAdmin();
-
-
-if(admin){
-
-document.getElementById("adminName").innerHTML =
-admin.username;
-
-}
-
-
-
-
-
-
-/*=============================
- LOAD STATISTICS
-=============================*/
-
-async function loadStatistics() {
-
-    // Wait for DB
-    let dbReady = false;
-    let retries = 0;
-    while (!dbReady && retries < 50) {
-        try {
-            if (window.DB && typeof DB.getLoans === "function") {
-                const test = await DB.getLoans();
-                if (Array.isArray(test)) {
-                    dbReady = true;
-                    break;
-                }
-            }
-        } catch(e) {}
-        await new Promise(r => setTimeout(r, 100));
-        retries++;
-    }
-
-    if (!dbReady) return;
-
-    let loans = await DB.getLoans();
-    let payments = await DB.getPayments();
-
-    if (!Array.isArray(loans)) loans = [];
-    if (!Array.isArray(payments)) payments = [];
-
-    let totalLoanAmount = 0;
-    let expectedInterest = 0;
-    let totalRepaid = 0;
-    let outstanding = 0;
-    let completed = 0;
-    let active = 0;
-    let interestCollected = 0;
-
-    loans.forEach(loan => {
-
-        let amount = Number(loan.originalPrincipal || 0);
-        let rate = Number(loan.interestRate || 20);
-        let balance = Number(loan.remainingPrincipal || 0);
-        
-        // Expected interest is calculated from OUTSTANDING balance
-        let expectedInt = (balance * rate) / 100;
-
-        let loanPayments = payments.filter(p => String(p.loanId) === String(loan.id));
-        let paidPrincipal = loanPayments.reduce((sum, p) => sum + Number(p.principalPaid || 0), 0);
-        let paidInterest = loanPayments.reduce((sum, p) => sum + Number(p.interestPaid || 0), 0);
-        let totalPaid = paidPrincipal + paidInterest;
-
-        totalLoanAmount += amount;
-        expectedInterest += expectedInt;
-        totalRepaid += totalPaid;
-        interestCollected += paidInterest;
-
-        if (loan.status === "ACTIVE") {
-            active++;
-            outstanding += balance;
-        }
-
-        if (loan.status === "COMPLETED") {
-            completed++;
-        }
-
+    loans.forEach(loan=>{
+        let amount=Number(loan.originalPrincipal||0),rate=Number(loan.interestRate||20),balance=Number(loan.remainingPrincipal||0);
+        let expectedInt=(balance*rate)/100;
+        let loanPayments=payments.filter(p=>String(p.loanId)===String(loan.id));
+        let paidPrincipal=loanPayments.reduce((sum,p)=>sum+Number(p.principalPaid||0),0);
+        let paidInterest=loanPayments.reduce((sum,p)=>sum+Number(p.interestPaid||0),0);
+        let totalPaid=paidPrincipal+paidInterest;
+        totalLoanAmount+=amount;expectedInterest+=expectedInt;totalRepaid+=totalPaid;interestCollected+=paidInterest;
+        if(loan.status==="ACTIVE"){active++;outstanding+=balance;}
+        if(loan.status==="COMPLETED"){completed++;}
     });
 
-    document.getElementById("totalClients").innerHTML = await DB.totalClients();
-
-    document.getElementById("totalLoans").innerHTML =
-        "KES " + totalLoanAmount.toLocaleString();
-
-    document.getElementById("activeLoans").innerHTML = active;
-
-    document.getElementById("completedLoans").innerHTML = completed;
-
-    document.getElementById("outstandingBalance").innerHTML =
-        "KES " + outstanding.toLocaleString();
-
-    document.getElementById("totalRepaid").innerHTML =
-        "KES " + totalRepaid.toLocaleString();
-
-    document.getElementById("expectedInterest").innerHTML =
-        "KES " + expectedInterest.toLocaleString();
-
-    document.getElementById("interestCollected").innerHTML =
-        "KES " + interestCollected.toLocaleString();
-
+    document.getElementById("totalClients").innerHTML=await DB.totalClients();
+    document.getElementById("totalLoans").innerHTML="KES "+totalLoanAmount.toLocaleString();
+    document.getElementById("activeLoans").innerHTML=active;
+    document.getElementById("completedLoans").innerHTML=completed;
+    document.getElementById("outstandingBalance").innerHTML="KES "+outstanding.toLocaleString();
+    document.getElementById("totalRepaid").innerHTML="KES "+totalRepaid.toLocaleString();
+    document.getElementById("expectedInterest").innerHTML="KES "+expectedInterest.toLocaleString();
+    document.getElementById("interestCollected").innerHTML="KES "+interestCollected.toLocaleString();
 }
 
+function logout(){AUTH.adminLogout();}
 
-
-
-/*=============================
- LOGOUT
-=============================*/
-
-
-function logout(){
-
-AUTH.adminLogout();
-
-}
-
-
-
-
-// START
-loadStatistics();
-
-
+setTimeout(()=>{loadStatistics();},600);
 
 </script>
 
-
-
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-
-
 </body>
-
 </html>
