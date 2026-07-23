@@ -168,6 +168,50 @@ font-weight:700;
 
 
 
+.topbar .topbar-right{
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+}
+
+
+
+.topbar .btn-back{
+
+background:rgba(255,255,255,0.2);
+
+color:white;
+
+padding:8px 16px;
+
+border-radius:20px;
+
+text-decoration:none;
+
+font-size:14px;
+
+font-weight:600;
+
+transition:.3s;
+
+}
+
+
+
+.topbar .btn-back:hover{
+
+background:rgba(255,255,255,0.35);
+
+color:white;
+
+}
+
+
+
 .content{
 
 padding:30px;
@@ -427,15 +471,15 @@ Active Loans
 
 
 
-<div>
+<div class="topbar-right">
 
-Welcome
+<a href="admin-dashboard.html" class="btn-back">
 
-<strong id="adminName">
+<i class="fa fa-arrow-left"></i> Back
 
-Admin
+</a>
 
-</strong>
+<span>Welcome, <strong id="adminName">Admin</strong></span>
 
 </div>
 
@@ -449,29 +493,6 @@ Admin
 
 
 <div class="content">
-
-
-<!-- BACK BUTTON -->
-
-
-<div class="mb-4">
-
-
-<a href="admin-dashboard.html"
-
-class="btn btn-primary">
-
-<i class="fa-solid fa-arrow-left"></i>
-
-Back to Dashboard
-
-</a>
-
-
-</div>
-
-
-
 
 
 
@@ -1180,7 +1201,7 @@ async function savePayment(){
         method: method
     };
 
-    // DB.addPayment now handles all interest/principal math
+    // DB.addPayment handles all interest/principal math
     await DB.addPayment(payment);
 
     alert("Payment recorded successfully");
