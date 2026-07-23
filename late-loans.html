@@ -1136,7 +1136,6 @@ async function loadLateLoans(){
     let totalDue = 0;
 
     let today = new Date();
-    today.setHours(0, 0, 0, 0);
 
     if (!Array.isArray(loans)) {
         table.innerHTML = `<tr><td colspan="10" class="text-center text-muted p-5">No late loans found.</td></tr>`;
@@ -1155,7 +1154,6 @@ async function loadLateLoans(){
         const parts = loan.dueDate.split("/");
         if (parts.length !== 3) continue;
         const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
-        dueDate.setHours(0, 0, 0, 0);
 
         if (dueDate >= today) continue;
 
@@ -1172,7 +1170,6 @@ async function loadLateLoans(){
                 const pParts = p.date.split("/");
                 if (pParts.length !== 3) continue;
                 const paymentDate = new Date(pParts[2], pParts[1] - 1, pParts[0]);
-                paymentDate.setHours(0, 0, 0, 0);
                 
                 if (paymentDate < dueDate) {
                     earlyPaymentTotal += Number(p.amount || 0);
@@ -1182,26 +1179,15 @@ async function loadLateLoans(){
             }
         }
 
-        // Calculate months overdue properly
-        let monthsDiff = 0;
-        let checkDate = new Date(dueDate);
-
-        while (true) {
-            let nextMonth = new Date(checkDate);
-            nextMonth.setMonth(nextMonth.getMonth() + 1);
-            
-            if (today < nextMonth) break;
-            
-            monthsDiff++;
-            checkDate = nextMonth;
-        }
-
+        // Calculate months overdue
+        let monthsDiff = (today.getFullYear() - dueDate.getFullYear()) * 12 + (today.getMonth() - dueDate.getMonth());
+        if (today.getDate() < dueDate.getDate()) monthsDiff--;
         if (monthsDiff < 1) monthsDiff = 1;
 
         // Monthly interest on remaining balance
         let monthlyInterest = (balance * rate) / 100;
 
-        // Total overdue interest for all completed months
+        // Total overdue interest for all months
         let totalOverdueInterest = monthlyInterest * monthsDiff;
 
         // Apply early payments first
@@ -1300,7 +1286,6 @@ async function viewLoan(id){
         const parts = loan.dueDate.split("/");
         if (parts.length === 3) {
             const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
-            dueDate.setHours(0, 0, 0, 0);
             payments.forEach(p => {
                 const amount = Number(p.amount || 0);
                 totalPaid += amount;
@@ -1308,7 +1293,6 @@ async function viewLoan(id){
                     const pParts = p.date.split("/");
                     if (pParts.length === 3) {
                         const paymentDate = new Date(pParts[2], pParts[1] - 1, pParts[0]);
-                        paymentDate.setHours(0, 0, 0, 0);
                         if (paymentDate < dueDate) {
                             totalEarlyPaid += amount;
                         } else {
@@ -1323,23 +1307,15 @@ async function viewLoan(id){
     let totalExpected = Number(loan.originalPrincipal) + (Number(loan.originalPrincipal) * rate / 100);
     let repaymentProgress = totalExpected > 0 ? Math.round((totalPaid / totalExpected) * 100) : 0;
 
+    // Calculate months overdue
     let monthsOverdue = 0;
     if (loan.dueDate) {
         const parts = loan.dueDate.split("/");
         if (parts.length === 3) {
             const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
-            dueDate.setHours(0, 0, 0, 0);
             let today = new Date();
-            today.setHours(0, 0, 0, 0);
-            
-            let checkDate = new Date(dueDate);
-            while (true) {
-                let nextMonth = new Date(checkDate);
-                nextMonth.setMonth(nextMonth.getMonth() + 1);
-                if (today < nextMonth) break;
-                monthsOverdue++;
-                checkDate = nextMonth;
-            }
+            monthsOverdue = (today.getFullYear() - dueDate.getFullYear()) * 12 + (today.getMonth() - dueDate.getMonth());
+            if (today.getDate() < dueDate.getDate()) monthsOverdue--;
             if (monthsOverdue < 1) monthsOverdue = 1;
         }
     }
@@ -1474,7 +1450,6 @@ async function loadPaymentRows(loan){
         const parts = loan.dueDate.split("/");
         if (parts.length === 3) {
             dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
-            dueDate.setHours(0, 0, 0, 0);
         }
     }
     
@@ -1484,7 +1459,6 @@ async function loadPaymentRows(loan){
             const pParts = p.date.split("/");
             if (pParts.length === 3) {
                 const paymentDate = new Date(pParts[2], pParts[1] - 1, pParts[0]);
-                paymentDate.setHours(0, 0, 0, 0);
                 if (paymentDate < dueDate) {
                     typeBadge = `<span class="badge bg-primary">Early</span>`;
                 } else {
@@ -1544,10 +1518,37 @@ async function savePayment(){
     let loan = await DB.getLoan(loanId);
     if (!loan) return;
 
+    let balance = Number(loan.remainingPrincipal || 0);
+    let rate = Number(loan.interestRate || 20);
+    let interestOwed = (balance * rate) / 100;
+
     await DB.addPayment({ loanId, amount, date: formattedDate, method });
 
-    // Reload so late-loans recalculates correctly
-    location.reload();
+    // If payment covers the full overdue interest, push due date forward
+    if (amount >= interestOwed) {
+        const parts = loan.dueDate.split("/");
+        if (parts.length === 3) {
+            let oldDue = new Date(parts[2], parts[1] - 1, parts[0]);
+            oldDue.setMonth(oldDue.getMonth() + 1);
+            
+            const newDay = String(oldDue.getDate()).padStart(2, "0");
+            const newMonth = String(oldDue.getMonth() + 1).padStart(2, "0");
+            const newYear = oldDue.getFullYear();
+            
+            loan.dueDate = `${newDay}/${newMonth}/${newYear}`;
+            await DB.updateLoan(loan);
+            
+            alert(`Payment recorded! Interest covered. New due date: ${loan.dueDate}`);
+        } else {
+            alert("Payment recorded successfully!");
+        }
+    } else {
+        let remaining = interestOwed - amount;
+        alert(`Payment recorded! Remaining overdue interest: ${money(remaining)}`);
+    }
+
+    loadLateLoans();
+    bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
 }
 
 
