@@ -366,6 +366,14 @@ border:3px solid #2563eb;
 
 
 
+.form-control{
+
+height:50px;
+
+border-radius:12px;
+
+}
+
 
 
 </style>
@@ -805,6 +813,28 @@ Number(value || 0)
 
 
 
+// ===============================
+// DATE FORMAT HELPERS
+// ===============================
+
+function formatDateDisplay(dateString) {
+    if (!dateString) return "";
+    const parts = dateString.split("-");
+    return parts[2] + "/" + parts[1] + "/" + parts[0];
+}
+
+function getTodayInput() {
+    return new Date().toISOString().split("T")[0];
+}
+
+function getDefaultDueInput() {
+    let d = new Date();
+    d.setMonth(d.getMonth() + 1);
+    return d.toISOString().split("T")[0];
+}
+
+
+
 
 
 // ===============================
@@ -934,6 +964,20 @@ document.getElementById("applicationDetails").innerHTML = `
 ${showGuarantor(app.guarantor1, "Guarantor 1", DEFAULT_IMG)}
 ${showGuarantor(app.guarantor2, "Guarantor 2", DEFAULT_IMG)}
 
+<div class="section-title mt-4"><i class="fa fa-calendar-check"></i> Approval Details</div>
+<div class="detail-card">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="fw-bold">Loan Date (Approval Date)</label>
+            <input type="date" id="approvalDate_${app.id}" class="form-control">
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="fw-bold">Due Date</label>
+            <input type="date" id="dueDate_${app.id}" class="form-control">
+        </div>
+    </div>
+</div>
+
 <div class="text-center mt-4">
 <button class="btn btn-success me-2" onclick="approveApplication(${app.id})"><i class="fa fa-check"></i> Approve Loan</button>
 <button class="btn btn-danger" onclick="rejectApplication(${app.id})"><i class="fa fa-times"></i> Reject</button>
@@ -943,6 +987,15 @@ ${showGuarantor(app.guarantor2, "Guarantor 2", DEFAULT_IMG)}
 
 let modal = new bootstrap.Modal(document.getElementById("applicationModal"));
 modal.show();
+
+// Set default dates
+setTimeout(() => {
+    let approvalInput = document.getElementById("approvalDate_" + app.id);
+    let dueInput = document.getElementById("dueDate_" + app.id);
+    
+    if (approvalInput) approvalInput.value = getTodayInput();
+    if (dueInput) dueInput.value = getDefaultDueInput();
+}, 300);
 
 }
 
@@ -1002,12 +1055,24 @@ async function approveApplication(id){
 
     let admin = AUTH.currentAdmin();
 
+    // Get dates from inputs or use defaults
+    let approvalDateInput = document.getElementById("approvalDate_" + id);
+    let dueDateInput = document.getElementById("dueDate_" + id);
+    
+    let today = new Date();
+    let defaultDue = new Date();
+    defaultDue.setMonth(defaultDue.getMonth() + 1);
+    
+    let loanDate = approvalDateInput && approvalDateInput.value 
+        ? formatDateDisplay(approvalDateInput.value) 
+        : today.toLocaleDateString("en-KE");
+    
+    let dueDate = dueDateInput && dueDateInput.value 
+        ? formatDateDisplay(dueDateInput.value) 
+        : defaultDue.toLocaleDateString("en-KE");
+
     app.status = "APPROVED";
     await DB.updateApplication(app);
-
-    let approvalDate = new Date();
-    let due = new Date();
-    due.setMonth(due.getMonth() + 1);
 
     let loan = {
         clientId: app.clientId,
@@ -1017,8 +1082,8 @@ async function approveApplication(id){
         purpose: app.purpose,
         interestRate: 20,
         currentInterest: app.amount * 0.20,
-        loanDate: approvalDate.toLocaleDateString("en-KE"),
-        dueDate: due.toLocaleDateString("en-KE"),
+        loanDate: loanDate,
+        dueDate: dueDate,
         approvedBy: admin.username,
         status: "ACTIVE"
     };
