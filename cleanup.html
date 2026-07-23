@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Cleanup</title></head>
+<body>
+<h2>Cleaning orphaned data...</h2>
+<div id="status"></div>
+
+<script src="assets/js/database.js"></script>
+<script>
+(async function() {
+    const status = document.getElementById("status");
+    
+    const clients = await DB.getClients();
+    const clientIds = clients.map(c => String(c.id));
+    
+    const loans = await DB.getLoans();
+    const applications = await DB.getApplications();
+    
+    let rLoans = 0, rApps = 0;
+    
+    for (const loan of loans) {
+        if (!clientIds.includes(String(loan.clientId))) {
+            await DB.deleteLoan(loan.id);
+            rLoans++;
+        }
+    }
+    
+    for (const app of applications) {
+        if (!clientIds.includes(String(app.clientId))) {
+            await DB.deleteApplication(app.id);
+            rApps++;
+        }
+    }
+    
+    status.innerHTML = `
+        <p>✅ Cleanup complete!</p>
+        <p>Removed: ${rLoans} loans, ${rApps} applications</p>
+        <a href="admin-dashboard.html">Go to Dashboard</a>
+    `;
+})();
+</script>
+</body>
+</html>
