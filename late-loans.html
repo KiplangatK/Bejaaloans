@@ -346,7 +346,7 @@ overflow-x:auto;
 
 .table{
 
-min-width:1200px;
+min-width:1400px;
 
 }
 
@@ -395,6 +395,118 @@ padding:6px 10px;
 border-radius:8px;
 
 font-size:13px;
+
+}
+
+
+
+.btn-view{
+
+background:#1976d2;
+
+color:white;
+
+border-radius:20px;
+
+}
+
+
+
+.btn-payment{
+
+background:#198754;
+
+color:white;
+
+border-radius:20px;
+
+}
+
+
+
+.btn-guarantors{
+
+background:#6f42c1;
+
+color:white;
+
+border-radius:20px;
+
+}
+
+
+
+.btn-guarantors:hover{
+
+background:#5a3399;
+
+color:white;
+
+}
+
+
+
+.section-title{
+
+background:#0d47a1;
+
+color:white;
+
+padding:12px;
+
+border-radius:10px;
+
+margin-top:15px;
+
+font-weight:bold;
+
+}
+
+
+
+.detail-box{
+
+background:#f8fbff;
+
+border-radius:15px;
+
+padding:15px;
+
+margin-bottom:15px;
+
+border:1px solid #dbeafe;
+
+}
+
+
+
+.document-img{
+
+width:100%;
+
+height:160px;
+
+object-fit:contain;
+
+border-radius:10px;
+
+border:1px solid #ddd;
+
+}
+
+
+
+.guarantor-photo{
+
+width:120px;
+
+height:120px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+border:3px solid #2563eb;
 
 }
 
@@ -887,6 +999,56 @@ Loading late loans...
 
 
 
+<!-- ========================
+LOAN DETAILS MODAL
+======================== -->
+
+<div class="modal fade" id="loanModal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fa fa-file-invoice-dollar"></i> Loan Details</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="loanDetails"></div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ========================
+PAYMENT MODAL
+======================== -->
+
+<div class="modal fade" id="paymentModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fa fa-money-bill"></i> Record Payment</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="paymentLoanId">
+                <label class="form-label">Amount Paid</label>
+                <input type="number" id="paymentAmount" class="form-control mb-3" placeholder="Enter payment amount">
+                <label class="form-label">Payment Date</label>
+                <input type="date" id="paymentDate" class="form-control mb-3">
+                <label class="form-label">Payment Method</label>
+                <select id="paymentMethod" class="form-select">
+                    <option>Cash</option>
+                    <option>M-Pesa</option>
+                    <option>Bank</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="savePayment()"><i class="fa fa-check"></i> Save Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 <!-- DATABASE -->
 
@@ -935,33 +1097,36 @@ admin.username;
 
 
 /*================================
+MONEY FORMAT
+================================*/
+
+function money(value){
+    return "KES " + Number(value || 0).toLocaleString();
+}
+
+
+/*================================
 LOAD LATE LOANS
 ================================*/
 
 
 async function loadLateLoans(){
 
-    // Wait for DB
     let dbReady = false;
     let retries = 0;
     while (!dbReady && retries < 50) {
         try {
             if (window.DB && typeof DB.getLoans === "function") {
                 const test = await DB.getLoans();
-                if (Array.isArray(test)) {
-                    dbReady = true;
-                    break;
-                }
+                if (Array.isArray(test)) { dbReady = true; break; }
             }
         } catch(e) {}
         await new Promise(r => setTimeout(r, 100));
         retries++;
     }
-
     if (!dbReady) return;
 
     let loans = await DB.getLoans();
-
     let table = document.getElementById("lateLoansTable");
     table.innerHTML = "";
 
@@ -992,7 +1157,6 @@ async function loadLateLoans(){
 
         if (dueDate >= today) continue;
 
-        // Interest on remaining principal
         let interestAmount = (balance * rate) / 100;
         let amountDue = balance + interestAmount;
 
@@ -1019,12 +1183,12 @@ async function loadLateLoans(){
                 <td>${loan.dueDate}</td>
                 <td class="text-danger fw-bold">${daysLate} Days</td>
                 <td>
-                    <a href="registered-clients.html" class="btn btn-primary btn-sm action-btn">
-                        <i class="fa-solid fa-user"></i> Client
-                    </a>
-                    <a href="active-loans.html" class="btn btn-info btn-sm action-btn">
-                        <i class="fa-solid fa-file"></i> Loan
-                    </a>
+                    <button class="btn btn-view btn-sm action-btn" onclick="viewLoan(${loan.id})">
+                        <i class="fa fa-eye"></i> Details
+                    </button>
+                    <button class="btn btn-payment btn-sm action-btn" onclick="openPayment(${loan.id})">
+                        <i class="fa fa-money-bill"></i> Payment
+                    </button>
                 </td>
             </tr>`;
     }
@@ -1046,6 +1210,170 @@ function updateCards(count, principal, interest, due) {
 }
 
 
+/*================================
+VIEW LOAN DETAILS
+================================*/
+
+async function viewLoan(id){
+    let loan = await DB.getLoan(id);
+    if(!loan) return;
+
+    let client = await DB.getClientById(loan.clientId);
+    let balance = Number(loan.remainingPrincipal || 0);
+    let rate = Number(loan.interestRate || 20);
+    let currentInterest = (balance * rate) / 100;
+
+    document.getElementById("loanDetails").innerHTML = `
+        <h5 class="text-primary">Client Information</h5>
+        <hr>
+        <p><b>Name:</b> ${client.fullname}</p>
+        <p><b>Phone:</b> ${client.phone}</p>
+
+        <h5 class="text-primary mt-4">Loan Information</h5>
+        <hr>
+        <p><b>Original Loan Amount:</b> ${money(loan.originalPrincipal)}</p>
+        <p><b>Remaining Principal:</b> ${money(balance)}</p>
+        <p><b>Current Interest Owed:</b> ${money(currentInterest)}</p>
+        <p><b>Interest Rate:</b> ${rate}%</p>
+        <p><b>Loan Date:</b> ${loan.loanDate || "-"}</p>
+        <p><b>Due Date:</b> <span class="text-danger fw-bold">${loan.dueDate || "-"}</span></p>
+        <p><b>Status:</b> <span class="badge bg-danger">${loan.status}</span></p>
+
+        <div class="text-center mt-3 mb-3">
+            <button class="btn btn-guarantors" onclick="toggleGuarantors(${loan.applicationId || 0})">
+                <i class="fa fa-users"></i> View Guarantors
+            </button>
+        </div>
+        <div id="guarantorSection" style="display:none;"></div>
+
+        <h5 class="text-primary mt-4">Payment History</h5>
+        <table class="table table-bordered">
+            <tr><th>Date</th><th>Amount</th><th>Principal Paid</th><th>Interest Paid</th><th>Balance</th></tr>
+            ${await loadPaymentRows(loan)}
+        </table>
+    `;
+
+    let modal = new bootstrap.Modal(document.getElementById("loanModal"));
+    modal.show();
+}
+
+
+/*================================
+TOGGLE GUARANTORS
+================================*/
+
+async function toggleGuarantors(applicationId) {
+    const section = document.getElementById("guarantorSection");
+    
+    if (section.style.display === "block") {
+        section.style.display = "none";
+        return;
+    }
+    
+    if (!applicationId || applicationId === 0) {
+        section.innerHTML = `<p class="text-muted">No guarantor details available.</p>`;
+        section.style.display = "block";
+        return;
+    }
+    
+    section.innerHTML = `<p class="text-center text-muted">Loading guarantor details...</p>`;
+    section.style.display = "block";
+    
+    let application = await DB.getApplication(applicationId);
+    
+    if (!application) {
+        section.innerHTML = `<p class="text-muted">No guarantor details available.</p>`;
+        return;
+    }
+    
+    const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+    
+    section.innerHTML = `
+        <hr>
+        <h5 class="text-primary"><i class="fa fa-users"></i> Guarantor Details</h5>
+        ${showGuarantor(application.guarantor1, "Guarantor 1", DEFAULT_IMG)}
+        ${showGuarantor(application.guarantor2, "Guarantor 2", DEFAULT_IMG)}
+    `;
+}
+
+
+function showGuarantor(g, title, DEFAULT_IMG){
+    if(!g) return "";
+    if(!DEFAULT_IMG) DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+    return `
+    <div class="detail-card">
+        <h5 class="text-primary">${title}</h5>
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <img src="${g.photo || DEFAULT_IMG}" class="guarantor-photo">
+            </div>
+            <div class="col-md-8">
+                <p><b>Name:</b> ${g.name || "-"}</p>
+                <p><b>National ID:</b> ${g.id || "-"}</p>
+                <p><b>Phone:</b> ${g.phone || "-"}</p>
+                <p><b>Relationship:</b> ${g.relationship || "-"}</p>
+                <p><b>Address:</b> ${g.address || "-"}</p>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-6"><h6>ID Front</h6><img src="${g.idFront || ''}" class="document-img"></div>
+            <div class="col-md-6"><h6>ID Back</h6><img src="${g.idBack || ''}" class="document-img"></div>
+        </div>
+    </div>`;
+}
+
+
+/*================================
+PAYMENT HISTORY
+================================*/
+
+async function loadPaymentRows(loan){
+    let payments = await DB.getLoanPayments(loan.id);
+    if(payments.length === 0){
+        return `<tr><td colspan="5" class="text-center">No payments yet</td></tr>`;
+    }
+    let rows = "";
+    payments.forEach(p => {
+        rows += `<tr><td>${p.date}</td><td>${money(p.amount)}</td><td>${money(p.principalPaid)}</td><td>${money(p.interestPaid)}</td><td>${money(p.balance)}</td></tr>`;
+    });
+    return rows;
+}
+
+
+/*================================
+OPEN PAYMENT
+================================*/
+
+function openPayment(id){
+    document.getElementById("paymentLoanId").value = id;
+    document.getElementById("paymentAmount").value = "";
+    document.getElementById("paymentDate").value = new Date().toISOString().split("T")[0];
+    let modal = new bootstrap.Modal(document.getElementById("paymentModal"));
+    modal.show();
+}
+
+
+/*================================
+SAVE PAYMENT
+================================*/
+
+async function savePayment(){
+    let loanId = Number(document.getElementById("paymentLoanId").value);
+    let amount = Number(document.getElementById("paymentAmount").value);
+    let date = document.getElementById("paymentDate").value;
+    let method = document.getElementById("paymentMethod").value;
+
+    if(amount <= 0){
+        alert("Enter payment amount");
+        return;
+    }
+
+    await DB.addPayment({ loanId, amount, date, method });
+
+    alert("Payment recorded successfully");
+    loadLateLoans();
+    bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
+}
 
 
 /*================================
@@ -1054,14 +1382,8 @@ LOGOUT
 
 
 function logout(){
-
-
-AUTH.adminLogout();
-
-
+    AUTH.adminLogout();
 }
-
-
 
 
 /*================================
