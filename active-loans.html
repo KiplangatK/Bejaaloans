@@ -315,18 +315,6 @@ border-radius:20px;
 
 
 
-.btn-early{
-
-background:#0d6efd;
-
-color:white;
-
-border-radius:20px;
-
-}
-
-
-
 .btn-guarantors{
 
 background:#6f42c1;
@@ -619,67 +607,23 @@ Active Loan List
 <tr>
 
 
-<th>
+<th>Photo</th>
 
-Photo
+<th>Client Name</th>
 
-</th>
+<th>Phone</th>
 
+<th>Loan Amount</th>
 
-<th>
+<th>Balance</th>
 
-Client Name
+<th>Interest</th>
 
-</th>
+<th>Loan Date</th>
 
+<th>Due Date</th>
 
-<th>
-
-Phone
-
-</th>
-
-
-<th>
-
-Loan Amount
-
-</th>
-
-
-<th>
-
-Balance
-
-</th>
-
-
-<th>
-
-Interest
-
-</th>
-
-
-<th>
-
-Loan Date
-
-</th>
-
-
-<th>
-
-Due Date
-
-</th>
-
-
-<th>
-
-Action
-
-</th>
+<th>Action</th>
 
 
 </tr>
@@ -750,22 +694,14 @@ Loan Details
 
 
 
-<button class="btn-close"
-
-data-bs-dismiss="modal">
-
-</button>
+<button class="btn-close" data-bs-dismiss="modal"></button>
 
 
 </div>
 
 
 
-<div class="modal-body"
-
-id="loanDetails">
-
-</div>
+<div class="modal-body" id="loanDetails"></div>
 
 
 
@@ -801,21 +737,9 @@ id="loanDetails">
 <div class="modal-header bg-success text-white">
 
 
-<h5 class="modal-title">
+<h5 class="modal-title"><i class="fa fa-money-bill"></i> Record Payment</h5>
 
-<i class="fa fa-money-bill"></i>
-
-Record Payment
-
-</h5>
-
-
-
-<button class="btn-close"
-
-data-bs-dismiss="modal">
-
-</button>
+<button class="btn-close" data-bs-dismiss="modal"></button>
 
 
 </div>
@@ -829,9 +753,7 @@ data-bs-dismiss="modal">
 
 
 
-<input type="hidden"
-
-id="paymentLoanId">
+<input type="hidden" id="paymentLoanId">
 
 <input type="hidden" id="paymentLoanDueDate">
 
@@ -842,22 +764,10 @@ id="paymentLoanId">
 
 
 
-<label class="form-label mt-3">
-
-Amount Paid
-
-</label>
+<label class="form-label mt-3">Amount Paid</label>
 
 
-<input type="number"
-
-id="paymentAmount"
-
-class="form-control mb-3"
-
-placeholder="Enter payment amount"
-
-oninput="updatePaymentNote()">
+<input type="number" id="paymentAmount" class="form-control mb-3" placeholder="Enter payment amount" oninput="updatePaymentNote()">
 
 
 
@@ -865,20 +775,10 @@ oninput="updatePaymentNote()">
 
 
 
-<label class="form-label">
-
-Payment Date
-
-</label>
+<label class="form-label">Payment Date</label>
 
 
-<input type="date"
-
-id="paymentDate"
-
-class="form-control mb-3"
-
-onchange="updatePaymentNote()">
+<input type="date" id="paymentDate" class="form-control mb-3" onchange="updatePaymentNote()">
 
 
 
@@ -886,50 +786,23 @@ onchange="updatePaymentNote()">
 
 
 
-<label class="form-label">
-
-Payment Method
-
-</label>
+<label class="form-label">Payment Method</label>
 
 
+<select id="paymentMethod" class="form-select mb-3">
 
-<select id="paymentMethod"
+<option>Cash</option>
 
-class="form-select mb-3">
+<option>M-Pesa</option>
 
-
-<option>
-
-Cash
-
-</option>
-
-
-<option>
-
-M-Pesa
-
-</option>
-
-
-<option>
-
-Bank
-
-</option>
-
+<option>Bank</option>
 
 </select>
 
 
 
 
-<label class="form-label">
-
-Comment
-
-</label>
+<label class="form-label">Comment</label>
 
 <input type="text" id="paymentComment" class="form-control" placeholder="Auto-generated or custom note" readonly>
 
@@ -948,17 +821,7 @@ Comment
 
 <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 
-<button class="btn btn-success"
-
-onclick="savePayment()">
-
-
-<i class="fa fa-check"></i>
-
-Save Payment
-
-
-</button>
+<button class="btn btn-success" onclick="savePayment()"><i class="fa fa-check"></i> Save Payment</button>
 
 
 </div>
@@ -998,54 +861,23 @@ Save Payment
 
 /* ADMIN SECURITY */
 
-
 if(!AUTH.currentAdmin()){
-
-
-window.location.href="admin-login.html";
-
-
+    window.location.href="admin-login.html";
 }
-
-
-
 
 let admin = AUTH.currentAdmin();
 
-
-
 if(admin){
-
-
-document.getElementById("adminName").innerHTML =
-
-admin.username;
-
-
+    document.getElementById("adminName").innerHTML = admin.username;
 }
-
-
-
-
 
 
 function money(value){
-
-
-return "KES " +
-
-Number(value || 0).toLocaleString();
-
-
+    return "KES " + Number(value || 0).toLocaleString();
 }
 
 
-
-
-
-
 /* LOAD ACTIVE LOANS */
-
 
 async function loadActiveLoans(){
 
@@ -1117,7 +949,6 @@ async function loadActiveLoans(){
 // VIEW LOAN DETAILS
 // ===============================
 
-
 async function viewLoan(id){
 
     let loan = await DB.getLoan(id);
@@ -1128,6 +959,44 @@ async function viewLoan(id){
     let rate = Number(loan.interestRate || 20);
     let currentInterest = (balance * rate) / 100;
 
+    // Get all payments
+    let payments = await DB.getLoanPayments(loan.id);
+    
+    // Calculate early vs regular payments
+    let totalEarlyPaid = 0;
+    let totalRegularPaid = 0;
+    let totalPaid = 0;
+    
+    if (Array.isArray(payments) && loan.dueDate) {
+        const parts = loan.dueDate.split("/");
+        if (parts.length === 3) {
+            const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
+            
+            payments.forEach(p => {
+                const amount = Number(p.amount || 0);
+                totalPaid += amount;
+                
+                if (p.date) {
+                    const pParts = p.date.split("/");
+                    if (pParts.length === 3) {
+                        const paymentDate = new Date(pParts[2], pParts[1] - 1, pParts[0]);
+                        if (paymentDate < dueDate) {
+                            totalEarlyPaid += amount;
+                        } else {
+                            totalRegularPaid += amount;
+                        }
+                    }
+                }
+            });
+        }
+    }
+    
+    let totalExpected = Number(loan.originalPrincipal) + (Number(loan.originalPrincipal) * rate / 100);
+    let repaymentProgress = 0;
+    if (totalExpected > 0) {
+        repaymentProgress = Math.round((totalPaid / totalExpected) * 100);
+    }
+
     document.getElementById("loanDetails").innerHTML = `
 
         <h5 class="text-primary">Client Information</h5>
@@ -1137,13 +1006,27 @@ async function viewLoan(id){
 
         <h5 class="text-primary mt-4">Loan Information</h5>
         <hr>
-        <p><b>Original Loan Amount:</b> ${money(loan.originalPrincipal)}</p>
-        <p><b>Remaining Principal:</b> ${money(balance)}</p>
-        <p><b>Current Interest Owed:</b> ${money(currentInterest)}</p>
-        <p><b>Interest Rate:</b> ${rate}%</p>
+        <div class="row">
+            <div class="col-md-6">
+                <p><b>Original Loan Amount:</b> ${money(loan.originalPrincipal)}</p>
+                <p><b>Remaining Principal:</b> ${money(balance)}</p>
+                <p><b>Current Interest Owed:</b> ${money(currentInterest)}</p>
+                <p><b>Interest Rate:</b> ${rate}%</p>
+            </div>
+            <div class="col-md-6">
+                <p><b>Total Paid:</b> <span class="text-success fw-bold">${money(totalPaid)}</span></p>
+                <p><b>Early Payments:</b> <span class="text-primary fw-bold">${money(totalEarlyPaid)}</span></p>
+                <p><b>Regular/Late Payments:</b> <span class="text-warning fw-bold">${money(totalRegularPaid)}</span></p>
+                <p><b>Repayment Progress:</b> ${repaymentProgress}%</p>
+            </div>
+        </div>
         <p><b>Loan Date:</b> ${loan.loanDate || "-"}</p>
         <p><b>Due Date:</b> <span class="badge bg-danger">${loan.dueDate || "-"}</span></p>
         <p><b>Status:</b> <span class="badge bg-success">${loan.status}</span></p>
+
+        <div class="progress mt-2 mb-3" style="height:10px;">
+            <div class="progress-bar bg-success" style="width:${repaymentProgress}%"></div>
+        </div>
 
         <div class="text-center mt-3 mb-3">
             <button class="btn btn-guarantors" onclick="toggleGuarantors(${loan.applicationId || 0})">
@@ -1154,7 +1037,7 @@ async function viewLoan(id){
 
         <h5 class="text-primary mt-4">Payment History</h5>
         <table class="table table-bordered">
-            <tr><th>Date</th><th>Amount</th><th>Principal Paid</th><th>Interest Paid</th><th>Balance</th><th>Note</th></tr>
+            <tr><th>Date</th><th>Amount</th><th>Principal Paid</th><th>Interest Paid</th><th>Balance</th><th>Type</th><th>Note</th></tr>
             ${await loadPaymentRows(loan)}
         </table>
 
@@ -1235,14 +1118,37 @@ function showGuarantor(g, title, DEFAULT_IMG){
 // PAYMENT HISTORY
 // ===============================
 
-
 async function loadPaymentRows(loan){
     let payments = await DB.getLoanPayments(loan.id);
     if(payments.length === 0){
-        return `<tr><td colspan="6" class="text-center">No payments yet</td></tr>`;
+        return `<tr><td colspan="7" class="text-center">No payments yet</td></tr>`;
     }
+    
     let rows = "";
+    
+    // Parse due date once
+    let dueDate = null;
+    if (loan.dueDate) {
+        const parts = loan.dueDate.split("/");
+        if (parts.length === 3) {
+            dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
+        }
+    }
+    
     payments.forEach(p => {
+        let typeBadge = "";
+        if (p.date && dueDate) {
+            const pParts = p.date.split("/");
+            if (pParts.length === 3) {
+                const paymentDate = new Date(pParts[2], pParts[1] - 1, pParts[0]);
+                if (paymentDate < dueDate) {
+                    typeBadge = `<span class="badge bg-primary">Early</span>`;
+                } else {
+                    typeBadge = `<span class="badge bg-warning text-dark">Regular</span>`;
+                }
+            }
+        }
+        
         rows += `
             <tr>
                 <td>${p.date}</td>
@@ -1250,6 +1156,7 @@ async function loadPaymentRows(loan){
                 <td>${money(p.principalPaid)}</td>
                 <td>${money(p.interestPaid)}</td>
                 <td>${money(p.balance)}</td>
+                <td>${typeBadge}</td>
                 <td>${p.note || "-"}</td>
             </tr>`;
     });
@@ -1257,13 +1164,9 @@ async function loadPaymentRows(loan){
 }
 
 
-
-
-
 // ===============================
 // OPEN PAYMENT
 // ===============================
-
 
 function openPayment(id, dueDate){
     document.getElementById("paymentLoanId").value = id;
@@ -1318,14 +1221,9 @@ function updatePaymentNote() {
 }
 
 
-
-
-
-
 // ===============================
 // SAVE PAYMENT
 // ===============================
-
 
 async function savePayment(){
 
@@ -1346,23 +1244,16 @@ async function savePayment(){
     loadActiveLoans();
 
     bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
-
 }
-
-
-
-
 
 
 // ===============================
 // LOGOUT
 // ===============================
 
-
 function logout(){
     AUTH.adminLogout();
 }
-
 
 
 // ===============================
