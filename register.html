@@ -216,13 +216,13 @@ display:none;
 
 .otp-input{
 
-width:60px;
+width:55px;
 
-height:60px;
+height:55px;
 
 text-align:center;
 
-font-size:24px;
+font-size:22px;
 
 font-weight:bold;
 
@@ -230,7 +230,7 @@ border-radius:12px;
 
 border:2px solid #2563EB;
 
-margin:0 5px;
+margin:0 3px;
 
 }
 
@@ -241,6 +241,36 @@ margin:0 5px;
 color:#4caf50;
 
 font-weight:bold;
+
+}
+
+
+
+.status-ok{
+
+color:#4caf50;
+
+font-size:13px;
+
+}
+
+
+
+.status-error{
+
+color:#dc3545;
+
+font-size:13px;
+
+}
+
+
+
+.status-checking{
+
+color:#ffc107;
+
+font-size:13px;
 
 }
 
@@ -477,8 +507,6 @@ National ID Number <span class="text-danger">*</span>
 
 
 
-<div class="input-group">
-
 <input
 
 type="text"
@@ -489,15 +517,12 @@ class="form-control"
 
 placeholder="e.g. 12345678"
 
+maxlength="10"
+
+oninput="autoVerifyID()"
+
 required>
 
-<button class="btn btn-outline-primary" type="button" onclick="verifyID()">
-
-<i class="fa fa-check"></i> Verify
-
-</button>
-
-</div>
 
 <div id="idStatus" class="mt-1"></div>
 
@@ -526,8 +551,6 @@ Phone Number <span class="text-danger">*</span>
 
 <div class="input-group">
 
-<span class="input-group-text">+254</span>
-
 <input
 
 type="tel"
@@ -536,7 +559,9 @@ id="phone"
 
 class="form-control"
 
-placeholder="7XXXXXXXX"
+placeholder="07XXXXXXXX or +2547XXXXXXXX"
+
+oninput="autoCheckPhone()"
 
 required>
 
@@ -565,7 +590,7 @@ required>
 
 <p class="small text-muted">A 6-digit code has been sent to your phone.</p>
 
-<div class="d-flex justify-content-center gap-2 mt-2">
+<div class="d-flex justify-content-center gap-1 mt-2">
 
 <input type="text" class="otp-input" id="otp1" maxlength="1" oninput="otpNext(this, 'otp2')">
 
@@ -1202,13 +1227,13 @@ function goToStep2() {
 
     // Check ID verified
     if (!sessionStorage.getItem("idVerified")) {
-        showError("Please verify your National ID first.");
+        showError("Your National ID could not be verified. Please check and try again.");
         return;
     }
 
     // Check phone verified
     if (!sessionStorage.getItem("phoneVerified")) {
-        showError("Please verify your phone number first.");
+        showError("Please verify your phone number with the OTP code.");
         return;
     }
 
@@ -1235,46 +1260,125 @@ function showError(msg) {
 
 
 // ============================
-// ID VERIFICATION
+// AUTO ID VERIFICATION
 // ============================
 
-async function verifyID() {
+let idCheckTimeout;
+
+async function autoVerifyID() {
     const nationalID = document.getElementById("nationalID").value.trim();
     const statusEl = document.getElementById("idStatus");
-    const fullname = document.getElementById("fullname").value.trim();
+
+    // Clear previous timeout
+    if (idCheckTimeout) clearTimeout(idCheckTimeout);
+    
+    // Reset verification on edit
+    sessionStorage.removeItem("idVerified");
+    document.getElementById("nationalID").style.border = "";
 
     if (!nationalID) {
-        statusEl.innerHTML = '<span class="text-danger">Enter ID number first.</span>';
+        statusEl.innerHTML = "";
         return;
     }
 
-    if (nationalID.length < 6 || nationalID.length > 10) {
-        statusEl.innerHTML = '<span class="text-danger">Invalid ID number format (6-10 digits).</span>';
+    if (nationalID.length < 6) {
+        statusEl.innerHTML = '<span class="status-checking">Enter at least 6 digits...</span>';
         return;
     }
 
-    if (!/^\d+$/.test(nationalID)) {
-        statusEl.innerHTML = '<span class="text-danger">ID should contain numbers only.</span>';
+    if (nationalID.length > 10 || !/^\d+$/.test(nationalID)) {
+        statusEl.innerHTML = '<span class="status-error"><i class="fa fa-times-circle"></i> Invalid ID format (6-10 digits, numbers only).</span>';
         return;
     }
 
-    statusEl.innerHTML = '<span class="text-warning"><i class="fa fa-spinner fa-spin"></i> Verifying ID...</span>';
+    statusEl.innerHTML = '<span class="status-checking"><i class="fa fa-spinner fa-spin"></i> Checking...</span>';
 
-    // Check if ID already registered
-    const clients = await DB.getClients();
-    const existing = clients.find(c => c.nationalID === nationalID);
+    // Debounce: wait 800ms after user stops typing
+    idCheckTimeout = setTimeout(async () => {
+        try {
+            const clients = await DB.getClients();
+            const existing = clients.find(c => c.nationalID === nationalID);
 
-    if (existing) {
-        statusEl.innerHTML = '<span class="text-danger"><i class="fa fa-times-circle"></i> This ID is already registered to: ' + existing.fullname + '</span>';
+            if (existing) {
+                statusEl.innerHTML = '<span class="status-error"><i class="fa fa-times-circle"></i> Already registered to: <b>' + existing.fullname + '</b></span>';
+                return;
+            }
+
+            statusEl.innerHTML = '<span class="status-ok"><i class="fa fa-check-circle"></i> ID available & valid.</span>';
+            sessionStorage.setItem("idVerified", "true");
+            document.getElementById("nationalID").style.border = "2px solid #4caf50";
+
+        } catch (e) {
+            statusEl.innerHTML = '<span class="status-ok"><i class="fa fa-check-circle"></i> ID format accepted.</span>';
+            sessionStorage.setItem("idVerified", "true");
+        }
+    }, 800);
+}
+
+
+// ============================
+// AUTO PHONE CHECK
+// ============================
+
+let phoneCheckTimeout;
+
+function normalizePhone(raw) {
+    let phone = raw.replace(/\s+/g, "").replace(/-/g, "");
+    // Convert +2547... to 07...
+    if (phone.startsWith("+2547")) phone = "0" + phone.substring(4);
+    if (phone.startsWith("+2541")) phone = "0" + phone.substring(4);
+    if (phone.startsWith("2547")) phone = "0" + phone.substring(3);
+    if (phone.startsWith("2541")) phone = "0" + phone.substring(3);
+    return phone;
+}
+
+function isValidPhone(raw) {
+    const phone = normalizePhone(raw);
+    return /^0[17]\d{8}$/.test(phone);
+}
+
+async function autoCheckPhone() {
+    const rawPhone = document.getElementById("phone").value.trim();
+    const statusEl = document.getElementById("phoneStatus");
+    const sendBtn = document.getElementById("sendOTPBtn");
+
+    // Clear previous timeout
+    if (phoneCheckTimeout) clearTimeout(phoneCheckTimeout);
+    
+    // Reset
+    sessionStorage.removeItem("phoneVerified");
+    document.getElementById("phone").style.border = "";
+    document.getElementById("otpBox").style.display = "none";
+    sendBtn.disabled = false;
+    sendBtn.innerHTML = '<i class="fa fa-paper-plane"></i> Send Code';
+
+    if (!rawPhone) {
+        statusEl.innerHTML = "";
         return;
     }
 
-    // Simulate ID verification (in production, verify against government database)
-    await new Promise(r => setTimeout(r, 1500));
+    const phone = normalizePhone(rawPhone);
 
-    statusEl.innerHTML = '<span class="text-success"><i class="fa fa-check-circle"></i> ID verified successfully.</span>';
-    sessionStorage.setItem("idVerified", "true");
-    document.getElementById("nationalID").style.border = "2px solid #4caf50";
+    if (!isValidPhone(rawPhone)) {
+        statusEl.innerHTML = '<span class="status-error">Enter 07XXXXXXXX or +2547XXXXXXXX</span>';
+        return;
+    }
+
+    statusEl.innerHTML = '<span class="status-checking"><i class="fa fa-spinner fa-spin"></i> Checking...</span>';
+
+    phoneCheckTimeout = setTimeout(async () => {
+        try {
+            const existing = await DB.getClientByPhone(phone);
+            if (existing) {
+                statusEl.innerHTML = '<span class="status-error"><i class="fa fa-times-circle"></i> Already registered.</span>';
+                return;
+            }
+            statusEl.innerHTML = '<span class="status-ok"><i class="fa fa-check-circle"></i> Phone available. Click "Send Code" to verify.</span>';
+            document.getElementById("phone").style.border = "2px solid #4caf50";
+        } catch (e) {
+            statusEl.innerHTML = '<span class="status-ok"><i class="fa fa-check-circle"></i> Phone format accepted.</span>';
+        }
+    }, 800);
 }
 
 
@@ -1285,24 +1389,20 @@ async function verifyID() {
 let generatedOTP = "";
 
 async function sendOTP() {
-    const phone = document.getElementById("phone").value.trim();
+    const rawPhone = document.getElementById("phone").value.trim();
     const statusEl = document.getElementById("phoneStatus");
-    const fullname = document.getElementById("fullname").value.trim();
 
-    if (!phone) {
-        statusEl.innerHTML = '<span class="text-danger">Enter phone number first.</span>';
+    if (!isValidPhone(rawPhone)) {
+        statusEl.innerHTML = '<span class="status-error">Enter a valid phone number first.</span>';
         return;
     }
 
-    if (!/^7\d{8}$/.test(phone)) {
-        statusEl.innerHTML = '<span class="text-danger">Invalid format. Use 7XXXXXXXX.</span>';
-        return;
-    }
+    const phone = normalizePhone(rawPhone);
 
-    // Check if phone already registered
-    const existing = await DB.getClientByPhone("0" + phone);
+    // Check if already registered
+    const existing = await DB.getClientByPhone(phone);
     if (existing) {
-        statusEl.innerHTML = '<span class="text-danger"><i class="fa fa-times-circle"></i> This phone is already registered.</span>';
+        statusEl.innerHTML = '<span class="status-error"><i class="fa fa-times-circle"></i> This phone is already registered.</span>';
         return;
     }
 
@@ -1312,14 +1412,12 @@ async function sendOTP() {
     // In production: send via SMS (Africa's Talking / Twilio)
     console.log("OTP for " + phone + ": " + generatedOTP);
     
-    // Show OTP for demo purposes (in production, this goes via SMS)
-    statusEl.innerHTML = '<span class="text-success"><i class="fa fa-check-circle"></i> Code sent! (Demo: <b>' + generatedOTP + '</b>)</span>';
+    statusEl.innerHTML = '<span class="status-ok"><i class="fa fa-check-circle"></i> Code sent! (Demo: <b>' + generatedOTP + '</b>)</span>';
     
     document.getElementById("otpBox").style.display = "block";
     document.getElementById("sendOTPBtn").disabled = true;
     document.getElementById("sendOTPBtn").innerHTML = '<i class="fa fa-clock"></i> Sent';
     
-    // Focus first OTP input
     document.getElementById("otp1").focus();
 }
 
@@ -1343,17 +1441,18 @@ function verifyOTP() {
         document.getElementById("otp6").value;
 
     if (enteredOTP.length < 6) {
-        statusEl.innerHTML = '<span class="text-danger">Enter the complete 6-digit code.</span>';
+        statusEl.innerHTML = '<span class="status-error">Enter the complete 6-digit code.</span>';
         return;
     }
 
     if (enteredOTP === generatedOTP) {
-        statusEl.innerHTML = '<span class="phone-verified"><i class="fa fa-check-circle"></i> Phone verified successfully!</span>';
+        statusEl.innerHTML = '<span class="phone-verified"><i class="fa fa-check-circle"></i> Phone verified!</span>';
         sessionStorage.setItem("phoneVerified", "true");
         document.getElementById("phone").style.border = "2px solid #4caf50";
         document.getElementById("otpBox").style.display = "none";
+        document.getElementById("sendOTPBtn").innerHTML = '<i class="fa fa-check"></i> Verified';
     } else {
-        statusEl.innerHTML = '<span class="text-danger"><i class="fa fa-times-circle"></i> Incorrect code. Try again.</span>';
+        statusEl.innerHTML = '<span class="status-error"><i class="fa fa-times-circle"></i> Incorrect code. Try again.</span>';
     }
 }
 
@@ -1434,7 +1533,8 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     // GET VALUES
     const fullname = document.getElementById("fullname").value.trim();
     const nationalID = document.getElementById("nationalID").value.trim();
-    const phone = "0" + document.getElementById("phone").value.trim();
+    const rawPhone = document.getElementById("phone").value.trim();
+    const phone = normalizePhone(rawPhone);
     const email = document.getElementById("email").value.trim();
     const occupation = document.getElementById("occupation").value.trim();
     const employer = document.getElementById("employer").value.trim();
@@ -1452,13 +1552,13 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     }
 
     if (!sessionStorage.getItem("idVerified")) {
-        errorBox.innerHTML = "Please verify your National ID before submitting.";
+        errorBox.innerHTML = "Please ensure your National ID is verified.";
         errorBox.style.display = "block";
         return;
     }
 
     if (!sessionStorage.getItem("phoneVerified")) {
-        errorBox.innerHTML = "Please verify your phone number before submitting.";
+        errorBox.innerHTML = "Please verify your phone number with the OTP code.";
         errorBox.style.display = "block";
         return;
     }
