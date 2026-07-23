@@ -482,6 +482,8 @@ class="form-control"
 
 placeholder="As per National ID"
 
+oninput="autoCheckName()"
+
 required>
 
 
@@ -1199,7 +1201,6 @@ function goToStep1() {
 }
 
 function goToStep2() {
-    // Validate step 1 fields
     const fullname = document.getElementById("fullname").value.trim();
     const nationalID = document.getElementById("nationalID").value.trim();
     const phone = document.getElementById("phone").value.trim();
@@ -1225,13 +1226,11 @@ function goToStep2() {
         return;
     }
 
-    // Check ID verified
     if (!sessionStorage.getItem("idVerified")) {
         showError("Your National ID could not be verified. Please check and try again.");
         return;
     }
 
-    // Check phone verified
     if (!sessionStorage.getItem("phoneVerified")) {
         showError("Please verify your phone number with the OTP code.");
         return;
@@ -1260,6 +1259,45 @@ function showError(msg) {
 
 
 // ============================
+// AUTO NAME CHECK
+// ============================
+
+let nameCheckTimeout;
+
+function autoCheckName() {
+    const fullname = document.getElementById("fullname").value.trim();
+    const nationalID = document.getElementById("nationalID").value.trim();
+    const statusEl = document.getElementById("idStatus");
+
+    if (nameCheckTimeout) clearTimeout(nameCheckTimeout);
+    if (!fullname) return;
+
+    nameCheckTimeout = setTimeout(() => {
+        if (!/^[a-zA-Z\s'-]+$/.test(fullname)) {
+            statusEl.innerHTML = '<span class="status-error"><i class="fa fa-times-circle"></i> Name should match ID format (letters only).</span>';
+            document.getElementById("fullname").style.border = "2px solid #dc3545";
+            sessionStorage.removeItem("idVerified");
+            return;
+        }
+
+        if (fullname.length < 3) {
+            statusEl.innerHTML = '<span class="status-error"><i class="fa fa-times-circle"></i> Enter full name as it appears on your ID.</span>';
+            document.getElementById("fullname").style.border = "2px solid #dc3545";
+            sessionStorage.removeItem("idVerified");
+            return;
+        }
+
+        document.getElementById("fullname").style.border = "2px solid #4caf50";
+
+        // Re-verify ID together with name
+        if (nationalID && nationalID.length >= 6) {
+            autoVerifyID();
+        }
+    }, 500);
+}
+
+
+// ============================
 // AUTO ID VERIFICATION
 // ============================
 
@@ -1267,12 +1305,11 @@ let idCheckTimeout;
 
 async function autoVerifyID() {
     const nationalID = document.getElementById("nationalID").value.trim();
+    const fullname = document.getElementById("fullname").value.trim();
     const statusEl = document.getElementById("idStatus");
 
-    // Clear previous timeout
     if (idCheckTimeout) clearTimeout(idCheckTimeout);
     
-    // Reset verification on edit
     sessionStorage.removeItem("idVerified");
     document.getElementById("nationalID").style.border = "";
 
@@ -1291,26 +1328,36 @@ async function autoVerifyID() {
         return;
     }
 
-    statusEl.innerHTML = '<span class="status-checking"><i class="fa fa-spinner fa-spin"></i> Checking...</span>';
+    // Check name format too
+    if (fullname && (!/^[a-zA-Z\s'-]+$/.test(fullname) || fullname.length < 3)) {
+        statusEl.innerHTML = '<span class="status-error"><i class="fa fa-times-circle"></i> Enter full name as per ID (letters only).</span>';
+        return;
+    }
 
-    // Debounce: wait 800ms after user stops typing
+    statusEl.innerHTML = '<span class="status-checking"><i class="fa fa-spinner fa-spin"></i> Verifying ID...</span>';
+
     idCheckTimeout = setTimeout(async () => {
         try {
             const clients = await DB.getClients();
             const existing = clients.find(c => c.nationalID === nationalID);
 
             if (existing) {
-                statusEl.innerHTML = '<span class="status-error"><i class="fa fa-times-circle"></i> Already registered to: <b>' + existing.fullname + '</b></span>';
+                statusEl.innerHTML = '<span class="status-error"><i class="fa fa-times-circle"></i> This ID is already registered.</span>';
+                document.getElementById("nationalID").style.border = "2px solid #dc3545";
                 return;
             }
 
-            statusEl.innerHTML = '<span class="status-ok"><i class="fa fa-check-circle"></i> ID available & valid.</span>';
+            statusEl.innerHTML = '<span class="status-ok"><i class="fa fa-check-circle"></i> ID verified & name matches format.</span>';
             sessionStorage.setItem("idVerified", "true");
             document.getElementById("nationalID").style.border = "2px solid #4caf50";
+            if (fullname) document.getElementById("fullname").style.border = "2px solid #4caf50";
 
         } catch (e) {
-            statusEl.innerHTML = '<span class="status-ok"><i class="fa fa-check-circle"></i> ID format accepted.</span>';
-            sessionStorage.setItem("idVerified", "true");
+            if (fullname && fullname.length >= 3 && /^[a-zA-Z\s'-]+$/.test(fullname)) {
+                statusEl.innerHTML = '<span class="status-ok"><i class="fa fa-check-circle"></i> ID format accepted.</span>';
+                sessionStorage.setItem("idVerified", "true");
+                document.getElementById("nationalID").style.border = "2px solid #4caf50";
+            }
         }
     }, 800);
 }
@@ -1324,7 +1371,6 @@ let phoneCheckTimeout;
 
 function normalizePhone(raw) {
     let phone = raw.replace(/\s+/g, "").replace(/-/g, "");
-    // Convert +2547... to 07...
     if (phone.startsWith("+2547")) phone = "0" + phone.substring(4);
     if (phone.startsWith("+2541")) phone = "0" + phone.substring(4);
     if (phone.startsWith("2547")) phone = "0" + phone.substring(3);
@@ -1342,10 +1388,8 @@ async function autoCheckPhone() {
     const statusEl = document.getElementById("phoneStatus");
     const sendBtn = document.getElementById("sendOTPBtn");
 
-    // Clear previous timeout
     if (phoneCheckTimeout) clearTimeout(phoneCheckTimeout);
     
-    // Reset
     sessionStorage.removeItem("phoneVerified");
     document.getElementById("phone").style.border = "";
     document.getElementById("otpBox").style.display = "none";
@@ -1370,7 +1414,7 @@ async function autoCheckPhone() {
         try {
             const existing = await DB.getClientByPhone(phone);
             if (existing) {
-                statusEl.innerHTML = '<span class="status-error"><i class="fa fa-times-circle"></i> Already registered.</span>';
+                statusEl.innerHTML = '<span class="status-error"><i class="fa fa-times-circle"></i> This phone number is already registered.</span>';
                 return;
             }
             statusEl.innerHTML = '<span class="status-ok"><i class="fa fa-check-circle"></i> Phone available. Click "Send Code" to verify.</span>';
@@ -1399,17 +1443,13 @@ async function sendOTP() {
 
     const phone = normalizePhone(rawPhone);
 
-    // Check if already registered
     const existing = await DB.getClientByPhone(phone);
     if (existing) {
         statusEl.innerHTML = '<span class="status-error"><i class="fa fa-times-circle"></i> This phone is already registered.</span>';
         return;
     }
 
-    // Generate OTP
     generatedOTP = String(Math.floor(100000 + Math.random() * 900000));
-    
-    // In production: send via SMS (Africa's Talking / Twilio)
     console.log("OTP for " + phone + ": " + generatedOTP);
     
     statusEl.innerHTML = '<span class="status-ok"><i class="fa fa-check-circle"></i> Code sent! (Demo: <b>' + generatedOTP + '</b>)</span>';
@@ -1530,7 +1570,6 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     errorBox.style.display = "none";
     successBox.style.display = "none";
 
-    // GET VALUES
     const fullname = document.getElementById("fullname").value.trim();
     const nationalID = document.getElementById("nationalID").value.trim();
     const rawPhone = document.getElementById("phone").value.trim();
@@ -1544,7 +1583,6 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     const password = document.getElementById("password").value;
     const confirmPassword = document.getElementById("confirmPassword").value;
 
-    // VALIDATION
     if (password !== confirmPassword) {
         errorBox.innerHTML = "Passwords do not match.";
         errorBox.style.display = "block";
@@ -1569,12 +1607,10 @@ document.getElementById("registerForm").addEventListener("submit", async functio
         return;
     }
 
-    // COMPRESS IMAGES
     const profile = await compressImage(profilePhoto.files[0]);
     const front = await compressImage(idFront.files[0]);
     const back = await compressImage(idBack.files[0]);
 
-    // CLIENT OBJECT
     const client = {
         fullname: fullname,
         nationalID: nationalID,
@@ -1591,7 +1627,6 @@ document.getElementById("registerForm").addEventListener("submit", async functio
         password: password
     };
 
-    // SAVE USING AUTH ENGINE
     const result = await AUTH.registerClient(client);
 
     if (!result.success) {
@@ -1600,11 +1635,9 @@ document.getElementById("registerForm").addEventListener("submit", async functio
         return;
     }
 
-    // Clear verification flags
     sessionStorage.removeItem("idVerified");
     sessionStorage.removeItem("phoneVerified");
 
-    // SUCCESS MESSAGE
     successBox.innerHTML = `
         <h4><i class="fa fa-check-circle"></i> Account Created Successfully</h4>
         <p>Your Bejja Credit account has been created successfully.</p>
@@ -1613,7 +1646,6 @@ document.getElementById("registerForm").addEventListener("submit", async functio
         </a>`;
     successBox.style.display = "block";
 
-    // RESET FORM
     document.getElementById("registerForm").reset();
     updateSteps(1);
     goToStep1();
