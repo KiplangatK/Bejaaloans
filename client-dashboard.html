@@ -1344,14 +1344,8 @@ async function loadAllData() {
 }
 
 
-
-
-
-
-
-
 // ===============================
-// SHOW PAYMENT HISTORY
+// SHOW PAYMENT HISTORY — all loans
 // ===============================
 
 async function showPaymentHistory() {
@@ -1373,10 +1367,7 @@ async function showPaymentHistory() {
             let payments = await DB.getLoanPayments(loan.id);
             if (Array.isArray(payments)) {
                 payments.forEach(p => {
-                    allPayments.push({
-                        ...p,
-                        loanAmount: loan.originalPrincipal
-                    });
+                    allPayments.push(p);
                 });
             }
         }
@@ -1400,10 +1391,6 @@ async function showPaymentHistory() {
     let modal = new bootstrap.Modal(document.getElementById("paymentModal"));
     modal.show();
 }
-
-
-
-
 
 
 // ===============================
