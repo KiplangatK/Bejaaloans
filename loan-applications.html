@@ -161,6 +161,50 @@ font-weight:700;
 
 
 
+.topbar .topbar-right{
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+}
+
+
+
+.topbar .btn-back{
+
+background:rgba(255,255,255,0.2);
+
+color:white;
+
+padding:8px 16px;
+
+border-radius:20px;
+
+text-decoration:none;
+
+font-size:14px;
+
+font-weight:600;
+
+transition:.3s;
+
+}
+
+
+
+.topbar .btn-back:hover{
+
+background:rgba(255,255,255,0.35);
+
+color:white;
+
+}
+
+
+
 
 
 .content{
@@ -447,15 +491,15 @@ Loan Applications
 
 
 
-<div>
+<div class="topbar-right">
 
-Welcome
+<a href="admin-dashboard.html" class="btn-back">
 
-<strong id="adminName">
+<i class="fa fa-arrow-left"></i> Back
 
-Admin
+</a>
 
-</strong>
+<span>Welcome, <strong id="adminName">Admin</strong></span>
 
 </div>
 
@@ -771,12 +815,23 @@ Number(value || 0)
 async function loadApplications(){
 
     // Wait for DB
+    let dbReady = false;
     let retries = 0;
-    while (!window.DB || !window.DB.getApplications || typeof window.DB.getApplications !== "function") {
-        await new Promise(r => setTimeout(r, 300));
+    while (!dbReady && retries < 50) {
+        try {
+            if (window.DB && typeof DB.getApplications === "function") {
+                const test = await DB.getApplications();
+                if (Array.isArray(test)) {
+                    dbReady = true;
+                    break;
+                }
+            }
+        } catch(e) {}
+        await new Promise(r => setTimeout(r, 100));
         retries++;
-        if (retries > 50) return;
     }
+
+    if (!dbReady) return;
 
     let applications = await DB.getApplications();
 
@@ -1034,9 +1089,7 @@ function logout(){
 // START PAGE
 // ===============================
 
-setTimeout(() => {
-    loadApplications();
-}, 800);
+loadApplications();
 
 
 
