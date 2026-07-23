@@ -651,7 +651,7 @@ ACTIVE CLIENT
 
 <div class="summary-title">
 
-Active Loan
+Active Loans
 
 </div>
 
@@ -1203,7 +1203,6 @@ function money(value){
 
 async function loadAllData() {
 
-    // Wait for DB to be FULLY ready by testing an actual query
     let dbReady = false;
     let retries = 0;
     while (!dbReady && retries < 50) {
@@ -1243,10 +1242,10 @@ async function loadAllData() {
     if (!Array.isArray(loans)) loans = [];
     if (!Array.isArray(applications)) applications = [];
 
-    // LOAN STATUS
-    let loan = loans.find(l => String(l.clientId) === String(client.id) && l.status === "ACTIVE");
+    // LOAN STATUS - show all active loans
+    let myActiveLoans = loans.filter(l => String(l.clientId) === String(client.id) && l.status === "ACTIVE");
 
-    if (!loan) {
+    if (myActiveLoans.length === 0) {
         document.getElementById("loanStatus").innerHTML = `
             <div class="alert alert-warning">
                 <i class="fa fa-info-circle"></i> You currently have no active loan.
@@ -1258,34 +1257,64 @@ async function loadAllData() {
         document.getElementById("progressBar").style.width = "0%";
         document.getElementById("progressBar").innerHTML = "0%";
     } else {
-        document.getElementById("activeLoan").innerHTML = money(loan.originalPrincipal);
-
-        let balance = Number(loan.remainingPrincipal || loan.originalPrincipal || 0);
-        document.getElementById("balance").innerHTML = money(balance);
-        document.getElementById("dueDate").innerHTML = loan.dueDate || "-";
-
-        let payments = await DB.getLoanPayments(loan.id);
-        let totalPaid = 0;
-        if (Array.isArray(payments)) {
-            payments.forEach(p => { totalPaid += Number(p.amount || 0); });
+        let totalActiveAmount = 0;
+        let totalBalance = 0;
+        let totalPaidAll = 0;
+        let nearestDueDate = "";
+        
+        for (let loan of myActiveLoans) {
+            totalActiveAmount += Number(loan.originalPrincipal || 0);
+            let bal = Number(loan.remainingPrincipal || 0);
+            totalBalance += bal;
+            
+            let payments = await DB.getLoanPayments(loan.id);
+            if (Array.isArray(payments)) {
+                payments.forEach(p => { totalPaidAll += Number(p.amount || 0); });
+            }
+            
+            if (!nearestDueDate || (loan.dueDate && loan.dueDate < nearestDueDate)) {
+                nearestDueDate = loan.dueDate || "-";
+            }
         }
-        document.getElementById("paid").innerHTML = money(totalPaid);
-
-        let percentage = 0;
-        if (Number(loan.originalPrincipal) > 0) {
-            percentage = Math.round((totalPaid / Number(loan.originalPrincipal)) * 100);
+        
+        document.getElementById("activeLoan").innerHTML = money(totalActiveAmount);
+        document.getElementById("balance").innerHTML = money(totalBalance);
+        document.getElementById("dueDate").innerHTML = nearestDueDate || "-";
+        document.getElementById("paid").innerHTML = money(totalPaidAll);
+        
+        let totalPercentage = 0;
+        if (totalActiveAmount > 0) {
+            totalPercentage = Math.round((totalPaidAll / totalActiveAmount) * 100);
         }
-        document.getElementById("progressBar").style.width = percentage + "%";
-        document.getElementById("progressBar").innerHTML = percentage + "%";
-
-        document.getElementById("loanStatus").innerHTML = `
-            <div class="detail-box">
-                <p><b>Loan Amount:</b> ${money(loan.originalPrincipal)}</p>
-                <p><b>Outstanding:</b> ${money(balance)}</p>
-                <p><b>Loan Date:</b> ${loan.loanDate || "-"}</p>
-                <p><b>Due Date:</b> ${loan.dueDate || "-"}</p>
-                <span class="badge bg-success">ACTIVE</span>
-            </div>`;
+        document.getElementById("progressBar").style.width = totalPercentage + "%";
+        document.getElementById("progressBar").innerHTML = totalPercentage + "%";
+        
+        let loanListHTML = "";
+        for (let loan of myActiveLoans) {
+            let bal = Number(loan.remainingPrincipal || 0);
+            let rate = Number(loan.interestRate || 20);
+            let interest = (bal * rate) / 100;
+            
+            let statusBadge = '<span class="badge bg-success">ACTIVE</span>';
+            if (loan.dueDate) {
+                const parts = loan.dueDate.split("/");
+                if (parts.length === 3) {
+                    const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                    if (dueDate < new Date()) {
+                        statusBadge = '<span class="badge bg-danger">LATE</span>';
+                    }
+                }
+            }
+            
+            loanListHTML += `
+                <div class="detail-box">
+                    <p><b>Loan:</b> ${money(loan.originalPrincipal)} | <b>Balance:</b> ${money(bal)} | <b>Interest:</b> ${money(interest)}</p>
+                    <p><b>Due Date:</b> ${loan.dueDate || "-"} ${statusBadge}</p>
+                    <hr>
+                </div>`;
+        }
+        
+        document.getElementById("loanStatus").innerHTML = loanListHTML;
     }
 
     // APPLICATIONS
@@ -1329,20 +1358,32 @@ async function showPaymentHistory() {
     let loans = await DB.getLoans();
     if (!Array.isArray(loans)) loans = [];
 
-    let loan = loans.find(l => String(l.clientId) === String(client.id) && l.status === "ACTIVE");
+    let myLoans = loans.filter(l => String(l.clientId) === String(client.id));
 
     let table = document.getElementById("paymentTable");
     table.innerHTML = "";
 
-    if (!loan) {
-        table.innerHTML = `<tr><td colspan="4" class="text-center">No active loan found.</td></tr>`;
+    if (myLoans.length === 0) {
+        table.innerHTML = `<tr><td colspan="4" class="text-center">No loans found.</td></tr>`;
     } else {
-        let payments = await DB.getLoanPayments(loan.id);
+        let allPayments = [];
+        for (let loan of myLoans) {
+            let payments = await DB.getLoanPayments(loan.id);
+            if (Array.isArray(payments)) {
+                payments.forEach(p => {
+                    allPayments.push({
+                        ...p,
+                        loanAmount: loan.originalPrincipal
+                    });
+                });
+            }
+        }
 
-        if (!Array.isArray(payments) || payments.length === 0) {
+        if (allPayments.length === 0) {
             table.innerHTML = `<tr><td colspan="4" class="text-center">No payments made yet.</td></tr>`;
         } else {
-            payments.reverse().forEach(p => {
+            allPayments.sort((a, b) => b.date.localeCompare(a.date));
+            allPayments.forEach(p => {
                 table.innerHTML += `
                     <tr>
                         <td>${p.date || "-"}</td>
