@@ -705,9 +705,6 @@ Admin Dashboard
 
 
 
-
-
-
 <!-- REGISTERED CLIENTS -->
 
 
@@ -748,11 +745,47 @@ View all clients
 
 
 
+<!-- TOTAL LOANS (all) -->
+
+
+<div class="card-box">
+
+
+<i class="fa-solid fa-file-invoice"></i>
+
+
+<div class="card-title">
+
+Total Loans
+
+</div>
+
+
+
+<div class="card-number" id="totalLoans">
+
+...
+
+</div>
 
 
 
 
-<!-- ACTIVE LOANS -->
+<a href="active-loans.html">
+
+View all loans
+
+</a>
+
+
+
+</div>
+
+
+
+
+
+<!-- ACTIVE LOANS (not past due) -->
 
 
 <div class="card-box">
@@ -787,10 +820,6 @@ Manage active loans
 
 
 </div>
-
-
-
-
 
 
 
@@ -1043,7 +1072,7 @@ admin.username;
 
 
 /*====================================
- WAIT FOR DB — runs actual query
+ WAIT FOR DB
 ====================================*/
 
 async function waitForDB() {
@@ -1082,7 +1111,6 @@ async function loadAllDashboardData(){
         return;
     }
 
-    // Load stats and recent applications together
     await Promise.all([
         loadDashboardStats(),
         loadRecentApplications()
@@ -1100,30 +1128,41 @@ async function loadDashboardStats(){
         const clients = await DB.totalClients();
         document.getElementById("totalClients").innerHTML = clients;
 
-        // ACTIVE LOANS
-        const active = await DB.approvedLoans();
-        document.getElementById("activeLoans").innerHTML = active;
+        // TOTAL LOANS (all loans)
+        let allLoans = await DB.getLoans();
+        if (!Array.isArray(allLoans)) allLoans = [];
+        document.getElementById("totalLoans").innerHTML = allLoans.length;
+
+        // ACTIVE LOANS (not past due date) & LATE LOANS
+        let today = new Date();
+        let activeCount = 0;
+        let lateCount = 0;
+
+        for (let loan of allLoans) {
+            if (loan.status === "COMPLETED") continue;
+            if (Number(loan.remainingPrincipal || 0) <= 0) continue;
+
+            if (loan.dueDate) {
+                const parts = loan.dueDate.split("/");
+                if (parts.length === 3) {
+                    const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                    if (dueDate < today) {
+                        lateCount++;
+                    } else {
+                        activeCount++;
+                    }
+                }
+            } else {
+                activeCount++;
+            }
+        }
+
+        document.getElementById("activeLoans").innerHTML = activeCount;
+        document.getElementById("lateLoans").innerHTML = lateCount;
 
         // PENDING APPLICATIONS
         const pending = await DB.pendingApplications();
         document.getElementById("pendingApplications").innerHTML = pending;
-
-        // LATE LOANS
-        let today = new Date();
-        let loans = await DB.getLoans();
-        let lateLoans = 0;
-
-        if (Array.isArray(loans)) {
-            lateLoans = loans.filter(loan => {
-                if (loan.status !== "ACTIVE" || !loan.dueDate) return false;
-                const parts = loan.dueDate.split("/");
-                if (parts.length !== 3) return false;
-                const due = new Date(parts[2], parts[1] - 1, parts[0]);
-                return due < today && Number(loan.remainingPrincipal || 0) > 0;
-            }).length;
-        }
-
-        document.getElementById("lateLoans").innerHTML = lateLoans;
 
     } catch (err) {
         console.error("Dashboard stats load error:", err);
@@ -1210,7 +1249,7 @@ function logout(){
 
 
 /*====================================
- START — single entry point
+ START
 ====================================*/
 
 
