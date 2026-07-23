@@ -315,6 +315,18 @@ border-radius:20px;
 
 
 
+.btn-early{
+
+background:#0d6efd;
+
+color:white;
+
+border-radius:20px;
+
+}
+
+
+
 .btn-guarantors{
 
 background:#6f42c1;
@@ -398,6 +410,34 @@ border-radius:50%;
 object-fit:cover;
 
 border:3px solid #2563eb;
+
+}
+
+
+
+.payment-note{
+
+background:#fff3cd;
+
+border:1px solid #ffc107;
+
+border-radius:10px;
+
+padding:10px 15px;
+
+margin-top:10px;
+
+font-size:14px;
+
+color:#856404;
+
+}
+
+
+
+.payment-note i{
+
+margin-right:5px;
 
 }
 
@@ -793,12 +833,16 @@ data-bs-dismiss="modal">
 
 id="paymentLoanId">
 
+<input type="hidden" id="paymentLoanDueDate">
+
+
+
+<div id="earlyPaymentNote" class="payment-note" style="display:none;"></div>
 
 
 
 
-
-<label class="form-label">
+<label class="form-label mt-3">
 
 Amount Paid
 
@@ -811,7 +855,9 @@ id="paymentAmount"
 
 class="form-control mb-3"
 
-placeholder="Enter payment amount">
+placeholder="Enter payment amount"
+
+oninput="updatePaymentNote()">
 
 
 
@@ -830,7 +876,9 @@ Payment Date
 
 id="paymentDate"
 
-class="form-control mb-3">
+class="form-control mb-3"
+
+onchange="updatePaymentNote()">
 
 
 
@@ -848,7 +896,7 @@ Payment Method
 
 <select id="paymentMethod"
 
-class="form-select">
+class="form-select mb-3">
 
 
 <option>
@@ -876,6 +924,17 @@ Bank
 
 
 
+
+<label class="form-label">
+
+Comment
+
+</label>
+
+<input type="text" id="paymentComment" class="form-control" placeholder="Auto-generated or custom note" readonly>
+
+
+
 </div>
 
 
@@ -886,6 +945,8 @@ Bank
 
 <div class="modal-footer">
 
+
+<button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 
 <button class="btn btn-success"
 
@@ -988,27 +1049,21 @@ Number(value || 0).toLocaleString();
 
 async function loadActiveLoans(){
 
-    // Wait for DB
     let dbReady = false;
     let retries = 0;
     while (!dbReady && retries < 50) {
         try {
             if (window.DB && typeof DB.getLoans === "function") {
                 const test = await DB.getLoans();
-                if (Array.isArray(test)) {
-                    dbReady = true;
-                    break;
-                }
+                if (Array.isArray(test)) { dbReady = true; break; }
             }
         } catch(e) {}
         await new Promise(r => setTimeout(r, 100));
         retries++;
     }
-
     if (!dbReady) return;
 
     let loans = await DB.getLoans();
-
     let table = document.getElementById("activeLoansTable");
     table.innerHTML = "";
 
@@ -1048,7 +1103,7 @@ async function loadActiveLoans(){
                     <button class="btn btn-view btn-sm mb-1" onclick="viewLoan(${loan.id})">
                         <i class="fa fa-eye"></i> Details
                     </button>
-                    <button class="btn btn-payment btn-sm" onclick="openPayment(${loan.id})">
+                    <button class="btn btn-payment btn-sm" onclick="openPayment(${loan.id}, '${loan.dueDate || ''}')">
                         <i class="fa fa-money-bill"></i> Payment
                     </button>
                 </td>
@@ -1069,7 +1124,6 @@ async function viewLoan(id){
     if(!loan) return;
 
     let client = await DB.getClientById(loan.clientId);
-
     let balance = Number(loan.remainingPrincipal || 0);
     let rate = Number(loan.interestRate || 20);
     let currentInterest = (balance * rate) / 100;
@@ -1087,6 +1141,8 @@ async function viewLoan(id){
         <p><b>Remaining Principal:</b> ${money(balance)}</p>
         <p><b>Current Interest Owed:</b> ${money(currentInterest)}</p>
         <p><b>Interest Rate:</b> ${rate}%</p>
+        <p><b>Loan Date:</b> ${loan.loanDate || "-"}</p>
+        <p><b>Due Date:</b> <span class="badge bg-danger">${loan.dueDate || "-"}</span></p>
         <p><b>Status:</b> <span class="badge bg-success">${loan.status}</span></p>
 
         <div class="text-center mt-3 mb-3">
@@ -1094,12 +1150,11 @@ async function viewLoan(id){
                 <i class="fa fa-users"></i> View Guarantors
             </button>
         </div>
-
         <div id="guarantorSection" style="display:none;"></div>
 
         <h5 class="text-primary mt-4">Payment History</h5>
         <table class="table table-bordered">
-            <tr><th>Date</th><th>Amount</th><th>Principal Paid</th><th>Interest Paid</th><th>Balance</th></tr>
+            <tr><th>Date</th><th>Amount</th><th>Principal Paid</th><th>Interest Paid</th><th>Balance</th><th>Note</th></tr>
             ${await loadPaymentRows(loan)}
         </table>
 
@@ -1118,14 +1173,13 @@ async function viewLoan(id){
 async function toggleGuarantors(applicationId) {
     const section = document.getElementById("guarantorSection");
     
-    // If already visible, hide it
     if (section.style.display === "block") {
         section.style.display = "none";
         return;
     }
     
     if (!applicationId || applicationId === 0) {
-        section.innerHTML = `<p class="text-muted">No guarantor details available for this loan.</p>`;
+        section.innerHTML = `<p class="text-muted">No guarantor details available.</p>`;
         section.style.display = "block";
         return;
     }
@@ -1136,7 +1190,7 @@ async function toggleGuarantors(applicationId) {
     let application = await DB.getApplication(applicationId);
     
     if (!application) {
-        section.innerHTML = `<p class="text-muted">No guarantor details available for this loan.</p>`;
+        section.innerHTML = `<p class="text-muted">No guarantor details available.</p>`;
         return;
     }
     
@@ -1151,14 +1205,9 @@ async function toggleGuarantors(applicationId) {
 }
 
 
-// ===============================
-// DISPLAY GUARANTOR
-// ===============================
-
 function showGuarantor(g, title, DEFAULT_IMG){
     if(!g) return "";
     if(!DEFAULT_IMG) DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-
     return `
     <div class="detail-card">
         <h5 class="text-primary">${title}</h5>
@@ -1182,67 +1231,29 @@ function showGuarantor(g, title, DEFAULT_IMG){
 }
 
 
-
-
 // ===============================
 // PAYMENT HISTORY
 // ===============================
 
 
 async function loadPaymentRows(loan){
-
-
-let payments = await DB.getLoanPayments(loan.id);
-
-
-
-if(payments.length===0){
-
-
-return `<tr><td colspan="5" class="text-center">No payments yet</td></tr>`;
-
-}
-
-
-
-let rows="";
-
-
-
-payments.forEach(p=>{
-
-
-rows += `
-
-
-<tr>
-
-
-<td>${p.date}</td>
-
-
-<td>${money(p.amount)}</td>
-
-
-<td>${money(p.principalPaid)}</td>
-
-
-<td>${money(p.interestPaid)}</td>
-
-
-<td>${money(p.balance)}</td>
-
-
-</tr>`;
-
-
-
-});
-
-
-return rows;
-
-
+    let payments = await DB.getLoanPayments(loan.id);
+    if(payments.length === 0){
+        return `<tr><td colspan="6" class="text-center">No payments yet</td></tr>`;
+    }
+    let rows = "";
+    payments.forEach(p => {
+        rows += `
+            <tr>
+                <td>${p.date}</td>
+                <td>${money(p.amount)}</td>
+                <td>${money(p.principalPaid)}</td>
+                <td>${money(p.interestPaid)}</td>
+                <td>${money(p.balance)}</td>
+                <td>${p.note || "-"}</td>
+            </tr>`;
+    });
+    return rows;
 }
 
 
@@ -1254,16 +1265,56 @@ return rows;
 // ===============================
 
 
-function openPayment(id){
+function openPayment(id, dueDate){
+    document.getElementById("paymentLoanId").value = id;
+    document.getElementById("paymentLoanDueDate").value = dueDate;
+    document.getElementById("paymentAmount").value = "";
+    document.getElementById("paymentDate").value = new Date().toISOString().split("T")[0];
+    document.getElementById("paymentComment").value = "";
+    document.getElementById("earlyPaymentNote").style.display = "none";
+    
+    updatePaymentNote();
+
+    let modal = new bootstrap.Modal(document.getElementById("paymentModal"));
+    modal.show();
+}
 
 
-document.getElementById("paymentLoanId").value = id;
-document.getElementById("paymentAmount").value = "";
-document.getElementById("paymentDate").value = new Date().toISOString().split("T")[0];
+// ===============================
+// UPDATE PAYMENT NOTE
+// ===============================
 
-let modal = new bootstrap.Modal(document.getElementById("paymentModal"));
-modal.show();
+function updatePaymentNote() {
+    const dueDateStr = document.getElementById("paymentLoanDueDate").value;
+    const paymentDateStr = document.getElementById("paymentDate").value;
+    const amount = Number(document.getElementById("paymentAmount").value) || 0;
+    const noteEl = document.getElementById("earlyPaymentNote");
+    const commentEl = document.getElementById("paymentComment");
 
+    if (!dueDateStr || !paymentDateStr) {
+        noteEl.style.display = "none";
+        commentEl.value = "";
+        return;
+    }
+
+    const parts = dueDateStr.split("/");
+    if (parts.length !== 3) return;
+    const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
+    const paymentDate = new Date(paymentDateStr + "T00:00:00");
+
+    if (paymentDate < dueDate && amount > 0) {
+        const days = Math.floor((dueDate - paymentDate) / (1000 * 60 * 60 * 24));
+        noteEl.style.display = "block";
+        noteEl.innerHTML = `<i class="fa fa-info-circle"></i> <b>Early Payment</b> — This payment is <b>${days} days</b> before the due date (${dueDateStr}). The full amount will be deducted from the outstanding balance.`;
+        commentEl.value = `Early payment (${days} days before due date)`;
+    } else if (paymentDate >= dueDate && amount > 0) {
+        noteEl.style.display = "block";
+        noteEl.innerHTML = `<i class="fa fa-exclamation-triangle"></i> <b>Late/On-Time Payment</b> — Payment is on or after the due date. Interest will be covered first, then principal.`;
+        commentEl.value = "Payment on/after due date";
+    } else {
+        noteEl.style.display = "none";
+        commentEl.value = "";
+    }
 }
 
 
@@ -1282,21 +1333,14 @@ async function savePayment(){
     let amount = Number(document.getElementById("paymentAmount").value);
     let date = document.getElementById("paymentDate").value;
     let method = document.getElementById("paymentMethod").value;
+    let note = document.getElementById("paymentComment").value;
 
     if(amount <= 0){
         alert("Enter payment amount");
         return;
     }
 
-    let payment = {
-        loanId: loanId,
-        amount: amount,
-        date: date,
-        method: method
-    };
-
-    // DB.addPayment handles all interest/principal math
-    await DB.addPayment(payment);
+    await DB.addPayment({ loanId, amount, date, method, note });
 
     alert("Payment recorded successfully");
     loadActiveLoans();
