@@ -315,6 +315,28 @@ border-radius:20px;
 
 
 
+.btn-guarantors{
+
+background:#6f42c1;
+
+color:white;
+
+border-radius:20px;
+
+}
+
+
+
+.btn-guarantors:hover{
+
+background:#5a3399;
+
+color:white;
+
+}
+
+
+
 .section-title{
 
 background:#0d47a1;
@@ -1043,110 +1065,99 @@ async function loadActiveLoans(){
 
 async function viewLoan(id){
 
+    let loan = await DB.getLoan(id);
+    if(!loan) return;
 
-let loan = await DB.getLoan(id);
+    let client = await DB.getClientById(loan.clientId);
 
+    let balance = Number(loan.remainingPrincipal || 0);
+    let rate = Number(loan.interestRate || 20);
+    let currentInterest = (balance * rate) / 100;
 
-if(!loan){
+    document.getElementById("loanDetails").innerHTML = `
 
-return;
+        <h5 class="text-primary">Client Information</h5>
+        <hr>
+        <p><b>Name:</b> ${client.fullname}</p>
+        <p><b>Phone:</b> ${client.phone}</p>
 
-}
+        <h5 class="text-primary mt-4">Loan Information</h5>
+        <hr>
+        <p><b>Original Loan Amount:</b> ${money(loan.originalPrincipal)}</p>
+        <p><b>Remaining Principal:</b> ${money(balance)}</p>
+        <p><b>Current Interest Owed:</b> ${money(currentInterest)}</p>
+        <p><b>Interest Rate:</b> ${rate}%</p>
+        <p><b>Status:</b> <span class="badge bg-success">${loan.status}</span></p>
 
+        <div class="text-center mt-3 mb-3">
+            <button class="btn btn-guarantors" onclick="toggleGuarantors(${loan.applicationId || 0})">
+                <i class="fa fa-users"></i> View Guarantors
+            </button>
+        </div>
 
+        <div id="guarantorSection" style="display:none;"></div>
 
-let client = await DB.getClientById(loan.clientId);
+        <h5 class="text-primary mt-4">Payment History</h5>
+        <table class="table table-bordered">
+            <tr><th>Date</th><th>Amount</th><th>Principal Paid</th><th>Interest Paid</th><th>Balance</th></tr>
+            ${await loadPaymentRows(loan)}
+        </table>
 
-let balance = Number(loan.remainingPrincipal || 0);
-let rate = Number(loan.interestRate || 20);
-let currentInterest = (balance * rate) / 100;
-
-// Fetch the application for guarantor details
-let application = null;
-if (loan.applicationId) {
-    application = await DB.getApplication(loan.applicationId);
-}
-
-let guarantorSection = "";
-if (application) {
-    guarantorSection = `
-        <h5 class="text-primary mt-4"><i class="fa fa-users"></i> Guarantor Details</h5>
-        ${showGuarantor(application.guarantor1, "Guarantor 1")}
-        ${showGuarantor(application.guarantor2, "Guarantor 2")}
     `;
-} else {
-    guarantorSection = `
-        <p class="text-muted mt-3">No guarantor details available for this loan.</p>
+
+    let modal = new bootstrap.Modal(document.getElementById("loanModal"));
+    modal.show();
+
+}
+
+
+// ===============================
+// TOGGLE GUARANTORS
+// ===============================
+
+async function toggleGuarantors(applicationId) {
+    const section = document.getElementById("guarantorSection");
+    
+    // If already visible, hide it
+    if (section.style.display === "block") {
+        section.style.display = "none";
+        return;
+    }
+    
+    if (!applicationId || applicationId === 0) {
+        section.innerHTML = `<p class="text-muted">No guarantor details available for this loan.</p>`;
+        section.style.display = "block";
+        return;
+    }
+    
+    section.innerHTML = `<p class="text-center text-muted">Loading guarantor details...</p>`;
+    section.style.display = "block";
+    
+    let application = await DB.getApplication(applicationId);
+    
+    if (!application) {
+        section.innerHTML = `<p class="text-muted">No guarantor details available for this loan.</p>`;
+        return;
+    }
+    
+    const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+    
+    section.innerHTML = `
+        <hr>
+        <h5 class="text-primary"><i class="fa fa-users"></i> Guarantor Details</h5>
+        ${showGuarantor(application.guarantor1, "Guarantor 1", DEFAULT_IMG)}
+        ${showGuarantor(application.guarantor2, "Guarantor 2", DEFAULT_IMG)}
     `;
 }
-
-document.getElementById("loanDetails").innerHTML = `
-
-
-
-<h5 class="text-primary">
-
-Client Information
-
-</h5>
-
-
-<hr>
-
-
-<p><b>Name:</b> ${client.fullname}</p>
-
-<p><b>Phone:</b> ${client.phone}</p>
-
-
-<h5 class="text-primary mt-4">
-
-Loan Information
-
-</h5>
-
-
-<hr>
-
-
-<p><b>Original Loan Amount:</b> ${money(loan.originalPrincipal)}</p>
-
-<p><b>Remaining Principal:</b> ${money(balance)}</p>
-
-<p><b>Current Interest Owed:</b> ${money(currentInterest)}</p>
-
-<p><b>Interest Rate:</b> ${rate}%</p>
-
-<p><b>Status:</b> <span class="badge bg-success">${loan.status}</span></p>
-
-${guarantorSection}
-
-<h5 class="text-primary mt-4">Payment History</h5>
-
-<table class="table table-bordered">
-    <tr><th>Date</th><th>Amount</th><th>Principal Paid</th><th>Interest Paid</th><th>Balance</th></tr>
-    ${await loadPaymentRows(loan)}
-</table>
-
-`;
-
-
-
-let modal = new bootstrap.Modal(document.getElementById("loanModal"));
-modal.show();
-
-}
-
-
 
 
 // ===============================
 // DISPLAY GUARANTOR
 // ===============================
 
-function showGuarantor(g, title){
+function showGuarantor(g, title, DEFAULT_IMG){
     if(!g) return "";
-    const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+    if(!DEFAULT_IMG) DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
     return `
     <div class="detail-card">
