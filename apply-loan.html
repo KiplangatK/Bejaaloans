@@ -1575,7 +1575,6 @@ function validateGuarantorID(prefix) {
         return;
     }
 
-    // Check not same as client's ID
     const clientID = document.getElementById("nationalID").value.trim();
     if (value === clientID) {
         statusEl.innerHTML = '<span class="status-error">Cannot use your own ID.</span>';
@@ -1623,7 +1622,6 @@ function validateGuarantorPhone(prefix) {
         return;
     }
 
-    // Check not same as client's phone
     const clientPhone = document.getElementById("phone").value.trim();
     const normalized = normalizePhone(raw);
     if (normalized === clientPhone) {
@@ -1654,8 +1652,6 @@ function sendGuarantorOTP(prefix) {
     }
 
     const phone = normalizePhone(raw);
-
-    // Generate OTP
     const otp = String(Math.floor(100000 + Math.random() * 900000));
     guarantorOTPs[prefix] = otp;
     console.log("OTP for " + prefix + " (" + phone + "): " + otp);
@@ -2394,54 +2390,43 @@ if(saved){
 
 
 
-successBox.innerHTML=`
+    // Clear guarantor verification flags
+    sessionStorage.removeItem("g1_phoneVerified");
+    sessionStorage.removeItem("g2_phoneVerified");
 
-
-<h4>
-
-<i class="fa fa-check-circle"></i>
-
-Application Submitted Successfully
-
-</h4>
-
-
-<p>
-
-Your loan application has been sent for approval.
-
-</p>
-
-
-
-<a href="client-dashboard.html"
-
-class="btn btn-success">
-
-Go Dashboard
-
-</a>
-
-
-`;
-
-
-
-successBox.style.display="block";
-
-
-// Clear guarantor verification flags
-sessionStorage.removeItem("g1_phoneVerified");
-sessionStorage.removeItem("g2_phoneVerified");
-
-
-
-btn.disabled=false;
-
-
-btn.innerHTML=
-
-"Submit Loan Application";
+    // Show centered success overlay
+    document.body.innerHTML = `
+        <div style="
+            position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center;
+            z-index:9999;
+        ">
+            <div style="
+                background:white; border-radius:25px; padding:50px 40px; text-align:center;
+                max-width:500px; box-shadow:0 20px 40px rgba(0,0,0,.3); margin:20px;
+            ">
+                <i class="fa-solid fa-circle-check" style="font-size:80px; color:#198754; margin-bottom:20px;"></i>
+                <h2 style="color:#0F4C81; font-weight:700; margin-bottom:15px;">Application Submitted!</h2>
+                <p style="color:#666; font-size:17px; line-height:1.8; margin-bottom:25px;">
+                    Your loan application has been successfully submitted and is now <b>under review</b> by our team.
+                </p>
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <a href="client-dashboard.html" style="
+                        background:#2563EB; color:white; padding:14px; border-radius:12px;
+                        text-decoration:none; font-weight:600; font-size:16px;
+                    ">
+                        <i class="fa fa-home"></i> Go to Dashboard
+                    </a>
+                    <a href="my-loans.html" style="
+                        background:transparent; color:#2563EB; padding:14px; border-radius:12px;
+                        text-decoration:none; font-weight:600; font-size:16px; border:2px solid #2563EB;
+                    ">
+                        <i class="fa fa-file-invoice"></i> View My Loans
+                    </a>
+                </div>
+            </div>
+        </div>
+    `;
 
 
 
