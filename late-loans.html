@@ -1,1549 +1,2539 @@
-<!DOCTYPE html>
-<html lang="en">
+//+------------------------------------------------------------------+
+//|                NEXUS SCALPER BY KEVOH              |
+//+------------------------------------------------------------------+
 
-<head>
+#property copyright   "Click here to join Whatsapp Group"
+#property link        "https://chat.whatsapp.com/G6K8M9huwJ64y1l9taP6hG"
+#resource "\\Images\\Wallpaper.bmp"
+#include <Trade\Trade.mqh>
+CTrade trade;
+//+------------------------------------------------------------------+
+//|                    >>> AUTO TRADING SETTINGS <<<                 |
+//+------------------------------------------------------------------+
+input group "=== AUTO TRADING SETTINGS ==="
+input double   InpLotSize          = 0.01;   // Lot size
+input bool     InpUseSLTP          = true;  // Use risk management
+input int      InpMagicNumber      = 93876;   // Magic number
+input double   InpProfitTarget     = 10;     // Target profit
+input double   InpLossLimit        = 10;     // Loss limit
+input double   InpMaxSpread        = 49.0;   // Max spread in points
+int     InpBuyLadderLevels         = 10;       // Number of Buy Stops
+int     InpSellLadderLevels        = 10;       // Number of Sell Stops
+input int InpEntryPips             = 30;      // Entry Distance
+input int  InpLadderStepPips       = 30;      // Distance between ladder orders
+input int InpStopLossPips          = 40;
+input bool   UseATRFilter          = true;  // Enable ATR volatility filter
+input double MinATRValue           = 4;      // Minimum ATR allowed (points)
+bool ladderActive                  = true;
+bool continuationModeEnabled      = true;
+#resource "\\Images\\Wallpaper.bmp"
+bool manualStop = false;
+int atrHandle;
+double atrBuffer[];
+//+------------------------------------------------------------------+
+//|                    >>> MANUAL TRADING SETTINGS <<<               |
+//+------------------------------------------------------------------+
+input group "=== MANUAL TRADING SETTINGS ==="
+input double   Manual_LotSize        = 0.01;  // Manual lot size
+input double   Manual_StopLossPips   = 250;   // Manual SL points
+input double   Manual_TakeProfitPips = 250;   // Manual TP points
 
-<meta charset="UTF-8">
+//+------------------------------------------------------------------+
+//|                    >>> MANUAL TRAILING SETTINGS <<<              | `
+//+------------------------------------------------------------------+
+input group "=== MANUAL TRAILING SETTINGS ==="
+input bool     InpAllowManualTrailing  = true; // Enable manual trailing
+input double   InpManualTrailingStep   = 40;   // Manual Trailing step
+input double   InpManualTrailingStop   = 25;    // Manual  Trailing stop
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-<title>Bejja Credit | Late Loans</title>
-
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
+//--- Trailing stop inputs (auto EA)
+bool     InpUseTrailingStop            = true;
+long     InpTrailingStop               = 10;
+long     InpTrailingStep               = 1;
 
 
-<style>
+//--- Candle Colors & Grid
+color    InpBullColor                  = clrBlue;
+color    InpBearColor                  = clrRed;
+bool     InpHideGrid                   = true;
+
+//--- Panel Style
+color    InpPanelColor                = clrDarkGreen;
+color    InpPanelTextColor            = clrLightGray;//
+
+//--- Account Protection
+string   InpAllowedAccounts           = "1200228049,521008895,1200255190,561008895,561009621,1200238693";
+
+string   InpAccountExpiry             = "2026.08.12"; // Format YYYY.MM.DD or "LIFETIME"
+//--- Globals
+datetime lastOrderTick = 0;
+string panelPrefix = "NexusPanel_";
+bool g_Authorized = false;
+// User default setting
+input bool TurnEAOn = false;
+// Runtime variable (can change)
+bool autoModeEnabled;
+datetime sessionStartTime;      // Time EA started or reset
+string GV_AUTO_MODE = "NEXUS_AUTO_MODE"; // Global var name to persist auto mode
 
 
-*{
 
-margin:0;
 
-padding:0;
+//+------------------------------------------------------------------+
+//| Expert initialization function                                    |
+//+------------------------------------------------------------------+
+int OnInit()
+  {
+   CheckAccountAuthorization();
+   ApplyChartColors();
+   DrawPanel();
+   ResetSession();
+   autoModeEnabled = TurnEAOn;
+   Accountstatus();
+   atrHandle = iATR(_Symbol, PERIOD_CURRENT, 5);
+   EventSetTimer(1);  // Update every 1 second
+   sessionStartTime = TimeCurrent();
+   continuationModeEnabled = true;
+   return(INIT_SUCCEEDED);
+  }
 
-box-sizing:border-box;
+//+------------------------------------------------------------------+
+//| Expert tick function - Clean version                             |
+//+------------------------------------------------------------------+
+void OnTick()
+  {
+   ApplyTrailingStop();
+   UpdateStatsPanel();
+   CheckSessionLimits();
+   CheckManualTrailing();
+   UpdateClosedTradesCount();
+   UpdateSessionStatusLabel();
+   UpdateTradingStatsPanel();
+  }
+//+------------------------------------------------------------------+
+//| Expert deinitialization function                                 |
+//+------------------------------------------------------------------+
+void OnTimer()
+  {
+   
+      TradeLogic();
+      CheckSessionRestart();
+
+
+
+  }
+//+------------------------------------------------------------------+
+//| Expert deinitialization function                                 |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+  {
+   EventKillTimer();
+// Save current auto mode state
+   GlobalVariableSet(GV_AUTO_MODE, autoModeEnabled ? 1.0 : 0.0);
+  }
+
+//+------------------------------------------------------------------+
+//| ChartEvent function - Handles button clicks                      |
+//+------------------------------------------------------------------+
+int PanelX, PanelY, PanelWidth,padding,startY,ReCx,ReCV, labelX, valueX, lineSpacing, ReCd, PanelHeight,WallpaperH,ReC2L ,ReC2V ,WallpaperW;
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void UpdatePanelLayout()
+  {
+   int chartWidth  = (int)ChartGetInteger(0, CHART_WIDTH_IN_PIXELS, 0);
+   int chartHeight = (int)ChartGetInteger(0, CHART_HEIGHT_IN_PIXELS, 0);
+
+   PanelX = chartWidth * 0.001;       // 2% from left
+   PanelY = chartHeight * 0.03;      // 5% from top
+
+   PanelWidth  = chartWidth * 0.30;  // 30% of chart width
+   PanelHeight = chartHeight * 0.60; // 70% of chart height
+
+   padding     = PanelWidth * 0.04;
+   lineSpacing = PanelHeight * 0.06;
+
+   startY = PanelY + PanelHeight * 0.05;
+   labelX = PanelX + padding;
+   valueX = chartWidth * 0.20;
+   ReCx= chartWidth * 0.30;
+      ReCd= chartWidth * 0.20;
+
+   ReCV= chartWidth * 0.45;
+   WallpaperW  =chartWidth * 0.50;
+   WallpaperH =chartHeight*1 ;
+   ReC2L  =chartWidth * 0.31;
+   ReC2V  =chartWidth * 0.40;
+  }
+//+------------------------------------------------------------------+
+//| ChartEvent function - Handles button clicks                      |
+//+------------------------------------------------------------------+
+void OnChartEvent(const int id, const long &lparam, const double &dparam, const string &sparam)
+{
+   if(id == CHARTEVENT_OBJECT_CLICK)
+   {
+     if(sparam == "BTN_AUTO_MODE")
+{
+   if(autoModeEnabled) // Turning OFF
+   {
+      autoModeEnabled = false;
+      manualStop = true;
+
+      waitingForRestart = false;
+      nextSessionStartTime = 0;
+
+      currentStatus = STATUS_STOPPED;
+
+      ObjectDelete(0, panelPrefix + "STATUS");
+
+      CreateLabelIfNotExists(
+         panelPrefix + "STATUS",
+         "🔴 EA STOPPED",
+         labelX,
+         startY + lineSpacing,
+         clrRed,
+         16
+      );
+   }
+   else // Turning ON
+   {
+      autoModeEnabled = true;
+      manualStop = false;
+
+      currentStatus = STATUS_RUNNING;
+
+      ObjectDelete(0, panelPrefix + "STATUS");
+
+      CreateLabelIfNotExists(
+         panelPrefix + "STATUS",
+         "🟢 EA RUNNING",
+         labelX,
+         startY + lineSpacing,
+         clrLime,
+         16
+      );
+   }
+}
+      else if(sparam == "MANUAL_CLOSE_ALL")
+         CloseAllManualPositions();
+
+      else if(sparam == "EA_CLOSE_ALL")
+         CloseAllMyPositions();
+
+      else if(sparam == "CONTINUTION")
+{
+   continuationModeEnabled = !continuationModeEnabled;
+
+   string btnText = continuationModeEnabled
+                    ? "CONTINUATION: ON"
+                    : "CONTINUATION: OFF";
+
+   color btnColor = continuationModeEnabled
+                    ? clrLime
+                    : clrRed;
+
+   ObjectSetString(0,
+                   "CONTINUTION",
+                   OBJPROP_TEXT,
+                   btnText);
+
+   ObjectSetInteger(0,
+                    "CONTINUTION",
+                    OBJPROP_BGCOLOR,
+                    btnColor);
+
+   ChartRedraw();
+
+   Print("Continuation Mode: ", btnText);
+}
+      // --- Manual Trade Buttons
+      else if(sparam == "MANUAL_BUY")
+         OpenManualBuy(Manual_LotSize);
+
+      else if(sparam == "MANUAL_SELL")
+         OpenManualSell(Manual_LotSize);
+
+      else if(sparam == "MANUAL_RESET")
+         ResetSession();
+
+      UpdateStatsPanel();
+   }
+}
+//+------------------------------------------------------------------+
+//|   GetTodayProfit                                                               |
+//+------------------------------------------------------------------+
+double GetTodayProfit()
+  {
+   double totalProfit = 0.0;
+
+   MqlDateTime dt;
+   TimeToStruct(TimeCurrent(), dt);
+
+   dt.hour = 0;
+   dt.min  = 0;
+   dt.sec  = 0;
+
+   datetime dayStart = StructToTime(dt);
+
+   if(!HistorySelect(dayStart, TimeCurrent()))
+      return 0.0;
+
+   int deals = HistoryDealsTotal();
+
+   for(int i = 0; i < deals; i++)
+     {
+      ulong ticket = HistoryDealGetTicket(i);
+      if(ticket == 0)
+         continue;
+
+
+
+      // Only real trades (ignore deposits, etc.)
+      long type = HistoryDealGetInteger(ticket, DEAL_TYPE);
+      if(type != DEAL_TYPE_BUY && type != DEAL_TYPE_SELL)
+         continue;
+
+      double profit     = HistoryDealGetDouble(ticket, DEAL_PROFIT);
+      double commission = HistoryDealGetDouble(ticket, DEAL_COMMISSION);
+      double swap       = HistoryDealGetDouble(ticket, DEAL_SWAP);
+
+      totalProfit += (profit + swap + commission);
+     }
+
+   return totalProfit;
+  }
+
+//+------------------------------------------------------------------+
+//| Calculate closed profit since session started (COMPLETED)        |
+//+------------------------------------------------------------------+
+double GetSessionTotalProfit()
+  {
+   double totalProfit = 0.0;
+
+   if(!HistorySelect(sessionStartTime, TimeCurrent()))
+      return 0.0;
+
+   int dealsCount = HistoryDealsTotal();
+
+   for(int i = 0; i < dealsCount; i++)
+     {
+      ulong ticket = HistoryDealGetTicket(i);
+      if(ticket == 0)
+         continue;
+
+      int entryType = (int)HistoryDealGetInteger(ticket, DEAL_ENTRY);
+      if(entryType != DEAL_ENTRY_OUT && entryType != DEAL_ENTRY_INOUT)
+         continue;
+
+      int dealType = (int)HistoryDealGetInteger(ticket, DEAL_TYPE);
+      if(dealType != DEAL_TYPE_BUY && dealType != DEAL_TYPE_SELL)
+         continue;
+
+      string symbol = HistoryDealGetString(ticket, DEAL_SYMBOL);
+      int magic = (int)HistoryDealGetInteger(ticket, DEAL_MAGIC);
+      if(symbol != _Symbol || magic != InpMagicNumber)
+         continue;
+
+      double profit     = HistoryDealGetDouble(ticket, DEAL_PROFIT);
+      double swap       = HistoryDealGetDouble(ticket, DEAL_SWAP);
+      double commission = HistoryDealGetDouble(ticket, DEAL_COMMISSION);
+
+      totalProfit += profit + swap + commission;
+     }
+
+   return totalProfit;
+  }
+//+------------------------------------------------------------------+
+//|                    >>> GetSessionNetProfit <<<              |
+//+------------------------------------------------------------------+
+double GetSessionNetProfit()
+  {
+   double closedProfit = 0.0;
+   HistorySelect(sessionStartTime, TimeCurrent());
+   int deals = HistoryDealsTotal();
+
+   for(int i=0; i<deals; i++)
+     {
+      ulong ticket = HistoryDealGetTicket(i);
+      if(ticket==0)
+         continue;
+
+      if(HistoryDealGetString(ticket, DEAL_SYMBOL) != _Symbol)
+         continue;
+      if(HistoryDealGetInteger(ticket, DEAL_MAGIC) != InpMagicNumber)
+         continue;
+
+      long entryType = HistoryDealGetInteger(ticket, DEAL_ENTRY);
+      if(entryType == DEAL_ENTRY_OUT || entryType == DEAL_ENTRY_INOUT)
+        {
+         closedProfit += HistoryDealGetDouble(ticket, DEAL_PROFIT);
+        }
+     }
+
+   double floatingProfit = GetFloatingPL_EA();
+
+   return closedProfit + floatingProfit;
+  }
+
+
+
+//+------------------------------------------------------------------+
+//| Count number of closed EA trades since this session started      |
+//+------------------------------------------------------------------+
+int sessionClosedTrades = 0;
+void UpdateClosedTradesCount()
+  {
+   if(!HistorySelect(sessionStartTime, TimeCurrent()))
+      return;
+
+   sessionClosedTrades = 0;
+
+   int totalDeals = HistoryDealsTotal();
+   for(int i = 0; i < totalDeals; i++)
+     {
+      ulong ticket = HistoryDealGetTicket(i);
+      if(ticket == 0)
+         continue;
+
+      string sym   = HistoryDealGetString(ticket, DEAL_SYMBOL);
+      long type    = HistoryDealGetInteger(ticket, DEAL_TYPE);
+      long entry   = HistoryDealGetInteger(ticket, DEAL_ENTRY);
+      datetime tm  = (datetime)HistoryDealGetInteger(ticket, DEAL_TIME);
+
+      // 🟢 COUNT ONLY EXIT trades from this session
+      if(sym == _Symbol && tm >= sessionStartTime &&
+         (entry == DEAL_ENTRY_OUT || entry == DEAL_ENTRY_INOUT) &&
+         (type == DEAL_TYPE_BUY || type == DEAL_TYPE_SELL))
+        {
+         sessionClosedTrades++;
+        }
+     }
+
+// 🔄 UPDATE LABEL
+   SetLabelText(panelPrefix + "CLOSED_TRADES_V", IntegerToString(sessionClosedTrades));
+  }
+
+//+------------------------------------------------------------------+
+//| Helper: Trim whitespace                                           |
+//+------------------------------------------------------------------+
+string Trim(string s)
+  {
+   int i=0,j=StringLen(s)-1;
+   while(i<=j && StringGetCharacter(s,i)<=32)
+      i++;
+   while(j>=i && StringGetCharacter(s,j)<=32)
+      j--;
+   if(i>j)
+      return "";
+   return StringSubstr(s,i,j-i+1);
+  }
+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void ToggleAutoMode()
+  {
+   autoModeEnabled = !autoModeEnabled; // switch state
+   UpdateStatusLabel();
+   PrintFormat("Auto Mode set to: %s", autoModeEnabled ? "ON" : "OFF");
+  }
+
+
+//+------------------------------------------------------------------+
+//| Update session status (COMPLETED)                                |
+//+------------------------------------------------------------------+
+void UpdateSessionStatusLabel()
+  {
+   datetime now = TimeCurrent();
+   long secs = (long)(now - sessionStartTime);
+   int days = (int)(secs / 86400);
+   secs %= 86400;
+   int hours = (int)(secs / 3600);
+   secs %= 3600;
+   int mins = (int)(secs / 60);
+   int s = (int)(secs % 60);
+
+   string timeStr = "";
+   if(days > 0)
+      timeStr = IntegerToString(days) + "d ";
+   timeStr += StringFormat("%02d:%02d:%02d", hours, mins, s);
+
+   CreateLabelIfNotExists(panelPrefix + "SESSION_TIME_L", "🚀GOOD LUCK:", labelX+60, startY + 3*lineSpacing, clrGreen, 12);
+   SetLabelText(panelPrefix + "SESSION_TIME_V", timeStr);
+   ObjectSetInteger(0, panelPrefix + "SESSION_TIME_V", OBJPROP_COLOR, clrWhite);
+  }
+
+
+//+------------------------------------------------------------------+
+//| Reset Session Data (Call this when restart button is pressed)   |
+//+------------------------------------------------------------------+
+void ResetSession()
+  {
+// --- RESET VALUES ---
+   sessionStartTime = TimeCurrent();  // NEW session starts NOW
+   DeleteAllMyPendings();
+   ResetEAStatus();
+
+  }
+
+//+------------------------------------------------------------------+
+//| Account Authorization                                            |
+//+------------------------------------------------------------------+
+void CheckAccountAuthorization()
+  {
+   long acc = AccountInfoInteger(ACCOUNT_LOGIN);
+   string accStr = IntegerToString(acc);
+
+   string accounts[];
+   int total = StringSplit(InpAllowedAccounts, ',', accounts);
+
+   g_Authorized = false;
+
+//--- CHECK ACCOUNT NUMBER
+   for(int i = 0; i < total; i++)
+     {
+      string tok = Trim(accounts[i]);
+      if(tok == "")
+         continue;
+      if(tok == accStr)
+        {
+         g_Authorized = true;
+         break;
+        }
+     }
+
+//--- CHECK EXPIRY DATE / LIFETIME
+   if(g_Authorized)   // Only check expiry if account is allowed
+     {
+      // If expiry is set to LIFETIME → skip date validation
+      if(StringCompare(InpAccountExpiry, "LIFETIME") == 0
+         || StringCompare(InpAccountExpiry, "lifetime") == 0)
+        {
+         Print("🔓 LIFETIME license detected → No expiry check.");
+        }
+      else
+        {
+         string parts[];
+         int pcount = StringSplit(InpAccountExpiry, '.', parts);
+
+         if(pcount == 3)
+           {
+            long year  = StringToInteger(parts[0]);
+            long month = StringToInteger(parts[1]);
+            long day   = StringToInteger(parts[2]);
+
+            MqlDateTime dt;
+            dt.year = (int)year;
+            dt.mon  = (int)month;
+            dt.day  = (int)day;
+            dt.hour = 0;
+            dt.min  = 0;
+            dt.sec  = 0;
+
+
+            datetime expiryTime = StructToTime(dt);
+            if(TimeCurrent() > expiryTime)
+              {
+               g_Authorized = false;
+               Print("❌ Account expired! CONTACT support +254705886935");
+              }
+           }
+         else
+           {
+            g_Authorized = false;
+            Print("❌ Invalid expiry format! Use YYYY.MM.DD or LIFETIME");
+           }
+        }
+     }
+
+//--- FINAL STATUS
+   if(!g_Authorized)
+      Print("⚠ EA running in READ-ONLY mode. CONTACT support!");
+   else
+      PrintFormat("✅ Account %s authorized (expiry: %s)", accStr, InpAccountExpiry);
+  }
+
+//+------------------------------------------------------------------+
+//| Calculate days until expiry                                      |
+//+------------------------------------------------------------------+
+int DaysUntilExpiry()
+  {
+   string parts[];
+   int pcount = StringSplit(InpAccountExpiry, '.', parts);
+   if(pcount < 3)
+      return 0;
+
+   int year  = (int)StringToInteger(parts[0]);
+   int month = (int)StringToInteger(parts[1]);
+   int day   = (int)StringToInteger(parts[2]);
+
+   MqlDateTime dt;
+   dt.year = year;
+   dt.mon  = month;
+   dt.day  = day;
+   dt.hour = 0;
+   dt.min  = 0;
+   dt.sec  = 0;
+
+   datetime expiryTime = StructToTime(dt);
+   datetime now        = TimeCurrent();
+
+// Convert time difference to full days
+   int daysLeft = (int)((expiryTime - now) / 86400);
+
+   if(daysLeft < 0)
+      daysLeft = 0;
+
+   return daysLeft;
+  }
+
+//+------------------------------------------------------------------+
+//| Apply chart colors and remove grid (UNCHANGED)                   |
+//+------------------------------------------------------------------+
+void ApplyChartColors()
+  {
+   long chart_id = 0;
+   ChartSetInteger(chart_id, CHART_COLOR_CANDLE_BULL, (long)InpBullColor);
+   ChartSetInteger(chart_id, CHART_COLOR_CANDLE_BEAR, (long)InpBearColor);
+   ChartSetInteger(chart_id, CHART_COLOR_CHART_UP, (long)InpBullColor);
+   ChartSetInteger(chart_id, CHART_COLOR_CHART_DOWN, (long)InpBearColor);
+   ChartSetInteger(chart_id, CHART_COLOR_FOREGROUND, clrAqua);
+   ChartSetInteger(chart_id, CHART_COLOR_BID, clrAqua);
+
+
+   ChartSetInteger(0, CHART_SHOW_TRADE_HISTORY, false);
+
+   ChartSetInteger(0, CHART_SHIFT, true);
+   ChartSetInteger(0, CHART_SHOW_VOLUMES, false);
+   ChartSetInteger(0, CHART_SCALE, 5);
+
+   if(InpHideGrid)
+      ChartSetInteger(chart_id, CHART_SHOW_GRID, false);
+   ChartRedraw(chart_id);
+  }
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+double GetATRVolatility()
+  {
+   double atr[];
+   if(CopyBuffer(atrHandle,0,0,1,atr)>0)
+      return atr[0];
+   return 0;
+  }
+
+//+------------------------------------------------------------------+
+//| Position helpers - iterate safely (UNCHANGED)                     |
+//+------------------------------------------------------------------+
+int CountMyPositions()
+  {
+   int count = 0;
+   int total = PositionsTotal();
+   for(int i = 0; i < total; i++)
+     {
+      ulong ticket = PositionGetTicket(i);
+      if(ticket==0)
+         continue;
+      if(PositionSelectByTicket(ticket))
+        {
+         if(PositionGetString(POSITION_SYMBOL) == _Symbol &&
+            PositionGetInteger(POSITION_MAGIC) == InpMagicNumber)
+            count++;
+        }
+     }
+   return count;
+  }
+  int CountBuyPositions()
+  {
+   int count = 0;
+   int total = PositionsTotal();
+
+   for(int i = 0; i < total; i++)
+     {
+      ulong ticket = PositionGetTicket(i);
+      if(ticket == 0)
+         continue;
+
+      if(PositionSelectByTicket(ticket))
+        {
+         if(PositionGetString(POSITION_SYMBOL) == _Symbol &&
+            PositionGetInteger(POSITION_MAGIC) == InpMagicNumber &&
+            PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY)
+            count++;
+        }
+     }
+   return count;
+  }
+  int CountSellPositions()
+  {
+   int count = 0;
+   int total = PositionsTotal();
+
+   for(int i = 0; i < total; i++)
+     {
+      ulong ticket = PositionGetTicket(i);
+      if(ticket == 0)
+         continue;
+
+      if(PositionSelectByTicket(ticket))
+        {
+         if(PositionGetString(POSITION_SYMBOL) == _Symbol &&
+            PositionGetInteger(POSITION_MAGIC) == InpMagicNumber &&
+            PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_SELL)
+            count++;
+        }
+     }
+   return count;
+  }
+//+------------------------------------------------------------------+
+//| CountManualPositions (UNCHANGED)                                 |
+//+------------------------------------------------------------------+
+int CountManualPositions()
+  {
+   int count = 0;
+   int total = PositionsTotal();
+   for(int i = 0; i < total; i++)
+     {
+      ulong ticket = PositionGetTicket(i);
+      if(ticket==0)
+         continue;
+      if(PositionSelectByTicket(ticket))
+        {
+         if(PositionGetString(POSITION_SYMBOL) == _Symbol &&
+            PositionGetInteger(POSITION_MAGIC) == 0)
+            count++;
+        }
+     }
+   return count;
+  }
+//+------------------------------------------------------------------+
+//| CountManualPositions (UNCHANGED)                                 |
+//+------------------------------------------------------------------+  
+int CountClosedTradesToday()
+  {
+   int count = 0;
+
+   // Get today's start time (00:00)
+   datetime today_start = StringToTime(TimeToString(TimeCurrent(), TIME_DATE));
+
+   // Select history from today until now
+   if(!HistorySelect(today_start, TimeCurrent()))
+      return 0;
+
+   int total = HistoryDealsTotal();
+
+   for(int i = 0; i < total; i++)
+     {
+      ulong deal_ticket = HistoryDealGetTicket(i);
+      if(deal_ticket == 0)
+         continue;
+
+      // Check it's a closing deal
+      if(HistoryDealGetInteger(deal_ticket, DEAL_ENTRY) != DEAL_ENTRY_OUT)
+         continue;
+
+      // Filter by symbol
+      if(HistoryDealGetString(deal_ticket, DEAL_SYMBOL) != _Symbol)
+         continue;
+
+      // Filter by magic number
+      if(HistoryDealGetInteger(deal_ticket, DEAL_MAGIC) != InpMagicNumber)
+         continue;
+
+      count++;
+     }
+
+   return count;
+  }
+//+------------------------------------------------------------------+
+//| Get EA floating P/L (UNCHANGED)                                   |
+//+------------------------------------------------------------------+
+double GetFloatingPL_EA()
+  {
+   double totalPL = 0.0;
+   int total = PositionsTotal();
+   for(int i = 0; i < total; i++)
+     {
+      ulong ticket = PositionGetTicket(i);
+      if(ticket==0)
+         continue;
+      if(PositionSelectByTicket(ticket))
+        {
+         if(PositionGetString(POSITION_SYMBOL) == _Symbol &&
+            PositionGetInteger(POSITION_MAGIC) == InpMagicNumber)
+            totalPL += PositionGetDouble(POSITION_PROFIT);
+        }
+     }
+   return totalPL;
+  }
+
+//+------------------------------------------------------------------+
+//| Get Manual floating P/L (all manual trades) (UNCHANGED)          |
+//+------------------------------------------------------------------+
+double GetFloatingPL_Manual()
+  {
+   double totalPL = 0.0;
+   int total = PositionsTotal();
+   for(int i = 0; i < total; i++)
+     {
+      ulong ticket = PositionGetTicket(i);
+      if(ticket==0)
+         continue;
+      if(PositionSelectByTicket(ticket))
+        {
+         if(PositionGetString(POSITION_SYMBOL) == _Symbol &&
+            PositionGetInteger(POSITION_MAGIC) == 0)
+            totalPL += PositionGetDouble(POSITION_PROFIT);
+        }
+     }
+   return totalPL;
+  }
+
+//+------------------------------------------------------------------+
+//| Close all EA positions (FAST + RELIABLE + BULK STYLE)            |
+//+------------------------------------------------------------------+
+bool CloseAllMyPositions()
+{
+   trade.SetAsyncMode(true); // ⚡ faster execution
+
+   ulong tickets[];
+   int count = 0;
+
+   // 🔹 STEP 1: collect all positions first (snapshot)
+   for(int i = 0; i < PositionsTotal(); i++)
+   {
+      ulong ticket = PositionGetTicket(i);
+      if(ticket == 0)
+         continue;
+
+      if(!PositionSelectByTicket(ticket))
+         continue;
+
+      if(PositionGetString(POSITION_SYMBOL) != _Symbol)
+         continue;
+
+      if(PositionGetInteger(POSITION_MAGIC) != InpMagicNumber)
+         continue;
+
+      ArrayResize(tickets, count + 1);
+      tickets[count++] = ticket;
+   }
+
+   bool all_closed = true;
+
+   // 🔹 STEP 2: close all positions quickly
+   for(int i = 0; i < count; i++)
+   {
+      if(!trade.PositionClose(tickets[i]))
+      {
+         all_closed = false;
+
+         // optional debug
+         Print("❌ Failed to close ticket: ", tickets[i],
+               " Error: ", GetLastError());
+      }
+   }
+
+   return all_closed;
+}
+//+------------------------------------------------------------------+
+//| Close all Manual positions for this chart (NEW)                  |
+//+------------------------------------------------------------------+
+bool CloseAllManualPositions()
+  {
+   if(!g_Authorized)
+      return false;
+
+   bool all_ok = true;
+   int total = PositionsTotal();
+   for(int i = total - 1; i >= 0; i--)
+     {
+      ulong ticket = PositionGetTicket(i);
+      if(PositionSelectByTicket(ticket))
+        {
+         if(PositionGetString(POSITION_SYMBOL) == _Symbol &&
+            PositionGetInteger(POSITION_MAGIC) == 0) // Magic 0 for manual
+           {
+            bool res = trade.PositionClose(ticket);
+            if(!res)
+               all_ok = false;
+           }
+        }
+     }
+   return all_ok;
+  }
+
+
+
+//+------------------------------------------------------------------+
+//| Open Manual Buy/Sell (via manual panel) (SL/TP adjusted)         |
+//+------------------------------------------------------------------+
+bool OpenManualBuy(double lot)
+  {
+   if(!g_Authorized)
+     {
+      Print("❌ Manual BUY blocked: account not authorized!");
+      return false;
+     }
+   double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+   double sl=0, tp=0;
+   if(InpUseSLTP)
+     {
+      sl = NormalizeDouble(ask - Manual_StopLossPips*_Point, _Digits);
+      tp = NormalizeDouble(ask + Manual_TakeProfitPips*_Point, _Digits);
+     }
+   trade.SetExpertMagicNumber(0); // manual trades use magic 0
+   bool res = trade.Buy(lot, NULL, ask, sl, tp, "Manual Buy - Nexus Scalper");
+   trade.SetExpertMagicNumber(InpMagicNumber); // restore
+   return res;
+  }
+
+//+------------------------------------------------------------------+
+//|   OpenManualSell                                                               |
+//+------------------------------------------------------------------+
+bool OpenManualSell(double lot)
+  {
+   if(!g_Authorized)
+     {
+      Print("❌ Manual SELL blocked: account not authorized!");
+      return false;
+     }
+   double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   double sl=0, tp=0;
+   if(InpUseSLTP)
+     {
+      sl = NormalizeDouble(bid + Manual_StopLossPips*_Point, _Digits);
+      tp = NormalizeDouble(bid - Manual_TakeProfitPips*_Point, _Digits);
+     }
+   trade.SetExpertMagicNumber(0); // manual trades use magic 0
+   bool res = trade.Sell(lot, NULL, bid, sl, tp, "Manual Sell - Nexus Scalper");
+   trade.SetExpertMagicNumber(InpMagicNumber); // restore
+   return res;
+  }
+
+
+
+//+------------------------------------------------------------------+
+//| GetMainTrade: returns the main EA trade details                  |
+//+------------------------------------------------------------------+
+bool GetMainTrade(double &price, ENUM_POSITION_TYPE &type)
+  {
+   price = 0.0;
+   type  = POSITION_TYPE_BUY; // default value
+
+   int total = PositionsTotal();
+   for(int i = 0; i < total; i++)
+     {
+      ulong ticket = PositionGetTicket(i);
+      if(!PositionSelectByTicket(ticket))
+         continue;
+
+      // Check for EA's magic number
+      int magic = (int)PositionGetInteger(POSITION_MAGIC);
+      if(magic != InpMagicNumber)
+         continue;
+
+      // Found the main trade
+      price = PositionGetDouble(POSITION_PRICE_OPEN);
+      type  = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+      return true;
+     }
+
+// No main trade found
+   return false;
+  }
+
+enum EA_STATUS
+  {
+   STATUS_RUNNING,
+   STATUS_STOPPED,
+   STATUS_TP_HIT,
+   STATUS_SL_HIT
+  };
+
+EA_STATUS currentStatus = STATUS_STOPPED;
+int sessionTPHits = 0;
+int sessionSLHits = 0;
+ int SessionRestartDelaySeconds = 60; // Wait 60 sec before restarting
+
+datetime nextSessionStartTime = 0;
+bool waitingForRestart = false;
+//+------------------------------------------------------------------+
+//| CheckSessionLimits                                               |
+//+------------------------------------------------------------------+
+void CheckSessionLimits()
+{
+   double sessionResult = GetSessionTotalProfit() + GetFloatingPL_EA();
+
+   //==============================================================
+   // SESSION TP HIT
+   //==============================================================
+   if(sessionResult >= InpProfitTarget &&
+      currentStatus != STATUS_TP_HIT)
+   {
+      currentStatus = STATUS_TP_HIT;
+      sessionTPHits++;
+
+      ObjectDelete(0, panelPrefix + "STATUS");
+
+      CreateLabelIfNotExists(
+         panelPrefix + "STATUS",
+         "🚀 TP REACHED — EA OFF",        labelX, startY + lineSpacing,clrLime, 16);
+
+      DeleteAllMyPendings();
+      CloseAllMyPositions();
+      DeleteAllMyPendings();
+
+  if(continuationModeEnabled && !manualStop)
+{
+   waitingForRestart = true;
+   nextSessionStartTime = TimeCurrent() + SessionRestartDelaySeconds;
+
+   autoModeEnabled = false;
+
+   CreateLabelIfNotExists(
+      panelPrefix + "STATUS",
+      "⏳ Waiting For Restart...",
+      labelX,
+      startY + lineSpacing,
+      clrYellow,
+      16);
+}
+else
+{
+   autoModeEnabled = false;
+   waitingForRestart = false;
+}
+   }
+
+   //==============================================================
+   // SESSION SL HIT
+   //==============================================================
+   if(sessionResult <= -InpLossLimit &&
+      currentStatus != STATUS_SL_HIT)
+   {
+      currentStatus = STATUS_SL_HIT;
+      sessionSLHits++;
+
+      ObjectDelete(0, panelPrefix + "STATUS");
+
+      CreateLabelIfNotExists(
+         panelPrefix + "STATUS",
+         "❌ SL HIT — EA STOPPED",   labelX,  startY + lineSpacing, clrRed,  16  );
+
+      DeleteAllMyPendings();
+      CloseAllMyPositions();
+      DeleteAllMyPendings();
+
+if(continuationModeEnabled && !manualStop)
+{
+   waitingForRestart = true;
+   nextSessionStartTime = TimeCurrent() + SessionRestartDelaySeconds;
+
+   autoModeEnabled = false;
+
+   CreateLabelIfNotExists(
+      panelPrefix + "STATUS",
+      "⏳ Waiting For Restart...",
+      labelX,
+      startY + lineSpacing,
+      clrYellow,
+      16);
+}
+else
+{
+   autoModeEnabled = false;
+   waitingForRestart = false;
+}
+   }
+}
+//+------------------------------------------------------------------+
+//|    CheckSessionRestart             |
+//+------------------------------------------------------------------+
+void CheckSessionRestart()
+{
+   if(!waitingForRestart)
+      return;
+
+   if(manualStop)
+   {
+      waitingForRestart = false;
+      nextSessionStartTime = 0;
+      return;
+   }
+
+   if(!continuationModeEnabled)
+   {
+      waitingForRestart = false;
+      nextSessionStartTime = 0;
+      return;
+   }
+
+   if(TimeCurrent() >= nextSessionStartTime)
+   {
+      waitingForRestart = false;
+      nextSessionStartTime = 0;
+
+      ResetSession();
+
+      currentStatus = STATUS_RUNNING;
+      autoModeEnabled = true;
+   }
+}
+  //+------------------------------------------------------------------+
+//| Returns total winning trades for this EA session                 |
+//+------------------------------------------------------------------+
+//+------------------------------------------------------------------+
+//| Session TP Hits                                                  |
+//+------------------------------------------------------------------+
+int GetSessionWins()
+  {
+   return sessionTPHits;
+  }
+
+//+------------------------------------------------------------------+
+//| Session SL Hits                                                  |
+//+------------------------------------------------------------------+
+int GetSessionLosses()
+  {
+   return sessionSLHits;
+  }
+
+//+------------------------------------------------------------------+
+//| Session Win Rate                                                 |
+//+------------------------------------------------------------------+
+double GetSessionWinRate()
+  {
+   int total = sessionTPHits + sessionSLHits;
+
+   if(total == 0)
+      return 0.0;
+
+   return ((double)sessionTPHits / total) * 100.0;
+  }
+//+------------------------------------------------------------------+
+//| Panel Value Updates                                              |
+//+------------------------------------------------------------------+
+void UpdateWinsLabel()
+  {
+   ObjectSetString(0, panelPrefix + "WINS_V",
+                   OBJPROP_TEXT,
+                   IntegerToString(GetSessionWins()));
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void UpdateLossesLabel()
+  {
+   ObjectSetString(0, panelPrefix + "LOSSES_V",
+                   OBJPROP_TEXT,
+                   IntegerToString(GetSessionLosses()));
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void UpdateWinRateLabel()
+  {
+   ObjectSetString(0, panelPrefix + "WIN RATE_V",
+                   OBJPROP_TEXT,
+                   DoubleToString(GetSessionWinRate(), 2) + "%");
+  }
+
+//+------------------------------------------------------------------+
+//| Master panel updater                                             |
+//+------------------------------------------------------------------+
+void UpdateTradingStatsPanel()
+  {
+   UpdateWinsLabel();
+   UpdateLossesLabel();
+   UpdateWinRateLabel();
+  }
+//+------------------------------------------------------------------+
+//| Update the main session status label (COMPLETED)                 |
+//+------------------------------------------------------------------+
+void UpdateStatusLabel()
+  {
+// 🔒 Do NOT update if TP/SL already hit
+   if(currentStatus == STATUS_TP_HIT || currentStatus == STATUS_SL_HIT)
+      return;
+
+   ObjectDelete(0, panelPrefix + "STATUS");
+
+   if(autoModeEnabled)
+     {
+      currentStatus = STATUS_RUNNING;
+
+      CreateLabelIfNotExists(panelPrefix + "STATUS",
+                             "🟢 EA RUNNING",
+                             labelX+20, startY + lineSpacing,
+                             clrLimeGreen, 16);
+     }
+   else
+     {
+      currentStatus = STATUS_STOPPED;
+
+      CreateLabelIfNotExists(panelPrefix + "STATUS",
+                             "🔴 EA STOPPED",
+                             labelX+20, startY + lineSpacing,
+                             clrRed, 16);
+     }
+   
+  }
+  
+//+------------------------------------------------------------------+
+//| ResetEAStatus                |
+//+------------------------------------------------------------------+
+void ResetEAStatus()
+  {
+   currentStatus = STATUS_STOPPED;
+
+   ObjectDelete(0, panelPrefix + "STATUS");
+
+   CreateLabelIfNotExists(panelPrefix + "STATUS",
+                          "🔴 EA STOPPED",
+                          labelX+20, startY + lineSpacing,
+                          clrRed, 16);
+  }
+//+------------------------------------------------------------------+
+//| Manual Trailing Stop - Improved Version                           |
+//+------------------------------------------------------------------+
+void CheckManualTrailing()
+  {
+   if(!InpAllowManualTrailing)
+      return;
+
+   double point = _Point;
+
+// Loop through all positions
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+     {
+      ulong ticket = PositionGetTicket(i);
+      if(!PositionSelectByTicket(ticket))
+         continue;
+
+      string symbol = PositionGetString(POSITION_SYMBOL);
+      ENUM_POSITION_TYPE type = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+      double openPrice = PositionGetDouble(POSITION_PRICE_OPEN);
+      double stopLoss  = PositionGetDouble(POSITION_SL);
+      double takeProfit = PositionGetDouble(POSITION_TP);
+
+      // Only manual trades (magic 0)
+      int magic = (int)PositionGetInteger(POSITION_MAGIC);
+      if(magic != 0)
+         continue;
+
+      if(symbol != _Symbol)
+         continue;
+
+      // Broker minimum stop distance
+      int stopLevel = (int)SymbolInfoInteger(symbol, SYMBOL_TRADE_STOPS_LEVEL);
+      double minDist = stopLevel * point;
+
+      // Current market price
+      double currentPrice = (type == POSITION_TYPE_BUY)
+                            ? SymbolInfoDouble(symbol, SYMBOL_BID)
+                            : SymbolInfoDouble(symbol, SYMBOL_ASK);
+
+      double newSL = stopLoss;
+
+      // ---------------- BUY ----------------
+      if(type == POSITION_TYPE_BUY)
+        {
+         double profitPoints = (currentPrice - openPrice) / point;
+
+         if(profitPoints >= InpManualTrailingStop)
+           {
+            newSL = currentPrice - InpManualTrailingStep * point;
+
+            // Respect broker's min distance
+            if(newSL < openPrice + minDist)
+               newSL = openPrice + minDist;
+
+            if(newSL > stopLoss || stopLoss == 0)
+              {
+               bool res = trade.PositionModify(ticket, NormalizeDouble(newSL,_Digits), takeProfit);
+               if(res)
+                  PrintFormat("✅ Trailing BUY applied: Ticket=%I64d, NewSL=%.2f, CurrentPrice=%.2f", ticket, newSL, currentPrice);
+               else
+                  PrintFormat("❌ Trailing BUY failed: Ticket=%I64d, Result=%d", ticket, trade.ResultRetcode());
+              }
+           }
+        }
+      // ---------------- SELL ----------------
+      else
+         if(type == POSITION_TYPE_SELL)
+           {
+            double profitPoints = (openPrice - currentPrice) / point;
+
+            if(profitPoints >= InpManualTrailingStop)
+              {
+               newSL = currentPrice + InpManualTrailingStep * point;
+
+               // Respect broker's min distance
+               if(newSL > openPrice - minDist)
+                  newSL = openPrice - minDist;
+
+               if(newSL < stopLoss || stopLoss == 0)
+                 {
+                  bool res = trade.PositionModify(ticket, NormalizeDouble(newSL,_Digits), takeProfit);
+                  if(res)
+                     PrintFormat("✅ Trailing SELL applied: Ticket=%I64d, NewSL=%.2f, CurrentPrice=%.2f", ticket, newSL, currentPrice);
+                  else
+                     PrintFormat("❌ Trailing SELL failed: Ticket=%I64d, Result=%d", ticket, trade.ResultRetcode());
+                 }
+              }
+           }
+     }
+  }//+------------------------------------------------------------------+
+//|   HasPendingOrders                                                               |
+//+------------------------------------------------------------------+
+bool HasPendingOrders()
+  {
+   for(int i=0;i<OrdersTotal();i++)
+     {
+      ulong ticket = OrderGetTicket(i);
+      if(OrderSelect(ticket))
+        {
+         if(OrderGetInteger(ORDER_MAGIC)==InpMagicNumber &&
+            OrderGetString(ORDER_SYMBOL)==_Symbol)
+            return true;
+        }
+     }
+   return false;
+  }
+
+//+------------------------------------------------------------------+
+//| Label helpers (UNCHANGED)                                         |
+//+------------------------------------------------------------------+
+void CreateLabelIfNotExists(string name,string text,int x,int y,color clr,int fontSize)
+  {
+   if(ObjectFind(0,name)==-1)
+      ObjectCreate(0,name,OBJ_LABEL,0,0,0);
+   ObjectSetInteger(0,name,OBJPROP_CORNER,CORNER_LEFT_UPPER);
+   ObjectSetInteger(0,name,OBJPROP_XDISTANCE,x);
+   ObjectSetInteger(0,name,OBJPROP_YDISTANCE,y);
+   ObjectSetInteger(0,name,OBJPROP_FONTSIZE,fontSize);
+   ObjectSetInteger(0,name,OBJPROP_SELECTABLE,false);
+   ObjectSetInteger(0,name,OBJPROP_HIDDEN,false);
+   ObjectSetString(0,name,OBJPROP_FONT,"Consolas");
+   ObjectSetInteger(0,name,OBJPROP_COLOR,(long)clr);
+   ObjectSetString(0,name,OBJPROP_TEXT,text);
+  }
+
+//+------------------------------------------------------------------+
+//|  SetLabelText                                                                |
+//+------------------------------------------------------------------+
+void SetLabelText(string name,string text)
+  {
+   if(ObjectFind(0,name)!=-1)
+      ObjectSetString(0,name,OBJPROP_TEXT,text);
+  }
+
+   
+//+------------------------------------------------------------------+
+//| UpdateStatsPanel (NEW/COMPLETED)                                 |
+//+------------------------------------------------------------------+
+void UpdateStatsPanel()
+  {
+   SetLabelText(panelPrefix + "BAL_V", DoubleToString(AccountInfoDouble(ACCOUNT_BALANCE),2));
+   SetLabelText(panelPrefix + "EQ_V", DoubleToString(AccountInfoDouble(ACCOUNT_EQUITY),2));
+
+   double eaPL = GetFloatingPL_EA();
+   SetLabelText(panelPrefix + "PNL_V", DoubleToString(eaPL,2));
+   ObjectSetInteger(0, panelPrefix + "PNL_V", OBJPROP_COLOR, eaPL >= 0 ? clrLime : clrRed);
+   SetLabelText(panelPrefix + "OPEN_V", IntegerToString(CountMyPositions()));
+
+   double sessionPL = GetSessionTotalProfit();
+   SetLabelText(panelPrefix + "SESSIONPROFIT_V",DoubleToString(sessionPL, 2));
+   ObjectSetInteger(0, panelPrefix + "SESSIONPROFIT_V", OBJPROP_COLOR, sessionPL >= 0 ? clrLime : clrRed);
+   double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+   double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   double spread = (ask - bid) / _Point;
+   double vol = GetATRVolatility();
+   SetLabelText(panelPrefix + "VOL_V", DoubleToString(vol,_Digits));
+
+
+   SetLabelText(panelPrefix + "SPREAD_V",
+                DoubleToString(spread,1));
+
+   double netProfit = GetSessionNetProfit();
+   SetLabelText(panelPrefix + "NET PROFIT_V", DoubleToString(netProfit,2));
+   ObjectSetInteger(0, panelPrefix + "NET PROFIT_V", OBJPROP_COLOR, netProfit >= 0 ? clrLime : clrRed);
+   double todayProfit = GetTodayProfit();
+
+   SetLabelText(panelPrefix + "TODAY_V", DoubleToString(todayProfit,2));
+
+   ObjectSetInteger(0, panelPrefix + "TODAY_V", OBJPROP_COLOR,
+                    todayProfit >= 0 ? clrLime : clrRed);
+
+   double manualPL = GetFloatingPL_Manual();
+   SetLabelText(panelPrefix + "PNL_MAN_V", DoubleToString(manualPL,2));
+   ObjectSetInteger(0, panelPrefix + "PNL_MAN_V", OBJPROP_COLOR, manualPL >= 0 ? clrLime : clrRed);
+   SetLabelText(panelPrefix + "OPEN_MAN_V", IntegerToString(CountManualPositions()));
+
+
+   double manualClosed = 0;
+   HistorySelect(sessionStartTime, TimeCurrent());
+
+   for(int i=0;i<HistoryDealsTotal();i++)
+     {
+      ulong ticket = HistoryDealGetTicket(i);
+      if(HistoryDealGetInteger(ticket, DEAL_MAGIC)==0 &&
+         HistoryDealGetString(ticket, DEAL_SYMBOL)==_Symbol &&
+         HistoryDealGetInteger(ticket, DEAL_ENTRY)!=DEAL_ENTRY_IN)
+        {
+         manualClosed += HistoryDealGetDouble(ticket, DEAL_PROFIT);
+        }
+     }
+
+   SetLabelText(panelPrefix + "MANUAL PROFIT_V", DoubleToString(manualClosed,2));
+   ObjectSetInteger(0, panelPrefix + "MANUAL PROFIT_V", OBJPROP_COLOR, manualClosed >= 0 ? clrLime : clrRed);
+   ObjectSetString(0,panelPrefix + "TODAY_CLOSED_V",OBJPROP_TEXT,IntegerToString(CountClosedTradesToday()));
+   int buys  = CountBuyPositions();
+   int sells = CountSellPositions();
+
+ObjectSetString(0, panelPrefix + "OPEN BUYS_V",  OBJPROP_TEXT, IntegerToString(buys));
+ObjectSetString(0, panelPrefix + "OPEN SELLS_V", OBJPROP_TEXT, IntegerToString(sells));
+  }
+//+------------------------------------------------------------------+
+//| Account status                                |
+//+------------------------------------------------------------------+
+void Accountstatus()
+{
+// --- Account Info
+   long accNum = (long)AccountInfoInteger(ACCOUNT_LOGIN);
+   int daysLeft = DaysUntilExpiry();
+
+   CreateLabelIfNotExists(panelPrefix + "ACC_L", "Account:", labelX+25,startY+ 21*lineSpacing, InpPanelTextColor, 12);
+   CreateLabelIfNotExists(panelPrefix + "ACC_V", IntegerToString(accNum), valueX-25,startY+ 21*lineSpacing, clrWhite, 12);
+
+   string expiryText = (daysLeft==-1)?"LIFETIME":"Expires: ";
+   CreateLabelIfNotExists(panelPrefix + "EXPIRY_V", expiryText, labelX+25, startY + 23*lineSpacing, clrWhite, 12);
+   CreateLabelIfNotExists(panelPrefix + "EXPIRY_D",InpAccountExpiry,valueX-25, startY + 23*lineSpacing, clrWhite, 12);
+
+   if(daysLeft!=-1)
+      CreateLabelIfNotExists(panelPrefix + "COUNTDOWN_V", IntegerToString(daysLeft)+" day left", 50, startY + 25*lineSpacing, clrYellow, 12);
+
+   if(g_Authorized)
+      CreateLabelIfNotExists(panelPrefix + "ACC status", " 🚀 ACCOUNT VERIFIED", 50,startY+ 19*lineSpacing, clrLime, 15);
+   else
+
+      CreateLabelIfNotExists(panelPrefix + "ACC status", " ❌ ACCOUNT NOT VERIFIED", 50,startY+ 19*lineSpacing, clrRed, 15);
 
 }
+//+------------------------------------------------------------------+
+//| Draw Panel (COMPLETED)                                           |
+//+------------------------------------------------------------------+
+void DrawPanel()
+  {
+   UpdatePanelLayout();
+   DrawWallpaper();
+
+// --- Background rectangle (main)
+   string bg = panelPrefix + "BG";
+   if(ObjectFind(0, bg) == -1)
+      ObjectCreate(0, bg, OBJ_RECTANGLE_LABEL, 0, 0, 0);
+
+   ObjectSetInteger(0, bg, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+   ObjectSetInteger(0, bg, OBJPROP_XDISTANCE, PanelX);
+   ObjectSetInteger(0, bg, OBJPROP_YDISTANCE, PanelY-20);
+   ObjectSetInteger(0, bg, OBJPROP_XSIZE, WallpaperW);
+   ObjectSetInteger(0, bg, OBJPROP_YSIZE, PanelHeight+350);
+   ObjectSetInteger(0, bg, OBJPROP_BGCOLOR,clrBlack);
+   ObjectSetInteger(0, bg, OBJPROP_COLOR, clrBlack);
+   ObjectSetInteger(0, bg, OBJPROP_SELECTABLE, false);
+   ObjectSetInteger(0, bg, OBJPROP_HIDDEN, false);
+
+// --- Second rectangle (right for Manual Controls)
+   string bg2 = panelPrefix + "BG2";
+   if(ObjectFind(0, bg2) == -1)
+      ObjectCreate(0, bg2, OBJ_RECTANGLE_LABEL, 0, 0, 0);
+
+   ObjectSetInteger(0, bg2, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+   ObjectSetInteger(0, bg2, OBJPROP_XDISTANCE, ReCx);
+   ObjectSetInteger(0, bg2, OBJPROP_YDISTANCE, PanelY-20);
+   ObjectSetInteger(0, bg2, OBJPROP_XSIZE,  ReCd);
+   ObjectSetInteger(0, bg2, OBJPROP_YSIZE,PanelHeight+30);
+   ObjectSetInteger(0, bg2, OBJPROP_BGCOLOR, clrBlack);
+   ObjectSetInteger(0, bg2, OBJPROP_COLOR, clrBlack);
+   ObjectSetInteger(0, bg2, OBJPROP_SELECTABLE, false);
+   ObjectSetInteger(0, bg2, OBJPROP_HIDDEN, false);
+
+// --- Static Labels (field names)
+   CreateLabelIfNotExists(panelPrefix + "HEADER", "📊 NEXUS SCALPER BY KEVOH", labelX, startY-20, clrAqua, 15);
+   CreateLabelIfNotExists(panelPrefix + "BAL_L", "Balance:", labelX, startY + 4*lineSpacing, InpPanelTextColor, 12);
+   CreateLabelIfNotExists(panelPrefix + "EQ_L", "Equity:", labelX, startY + 5*lineSpacing, InpPanelTextColor, 12);
+   CreateLabelIfNotExists(panelPrefix + "PNL_L", "Floating P/L:", labelX, startY + 6*lineSpacing, InpPanelTextColor, 12);
+   CreateLabelIfNotExists(panelPrefix + "OPEN_L", "Open Trades :", labelX, startY + 7*lineSpacing, InpPanelTextColor, 12);
+   CreateLabelIfNotExists(panelPrefix + "SYMBOL_L", "Symbol:", labelX, startY + 8*lineSpacing, InpPanelTextColor, 12);
+   CreateLabelIfNotExists(panelPrefix + "CLOSED_TRADES", "Closed Trades:", labelX, startY + 9 * lineSpacing, clrWhite, 12);
+   CreateLabelIfNotExists(panelPrefix + "SESSIONPROFIT_L", "Total  Profit:", labelX, startY + 10*lineSpacing, InpPanelTextColor, 12);
+   CreateLabelIfNotExists(panelPrefix + "PROFITLIMIT_L", "Profit Target:", labelX, startY + 11*lineSpacing, clrWhite, 12);
+   CreateLabelIfNotExists(panelPrefix + "LOSSLIMIT_L", "Loss Limit:", labelX, startY + 12*lineSpacing, clrWhite, 12);
+      CreateLabelIfNotExists(panelPrefix + "NET PROFIT_L", "Net profit:", labelX, startY + 13*lineSpacing, clrWhite, 12);
+          //Rec 2 labels
+   CreateLabelIfNotExists(panelPrefix + "SPREAD_L", "Spread:", ReC2L, startY + 15*lineSpacing, clrWhite, 12);
+   CreateLabelIfNotExists(panelPrefix + "VOL_L", "Volatility:",ReC2L, startY + 14*lineSpacing, clrWhite, 12);
+   CreateLabelIfNotExists(panelPrefix + "TODAY_L",  "Today Profit:", ReC2L, startY + 18*lineSpacing, clrWhite,  14);
+   CreateLabelIfNotExists(panelPrefix + "WINS",  "Wins:", ReC2L, startY + 19*lineSpacing, clrWhite,  14);
+   CreateLabelIfNotExists(panelPrefix + "LOSSES",  "Losses:", ReC2L, startY + 20*lineSpacing, clrWhite,  14);
+   CreateLabelIfNotExists(panelPrefix + "WIN RATE",  "Win rate:", ReC2L, startY + 21*lineSpacing, clrWhite,  14);
+   CreateLabelIfNotExists(panelPrefix + "PNL_MAN_L", "Open Trades :", ReC2L, startY + 11*lineSpacing, InpPanelTextColor, 12);
+   CreateLabelIfNotExists(panelPrefix + "Floating", "Floating P/L:",ReC2L, startY + 12*lineSpacing, clrWhite, 12);
+   CreateLabelIfNotExists(panelPrefix + "MANUAL PROFIT", "Total profit :", ReC2L, startY + 13*lineSpacing, InpPanelTextColor, 12);
+
+// Manual Trading Header
+   CreateLabelIfNotExists("MANUAL_HEADER", "🕹️ MANUAL CONTROLS",ReCx+20, startY-20, clrWhite, 14);
+   CreateLabelIfNotExists("MANUAL_LOT", "Lot: " + DoubleToString(Manual_LotSize, 2), ReCx+10, startY + lineSpacing, clrWhite, 12);
+   CreateLabelIfNotExists(panelPrefix + "SUPPORT", "Contact: +254705886935 for support", ReCx-50, startY + 25*lineSpacing, clrGold, 12);
+
+
+   
+
+   double netProfit = GetSessionNetProfit();
+   
+               // Rec 1 vallues//
+   CreateLabelIfNotExists(panelPrefix + "BAL_V", DoubleToString(AccountInfoDouble(ACCOUNT_BALANCE),2), valueX, startY + 4*lineSpacing, clrWhite, 12);
+   CreateLabelIfNotExists(panelPrefix + "EQ_V", DoubleToString(AccountInfoDouble(ACCOUNT_EQUITY),2), valueX, startY + 5*lineSpacing, clrWhite, 12);
+   CreateLabelIfNotExists(panelPrefix + "PNL_V", DoubleToString(GetFloatingPL_EA(),2), valueX, startY + 6*lineSpacing, GetFloatingPL_EA() >= 0 ? clrLime : clrRed, 12);
+   CreateLabelIfNotExists(panelPrefix + "OPEN_V", IntegerToString(CountMyPositions()), valueX, startY + 7*lineSpacing, clrWhite, 12);
+   CreateLabelIfNotExists(panelPrefix + "SYMBOL_V", _Symbol, valueX, startY + 8*lineSpacing, clrWhite, 12);
+   CreateLabelIfNotExists(panelPrefix + "CLOSED_TRADES_V", "0", valueX, startY + 9 * lineSpacing,clrWhite,   12);
+   CreateLabelIfNotExists(panelPrefix + "SESSIONPROFIT_V",DoubleToString(GetSessionTotalProfit(), 2),valueX, startY + 10*lineSpacing, GetSessionTotalProfit() >= 0 ? clrLime : clrRed,12);
+   CreateLabelIfNotExists(panelPrefix + "PROFITLIMIT_V", DoubleToString(InpProfitTarget,2), valueX, startY + 11*lineSpacing, clrWhite, 12);
+   CreateLabelIfNotExists(panelPrefix + "LOSSLIMIT_V", DoubleToString(InpLossLimit,2), valueX, startY + 12*lineSpacing, clrWhite, 12);
+   CreateLabelIfNotExists(panelPrefix + "SPREAD_V", "0", ReCV, startY + 14*lineSpacing, clrWhite, 12);
+      CreateLabelIfNotExists(panelPrefix + "NET PROFIT_V", DoubleToString(netProfit,2), valueX, startY + 13*lineSpacing, netProfit >= 0 ? clrLime : clrRed, 12);
+
+                    //Rec 2 values
+   CreateLabelIfNotExists(panelPrefix + "OPEN_MAN_V", IntegerToString(CountManualPositions()), ReCV, startY +11*lineSpacing, clrWhite, 12);
+   CreateLabelIfNotExists(panelPrefix + "PNL_MAN_V", DoubleToString(GetFloatingPL_Manual(),2), ReCV, startY + 12*lineSpacing, GetFloatingPL_Manual() >= 0 ? clrLime : clrRed, 12);
+   CreateLabelIfNotExists(panelPrefix + "MANUAL PROFIT_V","0.", ReCV, startY +13*lineSpacing, clrWhite, 12);
+   CreateLabelIfNotExists(panelPrefix + "VOL_V", "0", ReCV, startY + 14*lineSpacing, clrWhite, 12);
+   CreateLabelIfNotExists(panelPrefix + "SPREAD_V", "0", ReCV, startY + 15*lineSpacing, clrWhite, 12);
+
+   CreateLabelIfNotExists(panelPrefix + "TODAY_V", "0.00",  ReCV,  startY + 18*lineSpacing, clrWhite, 14);
+   CreateLabelIfNotExists(panelPrefix + "WINS_V",  "0", ReCV,  startY + 19*lineSpacing, clrWhite, 14);
+   CreateLabelIfNotExists(panelPrefix + "LOSSES_V",  "0",  ReCV,  startY + 20*lineSpacing, clrWhite, 14);
+   CreateLabelIfNotExists(panelPrefix + "WIN RATE_V",  "0",  ReCV,  startY + 21*lineSpacing, clrWhite, 14);
+   CreateLabelIfNotExists(panelPrefix + "TODAY_CLOSED_V", "0", ReCV, startY + 24 * lineSpacing, clrWhite, 12);
+   
+   
+                 //Rec12 buttons
+   CreateButton("BTN_AUTO_MODE", "TURN EA ON/OFF", PanelX+100, startY + 15*lineSpacing, 180, 25, clrBlue, clrWhite);
+   CreateButton("EA_CLOSE_ALL", "CLOSE EA TRADES", PanelX+100, startY+17*lineSpacing, 180, 25, clrOrange, clrWhite);
+
+    //Rec 2 buttons
+   int manBtnX = PanelX + 350 + padding;
+   int manBtnY = startY + 3*lineSpacing;
+
+   CreateButton("MANUAL_BUY", "BUY", ReCx+10, startY + 3*lineSpacing, 100, 25, clrGreen, clrWhite);
+   CreateButton("MANUAL_SELL", "SELL", ReCx+140, startY + 3*lineSpacing, 100, 25, clrRed, clrWhite);
+
+   CreateButton("CONTINUTION", continuationModeEnabled ? "CONTINUATION: ON"
+                           : "CONTINUATION: OFF",ReCx+15,startY + 9*lineSpacing,210,25,continuationModeEnabled ? clrLime : clrRed, clrWhite);// Close and Reset
+                           manBtnY += 40;
+   CreateButton("MANUAL_CLOSE_ALL", "CLOSE MANUAL TRADES", ReCx+20, startY + 5*lineSpacing, 210, 25, clrOrange, clrWhite);
+
+   manBtnY += 40;
+   CreateButton("MANUAL_RESET", "RESET ", ReCx+40, startY + 7*lineSpacing, 160, 25, clrDarkGray, clrWhite);
+
+
+  }
+
+
+//+------------------------------------------------------------------+
+//| Helper to create a button (NEW)                                   |
+//+------------------------------------------------------------------+
+void CreateButton(string name,string text,int x,int y,int w,int h,color bgColor,color textColor)
+  {
+   if(ObjectFind(0,name)==-1)
+      ObjectCreate(0,name,OBJ_BUTTON,0,0,0);
+   ObjectSetInteger(0,name,OBJPROP_CORNER,CORNER_LEFT_UPPER);
+   ObjectSetInteger(0,name,OBJPROP_XDISTANCE,x);
+   ObjectSetInteger(0,name,OBJPROP_YDISTANCE,y);
+   ObjectSetInteger(0,name,OBJPROP_XSIZE,w);
+   ObjectSetInteger(0,name,OBJPROP_YSIZE,h);
+   ObjectSetInteger(0,name,OBJPROP_FONTSIZE,10);
+   ObjectSetInteger(0,name,OBJPROP_SELECTABLE,true);
+   ObjectSetInteger(0,name,OBJPROP_BORDER_TYPE,BORDER_FLAT);
+   ObjectSetInteger(0,name,OBJPROP_BGCOLOR,(long)bgColor);
+   ObjectSetInteger(0,name,OBJPROP_COLOR,(long)textColor);
+   ObjectSetString(0,name,OBJPROP_TEXT,text);
+   ObjectSetString(0,name,OBJPROP_FONT,"Arial");
 
 
 
-body{
+  }
 
-background:#edf4ff;
+//+------------------------------------------------------------------+
+//|       GetDynamicStep                                                           |
+//+------------------------------------------------------------------+
+double GetDynamicStep()
+  {
+   double atr = GetATRVolatility();
 
-font-family:
-Segoe UI,
-Tahoma,
-Geneva,
-Verdana,
-sans-serif;
+   double baseStep = InpLadderStepPips * _Point;
+   // 🔴 If disabled → return fixed step immediately
+  
 
+// Convert ATR to integer band (4–5 → 4, 5–6 → 5, etc.)
+   int atrBand = (int)MathFloor(atr);
+
+   double extraPoints = 0;
+
+   if(atrBand >= 4)
+     {
+      extraPoints = (atrBand - 3) * 10 * _Point;
+     }
+
+   double finalStep = baseStep + extraPoints;
+
+   return finalStep;
+  }
+//,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+//
+//TRADE EXECUTION
+//
+//
+//
+//  ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
+//================ STATE CONTROL =================
+int lastPositionCount = 0;
+double initialBuyAnchor = 0;
+double initialSellAnchor = 0;
+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+
+void TradeLogic()
+{
+   // Allow only XAUUSD symbols on M1
+   if(StringFind(_Symbol, "XAUUSD") < 0 || _Period != PERIOD_M1)
+      return;
+
+   if(!g_Authorized || !autoModeEnabled || manualStop)
+   return;
+
+   trade.SetExpertMagicNumber(InpMagicNumber);
+
+   double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+   double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+
+   // ✅ Spread filter
+   double spread = (ask - bid) / _Point;
+   if(spread > InpMaxSpread)
+   {
+      Print("❌ Spread too high: ", spread);
+      return;
+   }
+
+   // ✅ ATR filter ONLY for initial ladder creation
+   double atr = GetATRVolatility();
+
+   if(UseATRFilter)
+   {
+      Print("ATR = ", atr, " | MinATR = ", MinATRValue);
+
+      // 🔹 Build ladders ONLY when volatility is strong enough
+      if(atr >= MinATRValue)
+      {
+         if(!ladderActive)
+         {
+
+            BuildBuyLadder(ask);
+            BuildSellLadder(bid);
+
+            ladderActive = true;
+         }
+      }
+      else
+      {
+         Print("❌ Volatility too low for NEW ladder creation.");
+      }
+   }
+   else
+   {
+      // 🔹 ATR disabled → build normally
+      if(!ladderActive)
+      {
+         BuildBuyLadder(ask);
+         BuildSellLadder(bid);
+
+         ladderActive = true;
+      }
+   }
+
+   // 🚨 ALWAYS maintain and fill gaps regardless of ATR
+   if(ladderActive)
+   {
+      FillBuyGapSimple();
+      FillSellGapSimple();
+
+   }
 }
+void OnTradeTransaction(
+   const MqlTradeTransaction& trans,
+   const MqlTradeRequest& request,
+   const MqlTradeResult& result)
+{
+   // Only deal updates (executions)
+   if(trans.type != TRADE_TRANSACTION_DEAL_ADD)
+      return;
+
+   // Select deal safely
+   if(!HistoryDealSelect(trans.deal))
+      return;
+
+   // Only this EA
+   if((int)HistoryDealGetInteger(trans.deal, DEAL_MAGIC) != InpMagicNumber)
+      return;
+
+   // Only entry deals (ignore closes, modifications, SL/TP exits)
+   if((ENUM_DEAL_ENTRY)HistoryDealGetInteger(trans.deal, DEAL_ENTRY) != DEAL_ENTRY_IN)
+      return;
+
+   // Identify executed deal type (BUY or SELL)
+   ENUM_DEAL_TYPE dealType =
+      (ENUM_DEAL_TYPE)HistoryDealGetInteger(trans.deal, DEAL_TYPE);
+
+   // ================= BUY SIDE =================
+   if(dealType == DEAL_TYPE_BUY)
+   {
+      // BUY STOP triggered → maintain BUY ladder only
+      MaintainBuyLadder();
+   }
+
+   // ================= SELL SIDE =================
+   else if(dealType == DEAL_TYPE_SELL)
+   {
+      // SELL STOP triggered → maintain SELL ladder only
+      MaintainSellLadder();
+   }
+   
+   if(trans.type != TRADE_TRANSACTION_DEAL_ADD)
+      return;
+
+   if(!HistoryDealSelect(trans.deal))
+      return;
+
+   if((int)HistoryDealGetInteger(trans.deal, DEAL_MAGIC) != InpMagicNumber)
+      return;
+
+   if((ENUM_DEAL_ENTRY)HistoryDealGetInteger(trans.deal, DEAL_ENTRY) != DEAL_ENTRY_IN)
+      return;
+
+  
+   
+   // Find the newly opened position
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+   {
+      ulong ticket = PositionGetTicket(i);
+
+      if(!PositionSelectByTicket(ticket))
+         continue;
+
+      if(PositionGetString(POSITION_SYMBOL) != _Symbol)
+         continue;
+
+      if(PositionGetInteger(POSITION_MAGIC) != InpMagicNumber)
+         continue;
+
+      double openPrice = PositionGetDouble(POSITION_PRICE_OPEN);
+
+      double sl = 0.0;
+      double tp = 0.0;
+
+      ENUM_POSITION_TYPE type =
+         (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+
+      if(type == POSITION_TYPE_BUY)
+      {
+         sl = NormalizeDouble(
+            openPrice - InpStopLossPips * _Point,
+            _Digits);
+
+         
+      }
+      else if(type == POSITION_TYPE_SELL)
+      {
+         sl = NormalizeDouble(
+            openPrice + InpStopLossPips * _Point,
+            _Digits);
 
-
-
-.wrapper{
-
-display:flex;
-
-}
-
-
-
-/*====================
-SIDEBAR
-====================*/
-
-
-.sidebar{
-
-width:260px;
-
-min-height:100vh;
-
-background:#0d47a1;
-
-color:white;
-
-position:fixed;
-
-}
-
-
-
-.logo{
-
-padding:25px;
-
-font-size:28px;
-
-font-weight:bold;
-
-border-bottom:1px solid rgba(255,255,255,.15);
-
-}
-
-
-
-.logo i{
-
-margin-right:10px;
-
-}
-
-
-
-.sidebar ul{
-
-list-style:none;
-
-padding:15px 0;
-
-}
-
-
-
-.sidebar ul li a{
-
-display:block;
-
-color:white;
-
-padding:15px 25px;
-
-text-decoration:none;
-
-transition:.3s;
-
-}
-
-
-
-.sidebar ul li a:hover{
-
-background:#1565c0;
-
-padding-left:35px;
-
-}
-
-
-
-.sidebar ul li i{
-
-width:25px;
-
-}
-
-
-
-/*====================
-MAIN
-====================*/
-
-
-.main{
-
-margin-left:260px;
-
-width:100%;
-
-}
-
-
-
-/*====================
-TOP BAR
-====================*/
-
-
-.topbar{
-
-height:70px;
-
-background:#1976d2;
-
-color:white;
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-padding:0 30px;
-
-box-shadow:0 2px 10px rgba(0,0,0,.15);
-
-}
-
-
-
-.topbar h2{
-
-font-size:28px;
-
-}
-
-
-
-.topbar a{
-
-color:white;
-
-text-decoration:none;
-
-}
-
-
-
-/*====================
-CONTENT
-====================*/
-
-
-.content{
-
-padding:35px;
-
-width:100%;
-
-}
-
-
-
-/*====================
-CARDS
-====================*/
-
-
-.dashboard-cards{
-
-display:grid;
-
-grid-template-columns:repeat(4,1fr);
-
-gap:25px;
-
-margin-bottom:35px;
-
-}
-
-
-
-.card-box{
-
-background:white;
-
-border-radius:15px;
-
-padding:25px;
-
-box-shadow:
-0 8px 20px rgba(0,0,0,.08);
-
-transition:.3s;
-
-text-align:center;
-
-}
-
-
-
-.card-box:hover{
-
-transform:translateY(-5px);
-
-}
-
-
-
-.card-box i{
-
-font-size:35px;
-
-color:#d32f2f;
-
-}
-
-
-
-.card-title{
-
-margin-top:15px;
-
-font-size:18px;
-
-font-weight:600;
-
-}
-
-
-
-.card-number{
-
-font-size:32px;
-
-font-weight:700;
-
-color:#d32f2f;
-
-margin-top:12px;
-
-}
-
-
-/*====================
-TABLE
-====================*/
-
-
-.table-card{
-
-background:white;
-
-border-radius:15px;
-
-overflow:hidden;
-
-box-shadow:
-0 8px 20px rgba(0,0,0,.08);
-
-}
-
-
-
-.table-header{
-
-background:#1976d2;
-
-color:white;
-
-padding:20px 25px;
-
-font-size:22px;
-
-font-weight:bold;
-
-}
-
-
-
-.table-responsive{
-
-overflow-x:auto;
-
-}
-
-
-
-.table{
-
-min-width:1400px;
-
-}
-
-
-
-.table thead th{
-
-background:#e3f2fd;
-
-color:#0d47a1;
-
-white-space:nowrap;
-
-text-align:center;
-
-}
-
-
-
-.table tbody td{
-
-text-align:center;
-
-white-space:nowrap;
-
-vertical-align:middle;
-
-}
-
-
-
-.table-danger{
-
-background:#ffebee !important;
-
-}
-
-
-
-.action-btn{
-
-margin:3px;
-
-padding:6px 10px;
-
-border-radius:8px;
-
-font-size:13px;
-
-}
-
-
-
-.btn-view{
-
-background:#1976d2;
-
-color:white;
-
-border-radius:20px;
-
-}
-
-
-
-.btn-payment{
-
-background:#198754;
-
-color:white;
-
-border-radius:20px;
-
-}
-
-
-
-.btn-guarantors{
-
-background:#6f42c1;
-
-color:white;
-
-border-radius:20px;
-
-}
-
-
-
-.btn-guarantors:hover{
-
-background:#5a3399;
-
-color:white;
-
-}
-
-
-
-.section-title{
-
-background:#0d47a1;
-
-color:white;
-
-padding:12px;
-
-border-radius:10px;
-
-margin-top:15px;
-
-font-weight:bold;
-
-}
-
-
-
-.detail-box{
-
-background:#f8fbff;
-
-border-radius:15px;
-
-padding:15px;
-
-margin-bottom:15px;
-
-border:1px solid #dbeafe;
-
-}
-
-
-
-.document-img{
-
-width:100%;
-
-height:160px;
-
-object-fit:contain;
-
-border-radius:10px;
-
-border:1px solid #ddd;
-
-}
-
-
-
-.guarantor-photo{
-
-width:120px;
-
-height:120px;
-
-border-radius:50%;
-
-object-fit:cover;
-
-border:3px solid #2563eb;
-
-}
-
-
-
-/*====================
-RESPONSIVE
-====================*/
-
-
-@media(max-width:1200px){
-
-
-.dashboard-cards{
-
-grid-template-columns:repeat(2,1fr);
-
-}
-
-
-}
-
-
-
-@media(max-width:768px){
-
-
-.sidebar{
-
-width:220px;
-
-}
-
-
-.main{
-
-margin-left:220px;
-
-}
-
-
-
-.dashboard-cards{
-
-grid-template-columns:1fr;
-
-}
-
-
-}
-
-
-</style>
-
-
-</head>
-
-
-<body>
-
-
-<div class="wrapper">
-
-
-<!-- SIDEBAR -->
-
-
-<div class="sidebar">
-
-
-<div class="logo">
-
-
-<i class="fa-solid fa-building-columns"></i>
-
-Bejja Credit
-
-
-</div>
-
-
-
-<ul>
-
-
-<li>
-
-<a href="admin-dashboard.html">
-
-<i class="fa-solid fa-gauge"></i>
-
-Dashboard
-
-</a>
-
-</li>
-
-
-
-<li>
-
-<a href="registered-clients.html">
-
-<i class="fa-solid fa-users"></i>
-
-Registered Clients
-
-</a>
-
-</li>
-
-
-
-<li>
-
-<a href="active-loans.html">
-
-<i class="fa-solid fa-money-bill-wave"></i>
-
-Active Loans
-
-</a>
-
-</li>
-
-
-
-<li>
-
-<a href="late-loans.html">
-
-<i class="fa-solid fa-triangle-exclamation"></i>
-
-Late Loans
-
-</a>
-
-</li>
-
-
-
-<li>
-
-<a href="loan-applications.html">
-
-<i class="fa-solid fa-file-circle-check"></i>
-
-Pending Applications
-
-</a>
-
-</li>
-
-
-
-<li>
-
-<a href="statistics.html">
-
-<i class="fa-solid fa-chart-column"></i>
-
-Statistics
-
-</a>
-
-</li>
-
-
-
-<li>
-
-<a href="#" onclick="logout()">
-
-<i class="fa-solid fa-right-from-bracket"></i>
-
-Logout
-
-</a>
-
-</li>
-
-
-</ul>
-
-
-</div>
-
-
-
-<!-- MAIN -->
-
-
-<div class="main">
-
-
-<!-- TOPBAR -->
-
-
-<div class="topbar">
-
-
-<h2>
-
-<i class="fa-solid fa-triangle-exclamation text-warning"></i>
-
-Late Loans
-
-</h2>
-
-
-<div>
-
-
-Welcome,
-
-<strong id="adminName">
-
-Admin
-
-</strong>
-
-
-|
-
-<a href="#" onclick="logout()">
-
-Logout
-
-</a>
-
-
-</div>
-
-
-</div>
-
-
-
-<!-- PAGE CONTENT -->
-
-
-<div class="content">
-
-
-
-<!-- BACK BUTTON -->
-
-
-<div class="mb-4">
-
-
-<a href="admin-dashboard.html"
-
-class="btn btn-primary">
-
-
-<i class="fa-solid fa-arrow-left"></i>
-
-Back to Dashboard
-
-
-</a>
-
-
-</div>
-
-
-
-
-
-<!-- SUMMARY CARDS -->
-
-
-<div class="dashboard-cards">
-
-
-
-<div class="card-box">
-
-
-<i class="fa-solid fa-triangle-exclamation"></i>
-
-
-<div class="card-title">
-
-Total Late Loans
-
-</div>
-
-
-<div class="card-number" id="totalLateLoans">
-
-0
-
-</div>
-
-
-</div>
-
-
-
-
-
-<div class="card-box">
-
-
-<i class="fa-solid fa-wallet"></i>
-
-
-<div class="card-title">
-
-Outstanding Principal
-
-</div>
-
-
-<div class="card-number" id="totalOutstanding">
-
-KES 0
-
-</div>
-
-
-</div>
-
-
-
-
-
-<div class="card-box">
-
-
-<i class="fa-solid fa-percent"></i>
-
-
-<div class="card-title">
-
-Interest Owed
-
-</div>
-
-
-<div class="card-number" id="expectedInterest">
-
-KES 0
-
-</div>
-
-
-</div>
-
-
-
-
-
-<div class="card-box">
-
-
-<i class="fa-solid fa-money-bill-wave"></i>
-
-
-<div class="card-title">
-
-Total Overdue
-
-</div>
-
-
-<div class="card-number" id="totalDue">
-
-KES 0
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<!-- LATE LOANS TABLE -->
-
-
-<div class="table-card">
-
-
-<div class="table-header">
-
-Late Loan Clients
-
-</div>
-
-
-
-
-<div class="table-responsive">
-
-
-
-<table class="table table-hover mb-0">
-
-
-
-<thead>
-
-
-<tr>
-
-
-<th>#</th>
-
-<th>Client Name</th>
-
-<th>Phone</th>
-
-<th>Loan Amount</th>
-
-<th>Remaining Principal</th>
-
-<th>Interest Owed</th>
-
-<th>Overdue Amount</th>
-
-<th>Due Date</th>
-
-<th>Days Late</th>
-
-<th>Action</th>
-
-
-</tr>
-
-
-</thead>
-
-
-
-
-<tbody id="lateLoansTable">
-
-
-<tr>
-
-
-<td colspan="10"
-
-class="text-center text-muted p-5">
-
-
-Loading late loans...
-
-
-</td>
-
-
-</tr>
-
-
-</tbody>
-
-
-
-</table>
-
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-<!-- ========================
-LOAN DETAILS MODAL
-======================== -->
-
-<div class="modal fade" id="loanModal">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title"><i class="fa fa-file-invoice-dollar"></i> Loan Details</h5>
-                <button class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="loanDetails"></div>
-        </div>
-    </div>
-</div>
-
-
-<!-- ========================
-PAYMENT MODAL
-======================== -->
-
-<div class="modal fade" id="paymentModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title"><i class="fa fa-money-bill"></i> Record Payment</h5>
-                <button class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="paymentLoanId">
-                <label class="form-label">Amount Paid</label>
-                <input type="number" id="paymentAmount" class="form-control mb-3" placeholder="Enter payment amount">
-                <label class="form-label">Payment Date</label>
-                <input type="date" id="paymentDate" class="form-control mb-3">
-                <label class="form-label">Payment Method</label>
-                <select id="paymentMethod" class="form-select">
-                    <option>Cash</option>
-                    <option>M-Pesa</option>
-                    <option>Bank</option>
-                </select>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-success" onclick="savePayment()"><i class="fa fa-check"></i> Save Payment</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
-<!-- DATABASE -->
-
-
-<script src="assets/js/database.js"></script>
-
-
-<script src="assets/js/auth.js"></script>
-
-
-
-<script>
-
-
-/*================================
-ADMIN SECURITY
-================================*/
-
-
-if(!AUTH.currentAdmin()){
-
-
-window.location.href="admin-login.html";
-
-
-}
-
-
-
-const admin = AUTH.currentAdmin();
-
-
-
-if(admin){
-
-
-document.getElementById("adminName").innerHTML =
-
-admin.username;
-
-
-}
-
-
-
-
-
-/*================================
-MONEY FORMAT
-================================*/
-
-function money(value){
-    return "KES " + Number(value || 0).toLocaleString();
-}
-
-
-/*================================
-LOAD LATE LOANS
-================================*/
-
-
-async function loadLateLoans(){
-
-    let dbReady = false;
-    let retries = 0;
-    while (!dbReady && retries < 50) {
-        try {
-            if (window.DB && typeof DB.getLoans === "function") {
-                const test = await DB.getLoans();
-                if (Array.isArray(test)) { dbReady = true; break; }
-            }
-        } catch(e) {}
-        await new Promise(r => setTimeout(r, 100));
-        retries++;
-    }
-    if (!dbReady) return;
-
-    let loans = await DB.getLoans();
-    let table = document.getElementById("lateLoansTable");
-    table.innerHTML = "";
-
-    let lateCount = 0;
-    let outstandingPrincipal = 0;
-    let totalInterestOwed = 0;
-    let totalDue = 0;
-
-    let today = new Date();
-
-    if (!Array.isArray(loans)) {
-        table.innerHTML = `<tr><td colspan="10" class="text-center text-muted p-5">No late loans found.</td></tr>`;
-        updateCards(0, 0, 0, 0);
-        return;
-    }
-
-    for (let loan of loans) {
-
-        let originalAmount = Number(loan.originalPrincipal || 0);
-        let rate = Number(loan.interestRate || 20);
-        let balance = Number(loan.remainingPrincipal || 0);
-
-        if (!loan.dueDate || balance <= 0 || loan.status === "COMPLETED") continue;
-
-        const parts = loan.dueDate.split("/");
-        if (parts.length !== 3) continue;
-        const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
-
-        if (dueDate >= today) continue;
-
-        // Get all payments
-        let payments = await DB.getLoanPayments(loan.id);
         
-        // Calculate early payments (made BEFORE due date)
-        let earlyPaymentTotal = 0;
-        let hasPaymentAfterDue = false;
-        
-        if (Array.isArray(payments)) {
-            for (let p of payments) {
-                if (!p.date) continue;
-                const pParts = p.date.split("/");
-                if (pParts.length !== 3) continue;
-                const paymentDate = new Date(pParts[2], pParts[1] - 1, pParts[0]);
-                
-                if (paymentDate < dueDate) {
-                    // Early payment - accumulates to cover outstanding
-                    earlyPaymentTotal += Number(p.amount || 0);
-                } else {
-                    // Payment on or after due date
-                    hasPaymentAfterDue = true;
-                }
+      }
+
+      if(trade.PositionModify(ticket, sl, tp))
+      {
+         Print("Initial SL/TP updated from actual open price.");
+      }
+      else
+      {
+         Print("PositionModify failed. Error = ", GetLastError());
+      }
+
+      break; // Only modify the newly opened position
+   }
+
+}
+
+int lastProcessedDirection = 0;
+bool ladderActivationInProgress = false;
+int ladderActivationDirection = 0;
+
+//==================================================
+// Count open positions of a given type for this symbol and magic number
+// typeFilter: POSITION_TYPE_BUY, POSITION_TYPE_SELL, or -1 for all
+//==================================================
+int CountmyPositions(int typeFilter = -1)
+  {
+   int count = 0;
+
+   for(int i=0;i<PositionsTotal();i++)
+     {
+      ulong ticket = PositionGetTicket(i);
+      if(!PositionSelectByTicket(ticket))
+         continue;
+
+      if(PositionGetString(POSITION_SYMBOL) != _Symbol)
+         continue;
+      if(PositionGetInteger(POSITION_MAGIC) != InpMagicNumber)
+         continue;
+
+      long posType = PositionGetInteger(POSITION_TYPE);
+
+      if(typeFilter != -1 && posType != typeFilter)
+         continue;
+
+      count++;
+     }
+
+   return count;
+  }
+
+
+ 
+//+------------------------------------------------------------------+
+//| BuildBuyLadder             |
+//+------------------------------------------------------------------+
+void BuildBuyLadder(double anchor)
+{
+   trade.SetAsyncMode(true);
+
+   initialBuyAnchor = anchor;
+
+   double step = GetDynamicStep();
+   double base  = anchor + InpEntryPips * _Point;
+
+   for(int i = 0; i < InpBuyLadderLevels; i++)
+   {
+      double price = NormalizeDouble(base + (i * step), _Digits);
+
+      if(!PendingExists(ORDER_TYPE_BUY_STOP, price))
+      {
+         double sl = 0;
+         if(InpUseSLTP)
+            sl = price - InpStopLossPips * _Point;
+
+         trade.BuyStop(
+            InpLotSize,
+            price,
+            _Symbol,
+            sl,
+            0,
+            ORDER_TIME_GTC,
+            0,
+            "Nexus scalper pro by Kevoh"
+         );
+      }
+   }
+}
+//+------------------------------------------------------------------+
+//| BuildSellLadder              |
+//+------------------------------------------------------------------+
+void BuildSellLadder(double anchor)
+{
+   trade.SetAsyncMode(true);
+
+   initialSellAnchor = anchor;
+
+   double step = GetDynamicStep();
+   double base  = anchor - InpEntryPips * _Point;
+
+   for(int i = 0; i < InpSellLadderLevels; i++)
+   {
+      double price = NormalizeDouble(base - (i * step), _Digits);
+
+      if(!PendingExists(ORDER_TYPE_SELL_STOP, price))
+      {
+         double sl = 0;
+         if(InpUseSLTP)
+            sl = price + InpStopLossPips * _Point;
+
+         trade.SellStop(
+            InpLotSize,
+            price,
+            _Symbol,
+            sl,
+            0,
+            ORDER_TIME_GTC,
+            0,
+            "Nexus scalper pro by Kevoh"
+         );
+      }
+   }
+}
+
+//================ CHECK EXISTING PENDING =================
+bool BuyStopExists(double price)
+  {
+   return PendingExists(ORDER_TYPE_BUY_STOP, price);
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool SellStopExists(double price)
+  {
+   return PendingExists(ORDER_TYPE_SELL_STOP, price);
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool PendingExists(int orderType,double price)
+  {
+   for(int i=OrdersTotal()-1;i>=0;i--)
+     {
+      ulong ticket = OrderGetTicket(i);
+
+      if(!OrderSelect(ticket))
+         continue;
+
+      if(OrderGetInteger(ORDER_MAGIC)!=InpMagicNumber)
+         continue;
+
+      if(OrderGetString(ORDER_SYMBOL)!=_Symbol)
+         continue;
+
+      if(OrderGetInteger(ORDER_TYPE)==orderType)
+        {
+         double p = OrderGetDouble(ORDER_PRICE_OPEN);
+
+         if(MathAbs(p-price)<=_Point*3)
+            return true;
+        }
+     }
+
+   return false;
+  }
+
+
+//+------------------------------------------------------------------+
+//| CountBuyStops            |
+//+------------------------------------------------------------------+
+int CountBuyStops()
+  {
+   int count=0;
+
+   for(int i=OrdersTotal()-1;i>=0;i--)
+     {
+      ulong ticket = OrderGetTicket(i);
+      if(!OrderSelect(ticket))
+         continue;
+
+      if(OrderGetInteger(ORDER_MAGIC)!=InpMagicNumber)
+         continue;
+      if(OrderGetString(ORDER_SYMBOL)!=_Symbol)
+         continue;
+
+      if(OrderGetInteger(ORDER_TYPE)==ORDER_TYPE_BUY_STOP)
+         count++;
+     }
+
+   return count;
+  }
+//+------------------------------------------------------------------+
+//| CountSellStops              |
+//+------------------------------------------------------------------+
+int CountSellStops()
+  {
+   int count=0;
+
+   for(int i=OrdersTotal()-1;i>=0;i--)
+     {
+      ulong ticket = OrderGetTicket(i);
+      if(!OrderSelect(ticket))
+         continue;
+
+      if(OrderGetInteger(ORDER_MAGIC)!=InpMagicNumber)
+         continue;
+      if(OrderGetString(ORDER_SYMBOL)!=_Symbol)
+         continue;
+
+      if(OrderGetInteger(ORDER_TYPE)==ORDER_TYPE_SELL_STOP)
+         count++;
+     }
+
+   return count;
+  }
+
+//+------------------------------------------------------------------+
+//|   DeleteAllMyPendings()                                                                |
+//+------------------------------------------------------------------+
+void DeleteAllMyPendings()
+{
+   trade.SetAsyncMode(true); // ⚡ key
+
+   for(int i = OrdersTotal() - 1; i >= 0; i--)
+   {
+      ulong ticket = OrderGetTicket(i);
+
+      if(!OrderSelect(ticket))
+         continue;
+
+      if(OrderGetInteger(ORDER_MAGIC) != InpMagicNumber)
+         continue;
+
+      if(OrderGetString(ORDER_SYMBOL) != _Symbol)
+         continue;
+
+      trade.OrderDelete(ticket);
+   }
+
+   ladderActive = false;
+}
+  
+  
+ int Maxbuystops= 10;
+ int MaxSellstops=10;
+
+double GetBuySL(double price)
+{
+   return NormalizeDouble(price - InpStopLossPips * _Point, _Digits);
+}
+
+double GetSellSL(double price)
+{
+   return NormalizeDouble(price + InpStopLossPips * _Point, _Digits);
+}
+//+------------------------------------------------------------------+
+//| MaintainBuyLadder              |
+//+------------------------------------------------------------------+
+void MaintainBuyLadder()
+{
+
+   int current = CountBuyStops();
+   if(current >= Maxbuystops)
+      return;
+
+   int allowed = Maxbuystops - current;
+   int missing = InpBuyLadderLevels - current;
+
+   int toPlace = MathMin(missing, allowed);
+   if(toPlace <= 0)
+      return;
+
+   int maxFill = 1;   // 🔥 control speed
+   int placed = 0;
+
+   double step = GetDynamicStep();
+   double anchor = GetFarthestBuyStop();
+
+   if(anchor == 0)
+      anchor = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+
+   for(int i = 0; i < toPlace && placed < maxFill; i++)
+   {
+      double price = NormalizeDouble(anchor + step * (i + 1), _Digits);
+
+      if(!PendingExists(ORDER_TYPE_BUY_STOP, price))
+      {
+         double sl = 0;
+         if(InpUseSLTP)
+            sl = GetBuySL(price);
+
+         if(trade.BuyStop(
+               InpLotSize,
+               price,
+               _Symbol,
+               sl,
+               0,
+               ORDER_TIME_GTC,
+               0,
+               "Nexus scalper pro by Kevoh"))
+         {
+            placed++; // ✅ count successful placements
+         }
+      }
+   }
+}
+//+------------------------------------------------------------------+
+//| MaintainSellLadder            |
+//+------------------------------------------------------------------+
+void MaintainSellLadder()
+{
+
+   int current = CountSellStops();
+   if(current >= MaxSellstops)
+      return;
+
+   int allowed = MaxSellstops - current;
+   int missing = InpSellLadderLevels - current;
+
+   int toPlace = MathMin(missing, allowed);
+   if(toPlace <= 0)
+      return;
+
+   int maxFill = 1;
+   int placed = 0;
+
+   double step = GetDynamicStep();
+   double anchor = GetFarthestSellStop();
+
+   if(anchor == 0)
+      anchor = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+
+   for(int i = 0; i < toPlace && placed < maxFill; i++)
+   {
+      double price = NormalizeDouble(anchor - step * (i + 1), _Digits);
+
+      if(!PendingExists(ORDER_TYPE_SELL_STOP, price))
+      {
+         double sl = 0;
+         if(InpUseSLTP)
+            sl = GetSellSL(price);
+
+         if(trade.SellStop(
+               InpLotSize,
+               price,
+               _Symbol,
+               sl,
+               0,
+               ORDER_TIME_GTC,
+               0,
+               "Nexus scalper pro by Kevoh"))
+         {
+            placed++;
+         }
+      }
+   }
+}
+//+------------------------------------------------------------------+
+//| GetFarthestBuyStop             |
+//+------------------------------------------------------------------+
+double GetFarthestBuyStop()
+  {
+   double maxPrice = 0;
+   for(int i=OrdersTotal()-1; i>=0; i--)
+     {
+      ulong ticket = OrderGetTicket(i);
+      if(!OrderSelect(ticket))
+         continue;
+      if(OrderGetInteger(ORDER_MAGIC) != InpMagicNumber)
+         continue;
+      if(OrderGetString(ORDER_SYMBOL) != _Symbol)
+         continue;
+      if(OrderGetInteger(ORDER_TYPE) != ORDER_TYPE_BUY_STOP)
+         continue;
+
+      double p = OrderGetDouble(ORDER_PRICE_OPEN);
+      if(p > maxPrice)
+         maxPrice = p;
+     }
+   return maxPrice;
+  }
+//+------------------------------------------------------------------+
+//| GetFarthestSellStop             |
+//+------------------------------------------------------------------+
+double GetFarthestSellStop()
+  {
+   double minPrice = DBL_MAX;
+   for(int i=OrdersTotal()-1; i>=0; i--)
+     {
+      ulong ticket = OrderGetTicket(i);
+      if(!OrderSelect(ticket))
+         continue;
+      if(OrderGetInteger(ORDER_MAGIC) != InpMagicNumber)
+         continue;
+      if(OrderGetString(ORDER_SYMBOL) != _Symbol)
+         continue;
+      if(OrderGetInteger(ORDER_TYPE) != ORDER_TYPE_SELL_STOP)
+         continue;
+
+      double p = OrderGetDouble(ORDER_PRICE_OPEN);
+      if(p < minPrice)
+         minPrice = p;
+     }
+   if(minPrice == DBL_MAX)
+      minPrice = 0; // no sell stops yet
+   return minPrice;
+  }
+
+//+------------------------------------------------------------------+
+//| GetClosestBuyStop            |
+//+------------------------------------------------------------------+
+double GetClosestBuyStop()
+  {
+   double closest = 0;
+   double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+
+   for(int i=OrdersTotal()-1; i>=0; i--)
+     {
+      ulong ticket = OrderGetTicket(i);
+      if(!OrderSelect(ticket))
+         continue;
+
+      if(OrderGetInteger(ORDER_MAGIC) != InpMagicNumber)
+         continue;
+      if(OrderGetString(ORDER_SYMBOL) != _Symbol)
+         continue;
+      if(OrderGetInteger(ORDER_TYPE) != ORDER_TYPE_BUY_STOP)
+         continue;
+
+      double price = OrderGetDouble(ORDER_PRICE_OPEN);
+
+      if(price > ask) // only above price
+        {
+         if(closest == 0 || price < closest)
+            closest = price;
+        }
+     }
+   return closest;
+  }
+//+------------------------------------------------------------------+
+//| GetClosestSellStop              |
+//+------------------------------------------------------------------+
+double GetClosestSellStop()
+  {
+   double closest = 0;
+   double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+
+   for(int i=OrdersTotal()-1; i>=0; i--)
+     {
+      ulong ticket = OrderGetTicket(i);
+      if(!OrderSelect(ticket))
+         continue;
+
+      if(OrderGetInteger(ORDER_MAGIC) != InpMagicNumber)
+         continue;
+      if(OrderGetString(ORDER_SYMBOL) != _Symbol)
+         continue;
+      if(OrderGetInteger(ORDER_TYPE) != ORDER_TYPE_SELL_STOP)
+         continue;
+
+      double price = OrderGetDouble(ORDER_PRICE_OPEN);
+
+      if(price < bid) // only below price
+        {
+         if(closest == 0 || price > closest)
+            closest = price;
+        }
+     }
+   return closest;
+  }
+//+------------------------------------------------------------------+
+//|      >>> GetClosestBuyPosition <<<              |
+//+------------------------------------------------------------------+
+double GetClosestBuyPosition()
+  {
+   double closest = 0;
+   double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+
+   for(int i=0;i<PositionsTotal();i++)
+     {
+      ulong ticket = PositionGetTicket(i);
+      if(!PositionSelectByTicket(ticket))
+         continue;
+
+      if(PositionGetInteger(POSITION_MAGIC)!=InpMagicNumber)
+         continue;
+      if(PositionGetString(POSITION_SYMBOL)!=_Symbol)
+         continue;
+      if(PositionGetInteger(POSITION_TYPE)!=POSITION_TYPE_BUY)
+         continue;
+
+      double price = PositionGetDouble(POSITION_PRICE_OPEN);
+
+      if(price > ask)
+        {
+         if(closest == 0 || price < closest)
+            closest = price;
+        }
+     }
+
+   return closest;
+  }
+//+------------------------------------------------------------------+
+//|      >>> GetClosestSellPosition <<<              |
+//+------------------------------------------------------------------+
+double GetClosestSellPosition()
+  {
+   double closest = 0;
+   double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+
+   for(int i=0;i<PositionsTotal();i++)
+     {
+      ulong ticket = PositionGetTicket(i);
+      if(!PositionSelectByTicket(ticket))
+         continue;
+
+      if(PositionGetInteger(POSITION_MAGIC)!=InpMagicNumber)
+         continue;
+      if(PositionGetString(POSITION_SYMBOL)!=_Symbol)
+         continue;
+      if(PositionGetInteger(POSITION_TYPE)!=POSITION_TYPE_SELL)
+         continue;
+
+      double price = PositionGetDouble(POSITION_PRICE_OPEN);
+
+      if(price < bid)
+        {
+         if(closest == 0 || price > closest)
+            closest = price;
+        }
+     }
+
+   return closest;
+  }
+ 
+//+------------------------------------------------------------------+
+//|     >>> FillBuyGapSimple<<<              |
+//+------------------------------------------------------------------+
+//+------------------------------------------------------------------+
+void FillBuyGapSimple()
+{
+
+   double step = GetDynamicStep();
+   double ask  = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+
+   double closestStop = GetClosestBuyStop();
+   if(closestStop <= 0)
+      return;
+
+   double gap = closestStop - ask;
+
+   if(gap <= step)
+      return;
+
+   double nextLevel = closestStop - step;
+
+   int maxFill = 4;   // prevents spam
+   int placed = 0;
+
+   while(nextLevel > ask && placed < maxFill)
+   {
+      double price = NormalizeDouble(nextLevel, _Digits);
+
+      if(!PendingExists(ORDER_TYPE_BUY_STOP, price))
+      {
+         double sl = 0;
+      if(InpUseSLTP)
+       sl = GetBuySL(price);
+
+         trade.BuyStop(
+            InpLotSize,
+            price,
+            _Symbol,
+            sl,
+            0,
+            ORDER_TIME_GTC,
+            0,
+            "Nexus Scalper by Kevoh"
+         );
+
+         placed++;
+      }
+
+      nextLevel -= step;
+   }
+}
+//+------------------------------------------------------------------+
+//|                    FillSellGapSimple              |
+//+------------------------------------------------------------------+
+void FillSellGapSimple()
+{
+
+   double step = GetDynamicStep();
+   double bid  = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+
+   double closestStop = GetClosestSellStop();
+   if(closestStop <= 0)
+      return;
+
+   double gap = bid - closestStop;
+
+   if(gap <= step)
+      return;
+
+   double nextLevel = closestStop + step;
+
+   int maxFill = 4;
+   int placed = 0;
+
+   while(nextLevel < bid && placed < maxFill)
+   {
+      double price = NormalizeDouble(nextLevel, _Digits);
+
+      if(!PendingExists(ORDER_TYPE_SELL_STOP, price))
+      {
+         double sl = 0;
+         if(InpUseSLTP)
+          sl = GetSellSL(price);
+
+         trade.SellStop(
+            InpLotSize,
+            price,
+            _Symbol,
+            sl,
+            0,
+            ORDER_TIME_GTC,
+            0,
+            "Nexus Scalper by Kevoh"
+         );
+
+         placed++;
+      }
+
+      nextLevel += step;
+   }
+}
+//+------------------------------------------------------------------+
+//| Apply Trailing Stop                                              |
+//+------------------------------------------------------------------+
+void ApplyTrailingStop()
+{
+   double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+   {
+      ulong ticket = PositionGetTicket(i);
+
+      if(!PositionSelectByTicket(ticket))
+         continue;
+
+      if(PositionGetInteger(POSITION_MAGIC) != InpMagicNumber)
+         continue;
+
+      if(PositionGetString(POSITION_SYMBOL) != _Symbol)
+         continue;
+
+      ENUM_POSITION_TYPE type =
+         (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+
+      double open = PositionGetDouble(POSITION_PRICE_OPEN);
+      double sl   = PositionGetDouble(POSITION_SL);
+      double tp   = PositionGetDouble(POSITION_TP);
+
+      //================ BUY TRAILING =================
+      if(type == POSITION_TYPE_BUY)
+      {
+         double profitPoints = (bid - open) / _Point;
+
+         if(profitPoints >= InpTrailingStop)
+         {
+            int steps = (int)((profitPoints - InpTrailingStop) / InpTrailingStep) + 1;
+
+            double newSL = NormalizeDouble(
+               open + (steps * InpTrailingStep * _Point),
+               _Digits);
+
+            // Never move SL backwards
+            if(sl == 0.0 || newSL > sl)
+            {
+               if(!trade.PositionModify(ticket, newSL, tp))
+                  Print("BUY trailing failed. Error = ", GetLastError());
             }
-        }
+         }
+      }
 
-        // If a payment was made on/after due date, loan is current
-        if (hasPaymentAfterDue) continue;
+      //================ SELL TRAILING =================
+      else if(type == POSITION_TYPE_SELL)
+      {
+         double profitPoints = (open - ask) / _Point;
 
-        // Calculate remaining after applying early payments
-        let interestAmount = (balance * rate) / 100;
-        let totalOwed = balance + interestAmount;
-        let remainingAfterEarly = totalOwed - earlyPaymentTotal;
+         if(profitPoints >= InpTrailingStop)
+         {
+            int steps = (int)((profitPoints - InpTrailingStop) / InpTrailingStep) + 1;
 
-        // If early payments covered everything, loan is current
-        if (remainingAfterEarly <= 0) continue;
+            double newSL = NormalizeDouble(
+               open - (steps * InpTrailingStep * _Point),
+               _Digits);
 
-        // Loan is late - show overdue amount (what's still owed)
-        let overdueAmount = remainingAfterEarly;
-
-        lateCount++;
-        outstandingPrincipal += balance;
-        totalInterestOwed += interestAmount;
-        totalDue += overdueAmount;
-
-        let client = await DB.getClientById(loan.clientId);
-        let clientName = client ? client.fullname : "Unknown";
-        let phone = client ? client.phone : "-";
-
-        let daysLate = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
-
-        let earlyInfo = earlyPaymentTotal > 0 
-            ? `<br><small class="text-success">Early payments: ${money(earlyPaymentTotal)} applied</small>`
-            : "";
-
-        table.innerHTML += `
-            <tr class="table-danger">
-                <td>${lateCount}</td>
-                <td>${clientName}</td>
-                <td>${phone}</td>
-                <td>KES ${originalAmount.toLocaleString()}</td>
-                <td>KES ${balance.toLocaleString()}</td>
-                <td class="fw-bold text-danger">KES ${interestAmount.toLocaleString()}</td>
-                <td class="fw-bold">KES ${overdueAmount.toLocaleString()}${earlyInfo}</td>
-                <td>${loan.dueDate}</td>
-                <td class="text-danger fw-bold">${daysLate} Days</td>
-                <td>
-                    <button class="btn btn-view btn-sm action-btn" onclick="viewLoan(${loan.id})">
-                        <i class="fa fa-eye"></i> Details
-                    </button>
-                    <button class="btn btn-payment btn-sm action-btn" onclick="openPayment(${loan.id})">
-                        <i class="fa fa-money-bill"></i> Payment
-                    </button>
-                </td>
-            </tr>`;
-    }
-
-    updateCards(lateCount, outstandingPrincipal, totalInterestOwed, totalDue);
-
-    if (lateCount === 0) {
-        table.innerHTML = `<tr><td colspan="10" class="text-center text-muted p-5">No late loans found.</td></tr>`;
-    }
-
-}
-
-
-function updateCards(count, principal, interest, due) {
-    document.getElementById("totalLateLoans").innerHTML = count;
-    document.getElementById("totalOutstanding").innerHTML = "KES " + principal.toLocaleString();
-    document.getElementById("expectedInterest").innerHTML = "KES " + interest.toLocaleString();
-    document.getElementById("totalDue").innerHTML = "KES " + due.toLocaleString();
-}
-
-
-/*================================
-VIEW LOAN DETAILS
-================================*/
-
-async function viewLoan(id){
-    let loan = await DB.getLoan(id);
-    if(!loan) return;
-
-    let client = await DB.getClientById(loan.clientId);
-    let balance = Number(loan.remainingPrincipal || 0);
-    let rate = Number(loan.interestRate || 20);
-    let currentInterest = (balance * rate) / 100;
-
-    // Get all payments for breakdown
-    let payments = await DB.getLoanPayments(loan.id);
-    let totalEarlyPaid = 0;
-    let totalRegularPaid = 0;
-    let totalPaid = 0;
-    
-    if (Array.isArray(payments) && loan.dueDate) {
-        const parts = loan.dueDate.split("/");
-        if (parts.length === 3) {
-            const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
-            payments.forEach(p => {
-                const amount = Number(p.amount || 0);
-                totalPaid += amount;
-                if (p.date) {
-                    const pParts = p.date.split("/");
-                    if (pParts.length === 3) {
-                        const paymentDate = new Date(pParts[2], pParts[1] - 1, pParts[0]);
-                        if (paymentDate < dueDate) {
-                            totalEarlyPaid += amount;
-                        } else {
-                            totalRegularPaid += amount;
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    let totalExpected = Number(loan.originalPrincipal) + (Number(loan.originalPrincipal) * rate / 100);
-    let repaymentProgress = totalExpected > 0 ? Math.round((totalPaid / totalExpected) * 100) : 0;
-
-    document.getElementById("loanDetails").innerHTML = `
-        <h5 class="text-primary">Client Information</h5>
-        <hr>
-        <p><b>Name:</b> ${client.fullname}</p>
-        <p><b>Phone:</b> ${client.phone}</p>
-
-        <h5 class="text-primary mt-4">Loan Information</h5>
-        <hr>
-        <div class="row">
-            <div class="col-md-6">
-                <p><b>Original Loan Amount:</b> ${money(loan.originalPrincipal)}</p>
-                <p><b>Remaining Principal:</b> ${money(balance)}</p>
-                <p><b>Current Interest Owed:</b> ${money(currentInterest)}</p>
-                <p><b>Interest Rate:</b> ${rate}%</p>
-            </div>
-            <div class="col-md-6">
-                <p><b>Total Paid:</b> <span class="text-success fw-bold">${money(totalPaid)}</span></p>
-                <p><b>Early Payments:</b> <span class="text-primary fw-bold">${money(totalEarlyPaid)}</span></p>
-                <p><b>Regular/Late Payments:</b> <span class="text-warning fw-bold">${money(totalRegularPaid)}</span></p>
-                <p><b>Repayment Progress:</b> ${repaymentProgress}%</p>
-            </div>
-        </div>
-        <p><b>Loan Date:</b> ${loan.loanDate || "-"}</p>
-        <p><b>Due Date:</b> <span class="text-danger fw-bold">${loan.dueDate || "-"}</span></p>
-        <p><b>Status:</b> <span class="badge bg-danger">${loan.status}</span></p>
-
-        <div class="progress mt-2 mb-3" style="height:10px;">
-            <div class="progress-bar bg-success" style="width:${repaymentProgress}%"></div>
-        </div>
-
-        <div class="text-center mt-3 mb-3">
-            <button class="btn btn-guarantors" onclick="toggleGuarantors(${loan.applicationId || 0})">
-                <i class="fa fa-users"></i> View Guarantors
-            </button>
-        </div>
-        <div id="guarantorSection" style="display:none;"></div>
-
-        <h5 class="text-primary mt-4">Payment History</h5>
-        <table class="table table-bordered">
-            <tr><th>Date</th><th>Amount</th><th>Principal Paid</th><th>Interest Paid</th><th>Balance</th><th>Type</th></tr>
-            ${await loadPaymentRows(loan)}
-        </table>
-    `;
-
-    let modal = new bootstrap.Modal(document.getElementById("loanModal"));
-    modal.show();
-}
-
-
-/*================================
-TOGGLE GUARANTORS
-================================*/
-
-async function toggleGuarantors(applicationId) {
-    const section = document.getElementById("guarantorSection");
-    
-    if (section.style.display === "block") {
-        section.style.display = "none";
-        return;
-    }
-    
-    if (!applicationId || applicationId === 0) {
-        section.innerHTML = `<p class="text-muted">No guarantor details available.</p>`;
-        section.style.display = "block";
-        return;
-    }
-    
-    section.innerHTML = `<p class="text-center text-muted">Loading guarantor details...</p>`;
-    section.style.display = "block";
-    
-    let application = await DB.getApplication(applicationId);
-    
-    if (!application) {
-        section.innerHTML = `<p class="text-muted">No guarantor details available.</p>`;
-        return;
-    }
-    
-    const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-    
-    section.innerHTML = `
-        <hr>
-        <h5 class="text-primary"><i class="fa fa-users"></i> Guarantor Details</h5>
-        ${showGuarantor(application.guarantor1, "Guarantor 1", DEFAULT_IMG)}
-        ${showGuarantor(application.guarantor2, "Guarantor 2", DEFAULT_IMG)}
-    `;
-}
-
-
-function showGuarantor(g, title, DEFAULT_IMG){
-    if(!g) return "";
-    if(!DEFAULT_IMG) DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-    return `
-    <div class="detail-card">
-        <h5 class="text-primary">${title}</h5>
-        <div class="row">
-            <div class="col-md-4 text-center">
-                <img src="${g.photo || DEFAULT_IMG}" class="guarantor-photo">
-            </div>
-            <div class="col-md-8">
-                <p><b>Name:</b> ${g.name || "-"}</p>
-                <p><b>National ID:</b> ${g.id || "-"}</p>
-                <p><b>Phone:</b> ${g.phone || "-"}</p>
-                <p><b>Relationship:</b> ${g.relationship || "-"}</p>
-                <p><b>Address:</b> ${g.address || "-"}</p>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-md-6"><h6>ID Front</h6><img src="${g.idFront || ''}" class="document-img"></div>
-            <div class="col-md-6"><h6>ID Back</h6><img src="${g.idBack || ''}" class="document-img"></div>
-        </div>
-    </div>`;
-}
-
-
-/*================================
-PAYMENT HISTORY
-================================*/
-
-async function loadPaymentRows(loan){
-    let payments = await DB.getLoanPayments(loan.id);
-    if(payments.length === 0){
-        return `<tr><td colspan="6" class="text-center">No payments yet</td></tr>`;
-    }
-    
-    let rows = "";
-    let dueDate = null;
-    if (loan.dueDate) {
-        const parts = loan.dueDate.split("/");
-        if (parts.length === 3) {
-            dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
-        }
-    }
-    
-    payments.forEach(p => {
-        let typeBadge = "";
-        if (p.date && dueDate) {
-            const pParts = p.date.split("/");
-            if (pParts.length === 3) {
-                const paymentDate = new Date(pParts[2], pParts[1] - 1, pParts[0]);
-                if (paymentDate < dueDate) {
-                    typeBadge = `<span class="badge bg-primary">Early</span>`;
-                } else {
-                    typeBadge = `<span class="badge bg-warning text-dark">Regular</span>`;
-                }
+            // Never move SL backwards
+            if(sl == 0.0 || newSL < sl)
+            {
+               if(!trade.PositionModify(ticket, newSL, tp))
+                  Print("SELL trailing failed. Error = ", GetLastError());
             }
-        }
-        
-        rows += `
-            <tr>
-                <td>${p.date}</td>
-                <td>${money(p.amount)}</td>
-                <td>${money(p.principalPaid)}</td>
-                <td>${money(p.interestPaid)}</td>
-                <td>${money(p.balance)}</td>
-                <td>${typeBadge}</td>
-            </tr>`;
-    });
-    return rows;
+         }
+      }
+   }
 }
+void SetInitialSLTP()
+{
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+   {
+      ulong ticket = PositionGetTicket(i);
 
+      if(!PositionSelectByTicket(ticket))
+         continue;
 
-/*================================
-OPEN PAYMENT
-================================*/
+      if(PositionGetString(POSITION_SYMBOL) != _Symbol)
+         continue;
 
-function openPayment(id){
-    document.getElementById("paymentLoanId").value = id;
-    document.getElementById("paymentAmount").value = "";
-    document.getElementById("paymentDate").value = new Date().toISOString().split("T")[0];
-    let modal = new bootstrap.Modal(document.getElementById("paymentModal"));
-    modal.show();
+      if(PositionGetInteger(POSITION_MAGIC) != InpMagicNumber)
+         continue;
+
+      // Skip positions that already have SL/TP
+      if(PositionGetDouble(POSITION_SL) > 0)
+         continue;
+
+      ENUM_POSITION_TYPE type =
+         (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+
+      double openPrice = PositionGetDouble(POSITION_PRICE_OPEN);
+
+      double sl = 0.0;
+      double tp = 0.0;
+
+      if(type == POSITION_TYPE_BUY)
+      {
+         sl = NormalizeDouble(openPrice - InpStopLossPips * _Point, _Digits);
+      }
+      else if(type == POSITION_TYPE_SELL)
+      {
+         sl = NormalizeDouble(openPrice + InpStopLossPips * _Point, _Digits);
+      }
+
+      trade.PositionModify(ticket, sl, tp);
+   }
 }
+void DrawWallpaper()
+{
+   string name = "NEXUS_WALLPAPER";
 
+   if(ObjectFind(0, name) < 0)
+      ObjectCreate(0, name, OBJ_BITMAP_LABEL, 0, 0, 0);
 
-/*================================
-SAVE PAYMENT
-================================*/
+   ObjectSetInteger(0, name, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+   ObjectSetInteger(0, name, OBJPROP_XDISTANCE,  WallpaperW);
+   ObjectSetInteger(0, name, OBJPROP_YDISTANCE, PanelY );
 
-async function savePayment(){
-    let loanId = Number(document.getElementById("paymentLoanId").value);
-    let amount = Number(document.getElementById("paymentAmount").value);
-    let date = document.getElementById("paymentDate").value;
-    let method = document.getElementById("paymentMethod").value;
+   ObjectSetString(0, name, OBJPROP_BMPFILE, "::Images\\Wallpaper.bmp");
 
-    if(amount <= 0){
-        alert("Enter payment amount");
-        return;
-    }
+   
 
-    let loan = await DB.getLoan(loanId);
-    if (!loan) return;
-
-    let balance = Number(loan.remainingPrincipal || 0);
-    let rate = Number(loan.interestRate || 20);
-    let interestOwed = (balance * rate) / 100;
-
-    await DB.addPayment({ loanId, amount, date, method });
-
-    // If payment covers interest, push due date forward
-    if (amount >= interestOwed) {
-        const parts = loan.dueDate.split("/");
-        if (parts.length === 3) {
-            let oldDue = new Date(parts[2], parts[1] - 1, parts[0]);
-            oldDue.setMonth(oldDue.getMonth() + 1);
-            
-            const newDay = String(oldDue.getDate()).padStart(2, "0");
-            const newMonth = String(oldDue.getMonth() + 1).padStart(2, "0");
-            const newYear = oldDue.getFullYear();
-            
-            loan.dueDate = `${newDay}/${newMonth}/${newYear}`;
-            await DB.updateLoan(loan);
-            
-            alert(`Payment recorded! Interest covered. New due date: ${loan.dueDate}`);
-        } else {
-            alert("Payment recorded successfully!");
-        }
-    } else {
-        let remaining = interestOwed - amount;
-        alert(`Payment recorded! Remaining overdue interest: ${money(remaining)}`);
-    }
-
-    loadLateLoans();
-    bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
+   ObjectSetInteger(0, name, OBJPROP_BACK, true);
+   ObjectSetInteger(0, name, OBJPROP_SELECTABLE, false);
+   ObjectSetInteger(0, name, OBJPROP_HIDDEN, true);
 }
-
-
-/*================================
-LOGOUT
-================================*/
-
-
-function logout(){
-    AUTH.adminLogout();
-}
-
-
-/*================================
-START PAGE
-================================*/
-
-
-loadLateLoans();
-
-
-
-</script>
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-
-</html>
