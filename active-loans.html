@@ -904,7 +904,16 @@ async function loadActiveLoans(){
         return;
     }
 
-    let active = loans.filter(l => l.status === "ACTIVE");
+    let today = new Date();
+    let active = loans.filter(l => {
+        if (l.status !== "ACTIVE") return false;
+        if (Number(l.remainingPrincipal || 0) <= 0) return false;
+        if (!l.dueDate) return true;
+        const parts = l.dueDate.split("/");
+        if (parts.length !== 3) return true;
+        const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
+        return dueDate >= today; // Only show if due date hasn't passed
+    });
 
     if (active.length === 0) {
         table.innerHTML = `<tr><td colspan="9" class="text-center text-muted p-4">No active loans found</td></tr>`;
