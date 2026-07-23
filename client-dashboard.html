@@ -1259,7 +1259,7 @@ async function loadAllData() {
     } else {
         let totalLoanAmount = 0;
         let totalBalance = 0;
-        let totalPaidAll = 0;
+        let totalPrincipalPaid = 0;
         let nearestDueDate = "";
         
         for (let loan of myLoans) {
@@ -1269,7 +1269,7 @@ async function loadAllData() {
             
             let payments = await DB.getLoanPayments(loan.id);
             if (Array.isArray(payments)) {
-                payments.forEach(p => { totalPaidAll += Number(p.amount || 0); });
+                payments.forEach(p => { totalPrincipalPaid += Number(p.principalPaid || 0); });
             }
             
             if (!nearestDueDate || (loan.dueDate && loan.dueDate < nearestDueDate)) {
@@ -1280,11 +1280,11 @@ async function loadAllData() {
         document.getElementById("totalLoans").innerHTML = money(totalLoanAmount);
         document.getElementById("balance").innerHTML = money(totalBalance);
         document.getElementById("dueDate").innerHTML = nearestDueDate || "-";
-        document.getElementById("paid").innerHTML = money(totalPaidAll);
+        document.getElementById("paid").innerHTML = money(totalPrincipalPaid);
         
         let totalPercentage = 0;
         if (totalLoanAmount > 0) {
-            totalPercentage = Math.round((totalPaidAll / totalLoanAmount) * 100);
+            totalPercentage = Math.round((totalPrincipalPaid / totalLoanAmount) * 100);
         }
         document.getElementById("progressBar").style.width = totalPercentage + "%";
         document.getElementById("progressBar").innerHTML = totalPercentage + "%";
