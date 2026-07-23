@@ -526,10 +526,8 @@ function goToApplyLoan(event) {
     if (AUTH.isClientLoggedIn()) {
         window.location.href = "apply-loan.html";
     } else {
-        // Ask user to login first
-        if (confirm("You need to log in first to apply for a loan.\n\nClick OK to go to the Client Portal.")) {
-            window.location.href = "client-portal.html";
-        }
+        // Auto-redirect to login page
+        window.location.href = "client-portal.html";
     }
 }
 
