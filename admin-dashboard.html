@@ -1046,43 +1046,19 @@ Status
 
 
 if(!AUTH.currentAdmin()){
-
-
     window.location.href="admin-login.html";
-
-
 }
-
-
-
-
-
 
 
 /*====================================
  LOAD ADMIN DETAILS
 ====================================*/
 
-
 const admin = AUTH.currentAdmin();
 
-
-
 if(admin){
-
-
-document.getElementById("adminName").innerHTML =
-
-admin.username;
-
-
+    document.getElementById("adminName").innerHTML = admin.username;
 }
-
-
-
-
-
-
 
 
 /*====================================
@@ -1099,18 +1075,12 @@ async function waitForDB() {
                     return true;
                 }
             }
-        } catch(e) {
-            console.log("Waiting for DB... attempt " + retries);
-        }
-        await new Promise(r => setTimeout(r, 200));
+        } catch(e) {}
+        await new Promise(r => setTimeout(r, 300));
         retries++;
     }
     return false;
 }
-
-
-
-
 
 
 /*====================================
@@ -1133,7 +1103,6 @@ async function loadAllDashboardData(){
 }
 
 
-
 async function loadDashboardStats(){
 
     try {
@@ -1142,12 +1111,12 @@ async function loadDashboardStats(){
         const clients = await DB.totalClients();
         document.getElementById("totalClients").innerHTML = clients;
 
-        // TOTAL LOANS (all loans)
+        // TOTAL LOANS
         let allLoans = await DB.getLoans();
         if (!Array.isArray(allLoans)) allLoans = [];
         document.getElementById("totalLoans").innerHTML = allLoans.length;
 
-        // ACTIVE LOANS & LATE LOANS — match late-loans.html exactly
+        // ACTIVE LOANS & LATE LOANS
         let today = new Date();
         today.setHours(0, 0, 0, 0);
         let activeCount = 0;
@@ -1176,7 +1145,6 @@ async function loadDashboardStats(){
                 continue;
             }
 
-            // Past due — match late-loans.html logic
             let monthsDiff = 0;
             let checkDate = new Date(dueDate);
             while (true) {
@@ -1192,7 +1160,6 @@ async function loadDashboardStats(){
             let monthlyInterest = (balance * rate) / 100;
             let totalOutstandingInterest = monthlyInterest * monthsDiff;
 
-            // Sum all payments
             let payments = await DB.getLoanPayments(loan.id);
             let totalPaid = 0;
             if (Array.isArray(payments)) {
@@ -1224,17 +1191,9 @@ async function loadDashboardStats(){
 }
 
 
-
-
-
-
-
-
-
 /*====================================
  LOAD RECENT APPLICATIONS
 ====================================*/
-
 
 async function loadRecentApplications(){
 
@@ -1277,44 +1236,23 @@ async function loadRecentApplications(){
 }
 
 
-
-
-
-
-
-
-
-
 /*====================================
  LOGOUT
 ====================================*/
-
 
 function logout(){
     AUTH.adminLogout();
 }
 
 
-
-
-
-
-
-
 /*====================================
  START
 ====================================*/
 
-
 loadAllDashboardData();
 
 
-
-
 </script>
-
-
-
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
