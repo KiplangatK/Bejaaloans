@@ -1166,7 +1166,7 @@ async function loadLateLoans(){
         // Get all payments
         let payments = await DB.getLoanPayments(loan.id);
         
-        // Sum all payments (early + after due)
+        // Sum all payments
         let totalPaid = 0;
         if (Array.isArray(payments)) {
             for (let p of payments) {
@@ -1485,7 +1485,13 @@ async function savePayment(){
 
     await DB.addPayment({ loanId, amount, date: formattedDate, method });
 
-    location.reload();
+    alert("Payment recorded successfully!");
+
+    // Hide payment modal
+    bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
+
+    // Refresh the late loans list
+    loadLateLoans();
 }
 
 
