@@ -1183,7 +1183,6 @@ async function loadLateLoans(){
         }
 
         // Calculate months overdue properly
-        // Count each time we pass the same day of the next month
         let monthsDiff = 0;
         let checkDate = new Date(dueDate);
 
@@ -1554,22 +1553,33 @@ async function savePayment(){
 
     // If payment covers the full monthly interest, push due date forward
     if (amount >= interestOwed) {
-        const parts = loan.dueDate.split("/");
-        if (parts.length === 3) {
-            let oldDue = new Date(parts[2], parts[1] - 1, parts[0]);
-            oldDue.setMonth(oldDue.getMonth() + 1);
-            
-            const newDay = String(oldDue.getDate()).padStart(2, "0");
-            const newMonth = String(oldDue.getMonth() + 1).padStart(2, "0");
-            const newYear = oldDue.getFullYear();
-            
-            loan.dueDate = `${newDay}/${newMonth}/${newYear}`;
-            await DB.updateLoan(loan);
-            
-            alert(`Payment recorded! Interest covered. New due date: ${loan.dueDate}`);
-        } else {
-            alert("Payment recorded successfully!");
+        // Get the day from the original loan date
+        let loanDay = 15;
+        if (loan.loanDate) {
+            const loanParts = loan.loanDate.split("/");
+            if (loanParts.length === 3) {
+                loanDay = parseInt(loanParts[0]);
+            }
         }
+        
+        // Set new due date to that day of the next month from today
+        let newDue = new Date();
+        newDue.setMonth(newDue.getMonth() + 1);
+        newDue.setDate(loanDay);
+        
+        // Handle month overflow
+        if (newDue.getDate() < loanDay) {
+            newDue.setDate(0);
+        }
+        
+        const newDay = String(newDue.getDate()).padStart(2, "0");
+        const newMonth = String(newDue.getMonth() + 1).padStart(2, "0");
+        const newYear = newDue.getFullYear();
+        
+        loan.dueDate = `${newDay}/${newMonth}/${newYear}`;
+        await DB.updateLoan(loan);
+        
+        alert(`Payment recorded! Interest covered. New due date: ${loan.dueDate}`);
     } else {
         let remaining = interestOwed - amount;
         alert(`Payment recorded! Remaining overdue interest: ${money(remaining)}`);
