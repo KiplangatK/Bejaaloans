@@ -1183,23 +1183,18 @@ Number(value || 0)
 
 async function loadMyLoans(){
 
-    // Wait for DB
     let dbReady = false;
     let retries = 0;
     while (!dbReady && retries < 50) {
         try {
             if (window.DB && typeof DB.getLoans === "function") {
                 const test = await DB.getLoans();
-                if (Array.isArray(test)) {
-                    dbReady = true;
-                    break;
-                }
+                if (Array.isArray(test)) { dbReady = true; break; }
             }
         } catch(e) {}
         await new Promise(r => setTimeout(r, 100));
         retries++;
     }
-
     if (!dbReady) return;
 
     const client = AUTH.currentClient();
@@ -1215,12 +1210,10 @@ async function loadMyLoans(){
     if (!Array.isArray(loans)) loans = [];
     if (!Array.isArray(applications)) applications = [];
 
-    // Get approved/rejected loans
     let myLoans = loans.filter(loan =>
         String(loan.clientId) === String(client.id)
     );
 
-    // Get pending applications
     let myApplications = applications.filter(app =>
         String(app.clientId) === String(client.id)
     );
@@ -1231,26 +1224,40 @@ async function loadMyLoans(){
     let totalBorrowed = 0;
     let outstanding = 0;
     let activeCount = 0;
+    let today = new Date();
 
-    // Build combined list (loans + pending applications)
     let allItems = [];
 
     // Add approved loans
     myLoans.forEach(loan => {
+        let realStatus = loan.status;
+        let balance = Number(loan.remainingPrincipal || 0);
+        
+        if (loan.status === "COMPLETED" || balance <= 0) {
+            realStatus = "COMPLETED";
+        } else if (loan.status === "ACTIVE" && loan.dueDate) {
+            const parts = loan.dueDate.split("/");
+            if (parts.length === 3) {
+                const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                if (dueDate < today) {
+                    realStatus = "LATE";
+                }
+            }
+        }
+
         allItems.push({
             type: "loan",
             date: loan.loanDate || loan.createdAt || "-",
             amount: Number(loan.originalPrincipal || 0),
-            balance: Number(loan.remainingPrincipal || 0),
+            balance: balance,
             dueDate: loan.dueDate || "-",
-            status: loan.status || "ACTIVE",
+            status: realStatus,
             id: loan.id
         });
     });
 
     // Add pending/rejected applications
     myApplications.forEach(app => {
-        // Skip if already approved (already shown as loan)
         if (app.status === "APPROVED") return;
         
         allItems.push({
@@ -1273,7 +1280,6 @@ async function loadMyLoans(){
         return;
     }
 
-    // Sort by date newest first
     allItems.sort((a, b) => b.date.localeCompare(a.date));
 
     allItems.forEach(item => {
@@ -1284,11 +1290,17 @@ async function loadMyLoans(){
             activeCount++;
         }
 
+        if (item.status === "LATE") {
+            totalBorrowed += item.amount;
+            outstanding += item.balance;
+        }
+
         let statusColor = "bg-secondary";
         if (item.status === "ACTIVE") statusColor = "bg-success";
         if (item.status === "COMPLETED") statusColor = "bg-info";
         if (item.status === "PENDING") statusColor = "bg-warning text-dark";
         if (item.status === "REJECTED") statusColor = "bg-danger";
+        if (item.status === "LATE") statusColor = "bg-danger";
 
         let actionButtons = "";
         if (item.type === "loan") {
@@ -1300,8 +1312,7 @@ async function loadMyLoans(){
                     <i class="fa fa-clock-rotate-left"></i> Payments
                 </button>`;
         } else {
-            actionButtons = `
-                <span class="text-muted small">Awaiting review</span>`;
+            actionButtons = `<span class="text-muted small">Awaiting review</span>`;
         }
 
         table.innerHTML += `
