@@ -192,8 +192,144 @@ margin-top:10px;
 
 border-radius:10px;
 
+}
+
+
+
+.verify-box{
+
+background:#e8f5e9;
+
+border:2px solid #4caf50;
+
+border-radius:15px;
+
+padding:20px;
+
+margin-top:15px;
+
+display:none;
 
 }
+
+
+
+.otp-input{
+
+width:60px;
+
+height:60px;
+
+text-align:center;
+
+font-size:24px;
+
+font-weight:bold;
+
+border-radius:12px;
+
+border:2px solid #2563EB;
+
+margin:0 5px;
+
+}
+
+
+
+.phone-verified{
+
+color:#4caf50;
+
+font-weight:bold;
+
+}
+
+
+
+.step-indicator{
+
+display:flex;
+
+justify-content:center;
+
+margin-bottom:30px;
+
+}
+
+
+
+.step{
+
+width:40px;
+
+height:40px;
+
+border-radius:50%;
+
+background:#ddd;
+
+color:#888;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+font-weight:bold;
+
+margin:0 15px;
+
+position:relative;
+
+}
+
+
+
+.step.active{
+
+background:#2563EB;
+
+color:white;
+
+}
+
+
+
+.step.done{
+
+background:#4caf50;
+
+color:white;
+
+}
+
+
+
+.step-line{
+
+position:absolute;
+
+top:50%;
+
+left:100%;
+
+width:30px;
+
+height:3px;
+
+background:#ddd;
+
+}
+
+
+
+.step.done .step-line{
+
+background:#4caf50;
+
+}
+
 
 
 </style>
@@ -250,6 +386,13 @@ Create Client Account
 </p>
 
 
+<!-- Step Indicator -->
+<div class="step-indicator">
+    <div class="step active" id="step1">1<span class="step-line"></span></div>
+    <div class="step" id="step2">2<span class="step-line"></span></div>
+    <div class="step" id="step3">3</div>
+</div>
+
 
 </div>
 
@@ -274,6 +417,12 @@ Create Client Account
 <form id="registerForm">
 
 
+
+<!-- ==================== STEP 1: PERSONAL INFO ==================== -->
+
+<div id="formStep1">
+
+
 <div class="row">
 
 
@@ -287,7 +436,7 @@ Create Client Account
 
 <label class="fw-semibold">
 
-Full Name
+Full Name <span class="text-danger">*</span>
 
 </label>
 
@@ -300,6 +449,8 @@ type="text"
 id="fullname"
 
 class="form-control"
+
+placeholder="As per National ID"
 
 required>
 
@@ -320,11 +471,13 @@ required>
 
 <label class="fw-semibold">
 
-National ID
+National ID Number <span class="text-danger">*</span>
 
 </label>
 
 
+
+<div class="input-group">
 
 <input
 
@@ -334,7 +487,19 @@ id="nationalID"
 
 class="form-control"
 
+placeholder="e.g. 12345678"
+
 required>
+
+<button class="btn btn-outline-primary" type="button" onclick="verifyID()">
+
+<i class="fa fa-check"></i> Verify
+
+</button>
+
+</div>
+
+<div id="idStatus" class="mt-1"></div>
 
 
 </div>
@@ -353,11 +518,15 @@ required>
 
 <label class="fw-semibold">
 
-Phone Number
+Phone Number <span class="text-danger">*</span>
 
 </label>
 
 
+
+<div class="input-group">
+
+<span class="input-group-text">+254</span>
 
 <input
 
@@ -367,10 +536,60 @@ id="phone"
 
 class="form-control"
 
-placeholder="07XXXXXXXX"
+placeholder="7XXXXXXXX"
 
 required>
 
+<button class="btn btn-outline-primary" type="button" id="sendOTPBtn" onclick="sendOTP()">
+
+<i class="fa fa-paper-plane"></i> Send Code
+
+</button>
+
+</div>
+
+<div id="phoneStatus" class="mt-1"></div>
+
+
+</div>
+
+
+
+<!-- OTP Verification -->
+
+<div class="col-md-6 mb-3">
+
+<div class="verify-box" id="otpBox">
+
+<label class="fw-semibold">Enter Verification Code</label>
+
+<p class="small text-muted">A 6-digit code has been sent to your phone.</p>
+
+<div class="d-flex justify-content-center gap-2 mt-2">
+
+<input type="text" class="otp-input" id="otp1" maxlength="1" oninput="otpNext(this, 'otp2')">
+
+<input type="text" class="otp-input" id="otp2" maxlength="1" oninput="otpNext(this, 'otp3')">
+
+<input type="text" class="otp-input" id="otp3" maxlength="1" oninput="otpNext(this, 'otp4')">
+
+<input type="text" class="otp-input" id="otp4" maxlength="1" oninput="otpNext(this, 'otp5')">
+
+<input type="text" class="otp-input" id="otp5" maxlength="1" oninput="otpNext(this, 'otp6')">
+
+<input type="text" class="otp-input" id="otp6" maxlength="1">
+
+</div>
+
+<button class="btn btn-success w-100 mt-3" type="button" onclick="verifyOTP()">
+
+<i class="fa fa-check-circle"></i> Verify Phone
+
+</button>
+
+<div id="otpStatus" class="mt-1"></div>
+
+</div>
 
 </div>
 
@@ -400,7 +619,9 @@ type="email"
 
 id="email"
 
-class="form-control">
+class="form-control"
+
+placeholder="optional">
 
 
 </div>
@@ -419,7 +640,7 @@ class="form-control">
 
 <label class="fw-semibold">
 
-Occupation
+Occupation <span class="text-danger">*</span>
 
 </label>
 
@@ -483,7 +704,7 @@ class="form-control">
 
 <label class="fw-semibold">
 
-Monthly Income
+Monthly Income (KES) <span class="text-danger">*</span>
 
 </label>
 
@@ -516,21 +737,41 @@ required>
 
 <label class="fw-semibold">
 
-County
+County <span class="text-danger">*</span>
 
 </label>
 
 
 
-<input
+<select id="county" class="form-control" required>
 
-type="text"
+<option value="">Select County</option>
 
-id="county"
+<option>Mombasa</option><option>Kwale</option><option>Kilifi</option><option>Tana River</option>
 
-class="form-control"
+<option>Lamu</option><option>Taita Taveta</option><option>Garissa</option><option>Wajir</option>
 
-required>
+<option>Mandera</option><option>Marsabit</option><option>Isiolo</option><option>Meru</option>
+
+<option>Tharaka Nithi</option><option>Embu</option><option>Kitui</option><option>Machakos</option>
+
+<option>Makueni</option><option>Nyandarua</option><option>Nyeri</option><option>Kirinyaga</option>
+
+<option>Murang'a</option><option>Kiambu</option><option>Turkana</option><option>West Pokot</option>
+
+<option>Samburu</option><option>Trans Nzoia</option><option>Uasin Gishu</option><option>Elgeyo Marakwet</option>
+
+<option>Nandi</option><option>Baringo</option><option>Laikipia</option><option>Nakuru</option>
+
+<option>Narok</option><option>Kajiado</option><option>Kericho</option><option>Bomet</option>
+
+<option>Kakamega</option><option>Vihiga</option><option>Bungoma</option><option>Busia</option>
+
+<option>Siaya</option><option>Kisumu</option><option>Homa Bay</option><option>Migori</option>
+
+<option>Kisii</option><option>Nyamira</option><option>Nairobi</option>
+
+</select>
 
 
 </div>
@@ -549,7 +790,7 @@ required>
 
 <label class="fw-semibold">
 
-Physical Address
+Physical Address <span class="text-danger">*</span>
 
 </label>
 
@@ -570,6 +811,96 @@ required></textarea>
 
 
 
+<!-- PASSWORD -->
+
+<div class="col-md-6 mb-3">
+
+
+<label class="fw-semibold">
+
+Password <span class="text-danger">*</span>
+
+</label>
+
+
+
+<input
+
+type="password"
+
+id="password"
+
+class="form-control"
+
+placeholder="Min 4 characters"
+
+minlength="4"
+
+required>
+
+
+
+</div>
+
+
+
+<!-- CONFIRM PASSWORD -->
+
+<div class="col-md-6 mb-4">
+
+
+<label class="fw-semibold">
+
+Confirm Password <span class="text-danger">*</span>
+
+</label>
+
+
+
+<input
+
+type="password"
+
+id="confirmPassword"
+
+class="form-control"
+
+required>
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+<div class="text-center">
+
+<button type="button" class="btn btn-primary w-50" onclick="goToStep2()">
+
+<i class="fa fa-arrow-right"></i> Next: Upload Documents
+
+</button>
+
+</div>
+
+
+</div>
+
+
+
+
+
+<!-- ==================== STEP 2: DOCUMENTS ==================== -->
+
+<div id="formStep2" style="display:none;">
+
+
 
 
 <!-- DOCUMENT TITLE -->
@@ -585,13 +916,14 @@ Upload Verification Documents
 
 </h5>
 
+<p class="text-muted small">These documents will be used to verify your identity.</p>
+
 
 </div>
 
 
 
-
-
+<div class="row">
 
 
 
@@ -605,7 +937,7 @@ Upload Verification Documents
 
 <label class="fw-semibold">
 
-Profile Photo
+Profile Photo <span class="text-danger">*</span>
 
 </label>
 
@@ -655,7 +987,7 @@ class="preview">
 
 <label class="fw-semibold">
 
-National ID Front
+National ID Front <span class="text-danger">*</span>
 
 </label>
 
@@ -706,7 +1038,7 @@ class="id-preview">
 
 <label class="fw-semibold">
 
-National ID Back
+National ID Back <span class="text-danger">*</span>
 
 </label>
 
@@ -740,100 +1072,31 @@ class="id-preview">
 
 </div>
 
-
-
-<!-- PASSWORD -->
-
-<div class="col-md-6 mb-3">
-
-
-<label class="fw-semibold">
-
-Password
-
-</label>
-
-
-
-<input
-
-type="password"
-
-id="password"
-
-class="form-control"
-
-required>
-
-
-
 </div>
 
 
 
 
 
+<div class="text-center mt-3">
 
+<button type="button" class="btn btn-secondary me-2" onclick="goToStep1()">
 
-
-
-<!-- CONFIRM PASSWORD -->
-
-<div class="col-md-6 mb-4">
-
-
-<label class="fw-semibold">
-
-Confirm Password
-
-</label>
-
-
-
-<input
-
-type="password"
-
-id="confirmPassword"
-
-class="form-control"
-
-required>
-
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-<!-- CREATE ACCOUNT BUTTON -->
-
-<button
-
-type="submit"
-
-class="btn btn-primary w-100">
-
-
-<i class="fa fa-user-plus"></i>
-
-
-Create Account
-
+<i class="fa fa-arrow-left"></i> Back
 
 </button>
+
+<button type="submit" class="btn btn-primary w-50">
+
+<i class="fa fa-user-plus"></i> Create Account
+
+</button>
+
+</div>
+
+
+</div>
+
 
 
 
@@ -900,762 +1163,362 @@ Login Here
 <script>
 
 
+// ============================
+// STEP NAVIGATION
+// ============================
+
+function goToStep1() {
+    document.getElementById("formStep1").style.display = "block";
+    document.getElementById("formStep2").style.display = "none";
+    updateSteps(1);
+}
+
+function goToStep2() {
+    // Validate step 1 fields
+    const fullname = document.getElementById("fullname").value.trim();
+    const nationalID = document.getElementById("nationalID").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const occupation = document.getElementById("occupation").value.trim();
+    const income = document.getElementById("income").value.trim();
+    const county = document.getElementById("county").value;
+    const address = document.getElementById("address").value.trim();
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+
+    if (!fullname || !nationalID || !phone || !occupation || !income || !county || !address || !password || !confirmPassword) {
+        showError("Please fill all required fields in Step 1.");
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        showError("Passwords do not match.");
+        return;
+    }
+
+    if (password.length < 4) {
+        showError("Password must be at least 4 characters.");
+        return;
+    }
+
+    // Check ID verified
+    if (!sessionStorage.getItem("idVerified")) {
+        showError("Please verify your National ID first.");
+        return;
+    }
+
+    // Check phone verified
+    if (!sessionStorage.getItem("phoneVerified")) {
+        showError("Please verify your phone number first.");
+        return;
+    }
+
+    document.getElementById("formStep1").style.display = "none";
+    document.getElementById("formStep2").style.display = "block";
+    updateSteps(2);
+}
+
+function updateSteps(activeStep) {
+    for (let i = 1; i <= 3; i++) {
+        const step = document.getElementById("step" + i);
+        step.classList.remove("active", "done");
+        if (i < activeStep) step.classList.add("done");
+        if (i === activeStep) step.classList.add("active");
+    }
+}
+
+function showError(msg) {
+    const errorBox = document.getElementById("errorBox");
+    errorBox.innerHTML = msg;
+    errorBox.style.display = "block";
+    setTimeout(() => { errorBox.style.display = "none"; }, 4000);
+}
+
+
+// ============================
+// ID VERIFICATION
+// ============================
+
+async function verifyID() {
+    const nationalID = document.getElementById("nationalID").value.trim();
+    const statusEl = document.getElementById("idStatus");
+    const fullname = document.getElementById("fullname").value.trim();
+
+    if (!nationalID) {
+        statusEl.innerHTML = '<span class="text-danger">Enter ID number first.</span>';
+        return;
+    }
+
+    if (nationalID.length < 6 || nationalID.length > 10) {
+        statusEl.innerHTML = '<span class="text-danger">Invalid ID number format (6-10 digits).</span>';
+        return;
+    }
+
+    if (!/^\d+$/.test(nationalID)) {
+        statusEl.innerHTML = '<span class="text-danger">ID should contain numbers only.</span>';
+        return;
+    }
+
+    statusEl.innerHTML = '<span class="text-warning"><i class="fa fa-spinner fa-spin"></i> Verifying ID...</span>';
+
+    // Check if ID already registered
+    const clients = await DB.getClients();
+    const existing = clients.find(c => c.nationalID === nationalID);
+
+    if (existing) {
+        statusEl.innerHTML = '<span class="text-danger"><i class="fa fa-times-circle"></i> This ID is already registered to: ' + existing.fullname + '</span>';
+        return;
+    }
+
+    // Simulate ID verification (in production, verify against government database)
+    await new Promise(r => setTimeout(r, 1500));
+
+    statusEl.innerHTML = '<span class="text-success"><i class="fa fa-check-circle"></i> ID verified successfully.</span>';
+    sessionStorage.setItem("idVerified", "true");
+    document.getElementById("nationalID").style.border = "2px solid #4caf50";
+}
+
+
+// ============================
+// PHONE VERIFICATION - OTP
+// ============================
+
+let generatedOTP = "";
+
+async function sendOTP() {
+    const phone = document.getElementById("phone").value.trim();
+    const statusEl = document.getElementById("phoneStatus");
+    const fullname = document.getElementById("fullname").value.trim();
+
+    if (!phone) {
+        statusEl.innerHTML = '<span class="text-danger">Enter phone number first.</span>';
+        return;
+    }
+
+    if (!/^7\d{8}$/.test(phone)) {
+        statusEl.innerHTML = '<span class="text-danger">Invalid format. Use 7XXXXXXXX.</span>';
+        return;
+    }
+
+    // Check if phone already registered
+    const existing = await DB.getClientByPhone("0" + phone);
+    if (existing) {
+        statusEl.innerHTML = '<span class="text-danger"><i class="fa fa-times-circle"></i> This phone is already registered.</span>';
+        return;
+    }
+
+    // Generate OTP
+    generatedOTP = String(Math.floor(100000 + Math.random() * 900000));
+    
+    // In production: send via SMS (Africa's Talking / Twilio)
+    console.log("OTP for " + phone + ": " + generatedOTP);
+    
+    // Show OTP for demo purposes (in production, this goes via SMS)
+    statusEl.innerHTML = '<span class="text-success"><i class="fa fa-check-circle"></i> Code sent! (Demo: <b>' + generatedOTP + '</b>)</span>';
+    
+    document.getElementById("otpBox").style.display = "block";
+    document.getElementById("sendOTPBtn").disabled = true;
+    document.getElementById("sendOTPBtn").innerHTML = '<i class="fa fa-clock"></i> Sent';
+    
+    // Focus first OTP input
+    document.getElementById("otp1").focus();
+}
+
+
+function otpNext(current, nextId) {
+    if (current.value.length === 1 && nextId) {
+        document.getElementById(nextId).focus();
+    }
+}
+
+
+function verifyOTP() {
+    const statusEl = document.getElementById("otpStatus");
+    
+    const enteredOTP = 
+        document.getElementById("otp1").value +
+        document.getElementById("otp2").value +
+        document.getElementById("otp3").value +
+        document.getElementById("otp4").value +
+        document.getElementById("otp5").value +
+        document.getElementById("otp6").value;
+
+    if (enteredOTP.length < 6) {
+        statusEl.innerHTML = '<span class="text-danger">Enter the complete 6-digit code.</span>';
+        return;
+    }
+
+    if (enteredOTP === generatedOTP) {
+        statusEl.innerHTML = '<span class="phone-verified"><i class="fa fa-check-circle"></i> Phone verified successfully!</span>';
+        sessionStorage.setItem("phoneVerified", "true");
+        document.getElementById("phone").style.border = "2px solid #4caf50";
+        document.getElementById("otpBox").style.display = "none";
+    } else {
+        statusEl.innerHTML = '<span class="text-danger"><i class="fa fa-times-circle"></i> Incorrect code. Try again.</span>';
+    }
+}
+
+
 /* ============================
  IMAGE PREVIEW
 ============================ */
 
-
-
-function previewImage(input,target){
-
-
-
-const file=input.files[0];
-
-
-
-if(!file){
-
-return;
-
+function previewImage(input, target) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = document.getElementById(target);
+        img.src = e.target.result;
+        img.style.display = "block";
+    };
+    reader.readAsDataURL(file);
 }
 
-
-
-const reader=new FileReader();
-
-
-
-reader.onload=function(e){
-
-
-
-target.src=e.target.result;
-
-
-target.style.display="block";
-
-
-
-}
-
-
-
-reader.readAsDataURL(file);
-
-
-
-}
-
-
-
-
-
-
-
-document
-
-.getElementById("profilePhoto")
-
-.addEventListener("change",function(){
-
-
-previewImage(
-
-this,
-
-document.getElementById("profilePreview")
-
-);
-
-
+document.getElementById("profilePhoto").addEventListener("change", function() {
+    previewImage(this, "profilePreview");
 });
 
-
-
-
-
-
-
-document
-
-.getElementById("idFront")
-
-.addEventListener("change",function(){
-
-
-previewImage(
-
-this,
-
-document.getElementById("frontPreview")
-
-);
-
-
+document.getElementById("idFront").addEventListener("change", function() {
+    previewImage(this, "frontPreview");
 });
 
-
-
-
-
-
-
-document
-
-.getElementById("idBack")
-
-.addEventListener("change",function(){
-
-
-previewImage(
-
-this,
-
-document.getElementById("backPreview")
-
-);
-
-
+document.getElementById("idBack").addEventListener("change", function() {
+    previewImage(this, "backPreview");
 });
-
-
-
-
-
-
-
-
-
-
 
 
 /* ============================
  IMAGE COMPRESSION
 ============================ */
 
-
-function compressImage(file){
-
-
-
-return new Promise(resolve=>{
-
-
-
-const reader=new FileReader();
-
-
-
-
-reader.onload=function(e){
-
-
-
-const img=new Image();
-
-
-
-
-img.onload=function(){
-
-
-
-const canvas=document.createElement("canvas");
-
-
-
-let width=img.width;
-
-let height=img.height;
-
-
-
-const maxWidth=800;
-
-
-
-
-
-if(width>maxWidth){
-
-
-
-height = height * maxWidth / width;
-
-
-
-width=maxWidth;
-
-
-
+function compressImage(file) {
+    return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement("canvas");
+                let width = img.width;
+                let height = img.height;
+                const maxWidth = 800;
+                if (width > maxWidth) {
+                    height = height * maxWidth / width;
+                    width = maxWidth;
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL("image/jpeg", 0.7));
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
 }
-
-
-
-
-
-canvas.width=width;
-
-
-canvas.height=height;
-
-
-
-
-
-const ctx=canvas.getContext("2d");
-
-
-
-ctx.drawImage(
-
-img,
-
-0,
-
-0,
-
-width,
-
-height
-
-);
-
-
-
-
-
-
-
-resolve(
-
-canvas.toDataURL(
-
-"image/jpeg",
-
-0.7
-
-)
-
-);
-
-
-
-}
-
-
-
-
-
-
-img.src=e.target.result;
-
-
-
-}
-
-
-
-
-
-reader.readAsDataURL(file);
-
-
-
-});
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
 
 
 /* ============================
  CREATE CLIENT ACCOUNT
 ============================ */
 
-
-
-document
-
-.getElementById("registerForm")
-
-.addEventListener("submit",async function(e){
-
-
-
-e.preventDefault();
-
-
-
-
-
-
-const errorBox=document.getElementById("errorBox");
-
-
-const successBox=document.getElementById("successBox");
-
-
-
-
-errorBox.style.display="none";
-
-
-successBox.style.display="none";
-
-
-
-
-
-
-
-// GET VALUES
-
-
-const fullname =
-
-document.getElementById("fullname").value.trim();
-
-
-
-
-const nationalID =
-
-document.getElementById("nationalID").value.trim();
-
-
-
-
-const phone =
-
-document.getElementById("phone").value.trim();
-
-
-
-
-const email =
-
-document.getElementById("email").value.trim();
-
-
-
-
-const occupation =
-
-document.getElementById("occupation").value.trim();
-
-
-
-
-const employer =
-
-document.getElementById("employer").value.trim();
-
-
-
-
-const income =
-
-document.getElementById("income").value.trim();
-
-
-
-
-const county =
-
-document.getElementById("county").value.trim();
-
-
-
-
-const address =
-
-document.getElementById("address").value.trim();
-
-
-
-
-const password =
-
-document.getElementById("password").value;
-
-
-
-const confirmPassword =
-
-document.getElementById("confirmPassword").value;
-
-
-
-
-
-
-
-
-
-
-
-// VALIDATION
-
-
-if(
-
-fullname==="" ||
-
-nationalID==="" ||
-
-phone==="" ||
-
-occupation==="" ||
-
-income==="" ||
-
-county==="" ||
-
-address==="" ||
-
-password==="" ||
-
-confirmPassword===""
-
-){
-
-
-errorBox.innerHTML=
-
-"Please fill all required fields.";
-
-
-errorBox.style.display="block";
-
-
-return;
-
-
-}
-
-
-
-
-
-
-
-
-
-if(password !== confirmPassword){
-
-
-
-errorBox.innerHTML=
-
-"Passwords do not match.";
-
-
-errorBox.style.display="block";
-
-
-return;
-
-
-}
-
-
-
-
-
-
-
-
-
-
-if(!/^07\d{8}$/.test(phone)){
-
-
-
-errorBox.innerHTML=
-
-"Invalid phone number format.";
-
-
-
-errorBox.style.display="block";
-
-
-
-return;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-if(
-
-profilePhoto.files.length===0 ||
-
-idFront.files.length===0 ||
-
-idBack.files.length===0
-
-){
-
-
-
-errorBox.innerHTML=
-
-"Please upload all verification documents.";
-
-
-
-errorBox.style.display="block";
-
-
-
-return;
-
-
-
-}
-
-
-
-
-
-
-
-
-// COMPRESS IMAGES
-
-
-const profile = await compressImage(
-
-profilePhoto.files[0]
-
-);
-
-
-
-
-const front = await compressImage(
-
-idFront.files[0]
-
-);
-
-
-
-
-const back = await compressImage(
-
-idBack.files[0]
-
-);
-
-
-
-
-
-
-
-
-// ============================
-// CLIENT OBJECT
-// ============================
-
-
-const client={
-
-
-
-fullname:fullname,
-
-
-nationalID:nationalID,
-
-
-phone:phone,
-
-
-email:email,
-
-
-occupation:occupation,
-
-
-employer:employer,
-
-
-monthlyIncome:income,
-
-
-county:county,
-
-
-address:address,
-
-
-
-profilePhoto:profile,
-
-
-idFront:front,
-
-
-idBack:back,
-
-
-
-password:password
-
-
-
-};
-
-
-
-
-
-
-
-
-// ============================
-// SAVE USING AUTH ENGINE
-// ============================
-
-
-
-const result = await AUTH.registerClient(client);
-
-
-
-
-
-
-
-if(!result.success){
-
-
-
-errorBox.innerHTML=result.message;
-
-
-
-errorBox.style.display="block";
-
-
-
-return;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// ============================
-// SUCCESS MESSAGE
-// ============================
-
-
-
-successBox.innerHTML=`
-
-
-
-<h4>
-
-<i class="fa fa-check-circle"></i>
-
-Account Created Successfully
-
-</h4>
-
-
-
-<p>
-
-Your Bejja Credit account has been created successfully.
-
-</p>
-
-
-
-
-<a href="client-portal.html"
-
-class="btn btn-primary">
-
-
-<i class="fa fa-right-to-bracket"></i>
-
-
-Login Now
-
-
-</a>
-
-
-
-`;
-
-
-
-
-
-successBox.style.display="block";
-
-
-
-
-
-
-
-// RESET FORM
-
-
-
-document
-
-.getElementById("registerForm")
-
-.reset();
-
-
-
-
+document.getElementById("registerForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const errorBox = document.getElementById("errorBox");
+    const successBox = document.getElementById("successBox");
+
+    errorBox.style.display = "none";
+    successBox.style.display = "none";
+
+    // GET VALUES
+    const fullname = document.getElementById("fullname").value.trim();
+    const nationalID = document.getElementById("nationalID").value.trim();
+    const phone = "0" + document.getElementById("phone").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const occupation = document.getElementById("occupation").value.trim();
+    const employer = document.getElementById("employer").value.trim();
+    const income = document.getElementById("income").value.trim();
+    const county = document.getElementById("county").value;
+    const address = document.getElementById("address").value.trim();
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+
+    // VALIDATION
+    if (password !== confirmPassword) {
+        errorBox.innerHTML = "Passwords do not match.";
+        errorBox.style.display = "block";
+        return;
+    }
+
+    if (!sessionStorage.getItem("idVerified")) {
+        errorBox.innerHTML = "Please verify your National ID before submitting.";
+        errorBox.style.display = "block";
+        return;
+    }
+
+    if (!sessionStorage.getItem("phoneVerified")) {
+        errorBox.innerHTML = "Please verify your phone number before submitting.";
+        errorBox.style.display = "block";
+        return;
+    }
+
+    if (profilePhoto.files.length === 0 || idFront.files.length === 0 || idBack.files.length === 0) {
+        errorBox.innerHTML = "Please upload all verification documents.";
+        errorBox.style.display = "block";
+        return;
+    }
+
+    // COMPRESS IMAGES
+    const profile = await compressImage(profilePhoto.files[0]);
+    const front = await compressImage(idFront.files[0]);
+    const back = await compressImage(idBack.files[0]);
+
+    // CLIENT OBJECT
+    const client = {
+        fullname: fullname,
+        nationalID: nationalID,
+        phone: phone,
+        email: email,
+        occupation: occupation,
+        employer: employer,
+        monthlyIncome: income,
+        county: county,
+        address: address,
+        profilePhoto: profile,
+        idFront: front,
+        idBack: back,
+        password: password
+    };
+
+    // SAVE USING AUTH ENGINE
+    const result = await AUTH.registerClient(client);
+
+    if (!result.success) {
+        errorBox.innerHTML = result.message;
+        errorBox.style.display = "block";
+        return;
+    }
+
+    // Clear verification flags
+    sessionStorage.removeItem("idVerified");
+    sessionStorage.removeItem("phoneVerified");
+
+    // SUCCESS MESSAGE
+    successBox.innerHTML = `
+        <h4><i class="fa fa-check-circle"></i> Account Created Successfully</h4>
+        <p>Your Bejja Credit account has been created successfully.</p>
+        <a href="client-portal.html" class="btn btn-primary">
+            <i class="fa fa-right-to-bracket"></i> Login Now
+        </a>`;
+    successBox.style.display = "block";
+
+    // RESET FORM
+    document.getElementById("registerForm").reset();
+    updateSteps(1);
+    goToStep1();
 
 });
-
-
 
 </script>
 
