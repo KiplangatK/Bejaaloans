@@ -2,74 +2,52 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Complete Reset</title>
+<title>DB Test</title>
 </head>
 <body>
-<h2>Complete Database Reset</h2>
-<p id="status">Deleting old database...</p>
+<h2>Database Test</h2>
+<button onclick="testDB()">Test Database</button>
+<button onclick="addTestClient()">Add Test Client</button>
+<div id="result"></div>
 
+<script src="assets/js/database.js"></script>
 <script>
-// Step 1: Delete old database
-indexedDB.deleteDatabase("BejjaDB");
-document.getElementById("status").innerHTML = "Old database deleted. Creating fresh one...";
+async function testDB() {
+    const r = document.getElementById("result");
+    r.innerHTML = "Testing...";
+    
+    try {
+        const clients = await DB.getClients();
+        const staff = await DB.getStaff();
+        r.innerHTML = `
+            <p>✅ Database is working!</p>
+            <p>Clients: ${clients.length}</p>
+            <p>Staff: ${staff.length}</p>
+            <p>Staff list: ${JSON.stringify(staff)}</p>
+        `;
+    } catch(e) {
+        r.innerHTML = `<p>❌ Error: ${e.message}</p>`;
+    }
+}
 
-// Step 2: Wait then create fresh
-setTimeout(() => {
-    const request = indexedDB.open("BejjaDB", 1);
-    
-    request.onupgradeneeded = function(e) {
-        const db = e.target.result;
-        if (!db.objectStoreNames.contains("staff")) {
-            const store = db.createObjectStore("staff", { keyPath: "id", autoIncrement: true });
-            store.createIndex("username", "username", { unique: true });
-        }
-        if (!db.objectStoreNames.contains("clients")) {
-            const store = db.createObjectStore("clients", { keyPath: "id", autoIncrement: true });
-            store.createIndex("phone", "phone", { unique: true });
-            store.createIndex("status", "status", { unique: false });
-        }
-        if (!db.objectStoreNames.contains("loanApplications")) {
-            const store = db.createObjectStore("loanApplications", { keyPath: "id", autoIncrement: true });
-            store.createIndex("clientId", "clientId", { unique: false });
-            store.createIndex("status", "status", { unique: false });
-        }
-        if (!db.objectStoreNames.contains("loans")) {
-            const store = db.createObjectStore("loans", { keyPath: "id", autoIncrement: true });
-            store.createIndex("clientId", "clientId", { unique: false });
-            store.createIndex("status", "status", { unique: false });
-        }
-        if (!db.objectStoreNames.contains("payments")) {
-            const store = db.createObjectStore("payments", { keyPath: "id", autoIncrement: true });
-            store.createIndex("loanId", "loanId", { unique: false });
-        }
-    };
-    
-    request.onsuccess = function(e) {
-        const db = e.target.result;
-        // Add default admin
-        const tx = db.transaction("staff", "readwrite");
-        const store = tx.objectStore("staff");
-        store.add({
-            username: "admin",
-            password: "admin123",
-            role: "Administrator",
-            active: true
+async function addTestClient() {
+    const r = document.getElementById("result");
+    try {
+        const client = await DB.addClient({
+            fullname: "Test User",
+            nationalID: "12345678",
+            phone: "0712345678",
+            password: "test123",
+            occupation: "Tester",
+            monthlyIncome: "50000",
+            county: "Nairobi",
+            address: "Test Address"
         });
-        
-        tx.oncomplete = function() {
-            document.getElementById("status").innerHTML = `
-                <p style="color:green"><b>✅ Database reset complete!</b></p>
-                <p>Admin account created:</p>
-                <p><b>Username:</b> admin<br><b>Password:</b> admin123</p>
-                <p>Now open <a href="admin-portal.html">Admin Login</a> and login.</p>
-            `;
-        };
-    };
-    
-    request.onerror = function() {
-        document.getElementById("status").innerHTML = "Error creating database. Try refreshing.";
-    };
-}, 1000);
+        r.innerHTML = `<p>✅ Client added! ID: ${client.id}</p>`;
+    } catch(e) {
+        r.innerHTML = `<p>❌ Error adding client: ${e.message}</p>`;
+    }
+}
 </script>
 </body>
 </html>
