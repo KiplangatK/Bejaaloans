@@ -625,7 +625,7 @@ My Loan History
 
 <th>
 
-Loan Date
+Date
 
 </th>
 
@@ -1210,13 +1210,19 @@ async function loadMyLoans(){
     }
 
     let loans = await DB.getLoans();
+    let applications = await DB.getApplications();
 
-    if (!Array.isArray(loans)) {
-        loans = [];
-    }
+    if (!Array.isArray(loans)) loans = [];
+    if (!Array.isArray(applications)) applications = [];
 
+    // Get approved/rejected loans
     let myLoans = loans.filter(loan =>
         String(loan.clientId) === String(client.id)
+    );
+
+    // Get pending applications
+    let myApplications = applications.filter(app =>
+        String(app.clientId) === String(client.id)
     );
 
     let table = document.getElementById("myLoansTable");
@@ -1226,48 +1232,90 @@ async function loadMyLoans(){
     let outstanding = 0;
     let activeCount = 0;
 
-    if(myLoans.length === 0){
+    // Build combined list (loans + pending applications)
+    let allItems = [];
+
+    // Add approved loans
+    myLoans.forEach(loan => {
+        allItems.push({
+            type: "loan",
+            date: loan.loanDate || loan.createdAt || "-",
+            amount: Number(loan.originalPrincipal || 0),
+            balance: Number(loan.remainingPrincipal || 0),
+            dueDate: loan.dueDate || "-",
+            status: loan.status || "ACTIVE",
+            id: loan.id
+        });
+    });
+
+    // Add pending/rejected applications
+    myApplications.forEach(app => {
+        // Skip if already approved (already shown as loan)
+        if (app.status === "APPROVED") return;
+        
+        allItems.push({
+            type: "application",
+            date: app.applicationDate || "-",
+            amount: Number(app.amount || 0),
+            balance: Number(app.amount || 0),
+            dueDate: "-",
+            status: app.status || "PENDING",
+            id: app.id
+        });
+    });
+
+    if(allItems.length === 0){
         table.innerHTML = `
             <tr>
-                <td colspan="6" class="text-center text-muted p-4">No loans found.</td>
+                <td colspan="6" class="text-center text-muted p-4">No loans or applications found.</td>
             </tr>`;
         updateSummary(0, 0, 0, 0);
         return;
     }
 
-    myLoans.reverse().forEach(loan=>{
+    // Sort by date newest first
+    allItems.sort((a, b) => b.date.localeCompare(a.date));
 
-        let amount = Number(loan.originalPrincipal || 0);
-        let balance = Number(loan.remainingPrincipal || 0);
+    allItems.forEach(item => {
 
-        totalBorrowed += amount;
-        outstanding += balance;
-
-        if(loan.status === "ACTIVE"){
+        if (item.status === "ACTIVE") {
+            totalBorrowed += item.amount;
+            outstanding += item.balance;
             activeCount++;
         }
 
-        let statusColor = loan.status === "ACTIVE" ? "bg-success" : "bg-secondary";
+        let statusColor = "bg-secondary";
+        if (item.status === "ACTIVE") statusColor = "bg-success";
+        if (item.status === "COMPLETED") statusColor = "bg-info";
+        if (item.status === "PENDING") statusColor = "bg-warning text-dark";
+        if (item.status === "REJECTED") statusColor = "bg-danger";
+
+        let actionButtons = "";
+        if (item.type === "loan") {
+            actionButtons = `
+                <button class="btn btn-view btn-sm me-2" onclick="viewLoan(${item.id})">
+                    <i class="fa fa-eye"></i> Details
+                </button>
+                <button class="btn btn-payment btn-sm" onclick="viewPayments(${item.id})">
+                    <i class="fa fa-clock-rotate-left"></i> Payments
+                </button>`;
+        } else {
+            actionButtons = `
+                <span class="text-muted small">Awaiting review</span>`;
+        }
 
         table.innerHTML += `
             <tr>
-                <td>${loan.loanDate || "-"}</td>
-                <td>${money(amount)}</td>
-                <td>${money(balance)}</td>
-                <td><span class="text-danger fw-bold">${loan.dueDate || "-"}</span></td>
-                <td><span class="badge ${statusColor}">${loan.status || "PENDING"}</span></td>
-                <td>
-                    <button class="btn btn-view btn-sm me-2" onclick="viewLoan(${loan.id})">
-                        <i class="fa fa-eye"></i> Details
-                    </button>
-                    <button class="btn btn-payment btn-sm" onclick="viewPayments(${loan.id})">
-                        <i class="fa fa-clock-rotate-left"></i> Payments
-                    </button>
-                </td>
+                <td>${item.date}</td>
+                <td>${money(item.amount)}</td>
+                <td>${item.status === "PENDING" || item.status === "REJECTED" ? "-" : money(item.balance)}</td>
+                <td>${item.dueDate}</td>
+                <td><span class="badge ${statusColor}">${item.status}</span></td>
+                <td>${actionButtons}</td>
             </tr>`;
     });
 
-    updateSummary(myLoans.length, activeCount, totalBorrowed, outstanding);
+    updateSummary(allItems.length, activeCount, totalBorrowed, outstanding);
 
 }
 
