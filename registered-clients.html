@@ -383,6 +383,20 @@ color:white;
 
 
 
+.btn-disabled{
+
+background:#ccc;
+
+color:#888;
+
+border-radius:20px;
+
+cursor:not-allowed;
+
+}
+
+
+
 </style>
 
 </head>
@@ -613,6 +627,11 @@ Status
 
 
 <th>
+Loan Status
+</th>
+
+
+<th>
 Action
 </th>
 
@@ -626,7 +645,7 @@ Action
 
 <tbody id="clientsTable">
 
-<tr><td colspan="8" class="text-center text-muted p-4">Loading clients...</td></tr>
+<tr><td colspan="9" class="text-center text-muted p-4">Loading clients...</td></tr>
 
 </tbody>
 
@@ -1101,6 +1120,10 @@ Date
 
 
 
+<!-- Outstanding Warning -->
+<div id="outstandingWarning" class="alert alert-warning mt-2" style="display:none;"></div>
+
+
 
 
 
@@ -1119,6 +1142,8 @@ Date
 <button
 
 class="btn btn-success me-2"
+
+id="btnActivate"
 
 onclick="activateClient()">
 
@@ -1141,6 +1166,8 @@ Activate Client
 
 class="btn btn-warning text-white me-2"
 
+id="btnSuspend"
+
 onclick="suspendClient()">
 
 
@@ -1162,6 +1189,8 @@ Suspend Client
 <button
 
 class="btn btn-danger me-2"
+
+id="btnDelete"
 
 onclick="deleteClient()">
 
@@ -1293,6 +1322,7 @@ admin.username;
 
 
 let selectedClientId = null;
+let selectedClientHasOutstanding = false;
 
 
 
@@ -1336,8 +1366,8 @@ async function loadClients(){
     let retries = 0;
     while (!dbReady && retries < 50) {
         try {
-            if (window.DB && typeof DB.getClients === "function") {
-                const test = await DB.getClients();
+            if (window.DB && typeof DB.getLoans === "function") {
+                const test = await DB.getLoans();
                 if (Array.isArray(test)) {
                     dbReady = true;
                     break;
@@ -1351,33 +1381,47 @@ async function loadClients(){
     if (!dbReady) return;
 
     let clients = await DB.getClients();
+    let loans = await DB.getLoans();
+
+    if (!Array.isArray(clients)) clients = [];
+    if (!Array.isArray(loans)) loans = [];
 
     let table = document.getElementById("clientsTable");
     table.innerHTML="";
 
-    if(!Array.isArray(clients) || clients.length===0){
-        table.innerHTML=`<tr><td colspan="8" class="text-center text-muted p-4">No registered clients found.</td></tr>`;
+    if(clients.length===0){
+        table.innerHTML=`<tr><td colspan="9" class="text-center text-muted p-4">No registered clients found.</td></tr>`;
         return;
     }
 
     const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
-    clients.forEach((client,index)=>{
+    clients.forEach((client, index) => {
         let photo = client.profilePhoto || DEFAULT_IMG;
         let status = client.status || "ACTIVE";
-        let badge = status==="ACTIVE"
+        let badge = status === "ACTIVE"
             ? `<span class="status-active">ACTIVE</span>`
             : `<span class="status-suspended">SUSPENDED</span>`;
 
+        // Check if client has outstanding loan
+        let clientLoans = loans.filter(l => String(l.clientId) === String(client.id) && l.status === "ACTIVE");
+        let hasOutstanding = clientLoans.length > 0;
+        let totalOutstanding = clientLoans.reduce((sum, l) => sum + Number(l.remainingPrincipal || 0), 0);
+
+        let loanStatusBadge = hasOutstanding
+            ? `<span class="badge bg-danger">Active Loan: ${money(totalOutstanding)}</span>`
+            : `<span class="badge bg-secondary">No active loan</span>`;
+
         table.innerHTML += `
             <tr>
-                <td>${index+1}</td>
+                <td>${index + 1}</td>
                 <td><img src="${photo}" class="profile-img"></td>
                 <td>${client.fullname || "-"}</td>
                 <td>${client.phone || "-"}</td>
                 <td>${client.nationalID || "-"}</td>
                 <td>${client.createdAt || "-"}</td>
                 <td>${badge}</td>
+                <td>${loanStatusBadge}</td>
                 <td><button class="btn btn-view btn-sm" onclick="viewClient(${client.id})"><i class="fa fa-eye"></i> View Details</button></td>
             </tr>`;
     });
@@ -1400,12 +1444,19 @@ async function loadClients(){
 async function viewClient(id){
 
     let client = await DB.getClientById(id);
-
     if(!client) return;
 
     const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
     selectedClientId = id;
+
+    // Check outstanding loans
+    let loans = await DB.getLoans();
+    if (!Array.isArray(loans)) loans = [];
+    
+    let activeLoans = loans.filter(l => String(l.clientId) === String(client.id) && l.status === "ACTIVE");
+    let totalOutstanding = activeLoans.reduce((sum, l) => sum + Number(l.remainingPrincipal || 0), 0);
+    selectedClientHasOutstanding = totalOutstanding > 0;
 
     document.getElementById("viewPhoto").src = client.profilePhoto || DEFAULT_IMG;
     document.getElementById("viewProfile").src = client.profilePhoto || "";
@@ -1422,21 +1473,20 @@ async function viewClient(id){
     document.getElementById("viewAddress").innerHTML = client.address || "-";
     document.getElementById("viewDate").innerHTML = client.createdAt || "-";
 
-    document.getElementById("viewStatus").innerHTML = client.status==="SUSPENDED"
+    document.getElementById("viewStatus").innerHTML = client.status === "SUSPENDED"
         ? `<span class="status-suspended">SUSPENDED</span>`
         : `<span class="status-active">ACTIVE</span>`;
 
     // LOAN HISTORY
     let loanTable = document.getElementById("loanHistory");
-    loanTable.innerHTML="";
+    loanTable.innerHTML = "";
 
-    let loans = await DB.getLoans();
     let clientLoans = loans.filter(loan => String(loan.clientId) === String(client.id));
 
-    if(clientLoans.length===0){
-        loanTable.innerHTML=`<tr><td colspan="3" class="text-center">No loan history.</td></tr>`;
+    if (clientLoans.length === 0) {
+        loanTable.innerHTML = `<tr><td colspan="3" class="text-center">No loan history.</td></tr>`;
     } else {
-        clientLoans.forEach(loan=>{
+        clientLoans.forEach(loan => {
             loanTable.innerHTML += `
                 <tr>
                     <td>${money(loan.originalPrincipal)}</td>
@@ -1444,6 +1494,36 @@ async function viewClient(id){
                     <td>${loan.createdAt || loan.loanDate || "-"}</td>
                 </tr>`;
         });
+    }
+
+    // Show warning if outstanding balance
+    const warningEl = document.getElementById("outstandingWarning");
+    const btnSuspend = document.getElementById("btnSuspend");
+    const btnDelete = document.getElementById("btnDelete");
+
+    if (selectedClientHasOutstanding) {
+        warningEl.style.display = "block";
+        warningEl.innerHTML = `
+            <i class="fa fa-exclamation-triangle"></i> 
+            <b>This client has an outstanding loan balance of ${money(totalOutstanding)}.</b><br>
+            <small>Suspension and deletion are disabled until the loan is fully paid.</small>
+        `;
+        btnSuspend.disabled = true;
+        btnSuspend.classList.add("btn-disabled");
+        btnSuspend.title = "Cannot suspend - client has outstanding loan";
+        
+        btnDelete.disabled = true;
+        btnDelete.classList.add("btn-disabled");
+        btnDelete.title = "Cannot delete - client has outstanding loan";
+    } else {
+        warningEl.style.display = "none";
+        btnSuspend.disabled = false;
+        btnSuspend.classList.remove("btn-disabled");
+        btnSuspend.title = "";
+        
+        btnDelete.disabled = false;
+        btnDelete.classList.remove("btn-disabled");
+        btnDelete.title = "";
     }
 
     let modal = new bootstrap.Modal(document.getElementById("clientModal"));
@@ -1466,13 +1546,17 @@ async function viewClient(id){
 
 async function suspendClient(){
 
-    let client = await DB.getClientById(selectedClientId);
+    if (selectedClientHasOutstanding) {
+        alert("Cannot suspend this client. They have an outstanding loan balance that must be cleared first.");
+        return;
+    }
 
+    let client = await DB.getClientById(selectedClientId);
     if(!client) return;
 
     if(!confirm("Suspend this client account?")) return;
 
-    client.status="SUSPENDED";
+    client.status = "SUSPENDED";
     await DB.updateClient(client);
 
     alert("Client suspended successfully.");
@@ -1499,10 +1583,9 @@ async function suspendClient(){
 async function activateClient(){
 
     let client = await DB.getClientById(selectedClientId);
-
     if(!client) return;
 
-    client.status="ACTIVE";
+    client.status = "ACTIVE";
     await DB.updateClient(client);
 
     alert("Client activated successfully.");
@@ -1528,8 +1611,12 @@ async function activateClient(){
 
 async function deleteClient(){
 
-    let client = await DB.getClientById(selectedClientId);
+    if (selectedClientHasOutstanding) {
+        alert("Cannot delete this client. They have an outstanding loan balance of " + money(selectedClientOutstanding) + ". The loan must be fully paid first.");
+        return;
+    }
 
+    let client = await DB.getClientById(selectedClientId);
     if(!client) return;
 
     if(!confirm("WARNING: Delete this client permanently?")) return;
