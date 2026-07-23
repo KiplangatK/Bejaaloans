@@ -1323,7 +1323,6 @@ async function viewLoan(id){
     let totalExpected = Number(loan.originalPrincipal) + (Number(loan.originalPrincipal) * rate / 100);
     let repaymentProgress = totalExpected > 0 ? Math.round((totalPaid / totalExpected) * 100) : 0;
 
-    // Calculate months overdue
     let monthsOverdue = 0;
     if (loan.dueDate) {
         const parts = loan.dueDate.split("/");
@@ -1545,44 +1544,9 @@ async function savePayment(){
     let loan = await DB.getLoan(loanId);
     if (!loan) return;
 
-    let balance = Number(loan.remainingPrincipal || 0);
-    let rate = Number(loan.interestRate || 20);
-    let interestOwed = (balance * rate) / 100;
-
     await DB.addPayment({ loanId, amount, date: formattedDate, method });
 
-    // If payment covers the full monthly interest, push due date forward
-    if (amount >= interestOwed) {
-        let loanDay = 15;
-        if (loan.loanDate) {
-            const loanParts = loan.loanDate.split("/");
-            if (loanParts.length === 3) {
-                loanDay = parseInt(loanParts[0]);
-            }
-        }
-        
-        let newDue = new Date();
-        newDue.setMonth(newDue.getMonth() + 1);
-        newDue.setDate(loanDay);
-        
-        if (newDue.getDate() < loanDay) {
-            newDue.setDate(0);
-        }
-        
-        const newDay = String(newDue.getDate()).padStart(2, "0");
-        const newMonth = String(newDue.getMonth() + 1).padStart(2, "0");
-        const newYear = newDue.getFullYear();
-        
-        loan.dueDate = `${newDay}/${newMonth}/${newYear}`;
-        await DB.updateLoan(loan);
-        
-        alert(`Payment recorded! Interest covered. New due date: ${loan.dueDate}`);
-    } else {
-        let remaining = interestOwed - amount;
-        alert(`Payment recorded! Remaining overdue interest: ${money(remaining)}`);
-    }
-
-    // Reload the page to refresh everything
+    // Reload so late-loans recalculates correctly
     location.reload();
 }
 
