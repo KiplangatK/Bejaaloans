@@ -1,7 +1,7 @@
 /*=========================================================
     BEJJA LOAN CREDIT
     DATABASE ENGINE — IndexedDB
-    Version: 4.1
+    Version: 4.2
 
     - Unlimited storage for thousands of clients
     - Indexed queries by phone, clientId, loanId, status
@@ -9,6 +9,7 @@
     - Interest calculated on remaining balance
     - Interest paid first, remainder reduces principal
     - Auto-migrates from localStorage
+    - Stores payment notes/comments
 =========================================================*/
 
 (function(){
@@ -390,7 +391,8 @@ async function addPayment(payment) {
         interestPaid: interestPaid,
         balance: newBalance,
         date: payment.date || today(),
-        method: payment.method || "Cash"
+        method: payment.method || "Cash",
+        note: payment.note || ""
     };
 
     const savedPayment = await add("payments", newPayment);
@@ -513,7 +515,7 @@ async function exportDatabase() {
 
 openDB().then(async () => {
     await migrateFromLocalStorage();
-    console.log("BEJJA DATABASE ENGINE V4.1 (IndexedDB) LOADED");
+    console.log("BEJJA DATABASE ENGINE V4.2 (IndexedDB) LOADED");
 }).catch(err => {
     console.error("Database initialization failed:", err);
 });
