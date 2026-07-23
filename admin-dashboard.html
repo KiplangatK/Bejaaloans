@@ -1147,27 +1147,66 @@ async function loadDashboardStats(){
         if (!Array.isArray(allLoans)) allLoans = [];
         document.getElementById("totalLoans").innerHTML = allLoans.length;
 
-        // ACTIVE LOANS (not past due date) & LATE LOANS
+        // ACTIVE LOANS & LATE LOANS — match late-loans.html exactly
         let today = new Date();
+        today.setHours(0, 0, 0, 0);
         let activeCount = 0;
         let lateCount = 0;
 
         for (let loan of allLoans) {
             if (loan.status === "COMPLETED") continue;
-            if (Number(loan.remainingPrincipal || 0) <= 0) continue;
+            let balance = Number(loan.remainingPrincipal || 0);
+            if (balance <= 0) continue;
 
-            if (loan.dueDate) {
-                const parts = loan.dueDate.split("/");
-                if (parts.length === 3) {
-                    const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
-                    if (dueDate < today) {
-                        lateCount++;
-                    } else {
-                        activeCount++;
-                    }
-                }
-            } else {
+            if (!loan.dueDate) {
                 activeCount++;
+                continue;
+            }
+
+            const parts = loan.dueDate.split("/");
+            if (parts.length !== 3) {
+                activeCount++;
+                continue;
+            }
+            const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
+            dueDate.setHours(0, 0, 0, 0);
+
+            if (dueDate >= today) {
+                activeCount++;
+                continue;
+            }
+
+            // Past due — match late-loans.html logic
+            let monthsDiff = 0;
+            let checkDate = new Date(dueDate);
+            while (true) {
+                let nextMonth = new Date(checkDate);
+                nextMonth.setMonth(nextMonth.getMonth() + 1);
+                if (today < nextMonth) break;
+                monthsDiff++;
+                checkDate = nextMonth;
+            }
+            if (monthsDiff < 1) monthsDiff = 1;
+
+            let rate = Number(loan.interestRate || 20);
+            let monthlyInterest = (balance * rate) / 100;
+            let totalOutstandingInterest = monthlyInterest * monthsDiff;
+
+            // Sum all payments
+            let payments = await DB.getLoanPayments(loan.id);
+            let totalPaid = 0;
+            if (Array.isArray(payments)) {
+                for (let p of payments) {
+                    totalPaid += Number(p.amount || 0);
+                }
+            }
+
+            let remainingAfterAll = totalOutstandingInterest - totalPaid;
+
+            if (remainingAfterAll <= 0) {
+                activeCount++;
+            } else {
+                lateCount++;
             }
         }
 
