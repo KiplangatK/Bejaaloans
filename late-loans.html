@@ -1093,6 +1093,7 @@ function money(value){
 LOAD LATE LOANS
 ================================*/
 
+
 async function loadLateLoans(){
 
     let dbReady = false;
@@ -1142,30 +1143,7 @@ async function loadLateLoans(){
 
         if (dueDate >= today) continue;
 
-        // Get all payments
-        let payments = await DB.getLoanPayments(loan.id);
-        
-        // Separate early and after-due payments
-        let earlyPaymentTotal = 0;
-        let afterDueTotal = 0;
-        
-        if (Array.isArray(payments)) {
-            for (let p of payments) {
-                if (!p.date) continue;
-                const pParts = p.date.split("/");
-                if (pParts.length !== 3) continue;
-                const paymentDate = new Date(pParts[2], pParts[1] - 1, pParts[0]);
-                paymentDate.setHours(0, 0, 0, 0);
-                
-                if (paymentDate < dueDate) {
-                    earlyPaymentTotal += Number(p.amount || 0);
-                } else {
-                    afterDueTotal += Number(p.amount || 0);
-                }
-            }
-        }
-
-        // Calculate months overdue properly
+        // Calculate months overdue
         let monthsDiff = 0;
         let checkDate = new Date(dueDate);
 
@@ -1182,13 +1160,24 @@ async function loadLateLoans(){
         // Monthly interest on remaining balance
         let monthlyInterest = (balance * rate) / 100;
 
-        // Total overdue interest for all completed months
-        let totalOverdueInterest = monthlyInterest * monthsDiff;
+        // Total outstanding interest for all overdue months
+        let totalOutstandingInterest = monthlyInterest * monthsDiff;
 
-        // Apply early payments first, then after-due payments
-        let remainingAfterAll = totalOverdueInterest - earlyPaymentTotal - afterDueTotal;
+        // Get all payments
+        let payments = await DB.getLoanPayments(loan.id);
+        
+        // Sum all payments (early + after due)
+        let totalPaid = 0;
+        if (Array.isArray(payments)) {
+            for (let p of payments) {
+                totalPaid += Number(p.amount || 0);
+            }
+        }
 
-        // If all overdue interest is covered, loan is current
+        // Remaining after all payments
+        let remainingAfterAll = totalOutstandingInterest - totalPaid;
+
+        // If all outstanding interest is covered, loan is current
         if (remainingAfterAll <= 0) continue;
 
         // Overdue amount = what's still owed
@@ -1196,7 +1185,7 @@ async function loadLateLoans(){
 
         lateCount++;
         outstandingPrincipal += balance;
-        totalInterestOwed += totalOverdueInterest;
+        totalInterestOwed += totalOutstandingInterest;
         totalDue += overdueAmount;
 
         let client = await DB.getClientById(loan.clientId);
@@ -1205,12 +1194,8 @@ async function loadLateLoans(){
 
         let daysLate = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
 
-        let earlyInfo = earlyPaymentTotal > 0 
-            ? `<br><small class="text-success">Early: ${money(earlyPaymentTotal)}</small>`
-            : "";
-
-        let afterDueInfo = afterDueTotal > 0 
-            ? `<br><small class="text-warning">Paid after due: ${money(afterDueTotal)}</small>`
+        let paidInfo = totalPaid > 0 
+            ? `<br><small class="text-warning">Paid: ${money(totalPaid)}</small>`
             : "";
 
         let monthInfo = monthsDiff > 1 
@@ -1225,7 +1210,7 @@ async function loadLateLoans(){
                 <td>KES ${originalAmount.toLocaleString()}</td>
                 <td>KES ${balance.toLocaleString()}</td>
                 <td class="fw-bold text-danger">KES ${monthlyInterest.toLocaleString()}/mo</td>
-                <td class="fw-bold">KES ${overdueAmount.toLocaleString()}${monthInfo}${earlyInfo}${afterDueInfo}</td>
+                <td class="fw-bold">KES ${overdueAmount.toLocaleString()}${monthInfo}${paidInfo}</td>
                 <td>${loan.dueDate}</td>
                 <td class="text-danger fw-bold">${daysLate} Days (${monthsDiff} mo)</td>
                 <td>
@@ -1270,32 +1255,10 @@ async function viewLoan(id){
     let currentInterest = (balance * rate) / 100;
 
     let payments = await DB.getLoanPayments(loan.id);
-    let totalEarlyPaid = 0;
-    let totalRegularPaid = 0;
     let totalPaid = 0;
     
-    if (Array.isArray(payments) && loan.dueDate) {
-        const parts = loan.dueDate.split("/");
-        if (parts.length === 3) {
-            const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
-            dueDate.setHours(0, 0, 0, 0);
-            payments.forEach(p => {
-                const amount = Number(p.amount || 0);
-                totalPaid += amount;
-                if (p.date) {
-                    const pParts = p.date.split("/");
-                    if (pParts.length === 3) {
-                        const paymentDate = new Date(pParts[2], pParts[1] - 1, pParts[0]);
-                        paymentDate.setHours(0, 0, 0, 0);
-                        if (paymentDate < dueDate) {
-                            totalEarlyPaid += amount;
-                        } else {
-                            totalRegularPaid += amount;
-                        }
-                    }
-                }
-            });
-        }
+    if (Array.isArray(payments)) {
+        payments.forEach(p => { totalPaid += Number(p.amount || 0); });
     }
 
     let totalExpected = Number(loan.originalPrincipal) + (Number(loan.originalPrincipal) * rate / 100);
@@ -1322,6 +1285,8 @@ async function viewLoan(id){
         }
     }
 
+    let totalOutstandingInterest = currentInterest * monthsOverdue;
+
     document.getElementById("loanDetails").innerHTML = `
         <h5 class="text-primary">Client Information</h5>
         <hr>
@@ -1339,8 +1304,7 @@ async function viewLoan(id){
             </div>
             <div class="col-md-6">
                 <p><b>Total Paid:</b> <span class="text-success fw-bold">${money(totalPaid)}</span></p>
-                <p><b>Early Payments:</b> <span class="text-primary fw-bold">${money(totalEarlyPaid)}</span></p>
-                <p><b>Regular/Late Payments:</b> <span class="text-warning fw-bold">${money(totalRegularPaid)}</span></p>
+                <p><b>Total Outstanding Interest:</b> <span class="text-danger fw-bold">${money(totalOutstandingInterest)}</span></p>
                 <p><b>Repayment Progress:</b> ${repaymentProgress}%</p>
             </div>
         </div>
@@ -1499,7 +1463,7 @@ function openPayment(id){
 
 
 /*================================
-SAVE PAYMENT — just records and reloads
+SAVE PAYMENT
 ================================*/
 
 async function savePayment(){
@@ -1521,7 +1485,6 @@ async function savePayment(){
 
     await DB.addPayment({ loanId, amount, date: formattedDate, method });
 
-    // Reload so loadLateLoans recalculates everything fresh
     location.reload();
 }
 
@@ -1538,6 +1501,7 @@ function logout(){
 /*================================
 START PAGE
 ================================*/
+
 
 loadLateLoans();
 
