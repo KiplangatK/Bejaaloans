@@ -1289,7 +1289,6 @@ function autoCheckName() {
 
         document.getElementById("fullname").style.border = "2px solid #4caf50";
 
-        // Re-verify ID together with name
         if (nationalID && nationalID.length >= 6) {
             autoVerifyID();
         }
@@ -1328,7 +1327,6 @@ async function autoVerifyID() {
         return;
     }
 
-    // Check name format too
     if (fullname && (!/^[a-zA-Z\s'-]+$/.test(fullname) || fullname.length < 3)) {
         statusEl.innerHTML = '<span class="status-error"><i class="fa fa-times-circle"></i> Enter full name as per ID (letters only).</span>';
         return;
@@ -1638,17 +1636,31 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     sessionStorage.removeItem("idVerified");
     sessionStorage.removeItem("phoneVerified");
 
-    successBox.innerHTML = `
-        <h4><i class="fa fa-check-circle"></i> Account Created Successfully</h4>
-        <p>Your Bejja Credit account has been created successfully.</p>
-        <a href="client-portal.html" class="btn btn-primary">
-            <i class="fa fa-right-to-bracket"></i> Login Now
-        </a>`;
-    successBox.style.display = "block";
-
-    document.getElementById("registerForm").reset();
-    updateSteps(1);
-    goToStep1();
+    // Show centered success overlay
+    document.body.innerHTML = `
+        <div style="
+            position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center;
+            z-index:9999;
+        ">
+            <div style="
+                background:white; border-radius:25px; padding:50px 40px; text-align:center;
+                max-width:500px; box-shadow:0 20px 40px rgba(0,0,0,.3); margin:20px;
+            ">
+                <i class="fa-solid fa-circle-check" style="font-size:80px; color:#198754; margin-bottom:20px;"></i>
+                <h2 style="color:#0F4C81; font-weight:700; margin-bottom:15px;">Account Created!</h2>
+                <p style="color:#666; font-size:17px; line-height:1.8; margin-bottom:25px;">
+                    Your Bejja Credit account has been created successfully.
+                </p>
+                <a href="client-portal.html" style="
+                    background:#2563EB; color:white; padding:14px; border-radius:12px;
+                    text-decoration:none; font-weight:600; font-size:16px; display:block;
+                ">
+                    <i class="fa fa-right-to-bracket"></i> Login Now
+                </a>
+            </div>
+        </div>
+    `;
 
 });
 
