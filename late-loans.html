@@ -1389,9 +1389,40 @@ async function savePayment(){
         return;
     }
 
+    // Get current loan
+    let loan = await DB.getLoan(loanId);
+    if (!loan) return;
+
+    let balance = Number(loan.remainingPrincipal || 0);
+    let rate = Number(loan.interestRate || 20);
+    let interestOwed = (balance * rate) / 100;
+
+    // Record payment
     await DB.addPayment({ loanId, amount, date, method });
 
-    alert("Payment recorded successfully");
+    // If payment covers the interest (overdue amount), push due date forward by 1 month
+    if (amount >= interestOwed) {
+        const parts = loan.dueDate.split("/");
+        if (parts.length === 3) {
+            let oldDue = new Date(parts[2], parts[1] - 1, parts[0]);
+            oldDue.setMonth(oldDue.getMonth() + 1);
+            
+            const newDay = String(oldDue.getDate()).padStart(2, "0");
+            const newMonth = String(oldDue.getMonth() + 1).padStart(2, "0");
+            const newYear = oldDue.getFullYear();
+            
+            loan.dueDate = `${newDay}/${newMonth}/${newYear}`;
+            await DB.updateLoan(loan);
+            
+            alert(`Payment recorded! Interest covered. New due date: ${loan.dueDate}`);
+        } else {
+            alert("Payment recorded successfully!");
+        }
+    } else {
+        let remaining = interestOwed - amount;
+        alert(`Payment recorded! Remaining overdue interest: ${money(remaining)}`);
+    }
+
     loadLateLoans();
     bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
 }
