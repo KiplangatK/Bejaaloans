@@ -181,6 +181,51 @@ display:none;
 }
 
 
+
+.status-ok{
+
+color:#4caf50;
+
+font-size:12px;
+
+}
+
+
+
+.status-error{
+
+color:#dc3545;
+
+font-size:12px;
+
+}
+
+
+
+.status-checking{
+
+color:#ffc107;
+
+font-size:12px;
+
+}
+
+
+
+.verify-btn{
+
+height:50px;
+
+border-radius:12px;
+
+font-size:13px;
+
+white-space:nowrap;
+
+}
+
+
+
 </style>
 
 
@@ -786,7 +831,14 @@ id="g1_id"
 
 class="form-control"
 
-placeholder="National ID">
+placeholder="National ID (6-10 digits)"
+
+oninput="validateGuarantorID('g1')"
+
+maxlength="10">
+
+
+<div id="g1_idStatus" class="mt-1"></div>
 
 
 </div>
@@ -805,14 +857,65 @@ Phone Number
 </label>
 
 
+<div class="input-group">
+
 <input
 
 id="g1_phone"
 
 class="form-control"
 
-placeholder="07XXXXXXXX">
+placeholder="07XXXXXXXX or +2547XXXXXXXX"
 
+oninput="validateGuarantorPhone('g1')">
+
+
+<button class="btn btn-outline-success verify-btn" type="button" id="g1_sendOTPBtn" onclick="sendGuarantorOTP('g1')">
+
+<i class="fa fa-paper-plane"></i> Verify
+
+</button>
+
+</div>
+
+<div id="g1_phoneStatus" class="mt-1"></div>
+
+</div>
+
+
+<!-- G1 OTP -->
+
+<div class="col-md-6 mb-3">
+
+<div id="g1_otpBox" style="display:none; background:#e8f5e9; border:2px solid #4caf50; border-radius:12px; padding:15px;">
+
+<label class="fw-semibold">Enter Code</label>
+
+<div class="d-flex gap-1 mt-1">
+
+<input type="text" id="g1_otp1" maxlength="1" class="otp-input-small" oninput="otpNextG(this, 'g1_otp2')">
+
+<input type="text" id="g1_otp2" maxlength="1" class="otp-input-small" oninput="otpNextG(this, 'g1_otp3')">
+
+<input type="text" id="g1_otp3" maxlength="1" class="otp-input-small" oninput="otpNextG(this, 'g1_otp4')">
+
+<input type="text" id="g1_otp4" maxlength="1" class="otp-input-small" oninput="otpNextG(this, 'g1_otp5')">
+
+<input type="text" id="g1_otp5" maxlength="1" class="otp-input-small" oninput="otpNextG(this, 'g1_otp6')">
+
+<input type="text" id="g1_otp6" maxlength="1" class="otp-input-small">
+
+</div>
+
+<button class="btn btn-success btn-sm w-100 mt-2" type="button" onclick="verifyGuarantorOTP('g1')">
+
+<i class="fa fa-check-circle"></i> Confirm
+
+</button>
+
+<div id="g1_otpStatus" class="mt-1"></div>
+
+</div>
 
 </div>
 
@@ -1060,7 +1163,14 @@ id="g2_id"
 
 class="form-control"
 
-placeholder="National ID">
+placeholder="National ID (6-10 digits)"
+
+oninput="validateGuarantorID('g2')"
+
+maxlength="10">
+
+
+<div id="g2_idStatus" class="mt-1"></div>
 
 
 </div>
@@ -1079,14 +1189,65 @@ Phone Number
 </label>
 
 
+<div class="input-group">
+
 <input
 
 id="g2_phone"
 
 class="form-control"
 
-placeholder="07XXXXXXXX">
+placeholder="07XXXXXXXX or +2547XXXXXXXX"
 
+oninput="validateGuarantorPhone('g2')">
+
+
+<button class="btn btn-outline-success verify-btn" type="button" id="g2_sendOTPBtn" onclick="sendGuarantorOTP('g2')">
+
+<i class="fa fa-paper-plane"></i> Verify
+
+</button>
+
+</div>
+
+<div id="g2_phoneStatus" class="mt-1"></div>
+
+</div>
+
+
+<!-- G2 OTP -->
+
+<div class="col-md-6 mb-3">
+
+<div id="g2_otpBox" style="display:none; background:#e8f5e9; border:2px solid #4caf50; border-radius:12px; padding:15px;">
+
+<label class="fw-semibold">Enter Code</label>
+
+<div class="d-flex gap-1 mt-1">
+
+<input type="text" id="g2_otp1" maxlength="1" class="otp-input-small" oninput="otpNextG(this, 'g2_otp2')">
+
+<input type="text" id="g2_otp2" maxlength="1" class="otp-input-small" oninput="otpNextG(this, 'g2_otp3')">
+
+<input type="text" id="g2_otp3" maxlength="1" class="otp-input-small" oninput="otpNextG(this, 'g2_otp4')">
+
+<input type="text" id="g2_otp4" maxlength="1" class="otp-input-small" oninput="otpNextG(this, 'g2_otp5')">
+
+<input type="text" id="g2_otp5" maxlength="1" class="otp-input-small" oninput="otpNextG(this, 'g2_otp6')">
+
+<input type="text" id="g2_otp6" maxlength="1" class="otp-input-small">
+
+</div>
+
+<button class="btn btn-success btn-sm w-100 mt-2" type="button" onclick="verifyGuarantorOTP('g2')">
+
+<i class="fa fa-check-circle"></i> Confirm
+
+</button>
+
+<div id="g2_otpStatus" class="mt-1"></div>
+
+</div>
 
 </div>
 
@@ -1295,6 +1456,26 @@ border:1px solid #ddd;
 
 
 
+.otp-input-small{
+
+width:42px;
+
+height:42px;
+
+text-align:center;
+
+font-size:18px;
+
+font-weight:bold;
+
+border-radius:8px;
+
+border:2px solid #2563EB;
+
+}
+
+
+
 </style>
 
 
@@ -1359,6 +1540,168 @@ reader.readAsDataURL(file);
 
 }
 
+
+
+// ================================
+// GUARANTOR ID VALIDATION
+// ================================
+
+function validateGuarantorID(prefix) {
+    const idInput = document.getElementById(prefix + "_id");
+    const statusEl = document.getElementById(prefix + "_idStatus");
+    const value = idInput.value.trim();
+
+    if (!value) {
+        statusEl.innerHTML = "";
+        idInput.style.border = "";
+        return;
+    }
+
+    if (!/^\d+$/.test(value)) {
+        statusEl.innerHTML = '<span class="status-error">Numbers only.</span>';
+        idInput.style.border = "2px solid #dc3545";
+        return;
+    }
+
+    if (value.length < 6) {
+        statusEl.innerHTML = '<span class="status-checking">At least 6 digits.</span>';
+        idInput.style.border = "";
+        return;
+    }
+
+    if (value.length > 10) {
+        statusEl.innerHTML = '<span class="status-error">Max 10 digits.</span>';
+        idInput.style.border = "2px solid #dc3545";
+        return;
+    }
+
+    // Check not same as client's ID
+    const clientID = document.getElementById("nationalID").value.trim();
+    if (value === clientID) {
+        statusEl.innerHTML = '<span class="status-error">Cannot use your own ID.</span>';
+        idInput.style.border = "2px solid #dc3545";
+        return;
+    }
+
+    statusEl.innerHTML = '<span class="status-ok"><i class="fa fa-check-circle"></i> Valid format.</span>';
+    idInput.style.border = "2px solid #4caf50";
+}
+
+
+// ================================
+// GUARANTOR PHONE VALIDATION
+// ================================
+
+function normalizePhone(raw) {
+    let phone = raw.replace(/\s+/g, "").replace(/-/g, "");
+    if (phone.startsWith("+2547")) phone = "0" + phone.substring(4);
+    if (phone.startsWith("+2541")) phone = "0" + phone.substring(4);
+    if (phone.startsWith("2547")) phone = "0" + phone.substring(3);
+    if (phone.startsWith("2541")) phone = "0" + phone.substring(3);
+    return phone;
+}
+
+function isValidPhone(raw) {
+    const phone = normalizePhone(raw);
+    return /^0[17]\d{8}$/.test(phone);
+}
+
+function validateGuarantorPhone(prefix) {
+    const phoneInput = document.getElementById(prefix + "_phone");
+    const statusEl = document.getElementById(prefix + "_phoneStatus");
+    const raw = phoneInput.value.trim();
+
+    if (!raw) {
+        statusEl.innerHTML = "";
+        phoneInput.style.border = "";
+        return;
+    }
+
+    if (!isValidPhone(raw)) {
+        statusEl.innerHTML = '<span class="status-error">Enter 07XXXXXXXX or +2547XXXXXXXX</span>';
+        phoneInput.style.border = "2px solid #dc3545";
+        return;
+    }
+
+    // Check not same as client's phone
+    const clientPhone = document.getElementById("phone").value.trim();
+    const normalized = normalizePhone(raw);
+    if (normalized === clientPhone) {
+        statusEl.innerHTML = '<span class="status-error">Cannot use your own phone.</span>';
+        phoneInput.style.border = "2px solid #dc3545";
+        return;
+    }
+
+    statusEl.innerHTML = '<span class="status-ok"><i class="fa fa-check-circle"></i> Format valid. Verify to confirm.</span>';
+    phoneInput.style.border = "2px solid #ffc107";
+}
+
+
+// ================================
+// GUARANTOR OTP
+// ================================
+
+const guarantorOTPs = {};
+
+function sendGuarantorOTP(prefix) {
+    const raw = document.getElementById(prefix + "_phone").value.trim();
+    const statusEl = document.getElementById(prefix + "_phoneStatus");
+    const sendBtn = document.getElementById(prefix + "_sendOTPBtn");
+
+    if (!isValidPhone(raw)) {
+        statusEl.innerHTML = '<span class="status-error">Enter a valid phone first.</span>';
+        return;
+    }
+
+    const phone = normalizePhone(raw);
+
+    // Generate OTP
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+    guarantorOTPs[prefix] = otp;
+    console.log("OTP for " + prefix + " (" + phone + "): " + otp);
+
+    statusEl.innerHTML = '<span class="status-ok">Code sent! (Demo: <b>' + otp + '</b>)</span>';
+
+    document.getElementById(prefix + "_otpBox").style.display = "block";
+    sendBtn.disabled = true;
+    sendBtn.innerHTML = '<i class="fa fa-clock"></i> Sent';
+}
+
+
+function otpNextG(current, nextId) {
+    if (current.value.length === 1 && nextId) {
+        document.getElementById(nextId).focus();
+    }
+}
+
+
+function verifyGuarantorOTP(prefix) {
+    const statusEl = document.getElementById(prefix + "_otpStatus");
+    const phoneInput = document.getElementById(prefix + "_phone");
+
+    const entered = 
+        document.getElementById(prefix + "_otp1").value +
+        document.getElementById(prefix + "_otp2").value +
+        document.getElementById(prefix + "_otp3").value +
+        document.getElementById(prefix + "_otp4").value +
+        document.getElementById(prefix + "_otp5").value +
+        document.getElementById(prefix + "_otp6").value;
+
+    if (entered.length < 6) {
+        statusEl.innerHTML = '<span class="status-error">Enter complete code.</span>';
+        return;
+    }
+
+    if (entered === guarantorOTPs[prefix]) {
+        statusEl.innerHTML = '<span class="status-ok"><i class="fa fa-check-circle"></i> Verified!</span>';
+        sessionStorage.setItem(prefix + "_phoneVerified", "true");
+        phoneInput.style.border = "2px solid #4caf50";
+        document.getElementById(prefix + "_otpBox").style.display = "none";
+        document.getElementById(prefix + "_sendOTPBtn").innerHTML = '<i class="fa fa-check"></i> Done';
+    } else {
+        statusEl.innerHTML = '<span class="status-error">Incorrect code.</span>';
+    }
+}
 
 
 </script>
@@ -1682,7 +2025,7 @@ if(document.getElementById(field).value.trim()===""){
 
 errorBox.innerHTML=
 
-"Please complete guarantor details";
+"Please complete all guarantor details";
 
 
 errorBox.style.display="block";
@@ -1694,6 +2037,66 @@ return;
 }
 
 
+}
+
+
+
+
+
+// Validate Guarantor 1 ID format
+let g1_id = document.getElementById("g1_id").value.trim();
+if (!/^\d{6,10}$/.test(g1_id)) {
+    errorBox.innerHTML = "Guarantor 1: Invalid ID format (6-10 digits required).";
+    errorBox.style.display = "block";
+    return;
+}
+
+// Validate Guarantor 2 ID format
+let g2_id = document.getElementById("g2_id").value.trim();
+if (!/^\d{6,10}$/.test(g2_id)) {
+    errorBox.innerHTML = "Guarantor 2: Invalid ID format (6-10 digits required).";
+    errorBox.style.display = "block";
+    return;
+}
+
+// Validate Guarantor 1 phone
+let g1_phone = document.getElementById("g1_phone").value.trim();
+if (!isValidPhone(g1_phone)) {
+    errorBox.innerHTML = "Guarantor 1: Enter a valid phone number.";
+    errorBox.style.display = "block";
+    return;
+}
+if (!sessionStorage.getItem("g1_phoneVerified")) {
+    errorBox.innerHTML = "Guarantor 1: Please verify phone number with OTP.";
+    errorBox.style.display = "block";
+    return;
+}
+
+// Validate Guarantor 2 phone
+let g2_phone = document.getElementById("g2_phone").value.trim();
+if (!isValidPhone(g2_phone)) {
+    errorBox.innerHTML = "Guarantor 2: Enter a valid phone number.";
+    errorBox.style.display = "block";
+    return;
+}
+if (!sessionStorage.getItem("g2_phoneVerified")) {
+    errorBox.innerHTML = "Guarantor 2: Please verify phone number with OTP.";
+    errorBox.style.display = "block";
+    return;
+}
+
+// Guarantors can't have same phone
+if (normalizePhone(g1_phone) === normalizePhone(g2_phone)) {
+    errorBox.innerHTML = "Guarantors must have different phone numbers.";
+    errorBox.style.display = "block";
+    return;
+}
+
+// Guarantors can't have same ID
+if (g1_id === g2_id) {
+    errorBox.innerHTML = "Guarantors must have different ID numbers.";
+    errorBox.style.display = "block";
+    return;
 }
 
 
@@ -1915,9 +2318,9 @@ guarantor1:{
 
 name:document.getElementById("g1_name").value,
 
-id:document.getElementById("g1_id").value,
+id:g1_id,
 
-phone:document.getElementById("g1_phone").value,
+phone:normalizePhone(g1_phone),
 
 relationship:document.getElementById("g1_relationship").value,
 
@@ -1942,9 +2345,9 @@ guarantor2:{
 
 name:document.getElementById("g2_name").value,
 
-id:document.getElementById("g2_id").value,
+id:g2_id,
 
-phone:document.getElementById("g2_phone").value,
+phone:normalizePhone(g2_phone),
 
 relationship:document.getElementById("g2_relationship").value,
 
@@ -2025,6 +2428,11 @@ Go Dashboard
 
 
 successBox.style.display="block";
+
+
+// Clear guarantor verification flags
+sessionStorage.removeItem("g1_phoneVerified");
+sessionStorage.removeItem("g2_phoneVerified");
 
 
 
