@@ -196,6 +196,50 @@ text-decoration:none;
 
 
 
+.topbar .topbar-right{
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+}
+
+
+
+.topbar .btn-back{
+
+background:rgba(255,255,255,0.2);
+
+color:white;
+
+padding:8px 16px;
+
+border-radius:20px;
+
+text-decoration:none;
+
+font-size:14px;
+
+font-weight:600;
+
+transition:.3s;
+
+}
+
+
+
+.topbar .btn-back:hover{
+
+background:rgba(255,255,255,0.35);
+
+color:white;
+
+}
+
+
+
 /* CONTENT */
 
 
@@ -397,23 +441,15 @@ Loan Statistics
 
 
 
-<div>
+<div class="topbar-right">
 
-Welcome,
+<a href="admin-dashboard.html" class="btn-back">
 
-<strong id="adminName">
-Admin
-</strong>
-
-
-|
-
-<a href="#" onclick="logout()">
-
-Logout
+<i class="fa fa-arrow-left"></i> Back
 
 </a>
 
+<span>Welcome, <strong id="adminName">Admin</strong></span>
 
 </div>
 
@@ -446,7 +482,7 @@ Total Clients
 
 <div class="card-number" id="totalClients">
 
-0
+...
 
 </div>
 
@@ -500,7 +536,7 @@ Active Loans
 
 <div class="card-number" id="activeLoans">
 
-0
+...
 
 </div>
 
@@ -529,7 +565,7 @@ Completed Loans
 
 <div class="card-number" id="completedLoans">
 
-0
+...
 
 </div>
 
@@ -725,8 +761,30 @@ admin.username;
 
 async function loadStatistics() {
 
+    // Wait for DB
+    let dbReady = false;
+    let retries = 0;
+    while (!dbReady && retries < 50) {
+        try {
+            if (window.DB && typeof DB.getLoans === "function") {
+                const test = await DB.getLoans();
+                if (Array.isArray(test)) {
+                    dbReady = true;
+                    break;
+                }
+            }
+        } catch(e) {}
+        await new Promise(r => setTimeout(r, 100));
+        retries++;
+    }
+
+    if (!dbReady) return;
+
     let loans = await DB.getLoans();
     let payments = await DB.getPayments();
+
+    if (!Array.isArray(loans)) loans = [];
+    if (!Array.isArray(payments)) payments = [];
 
     let totalLoanAmount = 0;
     let expectedInterest = 0;
@@ -804,10 +862,8 @@ AUTH.adminLogout();
 
 
 
-// START — wait for DB
-setTimeout(() => {
-    loadStatistics();
-}, 500);
+// START
+loadStatistics();
 
 
 
