@@ -992,10 +992,7 @@ async function viewLoan(id){
     }
     
     let totalExpected = Number(loan.originalPrincipal) + (Number(loan.originalPrincipal) * rate / 100);
-    let repaymentProgress = 0;
-    if (totalExpected > 0) {
-        repaymentProgress = Math.round((totalPaid / totalExpected) * 100);
-    }
+    let repaymentProgress = totalExpected > 0 ? Math.round((totalPaid / totalExpected) * 100) : 0;
 
     document.getElementById("loanDetails").innerHTML = `
 
@@ -1126,7 +1123,6 @@ async function loadPaymentRows(loan){
     
     let rows = "";
     
-    // Parse due date once
     let dueDate = null;
     if (loan.dueDate) {
         const parts = loan.dueDate.split("/");
@@ -1229,7 +1225,7 @@ async function savePayment(){
 
     let loanId = Number(document.getElementById("paymentLoanId").value);
     let amount = Number(document.getElementById("paymentAmount").value);
-    let date = document.getElementById("paymentDate").value;
+    let dateInput = document.getElementById("paymentDate").value;
     let method = document.getElementById("paymentMethod").value;
     let note = document.getElementById("paymentComment").value;
 
@@ -1238,7 +1234,14 @@ async function savePayment(){
         return;
     }
 
-    await DB.addPayment({ loanId, amount, date, method, note });
+    // Convert date from YYYY-MM-DD (input) to DD/MM/YYYY (storage)
+    let formattedDate = dateInput;
+    if (dateInput && dateInput.includes("-")) {
+        const parts = dateInput.split("-");
+        formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    await DB.addPayment({ loanId, amount, date: formattedDate, method, note });
 
     alert("Payment recorded successfully");
     loadActiveLoans();
