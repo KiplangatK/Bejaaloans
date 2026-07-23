@@ -95,6 +95,14 @@ display:none;
 
 
 
+#loadingBox{
+
+display:none;
+
+}
+
+
+
 </style>
 
 
@@ -144,18 +152,15 @@ Administrator Portal
 
 
 
+<div id="loadingBox" class="alert alert-info text-center">
 
-
-
-
-<div id="errorBox"
-
-class="alert alert-danger">
+<i class="fa fa-spinner fa-spin"></i> Initializing system... Please wait...
 
 </div>
 
 
 
+<div id="errorBox" class="alert alert-danger"></div>
 
 
 
@@ -269,6 +274,8 @@ required>
 
 type="submit"
 
+id="loginBtn"
+
 class="btn btn-primary w-100 btn-login">
 
 
@@ -352,120 +359,74 @@ Back Home
 <script>
 
 
+// Show loading
+document.getElementById("loadingBox").style.display = "block";
+document.getElementById("loginBtn").disabled = true;
+
+// Wait for database to initialize
+async function waitForDatabase() {
+    let attempts = 0;
+    while (attempts < 60) {
+        if (window.DB && typeof DB.getStaff === "function") {
+            try {
+                const test = await DB.getStaff();
+                if (Array.isArray(test)) {
+                    document.getElementById("loadingBox").style.display = "none";
+                    document.getElementById("loginBtn").disabled = false;
+                    console.log("Database ready. Staff count:", test.length);
+                    return true;
+                }
+            } catch(e) {}
+        }
+        await new Promise(r => setTimeout(r, 500));
+        attempts++;
+    }
+    document.getElementById("loadingBox").innerHTML = 
+        '<i class="fa fa-exclamation-triangle"></i> System taking longer than expected. <a href="#" onclick="location.reload()">Refresh page</a>';
+    return false;
+}
+
+waitForDatabase();
+
+
 document
-
 .getElementById("adminLoginForm")
-
 .addEventListener("submit",async function(e){
-
-
 
 e.preventDefault();
 
-
-
-
 let username = 
-
 document.getElementById("username").value.trim();
 
-
-
-
 let password =
-
 document.getElementById("password").value.trim();
 
-
-
-
-
 let errorBox =
-
 document.getElementById("errorBox");
 
-
-
 errorBox.style.display="none";
-
 errorBox.innerHTML="";
 
 
-
-
-
-// Wait for DB to be fully ready
-let retries = 0;
-while (!window.DB || typeof DB.getStaff !== "function") {
-    await new Promise(r => setTimeout(r, 300));
-    retries++;
-    if (retries > 30) {
-        errorBox.innerHTML = "System is initializing. Please wait a moment and try again.";
-        errorBox.style.display = "block";
-        return;
-    }
-}
-
-// Verify DB is actually working by testing a query
-try {
-    const test = await DB.getStaff();
-    if (!Array.isArray(test)) throw new Error("DB not ready");
-} catch(e) {
-    errorBox.innerHTML = "System is still loading. Please refresh the page and try again.";
+// Double check DB is ready
+if (!window.DB || typeof DB.getStaff !== "function") {
+    errorBox.innerHTML = "System is still initializing. Please wait a moment.";
     errorBox.style.display = "block";
     return;
 }
 
 
-
 // LOGIN CHECK
-
-
-let result = await AUTH.adminLogin(
-
-username,
-
-password
-
-);
-
-
-
-
-
-
-
+let result = await AUTH.adminLogin(username, password);
 
 if(!result.success){
-
-
-
-errorBox.innerHTML = result.message;
-
-
-errorBox.style.display="block";
-
-
-return;
-
-
+    errorBox.innerHTML = result.message;
+    errorBox.style.display = "block";
+    return;
 }
 
-
-
-
-
-
-
-// SUCCESSFUL LOGIN — redirect to dashboard
-
-
+// SUCCESSFUL LOGIN
 window.location.href="admin-dashboard.html";
-
-
-
-
-
 
 });
 
