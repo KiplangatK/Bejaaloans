@@ -738,7 +738,7 @@ Registered Clients
 
 <div class="card-number" id="totalClients">
 
-...
+0
 
 </div>
 
@@ -759,7 +759,7 @@ View all clients
 
 
 
-<!-- TOTAL LOANS (all) -->
+<!-- TOTAL LOANS -->
 
 
 <div class="card-box">
@@ -778,7 +778,7 @@ Total Loans
 
 <div class="card-number" id="totalLoans">
 
-...
+0
 
 </div>
 
@@ -799,7 +799,7 @@ View all loans
 
 
 
-<!-- ACTIVE LOANS (not past due) -->
+<!-- ACTIVE LOANS -->
 
 
 <div class="card-box">
@@ -818,7 +818,7 @@ Active Loans
 
 <div class="card-number" id="activeLoans">
 
-...
+0
 
 </div>
 
@@ -858,7 +858,7 @@ Late Loans
 
 <div class="card-number" id="lateLoans">
 
-...
+0
 
 </div>
 
@@ -902,7 +902,7 @@ Pending Applications
 
 <div class="card-number" id="pendingApplications">
 
-...
+0
 
 </div>
 
@@ -1000,7 +1000,7 @@ Status
 
 <tbody id="recentApplications">
 
-<tr><td colspan="4" class="text-center text-muted p-4">Loading...</td></tr>
+<tr><td colspan="4" class="text-center text-muted p-4">No applications yet.</td></tr>
 
 </tbody>
 
@@ -1062,51 +1062,12 @@ if(admin){
 
 
 /*====================================
- WAIT FOR DB
+ LOAD DASHBOARD DATA
 ====================================*/
 
-async function waitForDB() {
-    let retries = 0;
-    while (retries < 60) {
-        try {
-            if (window.DB && typeof DB.totalClients === "function") {
-                const test = await DB.totalClients();
-                if (typeof test === "number") {
-                    return true;
-                }
-            }
-        } catch(e) {}
-        await new Promise(r => setTimeout(r, 300));
-        retries++;
-    }
-    return false;
-}
-
-
-/*====================================
- LOAD ALL DASHBOARD DATA
-====================================*/
-
-async function loadAllDashboardData(){
-
-    const ready = await waitForDB();
-    if (!ready) {
-        console.error("Database failed to load");
-        return;
-    }
-
-    await Promise.all([
-        loadDashboardStats(),
-        loadRecentApplications()
-    ]);
-
-}
-
-
-async function loadDashboardStats(){
+async function loadDashboardData(){
 
     try {
-
         // REGISTERED CLIENTS
         const clients = await DB.totalClients();
         document.getElementById("totalClients").innerHTML = clients;
@@ -1116,7 +1077,7 @@ async function loadDashboardStats(){
         if (!Array.isArray(allLoans)) allLoans = [];
         document.getElementById("totalLoans").innerHTML = allLoans.length;
 
-        // ACTIVE LOANS & LATE LOANS
+        // ACTIVE & LATE LOANS
         let today = new Date();
         today.setHours(0, 0, 0, 0);
         let activeCount = 0;
@@ -1127,23 +1088,14 @@ async function loadDashboardStats(){
             let balance = Number(loan.remainingPrincipal || 0);
             if (balance <= 0) continue;
 
-            if (!loan.dueDate) {
-                activeCount++;
-                continue;
-            }
+            if (!loan.dueDate) { activeCount++; continue; }
 
             const parts = loan.dueDate.split("/");
-            if (parts.length !== 3) {
-                activeCount++;
-                continue;
-            }
+            if (parts.length !== 3) { activeCount++; continue; }
             const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
             dueDate.setHours(0, 0, 0, 0);
 
-            if (dueDate >= today) {
-                activeCount++;
-                continue;
-            }
+            if (dueDate >= today) { activeCount++; continue; }
 
             let monthsDiff = 0;
             let checkDate = new Date(dueDate);
@@ -1168,9 +1120,7 @@ async function loadDashboardStats(){
                 }
             }
 
-            let remainingAfterAll = totalOutstandingInterest - totalPaid;
-
-            if (remainingAfterAll <= 0) {
+            if (totalOutstandingInterest - totalPaid <= 0) {
                 activeCount++;
             } else {
                 lateCount++;
@@ -1184,53 +1134,29 @@ async function loadDashboardStats(){
         const pending = await DB.pendingApplications();
         document.getElementById("pendingApplications").innerHTML = pending;
 
-    } catch (err) {
-        console.error("Dashboard stats load error:", err);
-    }
-
-}
-
-
-/*====================================
- LOAD RECENT APPLICATIONS
-====================================*/
-
-async function loadRecentApplications(){
-
-    try {
-
+        // RECENT APPLICATIONS
         let applications = await DB.getApplications();
-
         let table = document.getElementById("recentApplications");
         table.innerHTML = "";
 
         if (!Array.isArray(applications) || applications.length === 0) {
-            table.innerHTML = `
-                <tr>
-                    <td colspan="4" class="text-center text-muted p-4">
-                        No recent loan applications found.
-                    </td>
-                </tr>`;
-            return;
+            table.innerHTML = `<tr><td colspan="4" class="text-center text-muted p-4">No applications yet.</td></tr>`;
+        } else {
+            applications.slice(-5).reverse().forEach(app => {
+                let clientName = "Unknown";
+                if (app.client && app.client.fullname) clientName = app.client.fullname;
+                table.innerHTML += `
+                    <tr>
+                        <td>${clientName}</td>
+                        <td>KES ${Number(app.amount || 0).toLocaleString()}</td>
+                        <td>${app.applicationDate || "-"}</td>
+                        <td><span class="badge bg-warning">${app.status || "PENDING"}</span></td>
+                    </tr>`;
+            });
         }
 
-        applications.slice(-5).reverse().forEach(app => {
-            let clientName = "Unknown";
-            if (app.client && app.client.fullname) {
-                clientName = app.client.fullname;
-            }
-
-            table.innerHTML += `
-                <tr>
-                    <td>${clientName}</td>
-                    <td>KES ${Number(app.amount || 0).toLocaleString()}</td>
-                    <td>${app.applicationDate || "-"}</td>
-                    <td><span class="badge bg-warning">${app.status || "PENDING"}</span></td>
-                </tr>`;
-        });
-
     } catch (err) {
-        console.error("Recent applications load error:", err);
+        console.error("Dashboard load error:", err);
     }
 
 }
@@ -1246,10 +1172,12 @@ function logout(){
 
 
 /*====================================
- START
+ START — waits a bit for DB to be ready
 ====================================*/
 
-loadAllDashboardData();
+setTimeout(() => {
+    loadDashboardData();
+}, 800);
 
 
 </script>
