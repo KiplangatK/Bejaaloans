@@ -14,6 +14,7 @@
     - Handles date format conversion internally
     - Handles database deletion gracefully
     - Due date skips to next month from TODAY when all overdue interest cleared
+    - Months overdue counts from due date (includes current partial month)
 =========================================================*/
 
 (function(){
@@ -103,12 +104,11 @@ async function migrateFromLocalStorage() {
                     const parsed = JSON.parse(oldData);
                     if (Array.isArray(parsed) && parsed.length > 0) {
                         for (const item of parsed) { try { await add(table, item); } catch(e) {} }
-                        console.log("Migrated " + parsed.length + " records from localStorage." + table);
                     }
                 } catch(e) {}
             }
         }
-    } catch(e) { console.log("Migration skipped"); }
+    } catch(e) {}
 }
 
 /*=========================================================
@@ -219,6 +219,7 @@ async function deleteLoan(id) { return await remove("loans", id); }
     Payment clears ALL outstanding interest first (multi-month)
     Then remainder reduces principal
     Due date skips to next month from TODAY when all overdue cleared
+    Months overdue counts from due date (includes current partial month)
 =========================================================*/
 
 async function getPayments() { return await getAll("payments"); }
@@ -231,14 +232,12 @@ async function addPayment(payment) {
     let balance = Number(loan.remainingPrincipal || 0);
     let rate = Number(loan.interestRate || 20);
     
-    // Format payment date
     let paymentDate = payment.date || today();
     if (paymentDate && paymentDate.includes("-")) {
         const parts = paymentDate.split("-");
         paymentDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
     }
     
-    // Calculate total outstanding interest
     let totalOutstandingInterest = 0;
     
     if (loan.dueDate) {
@@ -253,13 +252,11 @@ async function addPayment(payment) {
                 let monthsOverdue = 0;
                 let checkDate = new Date(dueDate);
                 while (true) {
-                    let nextMonth = new Date(checkDate);
-                    nextMonth.setMonth(nextMonth.getMonth() + 1);
-                    if (todayDate < nextMonth) break;
+                    checkDate.setMonth(checkDate.getMonth() + 1);
+                    if (todayDate < checkDate) break;
                     monthsOverdue++;
-                    checkDate = nextMonth;
                 }
-                if (monthsOverdue < 1) monthsOverdue = 1;
+                monthsOverdue++;
                 
                 let monthlyInterest = (balance * rate) / 100;
                 totalOutstandingInterest = monthlyInterest * monthsOverdue;
@@ -271,14 +268,10 @@ async function addPayment(payment) {
         totalOutstandingInterest = (balance * rate) / 100;
     }
     
-    // 1. Pay total outstanding interest first
     let interestPaid = Math.min(amount, totalOutstandingInterest);
     let remainingAfterInterest = amount - interestPaid;
-    
-    // 2. Remaining reduces principal
     let principalPaid = remainingAfterInterest;
     if (principalPaid > balance) principalPaid = balance;
-    
     let newBalance = balance - principalPaid;
 
     const newPayment = {
@@ -289,7 +282,6 @@ async function addPayment(payment) {
 
     const savedPayment = await add("payments", newPayment);
 
-    // Update loan
     loan.remainingPrincipal = Math.max(0, newBalance);
     loan.currentInterest = (loan.remainingPrincipal * rate) / 100;
 
@@ -298,30 +290,21 @@ async function addPayment(payment) {
         loan.status = "COMPLETED";
     }
     
-    // If all outstanding interest is paid and principal remains, push due date to next month from TODAY
     if (interestPaid >= totalOutstandingInterest && newBalance > 0) {
         let loanDay = 15;
         if (loan.loanDate) {
             const loanParts = loan.loanDate.split("/");
-            if (loanParts.length === 3) {
-                loanDay = parseInt(loanParts[0]);
-            }
+            if (loanParts.length === 3) loanDay = parseInt(loanParts[0]);
         }
         
-        // Set due date to loanDay of the NEXT month from TODAY
         let newDue = new Date();
         newDue.setMonth(newDue.getMonth() + 1);
         newDue.setDate(loanDay);
-        
-        // Handle month overflow (e.g., 31st in 30-day month)
-        if (newDue.getDate() < loanDay) {
-            newDue.setDate(0);
-        }
+        if (newDue.getDate() < loanDay) newDue.setDate(0);
         
         const newDay = String(newDue.getDate()).padStart(2, "0");
         const newMonth = String(newDue.getMonth() + 1).padStart(2, "0");
         const newYear = newDue.getFullYear();
-        
         loan.dueDate = `${newDay}/${newMonth}/${newYear}`;
     }
 
@@ -358,16 +341,8 @@ function today() { const d = new Date(); const day = String(d.getDate()).padStar
 function nextMonthDate() { const d = new Date(); d.setMonth(d.getMonth() + 1); const day = String(d.getDate()).padStart(2, "0"); const month = String(d.getMonth() + 1).padStart(2, "0"); const year = d.getFullYear(); return `${day}/${month}/${year}`; }
 function formatMoney(value) { return "KES " + Number(value || 0).toLocaleString(); }
 
-/*=========================================================
-    MAINTENANCE
-=========================================================*/
-
 async function optimizeDatabase() { const loans = await getLoans(); return loans.length; }
 async function exportDatabase() { return { clients: await getClients(), loanApplications: await getApplications(), loans: await getLoans(), payments: await getPayments(), staff: await getStaff() }; }
-
-/*=========================================================
-    INITIALIZE & EXPORT
-=========================================================*/
 
 openDB().then(async () => { await migrateFromLocalStorage(); console.log("BEJJA DATABASE ENGINE V4.3 LOADED"); }).catch(err => { console.error("Database initialization failed:", err); });
 
