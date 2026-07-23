@@ -645,7 +645,7 @@ KES 0
 
 <div class="card-title">
 
-Total Expected Interest
+Expected Interest
 
 </div>
 
@@ -799,7 +799,9 @@ async function loadStatistics() {
         let amount = Number(loan.originalPrincipal || 0);
         let rate = Number(loan.interestRate || 20);
         let balance = Number(loan.remainingPrincipal || 0);
-        let expectedInt = (amount * rate) / 100;
+        
+        // Expected interest is calculated from OUTSTANDING balance
+        let expectedInt = (balance * rate) / 100;
 
         let loanPayments = payments.filter(p => String(p.loanId) === String(loan.id));
         let paidPrincipal = loanPayments.reduce((sum, p) => sum + Number(p.principalPaid || 0), 0);
