@@ -11,6 +11,7 @@
     - Then remainder reduces principal
     - Auto-migrates from localStorage
     - Stores payment notes/comments
+    - Handles date format conversion internally
 =========================================================*/
 
 (function(){
@@ -363,6 +364,7 @@ async function deleteLoan(id) {
     PAYMENT MANAGEMENT
     Payment clears ALL outstanding interest first (multi-month)
     Then remainder reduces principal
+    Handles date format conversion internally
 =========================================================*/
 
 async function getPayments() {
@@ -377,9 +379,15 @@ async function addPayment(payment) {
     let balance = Number(loan.remainingPrincipal || 0);
     let rate = Number(loan.interestRate || 20);
     
+    // Format payment date — handle both YYYY-MM-DD (input) and DD/MM/YYYY
+    let paymentDate = payment.date || today();
+    if (paymentDate && paymentDate.includes("-")) {
+        const parts = paymentDate.split("-");
+        paymentDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    
     // Calculate total outstanding interest (all overdue months)
     let totalOutstandingInterest = 0;
-    let monthsOverdue = 0;
     
     if (loan.dueDate) {
         const parts = loan.dueDate.split("/");
@@ -390,6 +398,7 @@ async function addPayment(payment) {
             today.setHours(0, 0, 0, 0);
             
             if (today > dueDate) {
+                let monthsOverdue = 0;
                 let checkDate = new Date(dueDate);
                 while (true) {
                     let nextMonth = new Date(checkDate);
@@ -426,7 +435,7 @@ async function addPayment(payment) {
         principalPaid: principalPaid,
         interestPaid: interestPaid,
         balance: newBalance,
-        date: payment.date || today(),
+        date: paymentDate,
         method: payment.method || "Cash",
         note: payment.note || ""
     };
