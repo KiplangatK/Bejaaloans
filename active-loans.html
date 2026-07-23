@@ -349,6 +349,37 @@ border:1px solid #dbeafe;
 
 
 
+.document-img{
+
+width:100%;
+
+height:160px;
+
+object-fit:contain;
+
+border-radius:10px;
+
+border:1px solid #ddd;
+
+}
+
+
+
+.guarantor-photo{
+
+width:120px;
+
+height:120px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+border:3px solid #2563eb;
+
+}
+
+
 
 </style>
 
@@ -1030,6 +1061,25 @@ let balance = Number(loan.remainingPrincipal || 0);
 let rate = Number(loan.interestRate || 20);
 let currentInterest = (balance * rate) / 100;
 
+// Fetch the application for guarantor details
+let application = null;
+if (loan.applicationId) {
+    application = await DB.getApplication(loan.applicationId);
+}
+
+let guarantorSection = "";
+if (application) {
+    guarantorSection = `
+        <h5 class="text-primary mt-4"><i class="fa fa-users"></i> Guarantor Details</h5>
+        ${showGuarantor(application.guarantor1, "Guarantor 1")}
+        ${showGuarantor(application.guarantor2, "Guarantor 2")}
+    `;
+} else {
+    guarantorSection = `
+        <p class="text-muted mt-3">No guarantor details available for this loan.</p>
+    `;
+}
+
 document.getElementById("loanDetails").innerHTML = `
 
 
@@ -1069,7 +1119,7 @@ Loan Information
 
 <p><b>Status:</b> <span class="badge bg-success">${loan.status}</span></p>
 
-
+${guarantorSection}
 
 <h5 class="text-primary mt-4">Payment History</h5>
 
@@ -1085,6 +1135,39 @@ Loan Information
 let modal = new bootstrap.Modal(document.getElementById("loanModal"));
 modal.show();
 
+}
+
+
+
+
+// ===============================
+// DISPLAY GUARANTOR
+// ===============================
+
+function showGuarantor(g, title){
+    if(!g) return "";
+    const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
+    return `
+    <div class="detail-card">
+        <h5 class="text-primary">${title}</h5>
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <img src="${g.photo || DEFAULT_IMG}" class="guarantor-photo">
+            </div>
+            <div class="col-md-8">
+                <p><b>Name:</b> ${g.name || "-"}</p>
+                <p><b>National ID:</b> ${g.id || "-"}</p>
+                <p><b>Phone:</b> ${g.phone || "-"}</p>
+                <p><b>Relationship:</b> ${g.relationship || "-"}</p>
+                <p><b>Address:</b> ${g.address || "-"}</p>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-6"><h6>ID Front</h6><img src="${g.idFront || ''}" class="document-img"></div>
+            <div class="col-md-6"><h6>ID Back</h6><img src="${g.idBack || ''}" class="document-img"></div>
+        </div>
+    </div>`;
 }
 
 
