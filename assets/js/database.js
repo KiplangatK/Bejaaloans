@@ -12,6 +12,7 @@
     - Auto-migrates from localStorage
     - Stores payment notes/comments
     - Handles date format conversion internally
+    - Handles database deletion gracefully
 =========================================================*/
 
 (function(){
@@ -29,11 +30,6 @@ let db = null;
 
 function openDB() {
     return new Promise((resolve, reject) => {
-        if (db) {
-            resolve(db);
-            return;
-        }
-
         const request = indexedDB.open(DB_NAME, DB_VERSION);
 
         request.onupgradeneeded = function(e) {
@@ -91,7 +87,20 @@ function openDB() {
 
         request.onerror = function(e) {
             console.error("IndexedDB error:", e.target.error);
-            reject(e.target.error);
+            if (e.target.error.name === "VersionError" || e.target.error.name === "InvalidStateError") {
+                indexedDB.deleteDatabase(DB_NAME);
+                const retry = indexedDB.open(DB_NAME, DB_VERSION);
+                retry.onsuccess = function(ev) {
+                    db = ev.target.result;
+                    seedDefaultAdmin().then(() => resolve(db)).catch(() => resolve(db));
+                };
+                retry.onerror = function(ev) {
+                    reject(ev.target.error);
+                };
+                retry.onupgradeneeded = request.onupgradeneeded;
+            } else {
+                reject(e.target.error);
+            }
         };
     });
 }
@@ -151,84 +160,125 @@ async function migrateFromLocalStorage() {
 =========================================================*/
 
 function getStore(storeName, mode) {
+    if (!db) throw new Error("Database not initialized");
     const transaction = db.transaction(storeName, mode);
     return transaction.objectStore(storeName);
 }
 
 function getAll(storeName) {
     return new Promise((resolve, reject) => {
-        const store = getStore(storeName, "readonly");
-        const request = store.getAll();
-        request.onsuccess = () => resolve(request.result || []);
-        request.onerror = () => reject(request.error);
+        try {
+            if (!db) { resolve([]); return; }
+            const store = getStore(storeName, "readonly");
+            const request = store.getAll();
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => reject(request.error);
+        } catch(e) {
+            resolve([]);
+        }
     });
 }
 
 function getById(storeName, id) {
     return new Promise((resolve, reject) => {
-        const store = getStore(storeName, "readonly");
-        const request = store.get(Number(id));
-        request.onsuccess = () => resolve(request.result || null);
-        request.onerror = () => reject(request.error);
+        try {
+            if (!db) { resolve(null); return; }
+            const store = getStore(storeName, "readonly");
+            const request = store.get(Number(id));
+            request.onsuccess = () => resolve(request.result || null);
+            request.onerror = () => reject(request.error);
+        } catch(e) {
+            resolve(null);
+        }
     });
 }
 
 function getByIndex(storeName, indexName, value) {
     return new Promise((resolve, reject) => {
-        const store = getStore(storeName, "readonly");
-        const index = store.index(indexName);
-        const request = index.getAll(value);
-        request.onsuccess = () => resolve(request.result || []);
-        request.onerror = () => reject(request.error);
+        try {
+            if (!db) { resolve([]); return; }
+            const store = getStore(storeName, "readonly");
+            const index = store.index(indexName);
+            const request = index.getAll(value);
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => reject(request.error);
+        } catch(e) {
+            resolve([]);
+        }
     });
 }
 
 function getFirstByIndex(storeName, indexName, value) {
     return new Promise((resolve, reject) => {
-        const store = getStore(storeName, "readonly");
-        const index = store.index(indexName);
-        const request = index.get(value);
-        request.onsuccess = () => resolve(request.result || null);
-        request.onerror = () => reject(request.error);
+        try {
+            if (!db) { resolve(null); return; }
+            const store = getStore(storeName, "readonly");
+            const index = store.index(indexName);
+            const request = index.get(value);
+            request.onsuccess = () => resolve(request.result || null);
+            request.onerror = () => reject(request.error);
+        } catch(e) {
+            resolve(null);
+        }
     });
 }
 
 function add(storeName, item) {
     return new Promise((resolve, reject) => {
-        const store = getStore(storeName, "readwrite");
-        const request = store.add(item);
-        request.onsuccess = () => {
-            item.id = request.result;
-            resolve(item);
-        };
-        request.onerror = () => reject(request.error);
+        try {
+            if (!db) { reject(new Error("Database not ready")); return; }
+            const store = getStore(storeName, "readwrite");
+            const request = store.add(item);
+            request.onsuccess = () => {
+                item.id = request.result;
+                resolve(item);
+            };
+            request.onerror = () => reject(request.error);
+        } catch(e) {
+            reject(e);
+        }
     });
 }
 
 function update(storeName, item) {
     return new Promise((resolve, reject) => {
-        const store = getStore(storeName, "readwrite");
-        const request = store.put(item);
-        request.onsuccess = () => resolve(item);
-        request.onerror = () => reject(request.error);
+        try {
+            if (!db) { reject(new Error("Database not ready")); return; }
+            const store = getStore(storeName, "readwrite");
+            const request = store.put(item);
+            request.onsuccess = () => resolve(item);
+            request.onerror = () => reject(request.error);
+        } catch(e) {
+            reject(e);
+        }
     });
 }
 
 function remove(storeName, id) {
     return new Promise((resolve, reject) => {
-        const store = getStore(storeName, "readwrite");
-        const request = store.delete(Number(id));
-        request.onsuccess = () => resolve(true);
-        request.onerror = () => reject(request.error);
+        try {
+            if (!db) { resolve(true); return; }
+            const store = getStore(storeName, "readwrite");
+            const request = store.delete(Number(id));
+            request.onsuccess = () => resolve(true);
+            request.onerror = () => reject(request.error);
+        } catch(e) {
+            resolve(true);
+        }
     });
 }
 
 function count(storeName) {
     return new Promise((resolve, reject) => {
-        const store = getStore(storeName, "readonly");
-        const request = store.count();
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
+        try {
+            if (!db) { resolve(0); return; }
+            const store = getStore(storeName, "readonly");
+            const request = store.count();
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        } catch(e) {
+            resolve(0);
+        }
     });
 }
 
