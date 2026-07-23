@@ -8,15 +8,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-<title>My Loans | Bejja Credit</title>
+<title>Bejja Credit | Late Loans</title>
 
-
-<!-- Bootstrap -->
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-
-<!-- Font Awesome -->
 
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
@@ -29,7 +25,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 *{
 
 margin:0;
+
 padding:0;
+
 box-sizing:border-box;
 
 }
@@ -40,64 +38,87 @@ body{
 
 background:#edf4ff;
 
-font-family:'Segoe UI',Tahoma,sans-serif;
+font-family:
+Segoe UI,
+Tahoma,
+Geneva,
+Verdana,
+sans-serif;
 
 }
 
 
 
+.wrapper{
+
+display:flex;
+
+}
 
 
-/* HEADER */
+
+/*====================
+SIDEBAR
+====================*/
 
 
-.header{
+.sidebar{
 
-background:linear-gradient(135deg,#0F4C81,#2563EB);
+width:260px;
+
+min-height:100vh;
+
+background:#0d47a1;
 
 color:white;
+
+position:fixed;
+
+}
+
+
+
+.logo{
 
 padding:25px;
 
-border-radius:0 0 25px 25px;
+font-size:28px;
 
-box-shadow:0 5px 15px rgba(0,0,0,.2);
+font-weight:bold;
 
-position:relative;
-
-}
-
-
-
-.header h2{
-
-font-weight:700;
+border-bottom:1px solid rgba(255,255,255,.15);
 
 }
 
 
 
-.header .btn-back{
+.logo i{
 
-position:absolute;
+margin-right:10px;
 
-top:20px;
+}
 
-right:25px;
 
-background:rgba(255,255,255,0.2);
+
+.sidebar ul{
+
+list-style:none;
+
+padding:15px 0;
+
+}
+
+
+
+.sidebar ul li a{
+
+display:block;
 
 color:white;
 
-padding:10px 20px;
-
-border-radius:25px;
+padding:15px 25px;
 
 text-decoration:none;
-
-font-weight:600;
-
-font-size:15px;
 
 transition:.3s;
 
@@ -105,106 +126,195 @@ transition:.3s;
 
 
 
-.header .btn-back:hover{
-
-background:rgba(255,255,255,0.35);
-
-color:white;
-
-}
-
-
-
-
-
-
-
-.container{
-
-max-width:1200px;
-
-}
-
-
-
-
-
-
-/* SUMMARY CARDS */
-
-
-.summary-card{
-
-border-radius:18px;
-
-padding:25px;
-
-color:white;
-
-height:140px;
-
-}
-
-
-
-.summary-card h2{
-
-font-size:32px;
-
-font-weight:bold;
-
-}
-
-
-
-.total{
+.sidebar ul li a:hover{
 
 background:#1565c0;
 
-}
-
-
-
-.active{
-
-background:#198754;
+padding-left:35px;
 
 }
 
 
 
-.borrowed{
+.sidebar ul li i{
 
-background:#6f42c1;
-
-}
-
-
-
-.balance{
-
-background:#dc3545;
+width:25px;
 
 }
 
 
 
+/*====================
+MAIN
+====================*/
+
+
+.main{
+
+margin-left:260px;
+
+width:100%;
+
+}
 
 
 
+/*====================
+TOP BAR
+====================*/
 
-/* TABLE */
+
+.topbar{
+
+height:70px;
+
+background:#1976d2;
+
+color:white;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:0 30px;
+
+box-shadow:0 2px 10px rgba(0,0,0,.15);
+
+}
+
+
+
+.topbar h2{
+
+font-size:28px;
+
+}
+
+
+
+.topbar a{
+
+color:white;
+
+text-decoration:none;
+
+}
+
+
+
+/*====================
+CONTENT
+====================*/
+
+
+.content{
+
+padding:35px;
+
+width:100%;
+
+}
+
+
+
+/*====================
+CARDS
+====================*/
+
+
+.dashboard-cards{
+
+display:grid;
+
+grid-template-columns:repeat(4,1fr);
+
+gap:25px;
+
+margin-bottom:35px;
+
+}
+
+
+
+.card-box{
+
+background:white;
+
+border-radius:15px;
+
+padding:25px;
+
+box-shadow:
+0 8px 20px rgba(0,0,0,.08);
+
+transition:.3s;
+
+text-align:center;
+
+}
+
+
+
+.card-box:hover{
+
+transform:translateY(-5px);
+
+}
+
+
+
+.card-box i{
+
+font-size:35px;
+
+color:#d32f2f;
+
+}
+
+
+
+.card-title{
+
+margin-top:15px;
+
+font-size:18px;
+
+font-weight:600;
+
+}
+
+
+
+.card-number{
+
+font-size:32px;
+
+font-weight:700;
+
+color:#d32f2f;
+
+margin-top:12px;
+
+}
+
+
+/*====================
+TABLE
+====================*/
 
 
 .table-card{
 
 background:white;
 
-border-radius:20px;
+border-radius:15px;
 
 overflow:hidden;
 
-box-shadow:0 8px 25px rgba(0,0,0,.12);
+box-shadow:
+0 8px 20px rgba(0,0,0,.08);
 
 }
 
@@ -212,11 +322,11 @@ box-shadow:0 8px 25px rgba(0,0,0,.12);
 
 .table-header{
 
-background:#0F4C81;
+background:#1976d2;
 
 color:white;
 
-padding:18px;
+padding:20px 25px;
 
 font-size:22px;
 
@@ -226,20 +336,41 @@ font-weight:bold;
 
 
 
-.table th{
+.table-responsive{
 
-background:#e3f2fd;
-
-color:#0F4C81;
+overflow-x:auto;
 
 }
 
 
 
-.table td,
-.table th{
+.table{
 
-padding:15px;
+min-width:1500px;
+
+}
+
+
+
+.table thead th{
+
+background:#e3f2fd;
+
+color:#0d47a1;
+
+white-space:nowrap;
+
+text-align:center;
+
+}
+
+
+
+.table tbody td{
+
+text-align:center;
+
+white-space:nowrap;
 
 vertical-align:middle;
 
@@ -247,22 +378,31 @@ vertical-align:middle;
 
 
 
+.table-danger{
 
-.badge{
-
-font-size:14px;
-
-padding:8px 15px;
+background:#ffebee !important;
 
 }
 
 
 
+.action-btn{
+
+margin:3px;
+
+padding:6px 10px;
+
+border-radius:8px;
+
+font-size:13px;
+
+}
+
 
 
 .btn-view{
 
-background:#2563EB;
+background:#1976d2;
 
 color:white;
 
@@ -284,47 +424,41 @@ border-radius:20px;
 
 
 
+.btn-guarantors{
 
-
-.btn-view:hover{
-
-background:#0F4C81;
+background:#6f42c1;
 
 color:white;
+
+border-radius:20px;
 
 }
 
 
 
-.btn-payment:hover{
+.btn-guarantors:hover{
 
-background:#146c43;
+background:#5a3399;
 
 color:white;
 
 }
 
-
-
-
-
-
-
-
-/* MODALS */
 
 
 .section-title{
 
-color:#0F4C81;
+background:#0d47a1;
+
+color:white;
+
+padding:12px;
+
+border-radius:10px;
+
+margin-top:15px;
 
 font-weight:bold;
-
-border-bottom:2px solid #2563EB;
-
-padding-bottom:5px;
-
-margin-bottom:15px;
 
 }
 
@@ -334,30 +468,95 @@ margin-bottom:15px;
 
 background:#f8fbff;
 
+border-radius:15px;
+
 padding:15px;
 
-border-radius:12px;
+margin-bottom:15px;
 
-margin-bottom:10px;
+border:1px solid #dbeafe;
 
 }
 
 
 
-.profile-img{
+.document-img{
 
-width:100px;
+width:100%;
 
-height:100px;
+height:160px;
+
+object-fit:contain;
+
+border-radius:10px;
+
+border:1px solid #ddd;
+
+}
+
+
+
+.guarantor-photo{
+
+width:120px;
+
+height:120px;
 
 border-radius:50%;
 
 object-fit:cover;
 
-border:3px solid #2563EB;
+border:3px solid #2563eb;
 
 }
 
+
+
+/*====================
+RESPONSIVE
+====================*/
+
+
+@media(max-width:1200px){
+
+
+.dashboard-cards{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+
+}
+
+
+
+@media(max-width:768px){
+
+
+.sidebar{
+
+width:220px;
+
+}
+
+
+.main{
+
+margin-left:220px;
+
+}
+
+
+
+.dashboard-cards{
+
+grid-template-columns:1fr;
+
+}
+
+
+}
 
 
 </style>
@@ -366,82 +565,213 @@ border:3px solid #2563EB;
 </head>
 
 
-
 <body>
 
 
+<div class="wrapper">
 
 
-<!-- DATABASE -->
-
-<script src="assets/js/database.js"></script>
-
-<script src="assets/js/auth.js"></script>
+<!-- SIDEBAR -->
 
 
+<div class="sidebar">
 
 
-<script>
+<div class="logo">
 
-
-// CLIENT LOGIN CHECK
-
-
-if(!AUTH.currentClient()){
-
-
-window.location.href="client-portal.html";
-
-
-}
-
-
-</script>
-
-
-
-
-
-
-
-<!-- HEADER -->
-
-
-<div class="header text-center">
-
-<a href="client-dashboard.html" class="btn-back">
-
-<i class="fa fa-arrow-left"></i> Back
-
-</a>
-
-<h2>
 
 <i class="fa-solid fa-building-columns"></i>
 
-BEJJA LOAN CREDIT
-
-</h2>
-
-
-<p>
-
-My Loans
-
-</p>
+Bejja Credit
 
 
 </div>
 
 
 
+<ul>
+
+
+<li>
+
+<a href="admin-dashboard.html">
+
+<i class="fa-solid fa-gauge"></i>
+
+Dashboard
+
+</a>
+
+</li>
 
 
 
+<li>
+
+<a href="registered-clients.html">
+
+<i class="fa-solid fa-users"></i>
+
+Registered Clients
+
+</a>
+
+</li>
 
 
-<div class="container py-4">
 
+<li>
+
+<a href="active-loans.html">
+
+<i class="fa-solid fa-money-bill-wave"></i>
+
+Active Loans
+
+</a>
+
+</li>
+
+
+
+<li>
+
+<a href="late-loans.html">
+
+<i class="fa-solid fa-triangle-exclamation"></i>
+
+Late Loans
+
+</a>
+
+</li>
+
+
+
+<li>
+
+<a href="loan-applications.html">
+
+<i class="fa-solid fa-file-circle-check"></i>
+
+Pending Applications
+
+</a>
+
+</li>
+
+
+
+<li>
+
+<a href="statistics.html">
+
+<i class="fa-solid fa-chart-column"></i>
+
+Statistics
+
+</a>
+
+</li>
+
+
+
+<li>
+
+<a href="#" onclick="logout()">
+
+<i class="fa-solid fa-right-from-bracket"></i>
+
+Logout
+
+</a>
+
+</li>
+
+
+</ul>
+
+
+</div>
+
+
+
+<!-- MAIN -->
+
+
+<div class="main">
+
+
+<!-- TOPBAR -->
+
+
+<div class="topbar">
+
+
+<h2>
+
+<i class="fa-solid fa-triangle-exclamation text-warning"></i>
+
+Late Loans
+
+</h2>
+
+
+<div>
+
+
+Welcome,
+
+<strong id="adminName">
+
+Admin
+
+</strong>
+
+
+|
+
+<a href="#" onclick="logout()">
+
+Logout
+
+</a>
+
+
+</div>
+
+
+</div>
+
+
+
+<!-- PAGE CONTENT -->
+
+
+<div class="content">
+
+
+
+<!-- BACK BUTTON -->
+
+
+<div class="mb-4">
+
+
+<a href="admin-dashboard.html"
+
+class="btn btn-primary">
+
+
+<i class="fa-solid fa-arrow-left"></i>
+
+Back to Dashboard
+
+
+</a>
+
+
+</div>
 
 
 
@@ -450,33 +780,27 @@ My Loans
 <!-- SUMMARY CARDS -->
 
 
-<div class="row g-4 mb-4">
+<div class="dashboard-cards">
 
 
 
+<div class="card-box">
 
 
-
-<div class="col-md-3">
-
-
-<div class="summary-card total">
+<i class="fa-solid fa-triangle-exclamation"></i>
 
 
-<h5>
+<div class="card-title">
 
-Total Loans
+Total Late Loans
 
-</h5>
+</div>
 
 
-<h2 id="totalLoans">
+<div class="card-number" id="totalLateLoans">
 
 0
 
-</h2>
-
-
 </div>
 
 
@@ -486,63 +810,23 @@ Total Loans
 
 
 
+<div class="card-box">
 
 
+<i class="fa-solid fa-wallet"></i>
 
 
-<div class="col-md-3">
+<div class="card-title">
 
-
-<div class="summary-card active">
-
-
-<h5>
-
-Active Loans
-
-</h5>
-
-
-<h2 id="activeLoans">
-
-0
-
-</h2>
-
+Outstanding Principal
 
 </div>
 
 
-</div>
-
-
-
-
-
-
-
-
-
-<div class="col-md-3">
-
-
-<div class="summary-card borrowed">
-
-
-<h5>
-
-Total Borrowed
-
-</h5>
-
-
-<h2 id="totalBorrowed">
+<div class="card-number" id="totalOutstanding">
 
 KES 0
 
-</h2>
-
-
 </div>
 
 
@@ -552,30 +836,23 @@ KES 0
 
 
 
+<div class="card-box">
 
 
+<i class="fa-solid fa-percent"></i>
 
 
-<div class="col-md-3">
+<div class="card-title">
+
+Interest Owed
+
+</div>
 
 
-<div class="summary-card balance">
-
-
-<h5>
-
-Outstanding
-
-</h5>
-
-
-<h2 id="outstanding">
+<div class="card-number" id="expectedInterest">
 
 KES 0
 
-</h2>
-
-
 </div>
 
 
@@ -585,14 +862,40 @@ KES 0
 
 
 
+<div class="card-box">
+
+
+<i class="fa-solid fa-money-bill-wave"></i>
+
+
+<div class="card-title">
+
+Total Overdue
+
+</div>
+
+
+<div class="card-number" id="totalDue">
+
+KES 0
+
+</div>
+
 
 </div>
 
 
 
-<!-- ===============================
-     LOAN TABLE
-================================ -->
+</div>
+
+
+
+
+
+
+
+
+<!-- LATE LOANS TABLE -->
 
 
 <div class="table-card">
@@ -600,17 +903,15 @@ KES 0
 
 <div class="table-header">
 
-<i class="fa fa-money-bill-wave"></i>
-
-My Loan History
+Late Loan Clients
 
 </div>
 
 
 
 
-
 <div class="table-responsive">
+
 
 
 <table class="table table-hover mb-0">
@@ -623,52 +924,25 @@ My Loan History
 <tr>
 
 
-<th>
+<th>#</th>
 
-Date
+<th>Client Name</th>
 
-</th>
+<th>Phone</th>
 
+<th>Loan Amount</th>
 
+<th>Remaining Principal</th>
 
-<th>
+<th>Interest/mo</th>
 
-Amount
+<th>Overdue Amount</th>
 
-</th>
+<th>Due Date</th>
 
+<th>Days Late</th>
 
-
-<th>
-
-Balance
-
-</th>
-
-
-
-<th>
-
-Due Date
-
-</th>
-
-
-
-<th>
-
-Status
-
-</th>
-
-
-
-<th>
-
-Action
-
-</th>
-
+<th>Action</th>
 
 
 </tr>
@@ -679,459 +953,33 @@ Action
 
 
 
-
-<tbody id="myLoansTable">
-
-<tr><td colspan="6" class="text-center text-muted p-4">Loading loans...</td></tr>
-
-</tbody>
-
-
-
-
-</table>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-<!-- ===============================
-     LOAN DETAILS MODAL
-================================ -->
-
-
-<div class="modal fade" id="loanDetailsModal">
-
-
-<div class="modal-dialog modal-lg">
-
-
-<div class="modal-content">
-
-
-
-<div class="modal-header bg-primary text-white">
-
-
-<h5 class="modal-title">
-
-Loan Details
-
-</h5>
-
-
-
-<button class="btn-close"
-
-data-bs-dismiss="modal">
-
-</button>
-
-
-</div>
-
-
-
-
-
-<div class="modal-body">
-
-
-
-<div class="row">
-
-
-
-
-
-<div class="col-md-4 text-center">
-
-
-
-<img id="loanClientPhoto"
-
-class="profile-img"
-
-src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
-
-
-
-
-
-<h5 class="mt-3"
-
-id="loanClientName">
-
-</h5>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<div class="col-md-8">
-
-
-
-<div class="detail-box">
-
-
-
-<p>
-
-<b>Loan Amount:</b>
-
-<span id="detailAmount"></span>
-
-</p>
-
-
-
-
-
-<p>
-
-<b>Date Taken:</b>
-
-<span id="detailDate"></span>
-
-</p>
-
-
-
-
-
-<p>
-
-<b>Due Date:</b>
-
-<span id="detailDue"
-
-class="text-danger fw-bold"></span>
-
-</p>
-
-
-
-
-
-<p>
-
-<b>Status:</b>
-
-<span id="detailStatus"></span>
-
-</p>
-
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<hr>
-
-
-
-
-
-
-<h5 class="section-title">
-
-Financial Details
-
-</h5>
-
-
-
-
-
-
-
-<div class="row">
-
-
-
-
-
-<div class="col-md-6">
-
-
-
-<div class="detail-box">
-
-
-
-<p>
-
-<b>Original Principal:</b>
-
-<span id="detailPrincipal"></span>
-
-</p>
-
-
-
-
-
-<p>
-
-<b>Remaining Balance:</b>
-
-<span id="detailBalance"></span>
-
-</p>
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-<div class="col-md-6">
-
-
-
-<div class="detail-box">
-
-
-
-<p>
-
-<b>Interest Rate:</b>
-
-<span id="detailInterest"></span>
-
-</p>
-
-
-
-
-
-<p>
-
-<b>Next Payment:</b>
-
-<span id="detailNextPayment"></span>
-
-</p>
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-
-<!-- ===============================
-     PAYMENT HISTORY MODAL
-================================ -->
-
-
-
-<div class="modal fade" id="paymentModal">
-
-
-
-<div class="modal-dialog modal-lg">
-
-
-
-<div class="modal-content">
-
-
-
-
-
-<div class="modal-header bg-success text-white">
-
-
-
-<h5 class="modal-title">
-
-Payment History
-
-</h5>
-
-
-
-
-<button class="btn-close"
-
-data-bs-dismiss="modal">
-
-</button>
-
-
-
-</div>
-
-
-
-
-
-
-
-<div class="modal-body">
-
-
-
-<h5 id="paymentLoanTitle"></h5>
-
-
-
-
-
-
-<table class="table table-bordered">
-
-
-
-<thead class="table-success">
-
+<tbody id="lateLoansTable">
 
 
 <tr>
 
 
-<th>
+<td colspan="10"
 
-Date
-
-</th>
+class="text-center text-muted p-5">
 
 
-
-<th>
-
-Amount Paid
-
-</th>
+Loading late loans...
 
 
-
-<th>
-
-Principal
-
-</th>
-
-
-
-<th>
-
-Interest
-
-</th>
-
+</td>
 
 
 </tr>
-
-
-</thead>
-
-
-
-
-
-
-<tbody id="paymentTable">
 
 
 </tbody>
 
 
 
-
-
 </table>
 
 
-
-
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
 </div>
 
 
@@ -1139,32 +987,107 @@ Interest
 
 
 
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+<!-- ========================
+LOAN DETAILS MODAL
+======================== -->
+
+<div class="modal fade" id="loanModal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fa fa-file-invoice-dollar"></i> Loan Details</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="loanDetails"></div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ========================
+PAYMENT MODAL
+======================== -->
+
+<div class="modal fade" id="paymentModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fa fa-money-bill"></i> Record Payment</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="paymentLoanId">
+                <label class="form-label">Amount Paid</label>
+                <input type="number" id="paymentAmount" class="form-control mb-3" placeholder="Enter payment amount">
+                <label class="form-label">Payment Date</label>
+                <input type="date" id="paymentDate" class="form-control mb-3">
+                <label class="form-label">Payment Method</label>
+                <select id="paymentMethod" class="form-select">
+                    <option>Cash</option>
+                    <option>M-Pesa</option>
+                    <option>Bank</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="savePayment()"><i class="fa fa-check"></i> Save Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
 
+<!-- DATABASE -->
 
+
+<script src="assets/js/database.js"></script>
+
+
+<script src="assets/js/auth.js"></script>
 
 
 
 <script>
 
-const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
+/*================================
+ADMIN SECURITY
+================================*/
 
 
-// ===============================
-// MONEY FORMAT
-// ===============================
+if(!AUTH.currentAdmin()){
 
 
-function money(value){
+window.location.href="admin-login.html";
 
 
-return "KES " +
+}
 
-Number(value || 0)
 
-.toLocaleString();
+
+const admin = AUTH.currentAdmin();
+
+
+
+if(admin){
+
+
+document.getElementById("adminName").innerHTML =
+
+admin.username;
 
 
 }
@@ -1173,15 +1096,21 @@ Number(value || 0)
 
 
 
+/*================================
+MONEY FORMAT
+================================*/
+
+function money(value){
+    return "KES " + Number(value || 0).toLocaleString();
+}
 
 
+/*================================
+LOAD LATE LOANS
+================================*/
 
-// ===============================
-// LOAD CLIENT LOANS
-// ===============================
 
-
-async function loadMyLoans(){
+async function loadLateLoans(){
 
     let dbReady = false;
     let retries = 0;
@@ -1197,258 +1126,444 @@ async function loadMyLoans(){
     }
     if (!dbReady) return;
 
-    const client = AUTH.currentClient();
+    let loans = await DB.getLoans();
+    let table = document.getElementById("lateLoansTable");
+    table.innerHTML = "";
 
-    if(!client){
-        window.location.href="client-portal.html";
+    let lateCount = 0;
+    let outstandingPrincipal = 0;
+    let totalInterestOwed = 0;
+    let totalDue = 0;
+
+    let today = new Date();
+
+    if (!Array.isArray(loans)) {
+        table.innerHTML = `<tr><td colspan="10" class="text-center text-muted p-5">No late loans found.</td></tr>`;
+        updateCards(0, 0, 0, 0);
         return;
     }
 
-    let loans = await DB.getLoans();
-    let applications = await DB.getApplications();
+    for (let loan of loans) {
 
-    if (!Array.isArray(loans)) loans = [];
-    if (!Array.isArray(applications)) applications = [];
-
-    let myLoans = loans.filter(loan =>
-        String(loan.clientId) === String(client.id)
-    );
-
-    let myApplications = applications.filter(app =>
-        String(app.clientId) === String(client.id)
-    );
-
-    let table = document.getElementById("myLoansTable");
-    table.innerHTML="";
-
-    let totalBorrowed = 0;
-    let outstanding = 0;
-    let activeCount = 0;
-    let today = new Date();
-
-    let allItems = [];
-
-    // Add approved loans
-    myLoans.forEach(loan => {
-        let realStatus = loan.status;
+        let originalAmount = Number(loan.originalPrincipal || 0);
+        let rate = Number(loan.interestRate || 20);
         let balance = Number(loan.remainingPrincipal || 0);
+
+        if (!loan.dueDate || balance <= 0 || loan.status === "COMPLETED") continue;
+
+        const parts = loan.dueDate.split("/");
+        if (parts.length !== 3) continue;
+        const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
+
+        if (dueDate >= today) continue;
+
+        // Get all payments
+        let payments = await DB.getLoanPayments(loan.id);
         
-        if (loan.status === "COMPLETED" || balance <= 0) {
-            realStatus = "COMPLETED";
-        } else if (loan.status === "ACTIVE" && loan.dueDate) {
-            const parts = loan.dueDate.split("/");
-            if (parts.length === 3) {
-                const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
-                if (dueDate < today) {
-                    realStatus = "LATE";
+        // Calculate early payments (made BEFORE due date)
+        let earlyPaymentTotal = 0;
+        let hasPaymentAfterDue = false;
+        
+        if (Array.isArray(payments)) {
+            for (let p of payments) {
+                if (!p.date) continue;
+                const pParts = p.date.split("/");
+                if (pParts.length !== 3) continue;
+                const paymentDate = new Date(pParts[2], pParts[1] - 1, pParts[0]);
+                
+                if (paymentDate < dueDate) {
+                    earlyPaymentTotal += Number(p.amount || 0);
+                } else {
+                    hasPaymentAfterDue = true;
                 }
             }
         }
 
-        allItems.push({
-            type: "loan",
-            date: loan.loanDate || loan.createdAt || "-",
-            amount: Number(loan.originalPrincipal || 0),
-            balance: balance,
-            dueDate: loan.dueDate || "-",
-            status: realStatus,
-            id: loan.id
-        });
-    });
+        // If a payment was made on/after due date, loan is current
+        if (hasPaymentAfterDue) continue;
 
-    // Add pending/rejected applications
-    myApplications.forEach(app => {
-        if (app.status === "APPROVED") return;
+        // Calculate months overdue
+        let monthsDiff = (today.getFullYear() - dueDate.getFullYear()) * 12 + (today.getMonth() - dueDate.getMonth());
+        if (today.getDate() < dueDate.getDate()) monthsDiff--;
+        if (monthsDiff < 1) monthsDiff = 1;
+
+        // Monthly interest on remaining balance
+        let monthlyInterest = (balance * rate) / 100;
         
-        allItems.push({
-            type: "application",
-            date: app.applicationDate || "-",
-            amount: Number(app.amount || 0),
-            balance: Number(app.amount || 0),
-            dueDate: "-",
-            status: app.status || "PENDING",
-            id: app.id
-        });
-    });
+        // Apply early payments to cover months of interest
+        let monthsCoveredByEarly = Math.floor(earlyPaymentTotal / monthlyInterest);
+        let remainingMonths = monthsDiff - monthsCoveredByEarly;
+        if (remainingMonths < 1) remainingMonths = 1;
+        
+        // Overdue amount = interest × remaining overdue months
+        let overdueAmount = monthlyInterest * remainingMonths;
+        let totalInterestForPeriod = monthlyInterest * monthsDiff;
 
-    if(allItems.length === 0){
-        table.innerHTML = `
-            <tr>
-                <td colspan="6" class="text-center text-muted p-4">No loans or applications found.</td>
-            </tr>`;
-        updateSummary(0, 0, 0, 0);
-        return;
-    }
+        // If early payments covered everything, loan is current
+        if (overdueAmount <= 0) continue;
 
-    allItems.sort((a, b) => b.date.localeCompare(a.date));
+        lateCount++;
+        outstandingPrincipal += balance;
+        totalInterestOwed += totalInterestForPeriod;
+        totalDue += overdueAmount;
 
-    allItems.forEach(item => {
+        let client = await DB.getClientById(loan.clientId);
+        let clientName = client ? client.fullname : "Unknown";
+        let phone = client ? client.phone : "-";
 
-        if (item.status === "ACTIVE") {
-            totalBorrowed += item.amount;
-            outstanding += item.balance;
-            activeCount++;
-        }
+        let daysLate = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
 
-        if (item.status === "LATE") {
-            totalBorrowed += item.amount;
-            outstanding += item.balance;
-        }
+        let earlyInfo = earlyPaymentTotal > 0 
+            ? `<br><small class="text-success">Early: ${money(earlyPaymentTotal)} (${monthsCoveredByEarly} mo covered)</small>`
+            : "";
 
-        let statusColor = "bg-secondary";
-        if (item.status === "ACTIVE") statusColor = "bg-success";
-        if (item.status === "COMPLETED") statusColor = "bg-info";
-        if (item.status === "PENDING") statusColor = "bg-warning text-dark";
-        if (item.status === "REJECTED") statusColor = "bg-danger";
-        if (item.status === "LATE") statusColor = "bg-danger";
-
-        let actionButtons = "";
-        if (item.type === "loan") {
-            actionButtons = `
-                <button class="btn btn-view btn-sm me-2" onclick="viewLoan(${item.id})">
-                    <i class="fa fa-eye"></i> Details
-                </button>
-                <button class="btn btn-payment btn-sm" onclick="viewPayments(${item.id})">
-                    <i class="fa fa-clock-rotate-left"></i> Payments
-                </button>`;
-        } else {
-            actionButtons = `<span class="text-muted small">Awaiting review</span>`;
-        }
+        let monthInfo = monthsDiff > 1 
+            ? `<br><small class="text-muted">${monthsDiff} months × ${money(monthlyInterest)}</small>`
+            : "";
 
         table.innerHTML += `
-            <tr>
-                <td>${item.date}</td>
-                <td>${money(item.amount)}</td>
-                <td>${item.status === "PENDING" || item.status === "REJECTED" ? "-" : money(item.balance)}</td>
-                <td>${item.dueDate}</td>
-                <td><span class="badge ${statusColor}">${item.status}</span></td>
-                <td>${actionButtons}</td>
+            <tr class="table-danger">
+                <td>${lateCount}</td>
+                <td>${clientName}</td>
+                <td>${phone}</td>
+                <td>KES ${originalAmount.toLocaleString()}</td>
+                <td>KES ${balance.toLocaleString()}</td>
+                <td class="fw-bold text-danger">KES ${monthlyInterest.toLocaleString()}/mo</td>
+                <td class="fw-bold">KES ${overdueAmount.toLocaleString()}${monthInfo}${earlyInfo}</td>
+                <td>${loan.dueDate}</td>
+                <td class="text-danger fw-bold">${daysLate} Days (${monthsDiff} mo)</td>
+                <td>
+                    <button class="btn btn-view btn-sm action-btn" onclick="viewLoan(${loan.id})">
+                        <i class="fa fa-eye"></i> Details
+                    </button>
+                    <button class="btn btn-payment btn-sm action-btn" onclick="openPayment(${loan.id})">
+                        <i class="fa fa-money-bill"></i> Payment
+                    </button>
+                </td>
             </tr>`;
-    });
+    }
 
-    updateSummary(allItems.length, activeCount, totalBorrowed, outstanding);
+    updateCards(lateCount, outstandingPrincipal, totalInterestOwed, totalDue);
 
-}
-
-
-
-
-
-
-
-
-
-
-
-// ===============================
-// UPDATE SUMMARY CARDS
-// ===============================
-
-
-function updateSummary(total, active, borrowed, balance){
-
-    document.getElementById("totalLoans").innerHTML = total;
-    document.getElementById("activeLoans").innerHTML = active;
-    document.getElementById("totalBorrowed").innerHTML = money(borrowed);
-    document.getElementById("outstanding").innerHTML = money(balance);
+    if (lateCount === 0) {
+        table.innerHTML = `<tr><td colspan="10" class="text-center text-muted p-5">No late loans found.</td></tr>`;
+    }
 
 }
 
 
+function updateCards(count, principal, interest, due) {
+    document.getElementById("totalLateLoans").innerHTML = count;
+    document.getElementById("totalOutstanding").innerHTML = "KES " + principal.toLocaleString();
+    document.getElementById("expectedInterest").innerHTML = "KES " + interest.toLocaleString();
+    document.getElementById("totalDue").innerHTML = "KES " + due.toLocaleString();
+}
 
 
-
-
-
-// ===============================
-// VIEW LOAN DETAILS
-// ===============================
-
+/*================================
+VIEW LOAN DETAILS
+================================*/
 
 async function viewLoan(id){
-
     let loan = await DB.getLoan(id);
+    if(!loan) return;
 
-    if(!loan){
-        alert("Loan not found");
-        return;
+    let client = await DB.getClientById(loan.clientId);
+    let balance = Number(loan.remainingPrincipal || 0);
+    let rate = Number(loan.interestRate || 20);
+    let currentInterest = (balance * rate) / 100;
+
+    let payments = await DB.getLoanPayments(loan.id);
+    let totalEarlyPaid = 0;
+    let totalRegularPaid = 0;
+    let totalPaid = 0;
+    
+    if (Array.isArray(payments) && loan.dueDate) {
+        const parts = loan.dueDate.split("/");
+        if (parts.length === 3) {
+            const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
+            payments.forEach(p => {
+                const amount = Number(p.amount || 0);
+                totalPaid += amount;
+                if (p.date) {
+                    const pParts = p.date.split("/");
+                    if (pParts.length === 3) {
+                        const paymentDate = new Date(pParts[2], pParts[1] - 1, pParts[0]);
+                        if (paymentDate < dueDate) {
+                            totalEarlyPaid += amount;
+                        } else {
+                            totalRegularPaid += amount;
+                        }
+                    }
+                }
+            });
+        }
     }
 
-    let client = AUTH.currentClient();
+    let totalExpected = Number(loan.originalPrincipal) + (Number(loan.originalPrincipal) * rate / 100);
+    let repaymentProgress = totalExpected > 0 ? Math.round((totalPaid / totalExpected) * 100) : 0;
 
-    document.getElementById("loanClientName").innerHTML = client.fullname || "-";
-    document.getElementById("loanClientPhoto").src = client.profilePhoto || DEFAULT_IMG;
-    document.getElementById("detailAmount").innerHTML = money(loan.originalPrincipal);
-    document.getElementById("detailDate").innerHTML = loan.loanDate || "-";
-    document.getElementById("detailDue").innerHTML = loan.dueDate || "-";
-    document.getElementById("detailStatus").innerHTML = loan.status || "-";
-    document.getElementById("detailPrincipal").innerHTML = money(loan.originalPrincipal);
-    document.getElementById("detailBalance").innerHTML = money(loan.remainingPrincipal);
-    document.getElementById("detailInterest").innerHTML = (loan.interestRate || 0) + "%";
-    document.getElementById("detailNextPayment").innerHTML = money(loan.currentInterest || 0);
+    // Calculate months overdue for display
+    let monthsOverdue = 0;
+    if (loan.dueDate) {
+        const parts = loan.dueDate.split("/");
+        if (parts.length === 3) {
+            const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
+            let today = new Date();
+            monthsOverdue = (today.getFullYear() - dueDate.getFullYear()) * 12 + (today.getMonth() - dueDate.getMonth());
+            if (today.getDate() < dueDate.getDate()) monthsOverdue--;
+            if (monthsOverdue < 1) monthsOverdue = 1;
+        }
+    }
 
-    let modal = new bootstrap.Modal(document.getElementById("loanDetailsModal"));
+    document.getElementById("loanDetails").innerHTML = `
+        <h5 class="text-primary">Client Information</h5>
+        <hr>
+        <p><b>Name:</b> ${client.fullname}</p>
+        <p><b>Phone:</b> ${client.phone}</p>
+
+        <h5 class="text-primary mt-4">Loan Information</h5>
+        <hr>
+        <div class="row">
+            <div class="col-md-6">
+                <p><b>Original Loan Amount:</b> ${money(loan.originalPrincipal)}</p>
+                <p><b>Remaining Principal:</b> ${money(balance)}</p>
+                <p><b>Monthly Interest (${rate}%):</b> ${money(currentInterest)}</p>
+                <p><b>Months Overdue:</b> <span class="text-danger fw-bold">${monthsOverdue} month(s)</span></p>
+            </div>
+            <div class="col-md-6">
+                <p><b>Total Paid:</b> <span class="text-success fw-bold">${money(totalPaid)}</span></p>
+                <p><b>Early Payments:</b> <span class="text-primary fw-bold">${money(totalEarlyPaid)}</span></p>
+                <p><b>Regular/Late Payments:</b> <span class="text-warning fw-bold">${money(totalRegularPaid)}</span></p>
+                <p><b>Repayment Progress:</b> ${repaymentProgress}%</p>
+            </div>
+        </div>
+        <p><b>Loan Date:</b> ${loan.loanDate || "-"}</p>
+        <p><b>Due Date:</b> <span class="text-danger fw-bold">${loan.dueDate || "-"}</span></p>
+        <p><b>Status:</b> <span class="badge bg-danger">${loan.status}</span></p>
+
+        <div class="progress mt-2 mb-3" style="height:10px;">
+            <div class="progress-bar bg-success" style="width:${repaymentProgress}%"></div>
+        </div>
+
+        <div class="text-center mt-3 mb-3">
+            <button class="btn btn-guarantors" onclick="toggleGuarantors(${loan.applicationId || 0})">
+                <i class="fa fa-users"></i> View Guarantors
+            </button>
+        </div>
+        <div id="guarantorSection" style="display:none;"></div>
+
+        <h5 class="text-primary mt-4">Payment History</h5>
+        <table class="table table-bordered">
+            <tr><th>Date</th><th>Amount</th><th>Principal Paid</th><th>Interest Paid</th><th>Balance</th><th>Type</th></tr>
+            ${await loadPaymentRows(loan)}
+        </table>
+    `;
+
+    let modal = new bootstrap.Modal(document.getElementById("loanModal"));
     modal.show();
-
 }
 
 
+/*================================
+TOGGLE GUARANTORS
+================================*/
 
-
-
-
-
-
-
-// ===============================
-// VIEW PAYMENT HISTORY
-// ===============================
-
-
-async function viewPayments(id){
-
-    let loan = await DB.getLoan(id);
-
-    if(!loan){
-        alert("Loan not found");
+async function toggleGuarantors(applicationId) {
+    const section = document.getElementById("guarantorSection");
+    
+    if (section.style.display === "block") {
+        section.style.display = "none";
         return;
     }
-
-    document.getElementById("paymentLoanTitle").innerHTML = "Payments For Loan: " + money(loan.originalPrincipal);
-
-    let payments = await DB.getLoanPayments(id);
-
-    let table = document.getElementById("paymentTable");
-    table.innerHTML="";
-
-    if(payments.length === 0){
-        table.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No payments recorded yet</td></tr>`;
-    } else {
-        payments.forEach(payment=>{
-            table.innerHTML += `
-                <tr>
-                    <td>${payment.date || "-"}</td>
-                    <td>${money(payment.amount)}</td>
-                    <td>${money(payment.principalPaid)}</td>
-                    <td>${money(payment.interestPaid)}</td>
-                </tr>`;
-        });
+    
+    if (!applicationId || applicationId === 0) {
+        section.innerHTML = `<p class="text-muted">No guarantor details available.</p>`;
+        section.style.display = "block";
+        return;
     }
+    
+    section.innerHTML = `<p class="text-center text-muted">Loading guarantor details...</p>`;
+    section.style.display = "block";
+    
+    let application = await DB.getApplication(applicationId);
+    
+    if (!application) {
+        section.innerHTML = `<p class="text-muted">No guarantor details available.</p>`;
+        return;
+    }
+    
+    const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+    
+    section.innerHTML = `
+        <hr>
+        <h5 class="text-primary"><i class="fa fa-users"></i> Guarantor Details</h5>
+        ${showGuarantor(application.guarantor1, "Guarantor 1", DEFAULT_IMG)}
+        ${showGuarantor(application.guarantor2, "Guarantor 2", DEFAULT_IMG)}
+    `;
+}
 
+
+function showGuarantor(g, title, DEFAULT_IMG){
+    if(!g) return "";
+    if(!DEFAULT_IMG) DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+    return `
+    <div class="detail-card">
+        <h5 class="text-primary">${title}</h5>
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <img src="${g.photo || DEFAULT_IMG}" class="guarantor-photo">
+            </div>
+            <div class="col-md-8">
+                <p><b>Name:</b> ${g.name || "-"}</p>
+                <p><b>National ID:</b> ${g.id || "-"}</p>
+                <p><b>Phone:</b> ${g.phone || "-"}</p>
+                <p><b>Relationship:</b> ${g.relationship || "-"}</p>
+                <p><b>Address:</b> ${g.address || "-"}</p>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-6"><h6>ID Front</h6><img src="${g.idFront || ''}" class="document-img"></div>
+            <div class="col-md-6"><h6>ID Back</h6><img src="${g.idBack || ''}" class="document-img"></div>
+        </div>
+    </div>`;
+}
+
+
+/*================================
+PAYMENT HISTORY
+================================*/
+
+async function loadPaymentRows(loan){
+    let payments = await DB.getLoanPayments(loan.id);
+    if(payments.length === 0){
+        return `<tr><td colspan="6" class="text-center">No payments yet</td></tr>`;
+    }
+    
+    let rows = "";
+    let dueDate = null;
+    if (loan.dueDate) {
+        const parts = loan.dueDate.split("/");
+        if (parts.length === 3) {
+            dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
+        }
+    }
+    
+    payments.forEach(p => {
+        let typeBadge = "";
+        if (p.date && dueDate) {
+            const pParts = p.date.split("/");
+            if (pParts.length === 3) {
+                const paymentDate = new Date(pParts[2], pParts[1] - 1, pParts[0]);
+                if (paymentDate < dueDate) {
+                    typeBadge = `<span class="badge bg-primary">Early</span>`;
+                } else {
+                    typeBadge = `<span class="badge bg-warning text-dark">Regular</span>`;
+                }
+            }
+        }
+        
+        rows += `
+            <tr>
+                <td>${p.date}</td>
+                <td>${money(p.amount)}</td>
+                <td>${money(p.principalPaid)}</td>
+                <td>${money(p.interestPaid)}</td>
+                <td>${money(p.balance)}</td>
+                <td>${typeBadge}</td>
+            </tr>`;
+    });
+    return rows;
+}
+
+
+/*================================
+OPEN PAYMENT
+================================*/
+
+function openPayment(id){
+    document.getElementById("paymentLoanId").value = id;
+    document.getElementById("paymentAmount").value = "";
+    document.getElementById("paymentDate").value = new Date().toISOString().split("T")[0];
     let modal = new bootstrap.Modal(document.getElementById("paymentModal"));
     modal.show();
-
 }
 
 
+/*================================
+SAVE PAYMENT
+================================*/
+
+async function savePayment(){
+    let loanId = Number(document.getElementById("paymentLoanId").value);
+    let amount = Number(document.getElementById("paymentAmount").value);
+    let dateInput = document.getElementById("paymentDate").value;
+    let method = document.getElementById("paymentMethod").value;
+
+    if(amount <= 0){
+        alert("Enter payment amount");
+        return;
+    }
+
+    let formattedDate = dateInput;
+    if (dateInput && dateInput.includes("-")) {
+        const parts = dateInput.split("-");
+        formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    let loan = await DB.getLoan(loanId);
+    if (!loan) return;
+
+    let balance = Number(loan.remainingPrincipal || 0);
+    let rate = Number(loan.interestRate || 20);
+    let interestOwed = (balance * rate) / 100;
+
+    await DB.addPayment({ loanId, amount, date: formattedDate, method });
+
+    // If payment covers interest, push due date forward
+    if (amount >= interestOwed) {
+        const parts = loan.dueDate.split("/");
+        if (parts.length === 3) {
+            let oldDue = new Date(parts[2], parts[1] - 1, parts[0]);
+            oldDue.setMonth(oldDue.getMonth() + 1);
+            
+            const newDay = String(oldDue.getDate()).padStart(2, "0");
+            const newMonth = String(oldDue.getMonth() + 1).padStart(2, "0");
+            const newYear = oldDue.getFullYear();
+            
+            loan.dueDate = `${newDay}/${newMonth}/${newYear}`;
+            await DB.updateLoan(loan);
+            
+            alert(`Payment recorded! Interest covered. New due date: ${loan.dueDate}`);
+        } else {
+            alert("Payment recorded successfully!");
+        }
+    } else {
+        let remaining = interestOwed - amount;
+        alert(`Payment recorded! Remaining overdue interest: ${money(remaining)}`);
+    }
+
+    loadLateLoans();
+    bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
+}
 
 
+/*================================
+LOGOUT
+================================*/
 
-// ===============================
-// START PAGE
-// ===============================
 
-loadMyLoans();
+function logout(){
+    AUTH.adminLogout();
+}
+
+
+/*================================
+START PAGE
+================================*/
+
+
+loadLateLoans();
 
 
 
@@ -1456,20 +1571,8 @@ loadMyLoans();
 
 
 
-
-
-
-
-<!-- Bootstrap JS -->
-
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-
-
-
-
 </body>
-
 
 </html>
