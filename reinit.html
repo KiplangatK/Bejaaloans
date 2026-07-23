@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Reinitialize Database</title>
+</head>
+<body>
+<h3>Reinitializing Database...</h3>
+<div id="msg">Please wait...</div>
+
+<script>
+// Force delete the old database
+indexedDB.deleteDatabase("BejjaDB");
+
+setTimeout(() => {
+    document.getElementById("msg").innerHTML = `
+        <p>✅ Old database deleted!</p>
+        <p>Now loading fresh database...</p>
+    `;
+    
+    // Load the database script fresh
+    const script = document.createElement("script");
+    script.src = "assets/js/database.js";
+    script.onload = () => {
+        setTimeout(async () => {
+            document.getElementById("msg").innerHTML += `
+                <p>✅ Database reinitialized!</p>
+                <p><b>Admin login:</b> admin / admin123</p>
+                <a href="admin-portal.html" style="
+                    display:inline-block; padding:12px 24px; background:#1976d2; 
+                    color:white; text-decoration:none; border-radius:8px; margin-top:10px;
+                ">Go to Admin Login</a>
+            `;
+        }, 2000);
+    };
+    document.head.appendChild(script);
+}, 1000);
+</script>
+</body>
+</html>
