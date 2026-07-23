@@ -1553,7 +1553,6 @@ async function savePayment(){
 
     // If payment covers the full monthly interest, push due date forward
     if (amount >= interestOwed) {
-        // Get the day from the original loan date
         let loanDay = 15;
         if (loan.loanDate) {
             const loanParts = loan.loanDate.split("/");
@@ -1562,12 +1561,10 @@ async function savePayment(){
             }
         }
         
-        // Set new due date to that day of the next month from today
         let newDue = new Date();
         newDue.setMonth(newDue.getMonth() + 1);
         newDue.setDate(loanDay);
         
-        // Handle month overflow
         if (newDue.getDate() < loanDay) {
             newDue.setDate(0);
         }
@@ -1585,8 +1582,8 @@ async function savePayment(){
         alert(`Payment recorded! Remaining overdue interest: ${money(remaining)}`);
     }
 
-    loadLateLoans();
-    bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
+    // Reload the page to refresh everything
+    location.reload();
 }
 
 
