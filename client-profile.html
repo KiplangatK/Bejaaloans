@@ -94,6 +94,28 @@ padding:0 30px;
 box-shadow:0 4px 15px rgba(0,0,0,.15);
 }
 
+.topbar .topbar-right{
+display:flex;
+align-items:center;
+gap:15px;
+}
+
+.topbar .btn-back{
+background:rgba(255,255,255,0.2);
+color:white;
+padding:8px 16px;
+border-radius:20px;
+text-decoration:none;
+font-size:14px;
+font-weight:600;
+transition:.3s;
+}
+
+.topbar .btn-back:hover{
+background:rgba(255,255,255,0.35);
+color:white;
+}
+
 
 /* ===========================
    CONTENT
@@ -299,11 +321,15 @@ My Profile
 
 </h3>
 
-<div>
+<div class="topbar-right">
 
-Welcome,
+<a href="client-dashboard.html" class="btn-back">
 
-<strong id="topClientName"></strong>
+<i class="fa fa-arrow-left"></i> Back
+
+</a>
+
+<span>Welcome, <strong id="topClientName"></strong></span>
 
 </div>
 
@@ -318,7 +344,7 @@ Welcome,
 <div class="profile-card">
 
 <img id="profilePhoto"
-src="https://via.placeholder.com/150">
+src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
 
 <h3 id="clientName"></h3>
 
@@ -467,7 +493,7 @@ class="btn btn-success action-btn">
 
 <i class="fa fa-home"></i>
 
-Home
+Dashboard
 
 </a>
 
@@ -482,6 +508,8 @@ Home
 
 
 <script>
+
+const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
 // ===============================
 // MONEY FORMAT
@@ -529,9 +557,7 @@ client.fullname || "-";
 
 document.getElementById("profilePhoto").src=
 
-client.profilePhoto ||
-
-"https://via.placeholder.com/150";
+client.profilePhoto || DEFAULT_IMG;
 
 document.getElementById("clientName").innerHTML=
 
