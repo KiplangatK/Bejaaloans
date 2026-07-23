@@ -383,20 +383,6 @@ color:white;
 
 
 
-.btn-disabled{
-
-background:#ccc;
-
-color:#888;
-
-border-radius:20px;
-
-cursor:not-allowed;
-
-}
-
-
-
 </style>
 
 </head>
@@ -627,11 +613,6 @@ Status
 
 
 <th>
-Loan Status
-</th>
-
-
-<th>
 Action
 </th>
 
@@ -645,7 +626,7 @@ Action
 
 <tbody id="clientsTable">
 
-<tr><td colspan="9" class="text-center text-muted p-4">Loading clients...</td></tr>
+<tr><td colspan="8" class="text-center text-muted p-4">Loading clients...</td></tr>
 
 </tbody>
 
@@ -1280,105 +1261,43 @@ Back
 
 
 if(!AUTH.currentAdmin()){
-
-
-window.location.href="admin-login.html";
-
-
+    window.location.href="admin-login.html";
 }
-
-
-
 
 
 // =====================================
 // SHOW ADMIN NAME
 // =====================================
 
-
 let admin = AUTH.currentAdmin();
 
-
-
 if(admin){
-
-
-document.getElementById("adminName").innerHTML =
-
-admin.username;
-
-
+    document.getElementById("adminName").innerHTML = admin.username;
 }
-
-
-
-
-
 
 
 // =====================================
 // CURRENT SELECTED CLIENT
 // =====================================
 
-
 let selectedClientId = null;
 let selectedClientHasOutstanding = false;
-
-
-
-
-
-
-
 
 
 // =====================================
 // MONEY FORMAT
 // =====================================
 
-
 function money(value){
-
-
-return "KES " +
-
-Number(value || 0).toLocaleString();
-
-
+    return "KES " + Number(value || 0).toLocaleString();
 }
-
-
-
-
-
-
 
 
 // =====================================
 // LOAD CLIENTS TABLE
 // =====================================
 
-
 async function loadClients(){
-
-    // Wait for DB
-    let dbReady = false;
-    let retries = 0;
-    while (!dbReady && retries < 50) {
-        try {
-            if (window.DB && typeof DB.getLoans === "function") {
-                const test = await DB.getLoans();
-                if (Array.isArray(test)) {
-                    dbReady = true;
-                    break;
-                }
-            }
-        } catch(e) {}
-        await new Promise(r => setTimeout(r, 100));
-        retries++;
-    }
-
-    if (!dbReady) return;
 
     let clients = await DB.getClients();
     let loans = await DB.getLoans();
@@ -1387,10 +1306,10 @@ async function loadClients(){
     if (!Array.isArray(loans)) loans = [];
 
     let table = document.getElementById("clientsTable");
-    table.innerHTML="";
+    table.innerHTML = "";
 
-    if(clients.length===0){
-        table.innerHTML=`<tr><td colspan="9" class="text-center text-muted p-4">No registered clients found.</td></tr>`;
+    if(clients.length === 0){
+        table.innerHTML = `<tr><td colspan="8" class="text-center text-muted p-4">No registered clients found.</td></tr>`;
         return;
     }
 
@@ -1403,14 +1322,8 @@ async function loadClients(){
             ? `<span class="status-active">ACTIVE</span>`
             : `<span class="status-suspended">SUSPENDED</span>`;
 
-        // Check if client has outstanding loan
         let clientLoans = loans.filter(l => String(l.clientId) === String(client.id) && l.status === "ACTIVE");
         let hasOutstanding = clientLoans.length > 0;
-        let totalOutstanding = clientLoans.reduce((sum, l) => sum + Number(l.remainingPrincipal || 0), 0);
-
-        let loanStatusBadge = hasOutstanding
-            ? `<span class="badge bg-danger">Active Loan: ${money(totalOutstanding)}</span>`
-            : `<span class="badge bg-secondary">No active loan</span>`;
 
         table.innerHTML += `
             <tr>
@@ -1421,7 +1334,6 @@ async function loadClients(){
                 <td>${client.nationalID || "-"}</td>
                 <td>${client.createdAt || "-"}</td>
                 <td>${badge}</td>
-                <td>${loanStatusBadge}</td>
                 <td><button class="btn btn-view btn-sm" onclick="viewClient(${client.id})"><i class="fa fa-eye"></i> View Details</button></td>
             </tr>`;
     });
@@ -1429,17 +1341,9 @@ async function loadClients(){
 }
 
 
-
-
-
-
-
-
-
 // =====================================
 // VIEW CLIENT DETAILS
 // =====================================
-
 
 async function viewClient(id){
 
@@ -1450,7 +1354,6 @@ async function viewClient(id){
 
     selectedClientId = id;
 
-    // Check outstanding loans
     let loans = await DB.getLoans();
     if (!Array.isArray(loans)) loans = [];
     
@@ -1496,7 +1399,7 @@ async function viewClient(id){
         });
     }
 
-    // Show warning if outstanding balance
+    // Show warning if outstanding
     const warningEl = document.getElementById("outstandingWarning");
     const btnSuspend = document.getElementById("btnSuspend");
     const btnDelete = document.getElementById("btnDelete");
@@ -1509,21 +1412,15 @@ async function viewClient(id){
             <small>Suspension and deletion are disabled until the loan is fully paid.</small>
         `;
         btnSuspend.disabled = true;
-        btnSuspend.classList.add("btn-disabled");
-        btnSuspend.title = "Cannot suspend - client has outstanding loan";
-        
+        btnSuspend.style.opacity = "0.5";
         btnDelete.disabled = true;
-        btnDelete.classList.add("btn-disabled");
-        btnDelete.title = "Cannot delete - client has outstanding loan";
+        btnDelete.style.opacity = "0.5";
     } else {
         warningEl.style.display = "none";
         btnSuspend.disabled = false;
-        btnSuspend.classList.remove("btn-disabled");
-        btnSuspend.title = "";
-        
+        btnSuspend.style.opacity = "1";
         btnDelete.disabled = false;
-        btnDelete.classList.remove("btn-disabled");
-        btnDelete.title = "";
+        btnDelete.style.opacity = "1";
     }
 
     let modal = new bootstrap.Modal(document.getElementById("clientModal"));
@@ -1532,22 +1429,13 @@ async function viewClient(id){
 }
 
 
-
-
-
-
-
-
-
 // =====================================
 // SUSPEND CLIENT
 // =====================================
 
-
 async function suspendClient(){
-
     if (selectedClientHasOutstanding) {
-        alert("Cannot suspend this client. They have an outstanding loan balance that must be cleared first.");
+        alert("Cannot suspend this client. They have an outstanding loan balance.");
         return;
     }
 
@@ -1564,24 +1452,14 @@ async function suspendClient(){
 
     let modal = bootstrap.Modal.getInstance(document.getElementById("clientModal"));
     if(modal) modal.hide();
-
 }
-
-
-
-
-
-
-
 
 
 // =====================================
 // ACTIVATE CLIENT
 // =====================================
 
-
 async function activateClient(){
-
     let client = await DB.getClientById(selectedClientId);
     if(!client) return;
 
@@ -1593,26 +1471,16 @@ async function activateClient(){
 
     let modal = bootstrap.Modal.getInstance(document.getElementById("clientModal"));
     if(modal) modal.hide();
-
 }
-
-
-
-
-
-
-
 
 
 // =====================================
 // DELETE CLIENT
 // =====================================
 
-
 async function deleteClient(){
-
     if (selectedClientHasOutstanding) {
-        alert("Cannot delete this client. They have an outstanding loan balance of " + money(selectedClientOutstanding) + ". The loan must be fully paid first.");
+        alert("Cannot delete this client. They have an outstanding loan balance.");
         return;
     }
 
@@ -1628,36 +1496,25 @@ async function deleteClient(){
 
     let modal = bootstrap.Modal.getInstance(document.getElementById("clientModal"));
     if(modal) modal.hide();
-
 }
-
-
-
-
-
-
-
 
 
 // =====================================
 // LOGOUT
 // =====================================
 
-
 function logout(){
     AUTH.adminLogout();
 }
 
 
-
-
-
-
-
-
+// =====================================
 // START
+// =====================================
 
-loadClients();
+setTimeout(() => {
+    loadClients();
+}, 600);
 
 
 
