@@ -1,7 +1,7 @@
 /*=========================================================
     BEJJA LOAN CREDIT
     DATABASE ENGINE — IndexedDB
-    Version: 4.3
+    Version: 4.4
 
     - Unlimited storage for thousands of clients
     - Indexed queries by phone, clientId, loanId, status
@@ -13,7 +13,7 @@
     - Stores payment notes/comments
     - Handles date format conversion internally
     - Handles database deletion gracefully
-    - Due date skips to next month from TODAY when all overdue interest cleared
+    - ANY payment on past-due loan advances due date to next month from today
     - Months overdue counts from due date (includes current partial month)
 =========================================================*/
 
@@ -218,7 +218,7 @@ async function deleteLoan(id) { return await remove("loans", id); }
     PAYMENT MANAGEMENT
     Payment clears ALL outstanding interest first (multi-month)
     Then remainder reduces principal
-    Due date skips to next month from TODAY when all overdue cleared
+    ANY payment on past-due loan advances due date to next month from today
     Months overdue counts from due date (includes current partial month)
 =========================================================*/
 
@@ -290,22 +290,33 @@ async function addPayment(payment) {
         loan.status = "COMPLETED";
     }
     
-    if (interestPaid >= totalOutstandingInterest && newBalance > 0) {
-        let loanDay = 15;
-        if (loan.loanDate) {
-            const loanParts = loan.loanDate.split("/");
-            if (loanParts.length === 3) loanDay = parseInt(loanParts[0]);
+    // If payment is made on a past-due loan and principal remains, advance due date to next month from today
+    if (loan.dueDate && newBalance > 0 && loan.status !== "COMPLETED") {
+        const parts = loan.dueDate.split("/");
+        if (parts.length === 3) {
+            const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
+            dueDate.setHours(0, 0, 0, 0);
+            let todayDate = new Date();
+            todayDate.setHours(0, 0, 0, 0);
+            
+            if (todayDate > dueDate) {
+                let loanDay = 15;
+                if (loan.loanDate) {
+                    const loanParts = loan.loanDate.split("/");
+                    if (loanParts.length === 3) loanDay = parseInt(loanParts[0]);
+                }
+                
+                let newDue = new Date();
+                newDue.setMonth(newDue.getMonth() + 1);
+                newDue.setDate(loanDay);
+                if (newDue.getDate() < loanDay) newDue.setDate(0);
+                
+                const newDay = String(newDue.getDate()).padStart(2, "0");
+                const newMonth = String(newDue.getMonth() + 1).padStart(2, "0");
+                const newYear = newDue.getFullYear();
+                loan.dueDate = `${newDay}/${newMonth}/${newYear}`;
+            }
         }
-        
-        let newDue = new Date();
-        newDue.setMonth(newDue.getMonth() + 1);
-        newDue.setDate(loanDay);
-        if (newDue.getDate() < loanDay) newDue.setDate(0);
-        
-        const newDay = String(newDue.getDate()).padStart(2, "0");
-        const newMonth = String(newDue.getMonth() + 1).padStart(2, "0");
-        const newYear = newDue.getFullYear();
-        loan.dueDate = `${newDay}/${newMonth}/${newYear}`;
     }
 
     await updateLoan(loan);
@@ -344,7 +355,7 @@ function formatMoney(value) { return "KES " + Number(value || 0).toLocaleString(
 async function optimizeDatabase() { const loans = await getLoans(); return loans.length; }
 async function exportDatabase() { return { clients: await getClients(), loanApplications: await getApplications(), loans: await getLoans(), payments: await getPayments(), staff: await getStaff() }; }
 
-openDB().then(async () => { await migrateFromLocalStorage(); console.log("BEJJA DATABASE ENGINE V4.3 LOADED"); }).catch(err => { console.error("Database initialization failed:", err); });
+openDB().then(async () => { await migrateFromLocalStorage(); console.log("BEJJA DATABASE ENGINE V4.4 LOADED"); }).catch(err => { console.error("Database initialization failed:", err); });
 
 window.DB = {
     getClients, addClient, getClientById, getClientByPhone, updateClient, deleteClient,
