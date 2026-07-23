@@ -63,6 +63,8 @@ border-radius:0 0 25px 25px;
 
 box-shadow:0 5px 15px rgba(0,0,0,.2);
 
+position:relative;
+
 }
 
 
@@ -70,6 +72,44 @@ box-shadow:0 5px 15px rgba(0,0,0,.2);
 .header h2{
 
 font-weight:700;
+
+}
+
+
+
+.header .btn-back{
+
+position:absolute;
+
+top:20px;
+
+right:25px;
+
+background:rgba(255,255,255,0.2);
+
+color:white;
+
+padding:10px 20px;
+
+border-radius:25px;
+
+text-decoration:none;
+
+font-weight:600;
+
+font-size:15px;
+
+transition:.3s;
+
+}
+
+
+
+.header .btn-back:hover{
+
+background:rgba(255,255,255,0.35);
+
+color:white;
 
 }
 
@@ -369,6 +409,11 @@ window.location.href="client-portal.html";
 
 <div class="header text-center">
 
+<a href="client-dashboard.html" class="btn-back">
+
+<i class="fa fa-arrow-left"></i> Back
+
+</a>
 
 <h2>
 
@@ -1139,12 +1184,23 @@ Number(value || 0)
 async function loadMyLoans(){
 
     // Wait for DB
+    let dbReady = false;
     let retries = 0;
-    while (!window.DB || !window.DB.getLoans || typeof window.DB.getLoans !== "function") {
-        await new Promise(r => setTimeout(r, 300));
+    while (!dbReady && retries < 50) {
+        try {
+            if (window.DB && typeof DB.getLoans === "function") {
+                const test = await DB.getLoans();
+                if (Array.isArray(test)) {
+                    dbReady = true;
+                    break;
+                }
+            }
+        } catch(e) {}
+        await new Promise(r => setTimeout(r, 100));
         retries++;
-        if (retries > 50) return;
     }
+
+    if (!dbReady) return;
 
     const client = AUTH.currentClient();
 
@@ -1330,12 +1386,10 @@ async function viewPayments(id){
 
 
 // ===============================
-// START PAGE — wait for DB
+// START PAGE
 // ===============================
 
-setTimeout(() => {
-    loadMyLoans();
-}, 800);
+loadMyLoans();
 
 
 
