@@ -368,7 +368,7 @@ font-size:15px;
 
 .summary-value{
 
-font-size:25px;
+font-size:22px;
 
 font-weight:bold;
 
@@ -660,7 +660,7 @@ Total Loans
 
 id="totalLoans">
 
-0
+KES 0
 
 </div>
 
@@ -1242,7 +1242,7 @@ async function loadAllData() {
     if (!Array.isArray(loans)) loans = [];
     if (!Array.isArray(applications)) applications = [];
 
-    // MY LOANS - show all active loans
+    // MY LOANS - show all loans
     let myLoans = loans.filter(l => String(l.clientId) === String(client.id));
 
     if (myLoans.length === 0) {
@@ -1250,24 +1250,22 @@ async function loadAllData() {
             <div class="alert alert-warning">
                 <i class="fa fa-info-circle"></i> You currently have no loans.
             </div>`;
-        document.getElementById("totalLoans").innerHTML = "0";
+        document.getElementById("totalLoans").innerHTML = "KES 0";
         document.getElementById("balance").innerHTML = "KES 0";
         document.getElementById("dueDate").innerHTML = "-";
         document.getElementById("paid").innerHTML = "KES 0";
         document.getElementById("progressBar").style.width = "0%";
         document.getElementById("progressBar").innerHTML = "0%";
     } else {
-        let totalLoanCount = 0;
-        let totalActiveAmount = 0;
+        let totalLoanAmount = 0;
         let totalBalance = 0;
         let totalPaidAll = 0;
         let nearestDueDate = "";
         
         for (let loan of myLoans) {
-            totalActiveAmount += Number(loan.originalPrincipal || 0);
+            totalLoanAmount += Number(loan.originalPrincipal || 0);
             let bal = Number(loan.remainingPrincipal || 0);
             totalBalance += bal;
-            totalLoanCount++;
             
             let payments = await DB.getLoanPayments(loan.id);
             if (Array.isArray(payments)) {
@@ -1279,14 +1277,14 @@ async function loadAllData() {
             }
         }
         
-        document.getElementById("totalLoans").innerHTML = totalLoanCount;
+        document.getElementById("totalLoans").innerHTML = money(totalLoanAmount);
         document.getElementById("balance").innerHTML = money(totalBalance);
         document.getElementById("dueDate").innerHTML = nearestDueDate || "-";
         document.getElementById("paid").innerHTML = money(totalPaidAll);
         
         let totalPercentage = 0;
-        if (totalActiveAmount > 0) {
-            totalPercentage = Math.round((totalPaidAll / totalActiveAmount) * 100);
+        if (totalLoanAmount > 0) {
+            totalPercentage = Math.round((totalPaidAll / totalLoanAmount) * 100);
         }
         document.getElementById("progressBar").style.width = totalPercentage + "%";
         document.getElementById("progressBar").innerHTML = totalPercentage + "%";
