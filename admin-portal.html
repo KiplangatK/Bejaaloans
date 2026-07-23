@@ -394,20 +394,26 @@ errorBox.innerHTML="";
 
 
 
-
-
-
-// Wait for DB to be ready
-
+// Wait for DB to be fully ready
 let retries = 0;
 while (!window.DB || typeof DB.getStaff !== "function") {
-    await new Promise(r => setTimeout(r, 200));
+    await new Promise(r => setTimeout(r, 300));
     retries++;
-    if (retries > 25) {
-        errorBox.innerHTML = "System is loading. Please try again.";
+    if (retries > 30) {
+        errorBox.innerHTML = "System is initializing. Please wait a moment and try again.";
         errorBox.style.display = "block";
         return;
     }
+}
+
+// Verify DB is actually working by testing a query
+try {
+    const test = await DB.getStaff();
+    if (!Array.isArray(test)) throw new Error("DB not ready");
+} catch(e) {
+    errorBox.innerHTML = "System is still loading. Please refresh the page and try again.";
+    errorBox.style.display = "block";
+    return;
 }
 
 
