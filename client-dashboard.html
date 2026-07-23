@@ -646,21 +646,21 @@ ACTIVE CLIENT
 <div class="summary-card">
 
 
-<i class="fa fa-money-bill-wave"></i>
+<i class="fa fa-file-invoice"></i>
 
 
 <div class="summary-title">
 
-Active Loans
+Total Loans
 
 </div>
 
 
 <div class="summary-value"
 
-id="activeLoan">
+id="totalLoans">
 
-KES 0
+0
 
 </div>
 
@@ -804,7 +804,7 @@ style="height:auto;">
 
 <i class="fa fa-file-circle-check"></i>
 
-Loan Status
+My Loans
 
 </h5>
 
@@ -1242,30 +1242,32 @@ async function loadAllData() {
     if (!Array.isArray(loans)) loans = [];
     if (!Array.isArray(applications)) applications = [];
 
-    // LOAN STATUS - show all active loans
-    let myActiveLoans = loans.filter(l => String(l.clientId) === String(client.id) && l.status === "ACTIVE");
+    // MY LOANS - show all active loans
+    let myLoans = loans.filter(l => String(l.clientId) === String(client.id));
 
-    if (myActiveLoans.length === 0) {
+    if (myLoans.length === 0) {
         document.getElementById("loanStatus").innerHTML = `
             <div class="alert alert-warning">
-                <i class="fa fa-info-circle"></i> You currently have no active loan.
+                <i class="fa fa-info-circle"></i> You currently have no loans.
             </div>`;
-        document.getElementById("activeLoan").innerHTML = "KES 0";
+        document.getElementById("totalLoans").innerHTML = "0";
         document.getElementById("balance").innerHTML = "KES 0";
         document.getElementById("dueDate").innerHTML = "-";
         document.getElementById("paid").innerHTML = "KES 0";
         document.getElementById("progressBar").style.width = "0%";
         document.getElementById("progressBar").innerHTML = "0%";
     } else {
+        let totalLoanCount = 0;
         let totalActiveAmount = 0;
         let totalBalance = 0;
         let totalPaidAll = 0;
         let nearestDueDate = "";
         
-        for (let loan of myActiveLoans) {
+        for (let loan of myLoans) {
             totalActiveAmount += Number(loan.originalPrincipal || 0);
             let bal = Number(loan.remainingPrincipal || 0);
             totalBalance += bal;
+            totalLoanCount++;
             
             let payments = await DB.getLoanPayments(loan.id);
             if (Array.isArray(payments)) {
@@ -1277,7 +1279,7 @@ async function loadAllData() {
             }
         }
         
-        document.getElementById("activeLoan").innerHTML = money(totalActiveAmount);
+        document.getElementById("totalLoans").innerHTML = totalLoanCount;
         document.getElementById("balance").innerHTML = money(totalBalance);
         document.getElementById("dueDate").innerHTML = nearestDueDate || "-";
         document.getElementById("paid").innerHTML = money(totalPaidAll);
@@ -1290,13 +1292,15 @@ async function loadAllData() {
         document.getElementById("progressBar").innerHTML = totalPercentage + "%";
         
         let loanListHTML = "";
-        for (let loan of myActiveLoans) {
+        for (let loan of myLoans) {
             let bal = Number(loan.remainingPrincipal || 0);
             let rate = Number(loan.interestRate || 20);
             let interest = (bal * rate) / 100;
             
             let statusBadge = '<span class="badge bg-success">ACTIVE</span>';
-            if (loan.dueDate) {
+            if (loan.status === "COMPLETED" || bal <= 0) {
+                statusBadge = '<span class="badge bg-secondary">COMPLETED</span>';
+            } else if (loan.dueDate) {
                 const parts = loan.dueDate.split("/");
                 if (parts.length === 3) {
                     const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
