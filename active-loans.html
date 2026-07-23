@@ -912,7 +912,7 @@ async function loadActiveLoans(){
         const parts = l.dueDate.split("/");
         if (parts.length !== 3) return true;
         const dueDate = new Date(parts[2], parts[1] - 1, parts[0]);
-        return dueDate >= today; // Only show if due date hasn't passed
+        return dueDate >= today;
     });
 
     if (active.length === 0) {
@@ -968,10 +968,8 @@ async function viewLoan(id){
     let rate = Number(loan.interestRate || 20);
     let currentInterest = (balance * rate) / 100;
 
-    // Get all payments
     let payments = await DB.getLoanPayments(loan.id);
     
-    // Calculate early vs regular payments
     let totalEarlyPaid = 0;
     let totalRegularPaid = 0;
     let totalPaid = 0;
@@ -1227,14 +1225,14 @@ function updatePaymentNote() {
 
 
 // ===============================
-// SAVE PAYMENT
+// SAVE PAYMENT — simplified, DB handles date conversion
 // ===============================
 
 async function savePayment(){
 
     let loanId = Number(document.getElementById("paymentLoanId").value);
     let amount = Number(document.getElementById("paymentAmount").value);
-    let dateInput = document.getElementById("paymentDate").value;
+    let date = document.getElementById("paymentDate").value;
     let method = document.getElementById("paymentMethod").value;
     let note = document.getElementById("paymentComment").value;
 
@@ -1243,14 +1241,7 @@ async function savePayment(){
         return;
     }
 
-    // Convert date from YYYY-MM-DD (input) to DD/MM/YYYY (storage)
-    let formattedDate = dateInput;
-    if (dateInput && dateInput.includes("-")) {
-        const parts = dateInput.split("-");
-        formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
-    }
-
-    await DB.addPayment({ loanId, amount, date: formattedDate, method, note });
+    await DB.addPayment({ loanId, amount, date, method, note });
 
     alert("Payment recorded successfully");
     loadActiveLoans();
