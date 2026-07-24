@@ -117,7 +117,7 @@ async function loadLateLoans(){
         let paidInfo=totalPaid>0?`<br><small class="text-warning">Paid: ${money(totalPaid)}</small>`:"";
         let monthInfo=monthsDiff>1?`<br><small class="text-muted">${monthsDiff}mo × ${money(monthlyInterest)}</small>`:"";
         
-        table.innerHTML+=`<tr class="table-danger"><td>${lateCount}</td><td>${l.fullname||"Unknown"}</td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td>${money(balance)}</td><td class="fw-bold text-danger">${money(monthlyInterest)}/mo</td><td class="fw-bold">${money(remaining)}${monthInfo}${paidInfo}</td><td>${l.due_date}</td><td class="text-danger fw-bold">${daysLate} Days (${monthsDiff}mo)</td><td><button class="btn btn-view btn-sm action-btn" onclick="viewLoan(${l.id})"><i class="fa fa-eye"></i></button><button class="btn btn-payment btn-sm action-btn" onclick="openPayment(${l.id})"><i class="fa fa-money-bill"></i></button></td></tr>`;
+        table.innerHTML+=`<tr class="table-danger"><td>${lateCount}</td><td>${l.fullname||"Unknown"}</td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td>${money(balance)}</td><td class="fw-bold text-danger">${money(monthlyInterest)}/mo</td><td class="fw-bold">${money(remaining)}${monthInfo}${paidInfo}</td><td>${formatDate(l.due_date)}</td><td class="text-danger fw-bold">${daysLate} Days (${monthsDiff}mo)</td><td><button class="btn btn-view btn-sm action-btn" onclick="viewLoan(${l.id})"><i class="fa fa-eye"></i></button><button class="btn btn-payment btn-sm action-btn" onclick="openPayment(${l.id})"><i class="fa fa-money-bill"></i></button></td></tr>`;
     }
     updateCards(lateCount,outstanding,interestOwed,totalDue);
     if(lateCount===0)table.innerHTML='<tr><td colspan="10" class="text-center text-muted p-5">No late loans.</td></tr>';
@@ -138,7 +138,7 @@ async function viewLoan(id){
     let totalExpected=Number(loan.original_principal)+Number(loan.original_principal)*rate/100;
     let progress=totalExpected>0?Math.round((totalPaid/totalExpected)*100):0;
     
-    document.getElementById("loanDetails").innerHTML=`<h5 class="text-primary">Client Information</h5><hr><p><b>Name:</b> ${loan.fullname||"-"}</p><p><b>Phone:</b> ${loan.phone||"-"}</p><h5 class="text-primary mt-4">Loan Information</h5><hr><div class="row"><div class="col-md-6"><p><b>Original:</b> ${money(loan.original_principal)}</p><p><b>Remaining:</b> ${money(balance)}</p><p><b>Monthly Interest:</b> ${money(currentInterest)}</p><p><b>Months Overdue:</b> <span class="text-danger fw-bold">${monthsOverdue} mo</span></p></div><div class="col-md-6"><p><b>Total Paid:</b> <span class="text-success fw-bold">${money(totalPaid)}</span></p><p><b>Total Outstanding Interest:</b> <span class="text-danger fw-bold">${money(totalOutstandingInterest)}</span></p><p><b>Progress:</b> ${progress}%</p></div></div><p><b>Loan Date:</b> ${loan.loan_date||"-"}</p><p><b>Due Date:</b> <span class="text-danger fw-bold">${loan.due_date||"-"}</span></p><p><b>Status:</b> <span class="badge bg-danger">${loan.status}</span></p><div class="progress mt-2 mb-3" style="height:10px;"><div class="progress-bar bg-success" style="width:${progress}%"></div></div><h5 class="text-primary mt-4">Payment History</h5><table class="table table-bordered"><tr><th>Date</th><th>Amount</th><th>Principal</th><th>Interest</th><th>Balance</th></tr>${payments.length===0?'<tr><td colspan="5" class="text-center">No payments yet</td></tr>':payments.map(p=>`<tr><td>${p.payment_date||"-"}</td><td>${money(p.amount)}</td><td>${money(p.principal_paid)}</td><td>${money(p.interest_paid)}</td><td>${money(p.balance)}</td></tr>`).join("")}</table>`;
+    document.getElementById("loanDetails").innerHTML=`<h5 class="text-primary">Client Information</h5><hr><p><b>Name:</b> ${loan.fullname||"-"}</p><p><b>Phone:</b> ${loan.phone||"-"}</p><h5 class="text-primary mt-4">Loan Information</h5><hr><div class="row"><div class="col-md-6"><p><b>Original:</b> ${money(loan.original_principal)}</p><p><b>Remaining:</b> ${money(balance)}</p><p><b>Monthly Interest:</b> ${money(currentInterest)}</p><p><b>Months Overdue:</b> <span class="text-danger fw-bold">${monthsOverdue} mo</span></p></div><div class="col-md-6"><p><b>Total Paid:</b> <span class="text-success fw-bold">${money(totalPaid)}</span></p><p><b>Total Outstanding Interest:</b> <span class="text-danger fw-bold">${money(totalOutstandingInterest)}</span></p><p><b>Progress:</b> ${progress}%</p></div></div><p><b>Loan Date:</b> ${formatDate(loan.loan_date)}</p><p><b>Due Date:</b> <span class="text-danger fw-bold">${formatDate(loan.due_date)}</span></p><p><b>Status:</b> <span class="badge bg-danger">${loan.status}</span></p><div class="progress mt-2 mb-3" style="height:10px;"><div class="progress-bar bg-success" style="width:${progress}%"></div></div><h5 class="text-primary mt-4">Payment History</h5><table class="table table-bordered"><tr><th>Date</th><th>Amount</th><th>Principal</th><th>Interest</th><th>Balance</th></tr>${payments.length===0?'<tr><td colspan="5" class="text-center">No payments yet</td></tr>':payments.map(p=>`<tr><td>${formatDate(p.payment_date)}</td><td>${money(p.amount)}</td><td>${money(p.principal_paid)}</td><td>${money(p.interest_paid)}</td><td>${money(p.balance)}</td></tr>`).join("")}</table>`;
     new bootstrap.Modal(document.getElementById("loanModal")).show();
 }
 
@@ -151,7 +151,6 @@ async function savePayment(){
     let method=document.getElementById("paymentMethod").value;
     if(amount<=0){alert("Enter amount");return;}
     
-    // Get loan before payment
     let r=await api.getLoans();
     let loan=r.loans.find(l=>l.id==loanId);
     if(!loan)return;
@@ -163,7 +162,6 @@ async function savePayment(){
     
     await api.addPayment({loanId,amount,paymentDate:date,method});
     
-    // Check after payment
     let pResult=await api.getLoanPayments(loanId);
     let totalPaid=0;
     if(pResult.success&&Array.isArray(pResult.payments))pResult.payments.forEach(p=>{totalPaid+=Number(p.amount||0);});
@@ -171,7 +169,8 @@ async function savePayment(){
     
     if(remaining<=0){
         let updatedLoan=await api.getLoan(loanId);
-        alert("✅ Outstanding Cleared!\n\nNew due date: "+(updatedLoan.success?updatedLoan.loan.due_date:"updated")+"\nLoan moved to Active Loans.");
+        let newDue=updatedLoan.success?formatDate(updatedLoan.loan.due_date):"updated";
+        alert("✅ Outstanding Cleared!\n\nNew due date: "+newDue+"\nLoan moved to Active Loans.");
     }else{
         alert("Payment recorded! Remaining: "+money(remaining));
     }
