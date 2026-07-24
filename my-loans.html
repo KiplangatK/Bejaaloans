@@ -38,16 +38,13 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 <div class="col-md-3"><div class="summary-card borrowed"><h5>Total Borrowed</h5><h2 id="totalBorrowed">KES 0</h2></div></div>
 <div class="col-md-3"><div class="summary-card balance"><h5>Outstanding</h5><h2 id="outstanding">KES 0</h2></div></div>
 </div>
-
 <div class="table-card"><div class="table-header"><i class="fa fa-money-bill-wave"></i>My Loan History</div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Date</th><th>Amount</th><th>Balance</th><th>Due Date</th><th>Status</th></tr></thead><tbody id="myLoansTable"><tr><td colspan="5" class="text-center text-muted p-4">Loading...</td></tr></tbody></table></div></div>
 </div>
 
 <script>
 function money(v){return"KES "+Number(v||0).toLocaleString();}
-
 async function loadMyLoans(){
-    let result=await api.getMyLoans();
-    let table=document.getElementById("myLoansTable");table.innerHTML="";
+    let result=await api.getMyLoans();let table=document.getElementById("myLoansTable");table.innerHTML="";
     if(!result.success||!result.loans||result.loans.length===0){table.innerHTML='<tr><td colspan="5" class="text-center text-muted p-4">No loans found.</td></tr>';return;}
     let totalBorrowed=0,outstanding=0,activeCount=0,today=new Date();
     result.loans.reverse().forEach(l=>{
@@ -56,14 +53,13 @@ async function loadMyLoans(){
         let realStatus=l.status;if(l.status==="COMPLETED"||balance<=0)realStatus="COMPLETED";else if(l.due_date&&new Date(l.due_date)<today)realStatus="LATE";
         if(realStatus==="ACTIVE")activeCount++;
         let sc="bg-secondary";if(realStatus==="ACTIVE")sc="bg-success";if(realStatus==="COMPLETED")sc="bg-info";if(realStatus==="LATE")sc="bg-danger";
-        table.innerHTML+=`<tr><td>${l.loan_date||"-"}</td><td>${money(amount)}</td><td>${money(balance)}</td><td>${l.due_date||"-"}</td><td><span class="badge ${sc}">${realStatus}</span></td></tr>`;
+        table.innerHTML+=`<tr><td>${formatDate(l.loan_date)}</td><td>${money(amount)}</td><td>${money(balance)}</td><td>${formatDate(l.due_date)}</td><td><span class="badge ${sc}">${realStatus}</span></td></tr>`;
     });
     document.getElementById("totalLoans").innerHTML=result.loans.length;
     document.getElementById("activeLoans").innerHTML=activeCount;
     document.getElementById("totalBorrowed").innerHTML=money(totalBorrowed);
     document.getElementById("outstanding").innerHTML=money(outstanding);
 }
-
 loadMyLoans();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
