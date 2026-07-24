@@ -11,113 +11,123 @@
 <div class="container py-4">
     <div class="card shadow mx-auto" style="max-width:750px; border-radius:20px;">
         <div class="card-body p-4">
-            <h3 class="text-center mb-4">🚀 System Test</h3>
+            <h3 class="text-center mb-4">🚀 Full System Test</h3>
             
-            <div class="mb-3">
-                <label class="fw-bold">API Server:</label>
-                <input type="text" id="apiUrl" class="form-control" value="http://localhost:5000/api" placeholder="http://localhost:5000/api">
-            </div>
-            
-            <div class="mb-3">
-                <label class="fw-bold">Admin Username:</label>
-                <input type="text" id="adminUser" class="form-control" value="Kiplangat">
-            </div>
-            
-            <div class="mb-3">
-                <label class="fw-bold">Admin Password:</label>
-                <input type="password" id="adminPass" class="form-control" value="Kipla1530#">
-            </div>
-            
-            <div id="log" class="bg-dark text-light p-3 rounded mb-3" style="height:350px; overflow-y:auto; font-family:monospace; font-size:13px;">
+            <div id="log" class="bg-dark text-light p-3 rounded mb-3" style="height:400px; overflow-y:auto; font-family:monospace; font-size:13px;">
                 <div style="color:#ffc107;">Ready to test...</div>
             </div>
             
             <button class="btn btn-success w-100 btn-lg" onclick="runAllTests()">
-                <i class="fa fa-play"></i> Run Full Test
+                <i class="fa fa-play"></i> Run Full Test (Register + Apply + Approve)
             </button>
-            
-            <div class="row mt-2">
-                <div class="col-6"><button class="btn btn-outline-primary w-100" onclick="testConnection()">Test Connection</button></div>
-                <div class="col-6"><button class="btn btn-outline-warning w-100" onclick="testAdminLogin()">Test Admin Login</button></div>
-            </div>
         </div>
     </div>
 </div>
 
 <script>
-const API = () => document.getElementById("apiUrl").value;
+const API_BASE = "http://localhost:5000/api";
+let savedClientId, savedPhone, savedToken, savedAppId;
+
 function log(msg, color="#fff"){let d=document.getElementById("log");d.innerHTML+=`<div style="color:${color};margin-top:3px;">${msg}</div>`;d.scrollTop=d.scrollHeight;}
 
-async function testConnection(){
-    log("🔌 Testing connection...","#0dcaf0");
-    try{
-        let r=await fetch(API().replace("/api",""));
-        let d=await r.json();
-        log("✅ Server: "+d.message+" v"+d.version,"#198754");
-    }catch(e){log("❌ Cannot reach server. Is backend running?","#dc3545");}
-}
-
-async function testAdminLogin(){
-    log("🔑 Testing admin login...","#0dcaf0");
-    try{
-        let r=await fetch(API()+"/auth/admin-login",{
-            method:"POST",headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({username:document.getElementById("adminUser").value,password:document.getElementById("adminPass").value})
-        });
-        let d=await r.json();
-        if(d.success){log("✅ Admin login OK! Token: "+d.token.substring(0,20)+"...","#198754");localStorage.setItem("test_token",d.token);}
-        else{log("❌ Login failed: "+d.message,"#dc3545");}
-    }catch(e){log("❌ Error: "+e.message,"#dc3545");}
-}
-
 async function runAllTests(){
-    document.getElementById("log").innerHTML='<div style="color:#ffc107;">🚀 Running all tests...</div>';
-    
-    // 1. Connection
-    await testConnection();
-    
-    // 2. Admin login
-    await testAdminLogin();
-    
-    let token=localStorage.getItem("test_token");
-    if(!token){log("❌ Cannot continue without login","#dc3545");return;}
-    
-    let headers={"Content-Type":"application/json","Authorization":"Bearer "+token};
-    
-    // 3. Get stats
-    try{
-        let r=await fetch(API()+"/stats",{headers});
-        let d=await r.json();
-        if(d.success){log("📊 Stats: Clients="+d.stats.totalClients+" Loans="+d.stats.activeLoans+" Late="+d.stats.lateLoans+" Pending="+d.stats.pendingApplications,"#198754");}
-    }catch(e){log("❌ Stats failed","#dc3545");}
-    
-    // 4. Get clients
-    try{
-        let r=await fetch(API()+"/clients",{headers});
-        let d=await r.json();
-        log("👥 Total registered clients: "+(d.clients?d.clients.length:0),"#198754");
-    }catch(e){log("❌ Clients failed","#dc3545");}
-    
-    // 5. Register test client
-    log("📝 Registering test client...","#0dcaf0");
-    let phone="07"+Math.floor(10000000+Math.random()*90000000);
-    try{
-        let r=await fetch(API()+"/auth/register",{
-            method:"POST",headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({fullname:"Test User",nationalID:"88888888",phone:phone,email:"test@test.com",occupation:"Tester",monthlyIncome:"20000",county:"Nairobi",address:"123 Test St",password:"test123"})
-        });
-        let d=await r.json();
-        if(d.success){log("✅ Client registered! Phone: "+phone,"#198754");}
-        else{log("⚠️ "+d.message,"#ffc107");}
-    }catch(e){log("❌ Register failed","#dc3545");}
-    
-    log("","#fff");
-    log("✅ ALL TESTS COMPLETE!","#198754");
-    log("📌 If all green, your system is working!","#fff");
-}
+    document.getElementById("log").innerHTML='<div style="color:#ffc107;">🚀 Starting full test...</div>';
+    let headers={"Content-Type":"application/json"};
 
+    try {
+        // ========== 1. ADMIN LOGIN ==========
+        log("🔑 Logging in as admin...", "#0dcaf0");
+        let r = await fetch(API_BASE+"/auth/admin-login", {method:"POST",headers,body:JSON.stringify({username:"Kiplangat",password:"Kipla1530#"})});
+        let d = await r.json();
+        if(!d.success){log("❌ Admin login failed: "+d.message,"#dc3545");return;}
+        savedToken = d.token;
+        let adminHeaders = {...headers, "Authorization":"Bearer "+savedToken};
+        log("✅ Admin logged in!", "#198754");
+
+        // ========== 2. REGISTER CLIENT ==========
+        log("📝 Registering new client...", "#0dcaf0");
+        savedPhone = "07" + Math.floor(10000000 + Math.random() * 90000000);
+        r = await fetch(API_BASE+"/auth/register", {method:"POST",headers,body:JSON.stringify({
+            fullname:"Test Client",nationalID:"99999999",phone:savedPhone,email:"client@test.com",
+            occupation:"Business",monthlyIncome:"50000",county:"Nairobi",address:"456 Test Ave",password:"client123"
+        })});
+        d = await r.json();
+        if(!d.success){log("❌ Register failed: "+d.message,"#dc3545");return;}
+        log("✅ Client registered! Phone: "+savedPhone+" | Password: client123", "#198754");
+
+        // ========== 3. CLIENT LOGIN ==========
+        log("🔑 Logging in as client...", "#0dcaf0");
+        r = await fetch(API_BASE+"/auth/client-login", {method:"POST",headers,body:JSON.stringify({phone:savedPhone,password:"client123"})});
+        d = await r.json();
+        if(!d.success){log("❌ Client login failed: "+d.message,"#dc3545");return;}
+        savedClientId = d.client.id;
+        let clientHeaders = {...headers, "Authorization":"Bearer "+d.token};
+        log("✅ Client logged in! ID: "+savedClientId, "#198754");
+
+        // ========== 4. APPLY FOR LOAN ==========
+        log("📋 Submitting loan application (KES 20,000)...", "#0dcaf0");
+        r = await fetch(API_BASE+"/applications", {method:"POST",headers:clientHeaders,body:JSON.stringify({
+            amount:20000,purpose:"Business Expansion",
+            guarantor1:{name:"John Doe",phone:"0711111111"},
+            guarantor2:{name:"Jane Doe",phone:"0722222222"}
+        })});
+        d = await r.json();
+        if(!d.success){log("❌ Application failed: "+d.message,"#dc3545");return;}
+        log("✅ Loan application submitted!", "#198754");
+
+        // ========== 5. GET APPLICATIONS ==========
+        log("📋 Fetching applications...", "#0dcaf0");
+        r = await fetch(API_BASE+"/applications", {headers:adminHeaders});
+        d = await r.json();
+        if(!d.success){log("❌ Failed: "+d.message,"#dc3545");return;}
+        let pending = d.applications.filter(a=>a.status==="PENDING");
+        if(pending.length===0){log("❌ No pending applications found","#dc3545");return;}
+        savedAppId = pending[pending.length-1].id;
+        log("✅ Found pending application ID: "+savedAppId, "#198754");
+
+        // ========== 6. APPROVE LOAN ==========
+        log("✅ Approving loan...", "#0dcaf0");
+        let today = new Date().toISOString().split("T")[0];
+        let nextMonth = new Date();nextMonth.setMonth(nextMonth.getMonth()+1);
+        let dueDate = nextMonth.toISOString().split("T")[0];
+        r = await fetch(API_BASE+"/applications/"+savedAppId+"/approve", {method:"PUT",headers:adminHeaders,body:JSON.stringify({loanDate:today,dueDate:dueDate})});
+        d = await r.json();
+        if(!d.success){log("❌ Approve failed: "+d.message,"#dc3545");return;}
+        log("✅ Loan approved! Due date: "+dueDate, "#198754");
+
+        // ========== 7. GET LOANS ==========
+        log("📊 Fetching loans...", "#0dcaf0");
+        r = await fetch(API_BASE+"/loans", {headers:adminHeaders});
+        d = await r.json();
+        log("✅ Total loans in system: "+(d.loans?d.loans.length:0), "#198754");
+
+        // ========== 8. GET STATS ==========
+        r = await fetch(API_BASE+"/stats", {headers:adminHeaders});
+        d = await r.json();
+        if(d.success){
+            log("📊 Stats: Clients="+d.stats.totalClients+" | Active="+d.stats.activeLoans+" | Late="+d.stats.lateLoans+" | Pending="+d.stats.pendingApplications, "#198754");
+        }
+
+        // ========== SUMMARY ==========
+        log("", "#fff");
+        log("═══════════════════════════════", "#ffc107");
+        log("✅ ALL TESTS PASSED!", "#198754");
+        log("", "#fff");
+        log("📌 Test Credentials:", "#0dcaf0");
+        log("   Admin: Kiplangat / Kipla1530#", "#fff");
+        log("   Client Phone: "+savedPhone+" / Password: client123", "#fff");
+        log("", "#fff");
+        log("👉 Now check:", "#0dcaf0");
+        log("   • admin-dashboard.html → should show 1 active loan", "#fff");
+        log("   • active-loans.html → should show the loan", "#fff");
+        log("   • client-portal.html → login with client credentials", "#fff");
+
+    } catch(e) {
+        log("❌ Error: "+e.message, "#dc3545");
+        log("Make sure backend is running on "+API_BASE, "#ffc107");
+    }
+}
 </script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-</head>
 </body>
 </html>
