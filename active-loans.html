@@ -16,8 +16,7 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 .sidebar a:hover{background:#1565c0;padding-left:35px;}.sidebar i{width:25px;}
 .main{margin-left:260px;}
 .topbar{height:70px;background:#1976d2;color:white;display:flex;justify-content:space-between;align-items:center;padding:0 30px;box-shadow:0 4px 12px rgba(0,0,0,.15);}
-.topbar h2{font-weight:700;}
-.topbar .topbar-right{display:flex;align-items:center;gap:15px;}
+.topbar h2{font-weight:700;}.topbar .topbar-right{display:flex;align-items:center;gap:15px;}
 .topbar .btn-back{background:rgba(255,255,255,0.2);color:white;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:14px;font-weight:600;transition:.3s;}
 .topbar .btn-back:hover{background:rgba(255,255,255,0.35);color:white;}
 .content{padding:30px;}
@@ -26,8 +25,13 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 .table th{background:#e3f2fd;color:#0d47a1;}.table td,.table th{padding:15px;vertical-align:middle;}
 .btn-view{background:#1976d2;color:white;border-radius:20px;}
 .btn-payment{background:#198754;color:white;border-radius:20px;}
-.badge-success{background:#198754;}
-.badge-danger{background:#dc3545;}
+.btn-guarantors{background:#6f42c1;color:white;border-radius:20px;}
+.btn-guarantors:hover{background:#5a3399;color:white;}
+.section-title{background:#0d47a1;color:white;padding:12px;border-radius:10px;margin-top:15px;font-weight:bold;}
+.detail-box{background:#f8fbff;border-radius:15px;padding:15px;margin-bottom:15px;border:1px solid #dbeafe;}
+.document-img{width:100%;height:160px;object-fit:contain;border-radius:10px;border:1px solid #ddd;}
+.guarantor-photo{width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid #2563eb;}
+.payment-note{background:#fff3cd;border:1px solid #ffc107;border-radius:10px;padding:10px 15px;margin-top:10px;font-size:14px;color:#856404;}
 </style>
 </head>
 <body>
@@ -48,8 +52,8 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 <div class="content"><div class="table-card"><div class="table-header"><i class="fa fa-list"></i>Active Loan List</div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Client</th><th>Phone</th><th>Amount</th><th>Balance</th><th>Interest</th><th>Due Date</th><th>Action</th></tr></thead><tbody id="activeLoansTable"><tr><td colspan="7" class="text-center text-muted p-4">Loading...</td></tr></tbody></table></div></div></div>
 </div>
 
-<!-- Payment Modal -->
-<div class="modal fade" id="paymentModal"><div class="modal-dialog"><div class="modal-content"><div class="modal-header bg-success text-white"><h5 class="modal-title">Record Payment</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="paymentLoanId"><label class="form-label">Amount</label><input type="number" id="paymentAmount" class="form-control mb-3"><label class="form-label">Date</label><input type="date" id="paymentDate" class="form-control mb-3"><label class="form-label">Method</label><select id="paymentMethod" class="form-select"><option>Cash</option><option>M-Pesa</option><option>Bank</option></select></div><div class="modal-footer"><button class="btn btn-success" onclick="savePayment()">Save</button></div></div></div></div>
+<div class="modal fade" id="loanModal"><div class="modal-dialog modal-xl"><div class="modal-content"><div class="modal-header bg-primary text-white"><h5 class="modal-title"><i class="fa fa-file-invoice-dollar"></i>Loan Details</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body" id="loanDetails"></div></div></div></div>
+<div class="modal fade" id="paymentModal"><div class="modal-dialog"><div class="modal-content"><div class="modal-header bg-success text-white"><h5 class="modal-title"><i class="fa fa-money-bill"></i>Record Payment</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="paymentLoanId"><input type="hidden" id="paymentLoanDueDate"><div id="earlyPaymentNote" class="payment-note" style="display:none;"></div><label class="form-label mt-3">Amount Paid</label><input type="number" id="paymentAmount" class="form-control mb-3" placeholder="Enter payment amount" oninput="updatePaymentNote()"><label class="form-label">Payment Date</label><input type="date" id="paymentDate" class="form-control mb-3" onchange="updatePaymentNote()"><label class="form-label">Payment Method</label><select id="paymentMethod" class="form-select mb-3"><option>Cash</option><option>M-Pesa</option><option>Bank</option></select><label class="form-label">Comment</label><input type="text" id="paymentComment" class="form-control" placeholder="Auto-generated note" readonly></div><div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-success" onclick="savePayment()">Save Payment</button></div></div></div></div>
 
 <script src="assets/js/api.js"></script>
 <script src="assets/js/auth.js"></script>
@@ -60,42 +64,33 @@ let admin=AUTH.currentAdmin();if(admin)document.getElementById("adminName").inne
 function money(v){return"KES "+Number(v||0).toLocaleString();}
 
 async function loadActiveLoans(){
-    let result=await api.getLoans();
-    let table=document.getElementById("activeLoansTable");table.innerHTML="";
+    let result=await api.getLoans();let table=document.getElementById("activeLoansTable");table.innerHTML="";
     if(!result.success||!result.loans){table.innerHTML='<tr><td colspan="7" class="text-center text-muted p-4">No active loans.</td></tr>';return;}
-    
     let today=new Date();today.setHours(0,0,0,0);
-    // Only show: status ACTIVE, balance > 0, due date today or future
-    let active=result.loans.filter(l=>{
-        if(l.status!=="ACTIVE")return false;
-        if(Number(l.remaining_principal||0)<=0)return false;
-        if(!l.due_date)return true;
-        let d=new Date(l.due_date);d.setHours(0,0,0,0);
-        return d>=today;
-    });
-    
+    let active=result.loans.filter(l=>{if(l.status!=="ACTIVE")return false;if(Number(l.remaining_principal||0)<=0)return false;if(!l.due_date)return true;let d=new Date(l.due_date);d.setHours(0,0,0,0);return d>=today;});
     if(active.length===0){table.innerHTML='<tr><td colspan="7" class="text-center text-muted p-4">No active loans.</td></tr>';return;}
-    
     for(let l of active.reverse()){
         let bal=Number(l.remaining_principal||0),rate=Number(l.interest_rate||20),interest=(bal*rate)/100;
-        let dueBadge=l.due_date?`<span class="badge bg-success">${l.due_date}</span>`:"-";
-        table.innerHTML+=`<tr><td><b>${l.fullname||"Unknown"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td class="text-danger fw-bold">${money(bal)}</td><td>${money(interest)} (${rate}%)</td><td>${dueBadge}</td><td><button class="btn btn-view btn-sm" onclick="window.location.href='active-loans.html'"><i class="fa fa-eye"></i></button><button class="btn btn-payment btn-sm" onclick="openPayment(${l.id})"><i class="fa fa-money-bill"></i></button></td></tr>`;
+        table.innerHTML+=`<tr><td><b>${l.fullname||"Unknown"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td class="text-danger fw-bold">${money(bal)}</td><td>${money(interest)} (${rate}%)</td><td><span class="badge bg-success">${formatDate(l.due_date)}</span></td><td><button class="btn btn-view btn-sm" onclick="viewLoan(${l.id})"><i class="fa fa-eye"></i></button><button class="btn btn-payment btn-sm" onclick="openPayment(${l.id},'${l.due_date||""}')"><i class="fa fa-money-bill"></i></button></td></tr>`;
     }
 }
 
-function openPayment(id){document.getElementById("paymentLoanId").value=id;document.getElementById("paymentAmount").value="";document.getElementById("paymentDate").value=new Date().toISOString().split("T")[0];new bootstrap.Modal(document.getElementById("paymentModal")).show();}
-
-async function savePayment(){
-    let loanId=document.getElementById("paymentLoanId").value;
-    let amount=Number(document.getElementById("paymentAmount").value);
-    let date=document.getElementById("paymentDate").value;
-    let method=document.getElementById("paymentMethod").value;
-    if(amount<=0){alert("Enter amount");return;}
-    await api.addPayment({loanId,amount,paymentDate:date,method});
-    alert("Payment recorded!");
-    bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
-    loadActiveLoans();
+async function viewLoan(id){
+    let r=await api.getLoans();if(!r.success)return;let loan=r.loans.find(l=>l.id==id);if(!loan)return;
+    let balance=Number(loan.remaining_principal||0),rate=Number(loan.interest_rate||20),currentInterest=(balance*rate)/100;
+    let pResult=await api.getLoanPayments(id);let totalPaid=0,payments=pResult.success?pResult.payments:[];
+    if(Array.isArray(payments))payments.forEach(p=>{totalPaid+=Number(p.amount||0);});
+    let totalExpected=Number(loan.original_principal)+Number(loan.original_principal)*rate/100;
+    let progress=totalExpected>0?Math.round((totalPaid/totalExpected)*100):0;
+    document.getElementById("loanDetails").innerHTML=`<h5 class="text-primary">Client Information</h5><hr><p><b>Name:</b> ${loan.fullname||"-"}</p><p><b>Phone:</b> ${loan.phone||"-"}</p><h5 class="text-primary mt-4">Loan Information</h5><hr><div class="row"><div class="col-md-6"><p><b>Original:</b> ${money(loan.original_principal)}</p><p><b>Remaining:</b> ${money(balance)}</p><p><b>Current Interest:</b> ${money(currentInterest)}</p><p><b>Rate:</b> ${rate}%</p></div><div class="col-md-6"><p><b>Total Paid:</b> <span class="text-success fw-bold">${money(totalPaid)}</span></p><p><b>Progress:</b> ${progress}%</p></div></div><p><b>Loan Date:</b> ${formatDate(loan.loan_date)}</p><p><b>Due Date:</b> <span class="badge bg-success">${formatDate(loan.due_date)}</span></p><p><b>Status:</b> <span class="badge bg-success">${loan.status}</span></p><div class="progress mt-2 mb-3" style="height:10px;"><div class="progress-bar bg-success" style="width:${progress}%"></div></div><div class="text-center mt-3 mb-3"><button class="btn btn-guarantors" onclick="toggleGuarantors(${loan.application_id||0})"><i class="fa fa-users"></i>View Guarantors</button></div><div id="guarantorSection" style="display:none;"></div><h5 class="text-primary mt-4">Payment History</h5><table class="table table-bordered"><tr><th>Date</th><th>Amount</th><th>Principal</th><th>Interest</th><th>Balance</th><th>Note</th></tr>${payments.length===0?'<tr><td colspan="6" class="text-center">No payments yet</td></tr>':payments.map(p=>`<tr><td>${formatDate(p.payment_date)}</td><td>${money(p.amount)}</td><td>${money(p.principal_paid)}</td><td>${money(p.interest_paid)}</td><td>${money(p.balance)}</td><td>${p.note||"-"}</td></tr>`).join("")}</table>`;
+    new bootstrap.Modal(document.getElementById("loanModal")).show();
 }
+
+function openPayment(id,dueDate){document.getElementById("paymentLoanId").value=id;document.getElementById("paymentLoanDueDate").value=dueDate;document.getElementById("paymentAmount").value="";document.getElementById("paymentDate").value=new Date().toISOString().split("T")[0];document.getElementById("paymentComment").value="";document.getElementById("earlyPaymentNote").style.display="none";updatePaymentNote();new bootstrap.Modal(document.getElementById("paymentModal")).show();}
+
+function updatePaymentNote(){let ds=document.getElementById("paymentLoanDueDate").value,ps=document.getElementById("paymentDate").value,a=Number(document.getElementById("paymentAmount").value)||0;if(!ds||!ps){document.getElementById("earlyPaymentNote").style.display="none";document.getElementById("paymentComment").value="";return;}let dd=new Date(ds),pd=new Date(ps+"T00:00:00");if(pd<dd&&a>0){let days=Math.floor((dd-pd)/(1000*60*60*24));document.getElementById("earlyPaymentNote").style.display="block";document.getElementById("earlyPaymentNote").innerHTML=`<i class="fa fa-info-circle"></i> <b>Early Payment</b> — ${days} days before due date.`;document.getElementById("paymentComment").value=`Early payment (${days} days before due date)`;}else if(pd>=dd&&a>0){document.getElementById("earlyPaymentNote").style.display="block";document.getElementById("earlyPaymentNote").innerHTML='<i class="fa fa-exclamation-triangle"></i> <b>On-Time Payment</b>';document.getElementById("paymentComment").value="Payment on/after due date";}else{document.getElementById("earlyPaymentNote").style.display="none";document.getElementById("paymentComment").value="";}}
+
+async function savePayment(){let loanId=Number(document.getElementById("paymentLoanId").value),amount=Number(document.getElementById("paymentAmount").value),date=document.getElementById("paymentDate").value,method=document.getElementById("paymentMethod").value,note=document.getElementById("paymentComment").value;if(amount<=0){alert("Enter amount");return;}await api.addPayment({loanId,amount,paymentDate:date,method,note});alert("Payment recorded!");bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();loadActiveLoans();}
 
 function logout(){AUTH.adminLogout();}
 loadActiveLoans();
