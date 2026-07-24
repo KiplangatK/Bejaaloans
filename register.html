@@ -13,12 +13,15 @@ body{background:linear-gradient(135deg,#0F4C81,#2563EB);font-family:'Poppins',sa
 .card{max-width:950px;margin:auto;border:none;border-radius:20px;box-shadow:0 20px 40px rgba(0,0,0,.25);}
 .logo{font-size:60px;color:#2563EB;}
 .form-control{height:50px;border-radius:12px;}
-textarea.form-control{height:auto;}
 .btn-primary{height:50px;border-radius:12px;font-size:18px;font-weight:600;}
 .alert{display:none;}
 .upload-box{background:#f8f9fa;border-radius:15px;padding:20px;border:1px dashed #0F4C81;}
 .preview{width:120px;height:120px;border-radius:50%;object-fit:cover;display:none;margin-top:10px;border:3px solid #2563EB;}
 .id-preview{width:100%;max-height:200px;object-fit:contain;display:none;margin-top:10px;border-radius:10px;}
+.verify-box{background:#e8f5e9;border:2px solid #4caf50;border-radius:15px;padding:20px;margin-top:15px;display:none;}
+.otp-input{width:55px;height:55px;text-align:center;font-size:22px;font-weight:bold;border-radius:12px;border:2px solid #2563EB;margin:0 3px;}
+.phone-verified{color:#4caf50;font-weight:bold;font-size:13px;}
+.status-ok{color:#4caf50;font-size:13px;}.status-error{color:#dc3545;font-size:13px;}
 .step-indicator{display:flex;justify-content:center;margin-bottom:30px;}
 .step{width:40px;height:40px;border-radius:50%;background:#ddd;color:#888;display:flex;align-items:center;justify-content:center;font-weight:bold;margin:0 15px;position:relative;}
 .step.active{background:#2563EB;color:white;}.step.done{background:#4caf50;color:white;}
@@ -39,7 +42,8 @@ textarea.form-control{height:auto;}
 <div id="formStep1"><div class="row">
 <div class="col-md-6 mb-3"><label class="fw-semibold">Full Name <span class="text-danger">*</span></label><input type="text" id="fullname" class="form-control" placeholder="As per National ID" required></div>
 <div class="col-md-6 mb-3"><label class="fw-semibold">National ID Number <span class="text-danger">*</span></label><input type="text" id="nationalID" class="form-control" placeholder="e.g. 12345678" maxlength="10" required></div>
-<div class="col-md-6 mb-3"><label class="fw-semibold">Phone Number <span class="text-danger">*</span></label><input type="tel" id="phone" class="form-control" placeholder="07XXXXXXXX" required></div>
+<div class="col-md-6 mb-3"><label class="fw-semibold">Phone Number <span class="text-danger">*</span></label><div class="input-group"><input type="tel" id="phone" class="form-control" placeholder="07XXXXXXXX" required><button class="btn btn-outline-primary" type="button" id="sendOTPBtn" onclick="sendOTP()"><i class="fa fa-paper-plane"></i> Verify</button></div><div id="phoneStatus" class="mt-1"></div></div>
+<div class="col-md-6 mb-3"><div class="verify-box" id="otpBox"><label class="fw-semibold">Enter Verification Code</label><div class="d-flex justify-content-center gap-1 mt-2"><input type="text" class="otp-input" id="otp1" maxlength="1" oninput="otpNext(this,'otp2')"><input type="text" class="otp-input" id="otp2" maxlength="1" oninput="otpNext(this,'otp3')"><input type="text" class="otp-input" id="otp3" maxlength="1" oninput="otpNext(this,'otp4')"><input type="text" class="otp-input" id="otp4" maxlength="1" oninput="otpNext(this,'otp5')"><input type="text" class="otp-input" id="otp5" maxlength="1" oninput="otpNext(this,'otp6')"><input type="text" class="otp-input" id="otp6" maxlength="1"></div><button class="btn btn-success w-100 mt-3" type="button" onclick="verifyOTP()"><i class="fa fa-check-circle"></i> Confirm Code</button><div id="otpStatus" class="mt-1"></div></div></div>
 <div class="col-md-6 mb-3"><label class="fw-semibold">Email</label><input type="email" id="email" class="form-control" placeholder="optional"></div>
 <div class="col-md-6 mb-3"><label class="fw-semibold">Occupation <span class="text-danger">*</span></label><input type="text" id="occupation" class="form-control" required></div>
 <div class="col-md-6 mb-3"><label class="fw-semibold">Employer / Business Name</label><input type="text" id="employer" class="form-control"></div>
@@ -70,9 +74,39 @@ textarea.form-control{height:auto;}
 <script src="assets/js/auth.js"></script>
 <script>
 function goToStep1(){document.getElementById("formStep1").style.display="block";document.getElementById("formStep2").style.display="none";updateSteps(1);}
-function goToStep2(){let p=document.getElementById("password").value,c=document.getElementById("confirmPassword").value;if(p!==c){showError("Passwords do not match.");return;}document.getElementById("formStep1").style.display="none";document.getElementById("formStep2").style.display="block";updateSteps(2);}
+function goToStep2(){
+    let p=document.getElementById("password").value,c=document.getElementById("confirmPassword").value;
+    if(p!==c){showError("Passwords do not match.");return;}
+    if(!sessionStorage.getItem("phoneVerified")){showError("Please verify your phone number first.");return;}
+    document.getElementById("formStep1").style.display="none";document.getElementById("formStep2").style.display="block";updateSteps(2);
+}
 function updateSteps(s){for(let i=1;i<=3;i++){let st=document.getElementById("step"+i);st.classList.remove("active","done");if(i<s)st.classList.add("done");if(i===s)st.classList.add("active");}}
 function showError(m){let e=document.getElementById("errorBox");e.innerHTML=m;e.style.display="block";setTimeout(()=>e.style.display="none",4000);}
+
+let generatedOTP="";
+function sendOTP(){
+    let phone=document.getElementById("phone").value.trim();
+    if(!/^07\d{8}$/.test(phone)){document.getElementById("phoneStatus").innerHTML='<span class="status-error">Enter valid 07XXXXXXXX</span>';return;}
+    generatedOTP=String(Math.floor(100000+Math.random()*900000));
+    console.log("OTP:",generatedOTP);
+    document.getElementById("phoneStatus").innerHTML='<span class="status-ok">Code sent! (Demo: <b>'+generatedOTP+'</b>)</span>';
+    document.getElementById("otpBox").style.display="block";
+    document.getElementById("sendOTPBtn").disabled=true;
+    document.getElementById("sendOTPBtn").innerHTML='<i class="fa fa-clock"></i> Sent';
+    document.getElementById("otp1").focus();
+}
+function otpNext(c,n){if(c.value.length===1&&n)document.getElementById(n).focus();}
+function verifyOTP(){
+    let entered=document.getElementById("otp1").value+document.getElementById("otp2").value+document.getElementById("otp3").value+document.getElementById("otp4").value+document.getElementById("otp5").value+document.getElementById("otp6").value;
+    if(entered.length<6){document.getElementById("otpStatus").innerHTML='<span class="status-error">Enter complete code</span>';return;}
+    if(entered===generatedOTP){
+        document.getElementById("otpStatus").innerHTML='<span class="phone-verified"><i class="fa fa-check-circle"></i> Phone verified!</span>';
+        sessionStorage.setItem("phoneVerified","true");
+        document.getElementById("otpBox").style.display="none";
+        document.getElementById("sendOTPBtn").innerHTML='<i class="fa fa-check"></i> Verified';
+    }else{document.getElementById("otpStatus").innerHTML='<span class="status-error">Incorrect code</span>';}
+}
+
 function compressImage(f){return new Promise(r=>{let reader=new FileReader();reader.onload=function(e){let img=new Image();img.onload=function(){let c=document.createElement("canvas");let w=img.width,h=img.height,max=800;if(w>max){h=h*max/w;w=max;}c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);r(c.toDataURL("image/jpeg",0.7));};img.src=e.target.result;};reader.readAsDataURL(f);});}
 function previewImage(i,t){let f=i.files[0];if(!f)return;let r=new FileReader();r.onload=function(e){document.getElementById(t).src=e.target.result;document.getElementById(t).style.display="block";};r.readAsDataURL(f);}
 document.getElementById("profilePhoto").addEventListener("change",function(){previewImage(this,"profilePreview");});
@@ -84,6 +118,7 @@ e.preventDefault();
 let errorBox=document.getElementById("errorBox");
 let p=document.getElementById("password").value,c=document.getElementById("confirmPassword").value;
 if(p!==c){errorBox.innerHTML="Passwords do not match.";errorBox.style.display="block";return;}
+if(!sessionStorage.getItem("phoneVerified")){errorBox.innerHTML="Please verify your phone number.";errorBox.style.display="block";return;}
 if(!document.getElementById("profilePhoto").files[0]){errorBox.innerHTML="Upload all documents.";errorBox.style.display="block";return;}
 
 let profile=await compressImage(document.getElementById("profilePhoto").files[0]);
@@ -105,7 +140,7 @@ password:p
 });
 
 if(!result.success){errorBox.innerHTML=result.message;errorBox.style.display="block";return;}
-
+sessionStorage.removeItem("phoneVerified");
 document.body.innerHTML=`<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;"><div style="background:white;border-radius:25px;padding:50px 40px;text-align:center;max-width:500px;"><i class="fa-solid fa-circle-check" style="font-size:80px;color:#198754;margin-bottom:20px;"></i><h2 style="color:#0F4C81;">Account Created!</h2><p style="color:#666;margin-bottom:25px;">Your Bejja Credit account has been created.</p><a href="client-portal.html" style="background:#2563EB;color:white;padding:14px;border-radius:12px;text-decoration:none;font-weight:600;display:block;">Login Now</a></div></div>`;
 });
 </script>
