@@ -20,6 +20,10 @@
             <button class="btn btn-success w-100 mt-3 btn-lg" onclick="runTest()">
                 <i class="fa fa-play"></i> Run Full Test
             </button>
+            
+            <button class="btn btn-danger w-100 mt-2" onclick="clearAndTest()">
+                <i class="fa fa-trash"></i> Clear All Loans & Test
+            </button>
         </div>
     </div>
 </div>
@@ -34,17 +38,37 @@ function log(msg, color = "#fff") {
     d.scrollTop = d.scrollHeight;
 }
 
+async function clearAndTest() {
+    if (!confirm("Delete all loans and applications first?")) return;
+    document.getElementById("log").innerHTML = "";
+    log("🗑️ Clearing old loans...", "#ffc107");
+    let loans = await DB.getLoans();
+    for (let l of loans) await DB.deleteLoan(l.id);
+    let apps = await DB.getApplications();
+    for (let a of apps) await DB.deleteApplication(a.id);
+    log("✅ Cleared " + loans.length + " loans and " + apps.length + " applications.", "#198754");
+    log("");
+    runTest();
+}
+
 async function runTest() {
     document.getElementById("log").innerHTML = "";
     log("🚀 Starting test...", "#ffc107");
     
     try {
+        // Generate random phone and ID
+        let phone = "07" + Math.floor(10000000 + Math.random() * 90000000);
+        let nationalID = String(Math.floor(10000000 + Math.random() * 90000000));
+        
         // 1. Register client
         log("📝 Registering client...", "#0dcaf0");
+        log("   Phone: " + phone, "#888");
+        log("   Password: demo123", "#888");
+        
         let result = await AUTH.registerClient({
             fullname: "Demo User",
-            nationalID: "11111111",
-            phone: "0711111111",
+            nationalID: nationalID,
+            phone: phone,
             email: "demo@test.com",
             occupation: "Tester",
             employer: "Demo Inc",
@@ -59,7 +83,7 @@ async function runTest() {
         
         // 2. Login client
         log("🔑 Logging in client...", "#0dcaf0");
-        let login = await AUTH.clientLogin("0711111111", "demo123");
+        let login = await AUTH.clientLogin(phone, "demo123");
         if (!login.success) { log("❌ Login failed: " + login.message, "#dc3545"); return; }
         log("✅ Client logged in!", "#198754");
         
@@ -70,7 +94,7 @@ async function runTest() {
             amount: 10000,
             purpose: "Business",
             monthlyInterest: 2000,
-            client: { fullname: "Demo User", nationalID: "11111111", phone: "0711111111" },
+            client: { fullname: "Demo User", nationalID: nationalID, phone: phone },
             guarantor1: { name: "Guarantor 1", id: "22222222", phone: "0722222222", relationship: "Friend", address: "456 Street" },
             guarantor2: { name: "Guarantor 2", id: "33333333", phone: "0733333333", relationship: "Relative", address: "789 Street" }
         });
@@ -82,8 +106,8 @@ async function runTest() {
         if (!adminLogin.success) { log("❌ Admin login failed", "#dc3545"); return; }
         log("✅ Admin logged in!", "#198754");
         
-        // 5. Approve loan with past due date
-        log("✅ Approving loan (due date: 15/01/2026)...", "#0dcaf0");
+        // 5. Approve loan with past due date (15/02/2026)
+        log("✅ Approving loan...", "#0dcaf0");
         app.status = "APPROVED";
         await DB.updateApplication(app);
         
@@ -100,29 +124,51 @@ async function runTest() {
             approvedBy: "admin",
             status: "ACTIVE"
         });
-        log("✅ Loan approved! ID: " + loan.id + " | Due: 15/02/2026", "#198754");
-        log("📊 This loan is now " + (new Date().getMonth() - 1) + " months overdue!", "#ffc107");
+        
+        // Calculate months overdue
+        let dueDate = new Date(2026, 1, 15);
+        let today = new Date();
+        let monthsOverdue = 0;
+        let checkDate = new Date(dueDate);
+        while (true) {
+            checkDate.setMonth(checkDate.getMonth() + 1);
+            if (today < checkDate) break;
+            monthsOverdue++;
+        }
+        monthsOverdue++;
+        
+        let monthlyInterest = 2000;
+        let totalOutstanding = monthlyInterest * monthsOverdue;
+        
+        log("✅ Loan approved! ID: " + loan.id, "#198754");
+        log("📅 Due Date: 15/02/2026", "#fff");
+        log("📊 Months Overdue: " + monthsOverdue, "#ffc107");
+        log("💰 Monthly Interest: KES " + monthlyInterest.toLocaleString(), "#fff");
+        log("💰 Total Outstanding Interest: KES " + totalOutstanding.toLocaleString(), "#ffc107");
+        log("💰 Principal: KES 10,000", "#fff");
         
         // 6. Verify
         let loans = await DB.getLoans();
         let clients = await DB.getClients();
-        let apps = await DB.getApplications();
+        let apps2 = await DB.getApplications();
         
         log("", "#fff");
         log("══════════════════════════", "#ffc107");
         log("✅ TEST COMPLETE!", "#198754");
         log("📊 Clients: " + clients.length, "#fff");
-        log("📊 Applications: " + apps.length, "#fff");
+        log("📊 Applications: " + apps2.length, "#fff");
         log("📊 Loans: " + loans.length, "#fff");
         log("", "#fff");
-        log("👉 Now check:", "#0dcaf0");
-        log("   • late-loans.html — should show 1 late loan", "#fff");
-        log("   • active-loans.html — should be empty", "#fff");
-        log("   • admin-dashboard.html — should show 1 late loan", "#fff");
-        log("   • registered-clients.html — should show Demo User", "#fff");
+        log("👉 Now check these pages:", "#0dcaf0");
+        log("   ✅ late-loans.html — 1 late loan, KES " + totalOutstanding.toLocaleString() + " overdue", "#fff");
+        log("   ✅ active-loans.html — empty (due date passed)", "#fff");
+        log("   ✅ admin-dashboard.html — 1 late loan", "#fff");
+        log("   ✅ registered-clients.html — Demo User", "#fff");
         log("", "#fff");
-        log("👉 Make a partial payment and the loan stays late", "#0dcaf0");
-        log("👉 Pay full outstanding interest to move it to active", "#0dcaf0");
+        log("🧪 Test these scenarios:", "#0dcaf0");
+        log("   1. Pay KES 5,000 → loan stays in late list (partial)", "#fff");
+        log("   2. Pay KES " + totalOutstanding.toLocaleString() + " → loan moves to active loans", "#fff");
+        log("   3. Pay extra → reduces principal", "#fff");
         
     } catch(e) {
         log("❌ Error: " + e.message, "#dc3545");
