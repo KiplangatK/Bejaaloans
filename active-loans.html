@@ -150,33 +150,24 @@ async function loadActiveLoans(){
     let loans=await DB.getLoans();let table=document.getElementById("activeLoansTable");table.innerHTML="";
     if(!Array.isArray(loans)){table.innerHTML='<tr><td colspan="9" class="text-center text-muted p-4">No active loans found</td></tr>';return;}
 
-    // Show ALL loans with status ACTIVE and balance > 0
+    // Show ONLY loans with status ACTIVE, balance > 0, and due date NOT passed
+    let today=new Date();today.setHours(0,0,0,0);
     let active=loans.filter(l=>{
         if(l.status!=="ACTIVE")return false;
         if(Number(l.remainingPrincipal||0)<=0)return false;
-        return true;
+        if(!l.dueDate)return true;
+        let parts=l.dueDate.split("/");if(parts.length!==3)return true;
+        let due=new Date(parts[2],parts[1]-1,parts[0]);due.setHours(0,0,0,0);
+        return due>=today;
     });
 
     if(active.length===0){table.innerHTML='<tr><td colspan="9" class="text-center text-muted p-4">No active loans found</td></tr>';return;}
 
-    let today=new Date();today.setHours(0,0,0,0);
     const DEFAULT_IMG="https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-    
     for(let loan of active.reverse()){
         let client=await DB.getClientById(loan.clientId);if(!client)continue;
         let balance=Number(loan.remainingPrincipal||0);let rate=Number(loan.interestRate||20);let interestAmount=(balance*rate)/100;
-        
-        // Check if actually late
-        let dueBadge='<span class="badge bg-danger">'+loan.dueDate+'</span>';
-        if(loan.dueDate){
-            let parts=loan.dueDate.split("/");
-            if(parts.length===3){
-                let due=new Date(parts[2],parts[1]-1,parts[0]);due.setHours(0,0,0,0);
-                if(due>=today)dueBadge='<span class="badge bg-success">'+loan.dueDate+'</span>';
-            }
-        }
-        
-        table.innerHTML+=`<tr><td><img src="${client.profilePhoto||DEFAULT_IMG}" class="profile-img"></td><td>${client.fullname||"-"}</td><td>${client.phone||"-"}</td><td>${money(loan.originalPrincipal)}</td><td class="fw-bold text-danger">${money(balance)}</td><td>${money(interestAmount)} (${rate}%)</td><td>${loan.loanDate||"-"}</td><td>${dueBadge}</td><td><button class="btn btn-view btn-sm mb-1" onclick="viewLoan(${loan.id})"><i class="fa fa-eye"></i> Details</button><button class="btn btn-payment btn-sm" onclick="openPayment(${loan.id},'${loan.dueDate||""}')"><i class="fa fa-money-bill"></i> Payment</button></td></tr>`;
+        table.innerHTML+=`<tr><td><img src="${client.profilePhoto||DEFAULT_IMG}" class="profile-img"></td><td>${client.fullname||"-"}</td><td>${client.phone||"-"}</td><td>${money(loan.originalPrincipal)}</td><td class="fw-bold text-danger">${money(balance)}</td><td>${money(interestAmount)} (${rate}%)</td><td>${loan.loanDate||"-"}</td><td><span class="badge bg-success">${loan.dueDate||"-"}</span></td><td><button class="btn btn-view btn-sm mb-1" onclick="viewLoan(${loan.id})"><i class="fa fa-eye"></i> Details</button><button class="btn btn-payment btn-sm" onclick="openPayment(${loan.id},'${loan.dueDate||""}')"><i class="fa fa-money-bill"></i> Payment</button></td></tr>`;
     }
 }
 
@@ -186,7 +177,7 @@ async function viewLoan(id){
     let payments=await DB.getLoanPayments(loan.id);let totalEarlyPaid=0,totalRegularPaid=0,totalPaid=0;
     if(Array.isArray(payments)&&loan.dueDate){let parts=loan.dueDate.split("/");if(parts.length===3){let dueDate=new Date(parts[2],parts[1]-1,parts[0]);dueDate.setHours(0,0,0,0);payments.forEach(p=>{let amount=Number(p.amount||0);totalPaid+=amount;if(p.date){let pParts=p.date.split("/");if(pParts.length===3){let paymentDate=new Date(pParts[2],pParts[1]-1,pParts[0]);paymentDate.setHours(0,0,0,0);if(paymentDate<dueDate)totalEarlyPaid+=amount;else totalRegularPaid+=amount;}}});}}
     let totalExpected=Number(loan.originalPrincipal)+(Number(loan.originalPrincipal)*rate/100);let repaymentProgress=totalExpected>0?Math.round((totalPaid/totalExpected)*100):0;
-    document.getElementById("loanDetails").innerHTML=`<h5 class="text-primary">Client Information</h5><hr><p><b>Name:</b> ${client.fullname}</p><p><b>Phone:</b> ${client.phone}</p><h5 class="text-primary mt-4">Loan Information</h5><hr><div class="row"><div class="col-md-6"><p><b>Original Loan Amount:</b> ${money(loan.originalPrincipal)}</p><p><b>Remaining Principal:</b> ${money(balance)}</p><p><b>Current Interest Owed:</b> ${money(currentInterest)}</p><p><b>Interest Rate:</b> ${rate}%</p></div><div class="col-md-6"><p><b>Total Paid:</b> <span class="text-success fw-bold">${money(totalPaid)}</span></p><p><b>Early Payments:</b> <span class="text-primary fw-bold">${money(totalEarlyPaid)}</span></p><p><b>Regular/Late Payments:</b> <span class="text-warning fw-bold">${money(totalRegularPaid)}</span></p><p><b>Repayment Progress:</b> ${repaymentProgress}%</p></div></div><p><b>Loan Date:</b> ${loan.loanDate||"-"}</p><p><b>Due Date:</b> <span class="badge bg-danger">${loan.dueDate||"-"}</span></p><p><b>Status:</b> <span class="badge bg-success">${loan.status}</span></p><div class="progress mt-2 mb-3" style="height:10px;"><div class="progress-bar bg-success" style="width:${repaymentProgress}%"></div></div><div class="text-center mt-3 mb-3"><button class="btn btn-guarantors" onclick="toggleGuarantors(${loan.applicationId||0})"><i class="fa fa-users"></i>View Guarantors</button></div><div id="guarantorSection" style="display:none;"></div><h5 class="text-primary mt-4">Payment History</h5><table class="table table-bordered"><tr><th>Date</th><th>Amount</th><th>Principal Paid</th><th>Interest Paid</th><th>Balance</th><th>Type</th><th>Note</th></tr>${await loadPaymentRows(loan)}</table>`;
+    document.getElementById("loanDetails").innerHTML=`<h5 class="text-primary">Client Information</h5><hr><p><b>Name:</b> ${client.fullname}</p><p><b>Phone:</b> ${client.phone}</p><h5 class="text-primary mt-4">Loan Information</h5><hr><div class="row"><div class="col-md-6"><p><b>Original Loan Amount:</b> ${money(loan.originalPrincipal)}</p><p><b>Remaining Principal:</b> ${money(balance)}</p><p><b>Current Interest Owed:</b> ${money(currentInterest)}</p><p><b>Interest Rate:</b> ${rate}%</p></div><div class="col-md-6"><p><b>Total Paid:</b> <span class="text-success fw-bold">${money(totalPaid)}</span></p><p><b>Early Payments:</b> <span class="text-primary fw-bold">${money(totalEarlyPaid)}</span></p><p><b>Regular/Late Payments:</b> <span class="text-warning fw-bold">${money(totalRegularPaid)}</span></p><p><b>Repayment Progress:</b> ${repaymentProgress}%</p></div></div><p><b>Loan Date:</b> ${loan.loanDate||"-"}</p><p><b>Due Date:</b> <span class="badge bg-success">${loan.dueDate||"-"}</span></p><p><b>Status:</b> <span class="badge bg-success">${loan.status}</span></p><div class="progress mt-2 mb-3" style="height:10px;"><div class="progress-bar bg-success" style="width:${repaymentProgress}%"></div></div><div class="text-center mt-3 mb-3"><button class="btn btn-guarantors" onclick="toggleGuarantors(${loan.applicationId||0})"><i class="fa fa-users"></i>View Guarantors</button></div><div id="guarantorSection" style="display:none;"></div><h5 class="text-primary mt-4">Payment History</h5><table class="table table-bordered"><tr><th>Date</th><th>Amount</th><th>Principal Paid</th><th>Interest Paid</th><th>Balance</th><th>Type</th><th>Note</th></tr>${await loadPaymentRows(loan)}</table>`;
     new bootstrap.Modal(document.getElementById("loanModal")).show();
 }
 
