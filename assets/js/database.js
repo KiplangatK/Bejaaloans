@@ -1,7 +1,7 @@
 /*=========================================================
     BEJJA LOAN CREDIT
     DATABASE ENGINE — IndexedDB
-    Version: 4.5
+    Version: 4.6
 
     - Unlimited storage for thousands of clients
     - Indexed queries by phone, clientId, loanId, status
@@ -13,7 +13,7 @@
     - Stores payment notes/comments
     - Handles date format conversion internally
     - Handles database deletion gracefully
-    - Due date advances ONLY when ALL outstanding interest is fully paid
+    - Due date advances when CUMULATIVE interest covers full outstanding
     - Months overdue counts from due date (includes current partial month)
 =========================================================*/
 
@@ -218,7 +218,7 @@ async function deleteLoan(id) { return await remove("loans", id); }
     PAYMENT MANAGEMENT
     Payment clears ALL outstanding interest first (multi-month)
     Then remainder reduces principal
-    Due date advances ONLY when ALL outstanding interest is fully paid
+    Due date advances when CUMULATIVE interest covers full outstanding
     Months overdue counts from due date (includes current partial month)
 =========================================================*/
 
@@ -238,6 +238,7 @@ async function addPayment(payment) {
         paymentDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
     }
     
+    // Calculate total outstanding interest based on original due date
     let totalOutstandingInterest = 0;
     
     if (loan.dueDate) {
@@ -268,11 +269,9 @@ async function addPayment(payment) {
         totalOutstandingInterest = (balance * rate) / 100;
     }
     
-    // 1. Pay total outstanding interest first
+    // Current payment: interest first, then principal
     let interestPaid = Math.min(amount, totalOutstandingInterest);
     let remainingAfterInterest = amount - interestPaid;
-    
-    // 2. Remaining reduces principal
     let principalPaid = remainingAfterInterest;
     if (principalPaid > balance) principalPaid = balance;
     let newBalance = balance - principalPaid;
@@ -285,6 +284,7 @@ async function addPayment(payment) {
 
     const savedPayment = await add("payments", newPayment);
 
+    // Update loan balance
     loan.remainingPrincipal = Math.max(0, newBalance);
     loan.currentInterest = (loan.remainingPrincipal * rate) / 100;
 
@@ -293,8 +293,15 @@ async function addPayment(payment) {
         loan.status = "COMPLETED";
     }
     
-    // Only advance due date if ALL outstanding interest is paid AND principal remains
-    if (interestPaid >= totalOutstandingInterest && newBalance > 0 && loan.status !== "COMPLETED") {
+    // Check CUMULATIVE interest paid against total outstanding
+    const allPayments = await getByIndex("payments", "loanId", Number(payment.loanId));
+    let totalInterestPaidAll = 0;
+    for (let p of allPayments) {
+        totalInterestPaidAll += Number(p.interestPaid || 0);
+    }
+    
+    // Due date advances when cumulative interest covers full outstanding
+    if (totalInterestPaidAll >= totalOutstandingInterest && newBalance > 0 && loan.status !== "COMPLETED") {
         let loanDay = 15;
         if (loan.loanDate) {
             const loanParts = loan.loanDate.split("/");
@@ -348,7 +355,7 @@ function formatMoney(value) { return "KES " + Number(value || 0).toLocaleString(
 async function optimizeDatabase() { const loans = await getLoans(); return loans.length; }
 async function exportDatabase() { return { clients: await getClients(), loanApplications: await getApplications(), loans: await getLoans(), payments: await getPayments(), staff: await getStaff() }; }
 
-openDB().then(async () => { await migrateFromLocalStorage(); console.log("BEJJA DATABASE ENGINE V4.5 LOADED"); }).catch(err => { console.error("Database initialization failed:", err); });
+openDB().then(async () => { await migrateFromLocalStorage(); console.log("BEJJA DATABASE ENGINE V4.6 LOADED"); }).catch(err => { console.error("Database initialization failed:", err); });
 
 window.DB = {
     getClients, addClient, getClientById, getClientByPhone, updateClient, deleteClient,
