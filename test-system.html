@@ -65,9 +65,9 @@ async function runAllTests(){
         log("✅ Client logged in! ID: "+savedClientId, "#198754");
 
         // ========== 4. APPLY FOR LOAN ==========
-        log("📋 Submitting loan application (KES 20,000)...", "#0dcaf0");
+        log("📋 Submitting loan application (KES 10,000)...", "#0dcaf0");
         r = await fetch(API_BASE+"/applications", {method:"POST",headers:clientHeaders,body:JSON.stringify({
-            amount:20000,purpose:"Business Expansion",
+            amount:10000,purpose:"Business Expansion",
             guarantor1:{name:"John Doe",phone:"0711111111"},
             guarantor2:{name:"Jane Doe",phone:"0722222222"}
         })});
@@ -85,15 +85,25 @@ async function runAllTests(){
         savedAppId = pending[pending.length-1].id;
         log("✅ Found pending application ID: "+savedAppId, "#198754");
 
-        // ========== 6. APPROVE LOAN ==========
-        log("✅ Approving loan...", "#0dcaf0");
-        let today = new Date().toISOString().split("T")[0];
-        let nextMonth = new Date();nextMonth.setMonth(nextMonth.getMonth()+1);
-        let dueDate = nextMonth.toISOString().split("T")[0];
-        r = await fetch(API_BASE+"/applications/"+savedAppId+"/approve", {method:"PUT",headers:adminHeaders,body:JSON.stringify({loanDate:today,dueDate:dueDate})});
+        // ========== 6. APPROVE LOAN with dates set to past ==========
+        log("✅ Approving loan (Loan Date: 15/01/2026, Due Date: 15/02/2026)...", "#0dcaf0");
+        r = await fetch(API_BASE+"/applications/"+savedAppId+"/approve", {method:"PUT",headers:adminHeaders,body:JSON.stringify({loanDate:"2026-01-15",dueDate:"2026-02-15"})});
         d = await r.json();
         if(!d.success){log("❌ Approve failed: "+d.message,"#dc3545");return;}
-        log("✅ Loan approved! Due date: "+dueDate, "#198754");
+        log("✅ Loan approved! Loan Date: 15/01/2026 | Due Date: 15/02/2026", "#198754");
+
+        // Calculate months overdue
+        let dueDate = new Date(2026, 1, 15);
+        let today = new Date();
+        let monthsOverdue = 0;
+        let checkDate = new Date(dueDate);
+        while(true){checkDate.setMonth(checkDate.getMonth()+1);if(today<checkDate)break;monthsOverdue++;}
+        monthsOverdue++;
+        let monthlyInterest = 2000;
+        let totalOutstanding = monthlyInterest * monthsOverdue;
+        log("📊 Months Overdue: "+monthsOverdue, "#ffc107");
+        log("💰 Monthly Interest: KES "+monthlyInterest.toLocaleString(), "#fff");
+        log("💰 Total Outstanding Interest: KES "+totalOutstanding.toLocaleString(), "#ffc107");
 
         // ========== 7. GET LOANS ==========
         log("📊 Fetching loans...", "#0dcaf0");
@@ -117,10 +127,16 @@ async function runAllTests(){
         log("   Admin: Kiplangat / Kipla1530#", "#fff");
         log("   Client Phone: "+savedPhone+" / Password: client123", "#fff");
         log("", "#fff");
+        log("📅 Loan approved with past dates:", "#0dcaf0");
+        log("   Loan Date: 15/01/2026", "#fff");
+        log("   Due Date: 15/02/2026", "#fff");
+        log("   Months Overdue: "+monthsOverdue, "#ffc107");
+        log("   Total Outstanding: KES "+totalOutstanding.toLocaleString(), "#ffc107");
+        log("", "#fff");
         log("👉 Now check:", "#0dcaf0");
-        log("   • admin-dashboard.html → should show 1 active loan", "#fff");
-        log("   • active-loans.html → should show the loan", "#fff");
-        log("   • client-portal.html → login with client credentials", "#fff");
+        log("   • late-loans.html → should show 1 late loan", "#fff");
+        log("   • active-loans.html → should be empty", "#fff");
+        log("   • admin-dashboard.html → should show 1 late loan", "#fff");
 
     } catch(e) {
         log("❌ Error: "+e.message, "#dc3545");
