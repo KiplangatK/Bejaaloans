@@ -47,21 +47,17 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 <div class="topbar"><h3><i class="fa fa-user-circle"></i>My Profile</h3><div class="topbar-right"><a href="client-dashboard.html" class="btn-back"><i class="fa fa-arrow-left"></i> Back</a><span>Welcome, <strong id="topClientName"></strong></span></div></div>
 <div class="content">
 <div class="profile-card"><img id="profilePhoto" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"><h3 id="clientName"></h3><p id="clientPhone"></p><span class="badge bg-success">ACTIVE CLIENT</span></div>
-<div class="info-card">
-<div class="row">
+<div class="info-card"><div class="row">
 <div class="col-md-6"><div class="info-row"><div class="info-label">Full Name</div><div class="info-value" id="fullname"></div></div><div class="info-row"><div class="info-label">National ID</div><div class="info-value" id="nationalID"></div></div><div class="info-row"><div class="info-label">Phone</div><div class="info-value" id="phone"></div></div><div class="info-row"><div class="info-label">Email</div><div class="info-value" id="email"></div></div><div class="info-row"><div class="info-label">Occupation</div><div class="info-value" id="occupation"></div></div></div>
 <div class="col-md-6"><div class="info-row"><div class="info-label">Employer</div><div class="info-value" id="employer"></div></div><div class="info-row"><div class="info-label">Monthly Income</div><div class="info-value" id="income"></div></div><div class="info-row"><div class="info-label">County</div><div class="info-value" id="county"></div></div><div class="info-row"><div class="info-label">Address</div><div class="info-value" id="address"></div></div><div class="info-row"><div class="info-label">Registered</div><div class="info-value" id="createdDate"></div></div></div>
 </div>
-<hr class="my-4">
-<div class="text-center"><button class="btn btn-primary action-btn me-2" onclick="editProfile()"><i class="fa fa-user-pen"></i>Edit Profile</button><a href="client-dashboard.html" class="btn btn-success action-btn"><i class="fa fa-home"></i>Dashboard</a></div>
+<hr class="my-4"><div class="text-center"><a href="client-dashboard.html" class="btn btn-success action-btn"><i class="fa fa-home"></i>Dashboard</a></div>
 </div>
-</div>
-</div>
+</div></div>
 
 <script>
 function money(v){return"KES "+Number(v||0).toLocaleString();}
-document.addEventListener("DOMContentLoaded",()=>{let c=AUTH.currentClient();if(!c)return;document.getElementById("topClientName").innerHTML=c.fullname||"-";document.getElementById("profilePhoto").src=c.profilePhoto||"https://cdn-icons-png.flaticon.com/512/3135/3135715.png";document.getElementById("clientName").innerHTML=c.fullname||"-";document.getElementById("clientPhone").innerHTML=c.phone||"-";document.getElementById("fullname").innerHTML=c.fullname||"-";document.getElementById("nationalID").innerHTML=c.nationalID||"-";document.getElementById("phone").innerHTML=c.phone||"-";document.getElementById("email").innerHTML=c.email||"-";document.getElementById("occupation").innerHTML=c.occupation||"-";document.getElementById("employer").innerHTML=c.employer||"-";document.getElementById("income").innerHTML=money(c.monthlyIncome);document.getElementById("county").innerHTML=c.county||"-";document.getElementById("address").innerHTML=c.address||"-";document.getElementById("createdDate").innerHTML=c.createdAt||"-";});
-function editProfile(){alert("Edit profile feature coming soon.");}
+document.addEventListener("DOMContentLoaded",()=>{let c=AUTH.currentClient();if(!c)return;document.getElementById("topClientName").innerHTML=c.fullname||"-";document.getElementById("profilePhoto").src=c.profilePhoto||"https://cdn-icons-png.flaticon.com/512/3135/3135715.png";document.getElementById("clientName").innerHTML=c.fullname||"-";document.getElementById("clientPhone").innerHTML=c.phone||"-";document.getElementById("fullname").innerHTML=c.fullname||"-";document.getElementById("nationalID").innerHTML=c.nationalID||"-";document.getElementById("phone").innerHTML=c.phone||"-";document.getElementById("email").innerHTML=c.email||"-";document.getElementById("occupation").innerHTML=c.occupation||"-";document.getElementById("employer").innerHTML=c.employer||"-";document.getElementById("income").innerHTML=money(c.monthlyIncome);document.getElementById("county").innerHTML=c.county||"-";document.getElementById("address").innerHTML=c.address||"-";document.getElementById("createdDate").innerHTML=formatDate(c.createdAt);});
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
