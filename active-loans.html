@@ -24,9 +24,10 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 .table-card{background:white;border-radius:20px;overflow:hidden;box-shadow:0 8px 25px rgba(0,0,0,.12);}
 .table-header{background:#1976d2;color:white;padding:18px 25px;font-size:22px;font-weight:bold;}
 .table th{background:#e3f2fd;color:#0d47a1;}.table td,.table th{padding:15px;vertical-align:middle;}
-.profile-img{width:55px;height:55px;border-radius:50%;object-fit:cover;border:2px solid #1976d2;}
 .btn-view{background:#1976d2;color:white;border-radius:20px;}
 .btn-payment{background:#198754;color:white;border-radius:20px;}
+.badge-success{background:#198754;}
+.badge-danger{background:#dc3545;}
 </style>
 </head>
 <body>
@@ -44,9 +45,10 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 
 <div class="main">
 <div class="topbar"><h2><i class="fa fa-money-bill-wave"></i>Active Loans</h2><div class="topbar-right"><a href="admin-dashboard.html" class="btn-back"><i class="fa fa-arrow-left"></i> Back</a><span>Welcome, <strong id="adminName">Admin</strong></span></div></div>
-<div class="content"><div class="table-card"><div class="table-header"><i class="fa fa-list"></i>Active Loan List</div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Client</th><th>Phone</th><th>Amount</th><th>Balance</th><th>Due Date</th><th>Action</th></tr></thead><tbody id="activeLoansTable"><tr><td colspan="6" class="text-center text-muted p-4">Loading...</td></tr></tbody></table></div></div></div>
+<div class="content"><div class="table-card"><div class="table-header"><i class="fa fa-list"></i>Active Loan List</div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Client</th><th>Phone</th><th>Amount</th><th>Balance</th><th>Interest</th><th>Due Date</th><th>Action</th></tr></thead><tbody id="activeLoansTable"><tr><td colspan="7" class="text-center text-muted p-4">Loading...</td></tr></tbody></table></div></div></div>
 </div>
 
+<!-- Payment Modal -->
 <div class="modal fade" id="paymentModal"><div class="modal-dialog"><div class="modal-content"><div class="modal-header bg-success text-white"><h5 class="modal-title">Record Payment</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="paymentLoanId"><label class="form-label">Amount</label><input type="number" id="paymentAmount" class="form-control mb-3"><label class="form-label">Date</label><input type="date" id="paymentDate" class="form-control mb-3"><label class="form-label">Method</label><select id="paymentMethod" class="form-select"><option>Cash</option><option>M-Pesa</option><option>Bank</option></select></div><div class="modal-footer"><button class="btn btn-success" onclick="savePayment()">Save</button></div></div></div></div>
 
 <script src="assets/js/api.js"></script>
@@ -60,12 +62,24 @@ function money(v){return"KES "+Number(v||0).toLocaleString();}
 async function loadActiveLoans(){
     let result=await api.getLoans();
     let table=document.getElementById("activeLoansTable");table.innerHTML="";
-    if(!result.success||!result.loans){table.innerHTML='<tr><td colspan="6" class="text-center text-muted p-4">No active loans.</td></tr>';return;}
+    if(!result.success||!result.loans){table.innerHTML='<tr><td colspan="7" class="text-center text-muted p-4">No active loans.</td></tr>';return;}
+    
     let today=new Date();today.setHours(0,0,0,0);
-    let active=result.loans.filter(l=>{if(l.status!=="ACTIVE")return false;if(Number(l.remaining_principal||0)<=0)return false;if(!l.due_date)return true;let d=new Date(l.due_date);d.setHours(0,0,0,0);return d>=today;});
-    if(active.length===0){table.innerHTML='<tr><td colspan="6" class="text-center text-muted p-4">No active loans.</td></tr>';return;}
+    // Only show: status ACTIVE, balance > 0, due date today or future
+    let active=result.loans.filter(l=>{
+        if(l.status!=="ACTIVE")return false;
+        if(Number(l.remaining_principal||0)<=0)return false;
+        if(!l.due_date)return true;
+        let d=new Date(l.due_date);d.setHours(0,0,0,0);
+        return d>=today;
+    });
+    
+    if(active.length===0){table.innerHTML='<tr><td colspan="7" class="text-center text-muted p-4">No active loans.</td></tr>';return;}
+    
     for(let l of active.reverse()){
-        table.innerHTML+=`<tr><td><b>${l.fullname||"Unknown"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td class="text-danger fw-bold">${money(l.remaining_principal)}</td><td><span class="badge bg-success">${l.due_date||"-"}</span></td><td><button class="btn btn-view btn-sm" onclick="window.location.href='active-loans.html'"><i class="fa fa-eye"></i></button><button class="btn btn-payment btn-sm" onclick="openPayment(${l.id})"><i class="fa fa-money-bill"></i></button></td></tr>`;
+        let bal=Number(l.remaining_principal||0),rate=Number(l.interest_rate||20),interest=(bal*rate)/100;
+        let dueBadge=l.due_date?`<span class="badge bg-success">${l.due_date}</span>`:"-";
+        table.innerHTML+=`<tr><td><b>${l.fullname||"Unknown"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td class="text-danger fw-bold">${money(bal)}</td><td>${money(interest)} (${rate}%)</td><td>${dueBadge}</td><td><button class="btn btn-view btn-sm" onclick="window.location.href='active-loans.html'"><i class="fa fa-eye"></i></button><button class="btn btn-payment btn-sm" onclick="openPayment(${l.id})"><i class="fa fa-money-bill"></i></button></td></tr>`;
     }
 }
 
