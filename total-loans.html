@@ -23,6 +23,8 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 .table-card{background:white;border-radius:20px;overflow:hidden;box-shadow:0 8px 25px rgba(0,0,0,.12);}
 .table-header{background:#1976d2;color:white;padding:18px 25px;font-size:22px;font-weight:bold;}
 .table th{background:#e3f2fd;color:#0d47a1;}.table td,.table th{padding:15px;vertical-align:middle;}
+.profile-img{width:45px;height:45px;border-radius:50%;object-fit:cover;border:2px solid #1976d2;}
+.btn-view{background:#1976d2;color:white;border-radius:20px;padding:6px 15px;font-size:13px;}
 .badge-status{font-size:12px;padding:5px 10px;}
 </style>
 </head>
@@ -42,7 +44,7 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 
 <div class="main">
 <div class="topbar"><h2><i class="fa fa-file-invoice"></i>Total Loans</h2><div class="topbar-right"><a href="admin-dashboard.html" class="btn-back"><i class="fa fa-arrow-left"></i> Back</a><span>Welcome, <strong id="adminName">Admin</strong></span></div></div>
-<div class="content"><div class="table-card"><div class="table-header"><i class="fa fa-list"></i>All Loans</div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>#</th><th>Client</th><th>Phone</th><th>Amount</th><th>Balance</th><th>Due Date</th><th>Status</th></tr></thead><tbody id="allLoansTable"><tr><td colspan="7" class="text-center text-muted p-4">Loading...</td></tr></tbody></table></div></div></div>
+<div class="content"><div class="table-card"><div class="table-header"><i class="fa fa-list"></i>All Loans — Client List</div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>#</th><th>Photo</th><th>Client Name</th><th>Phone</th><th>Loan Amount</th><th>Balance</th><th>Due Date</th><th>Status</th><th>Action</th></tr></thead><tbody id="allLoansTable"><tr><td colspan="9" class="text-center text-muted p-4">Loading all loans...</td></tr></tbody></table></div></div></div>
 </div>
 
 <script src="assets/js/api.js"></script>
@@ -55,13 +57,15 @@ function money(v){return"KES "+Number(v||0).toLocaleString();}
 
 async function loadAllLoans(){
     let result=await api.getLoans();let table=document.getElementById("allLoansTable");table.innerHTML="";
-    if(!result.success||!result.loans||result.loans.length===0){table.innerHTML='<tr><td colspan="7" class="text-center text-muted p-4">No loans found.</td></tr>';return;}
+    if(!result.success||!result.loans||result.loans.length===0){table.innerHTML='<tr><td colspan="9" class="text-center text-muted p-4">No loans found.</td></tr>';return;}
     let today=new Date();today.setHours(0,0,0,0);
+    const DEFAULT_IMG="https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
     result.loans.reverse().forEach((l,i)=>{
+        let photo=l.profile_photo||DEFAULT_IMG;
         let statusBadge='<span class="badge bg-success badge-status">ACTIVE</span>';
         if(l.status==="COMPLETED"||Number(l.remaining_principal||0)<=0)statusBadge='<span class="badge bg-secondary badge-status">COMPLETED</span>';
         else if(l.due_date&&new Date(l.due_date)<today)statusBadge='<span class="badge bg-danger badge-status">LATE</span>';
-        table.innerHTML+=`<tr><td>${i+1}</td><td><b>${l.fullname||"Unknown"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td class="text-danger fw-bold">${money(l.remaining_principal)}</td><td>${formatDate(l.due_date)}</td><td>${statusBadge}</td></tr>`;
+        table.innerHTML+=`<tr><td>${i+1}</td><td><img src="${photo}" class="profile-img"></td><td><b>${l.fullname||"Unknown"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td class="text-danger fw-bold">${money(l.remaining_principal)}</td><td>${formatDate(l.due_date)}</td><td>${statusBadge}</td><td><button class="btn btn-view btn-sm" onclick="window.location.href='active-loans.html'"><i class="fa fa-eye"></i> View Details</button></td></tr>`;
     });
 }
 
