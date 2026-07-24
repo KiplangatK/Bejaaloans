@@ -1,0 +1,45 @@
+/* =====================================
+        BEJJA LOAN CREDIT
+        PREMIUM STYLE
+===================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;color:#333;overflow-x:hidden;}
+a{text-decoration:none;}
+
+.navbar{background:rgba(5,55,105,0.85);backdrop-filter:blur(12px);padding:18px 0;z-index:1000;box-shadow:0 5px 20px rgba(0,0,0,.15);}
+.navbar-brand{font-size:24px;letter-spacing:1px;}
+.navbar-brand i{color:#ffc107;margin-right:8px;}
+.nav-link{color:white!important;margin-left:25px;font-weight:600;transition:.3s;}
+.nav-link:hover{color:#ffc107!important;}
+
+.hero{min-height:100vh;display:flex;align-items:center;background:radial-gradient(circle at top right,#60a5fa,transparent 35%),linear-gradient(135deg,#064b86,#2563eb);color:white;padding-top:90px;position:relative;overflow:hidden;}
+.hero:before{content:"";position:absolute;width:500px;height:500px;background:rgba(255,255,255,.08);border-radius:50%;right:-150px;top:-150px;}
+.hero h1{font-size:70px;font-weight:800;line-height:1.1;margin-bottom:25px;}
+.hero p{font-size:21px;max-width:600px;line-height:1.8;margin-bottom:40px;color:#e5efff;}
+
+.btn-warning{background:#ffc107!important;border:none;font-weight:700;box-shadow:0 10px 25px rgba(255,193,7,.4);transition:.3s;}
+.btn-warning:hover{transform:translateY(-5px);}
+.btn-outline-light{border:2px solid white;font-weight:600;}
+.btn-outline-light:hover{background:white;color:#064b86;}
+.btn-success{background:#16a34a!important;border:none;font-weight:600;}
+
+.hero-icon{font-size:260px;color:white;animation:float 3s ease-in-out infinite;filter:drop-shadow(0 20px 30px rgba(0,0,0,.25));}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-20px);}}
+
+.loan-card{padding:40px 25px;border-radius:25px;background:white;text-align:center;box-shadow:0 15px 40px rgba(0,0,0,.12);transition:.4s;}
+.loan-card i{width:80px;height:80px;display:flex;align-items:center;justify-content:center;margin:auto;border-radius:50%;background:#e8f1ff;color:#07558c;font-size:35px;}
+.loan-card h4{margin-top:25px;font-weight:700;}
+.loan-card:hover{transform:translateY(-15px);box-shadow:0 25px 50px rgba(0,0,0,.18);}
+
+.why{background:#f8fafc;padding:80px 0;}
+.why i{font-size:45px;color:#16a34a;margin-bottom:15px;}
+
+footer{background:#071d35;color:white;padding:60px 0;}
+
+.hero h1,.hero p,.hero a{animation:slideUp 1s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
+
+html{scroll-behavior:smooth;}
