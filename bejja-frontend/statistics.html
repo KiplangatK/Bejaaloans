@@ -62,4 +62,25 @@ body{background:#edf4ff;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;}
 <script src="assets/js/auth.js"></script>
 <script>
 if(!AUTH.currentAdmin()){window.location.href="admin-login.html";}
-const admin=AUTH.currentAdmin();if(admin)document.getElementById("admin
+const admin=AUTH.currentAdmin();if(admin)document.getElementById("adminName").innerHTML=admin.username;
+
+async function loadStatistics(){
+    let result=await api.getStats();
+    if(!result.success)return;
+    let s=result.stats;
+    document.getElementById("totalClients").innerHTML=s.totalClients;
+    document.getElementById("totalLoans").innerHTML="KES "+Number(s.totalLoanAmount||0).toLocaleString();
+    document.getElementById("activeLoans").innerHTML=s.activeLoans;
+    document.getElementById("completedLoans").innerHTML=s.completedLoans;
+    document.getElementById("outstandingBalance").innerHTML="KES "+Number(s.outstandingBalance||0).toLocaleString();
+    document.getElementById("totalRepaid").innerHTML="KES "+Number(s.totalRepaid||0).toLocaleString();
+    document.getElementById("expectedInterest").innerHTML="KES "+Number(s.expectedInterest||0).toLocaleString();
+    document.getElementById("interestCollected").innerHTML="KES "+Number(s.interestCollected||0).toLocaleString();
+}
+
+function logout(){AUTH.adminLogout();}
+loadStatistics();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
