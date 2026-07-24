@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bejja Credit | Late Loans</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#edf4ff;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;}
+.wrapper{display:flex;}
+.sidebar{width:260px;min-height:100vh;background:#0d47a1;color:white;position:fixed;}
+.logo{padding:25px;font-size:28px;font-weight:bold;border-bottom:1px solid rgba(255,255,255,.15);}
+.logo i{margin-right:10px;}
+.sidebar ul{list-style:none;padding:15px 0;}
+.sidebar ul li a{display:block;color:white;padding:15px 25px;text-decoration:none;transition:.3s;}
+.sidebar ul li a:hover{background:#1565c0;padding-left:35px;}.sidebar ul li i{width:25px;}
+.main{margin-left:260px;width:100%;}
+.topbar{height:70px;background:#1976d2;color:white;display:flex;justify-content:space-between;align-items:center;padding:0 30px;box-shadow:0 2px 10px rgba(0,0,0,.15);}
+.topbar h2{font-size:28px;}.topbar a{color:white;text-decoration:none;}
+.content{padding:35px;width:100%;}
+.dashboard-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:25px;margin-bottom:35px;}
+.card-box{background:white;border-radius:15px;padding:25px;box-shadow:0 8px 20px rgba(0,0,0,.08);transition:.3s;text-align:center;}
+.card-box:hover{transform:translateY(-5px);}.card-box i{font-size:35px;color:#d32f2f;}
+.card-title{margin-top:15px;font-size:18px;font-weight:600;}
+.card-number{font-size:32px;font-weight:700;color:#d32f2f;margin-top:12px;}
+.table-card{background:white;border-radius:15px;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.08);}
+.table-header{background:#1976d2;color:white;padding:20px 25px;font-size:22px;font-weight:bold;}
+.table-responsive{overflow-x:auto;}.table{min-width:1200px;}
+.table thead th{background:#e3f2fd;color:#0d47a1;text-align:center;}
+.table tbody td{text-align:center;vertical-align:middle;}
+.table-danger{background:#ffebee!important;}
+.action-btn{margin:3px;padding:6px 10px;border-radius:8px;font-size:13px;}
+.btn-view{background:#1976d2;color:white;border-radius:20px;}
+.btn-payment{background:#198754;color:white;border-radius:20px;}
+@media(max-width:768px){.sidebar{width:220px;}.main{margin-left:220px;}.dashboard-cards{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<div class="sidebar">
+<div class="logo"><i class="fa-solid fa-building-columns"></i>Bejja Credit</div>
+<ul>
+<li><a href="admin-dashboard.html"><i class="fa-solid fa-gauge"></i>Dashboard</a></li>
+<li><a href="registered-clients.html"><i class="fa-solid fa-users"></i>Registered Clients</a></li>
+<li><a href="active-loans.html"><i class="fa-solid fa-money-bill-wave"></i>Active Loans</a></li>
+<li><a href="late-loans.html"><i class="fa-solid fa-triangle-exclamation"></i>Late Loans</a></li>
+<li><a href="loan-applications.html"><i class="fa-solid fa-file-circle-check"></i>Pending Applications</a></li>
+<li><a href="statistics.html"><i class="fa-solid fa-chart-column"></i>Statistics</a></li>
+<li><a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i>Logout</a></li>
+</ul>
+</div>
+
+<div class="main">
+<div class="topbar"><h2><i class="fa-solid fa-triangle-exclamation text-warning"></i>Late Loans</h2><div>Welcome, <strong id="adminName">Admin</strong> | <a href="#" onclick="logout()">Logout</a></div></div>
+<div class="content">
+<div class="mb-4"><a href="admin-dashboard.html" class="btn btn-primary"><i class="fa-solid fa-arrow-left"></i>Back to Dashboard</a></div>
+<div class="dashboard-cards">
+<div class="card-box"><i class="fa-solid fa-triangle-exclamation"></i><div class="card-title">Late Loans</div><div class="card-number" id="totalLateLoans">0</div></div>
+<div class="card-box"><i class="fa-solid fa-wallet"></i><div class="card-title">Outstanding</div><div class="card-number" id="totalOutstanding">KES 0</div></div>
+<div class="card-box"><i class="fa-solid fa-percent"></i><div class="card-title">Interest Owed</div><div class="card-number" id="expectedInterest">KES 0</div></div>
+<div class="card-box"><i class="fa-solid fa-money-bill-wave"></i><div class="card-title">Total Overdue</div><div class="card-number" id="totalDue">KES 0</div></div>
+</div>
+<div class="table-card"><div class="table-header">Late Loan Clients</div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>#</th><th>Client</th><th>Phone</th><th>Amount</th><th>Balance</th><th>Interest/mo</th><th>Overdue</th><th>Due Date</th><th>Days Late</th><th>Action</th></tr></thead><tbody id="lateLoansTable"><tr><td colspan="10" class="text-center text-muted p-5">Loading...</td></tr></tbody></table></div></div>
+</div>
+</div>
+</div>
+
+<div class="modal fade" id="paymentModal"><div class="modal-dialog"><div class="modal-content"><div class="modal-header bg-success text-white"><h5 class="modal-title">Record Payment</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="paymentLoanId"><label>Amount</label><input type="number" id="paymentAmount" class="form-control mb-3"><label>Date</label><input type="date" id="paymentDate" class="form-control mb-3"><label>Method</label><select id="paymentMethod" class="form-select"><option>Cash</option><option>M-Pesa</option><option>Bank</option></select></div><div class="modal-footer"><button class="btn btn-success" onclick="savePayment()">Save</button></div></div></div></div>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script>
+if(!AUTH.currentAdmin()){window.location.href="admin-login.html";}
+const admin=AUTH.currentAdmin();if(admin)document.getElementById("adminName").innerHTML=admin.username;
+function money(v){return"KES "+Number(v||0).toLocaleString();}
+
+async function loadLateLoans(){
+    let result=await api.getLoans();let table=document.getElementById("lateLoansTable");table.innerHTML="";
+    if(!result.success||!result.loans){table.innerHTML='<tr><td colspan="10" class="text-center text-muted p-5">No late loans.</td></tr>';return;}
+    let today=new Date();today.setHours(0,0,0,0);
+    let lateCount=0,outstanding=0,interestOwed=0,totalDue=0;
+    
+    for(let l of result.loans){
+        if(l.status!=="ACTIVE"||Number(l.remaining_principal||0)<=0||!l.due_date)continue;
+        let dueDate=new Date(l.due_date);dueDate.setHours(0,0,0,0);
+        if(dueDate>=today)continue;
+        
+        let balance=Number(l.remaining_principal||0),rate=Number(l.interest_rate||20);
+        let monthsDiff=0,checkDate=new Date(dueDate);
+        while(true){checkDate.setMonth(checkDate.getMonth()+1);if(today<checkDate)break;monthsDiff++;}
+        monthsDiff++;
+        let monthlyInterest=(balance*rate)/100,totalOutstandingInterest=monthlyInterest*monthsDiff;
+        
+        let pResult=await api.getLoanPayments(l.id);
+        let totalPaid=0;
+        if(pResult.success&&Array.isArray(pResult.payments))pResult.payments.forEach(p=>{totalPaid+=Number(p.amount||0);});
+        
+        let remaining=totalOutstandingInterest-totalPaid;
+        if(remaining<=0)continue;
+        
+        lateCount++;outstanding+=balance;interestOwed+=totalOutstandingInterest;totalDue+=remaining;
+        let daysLate=Math.floor((today-dueDate)/(1000*60*60*24));
+        table.innerHTML+=`<tr class="table-danger"><td>${lateCount}</td><td>${l.fullname||"Unknown"}</td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td>${money(balance)}</td><td>${money(monthlyInterest)}/mo</td><td>${money(remaining)}</td><td>${l.due_date}</td><td>${daysLate} Days (${monthsDiff} mo)</td><td><button class="btn btn-view btn-sm action-btn" onclick="window.location.href='active-loans.html'"><i class="fa fa-eye"></i></button><button class="btn btn-payment btn-sm action-btn" onclick="openPayment(${l.id})"><i class="fa fa-money-bill"></i></button></td></tr>`;
+    }
+    document.getElementById("totalLateLoans").innerHTML=lateCount;
+    document.getElementById("totalOutstanding").innerHTML="KES "+outstanding.toLocaleString();
+    document.getElementById("expectedInterest").innerHTML="KES "+interestOwed.toLocaleString();
+    document.getElementById("totalDue").innerHTML="KES "+totalDue.toLocaleString();
+    if(lateCount===0)table.innerHTML='<tr><td colspan="10" class="text-center text-muted p-5">No late loans.</td></tr>';
+}
+
+function openPayment(id){document.getElementById("paymentLoanId").value=id;document.getElementById("paymentAmount").value="";document.getElementById("paymentDate").value=new Date().toISOString().split("T")[0];new bootstrap.Modal(document.getElementById("paymentModal")).show();}
+
+async function savePayment(){
+    let loanId=document.getElementById("paymentLoanId").value;
+    let amount=Number(document.getElementById("paymentAmount").value);
+    let date=document.getElementById("paymentDate").value;
+    let method=document.getElementById("paymentMethod").value;
+    if(amount<=0){alert("Enter amount");return;}
+    await api.addPayment({loanId,amount,paymentDate:date,method});
+    alert("Payment recorded!");
+    bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
+    loadLateLoans();
+}
+
+function logout(){AUTH.adminLogout();}
+loadLateLoans();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
