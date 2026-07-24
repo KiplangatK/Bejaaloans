@@ -61,7 +61,7 @@ async function loadAllLoans(){
         let statusBadge='<span class="badge bg-success badge-status">ACTIVE</span>';
         if(l.status==="COMPLETED"||Number(l.remaining_principal||0)<=0)statusBadge='<span class="badge bg-secondary badge-status">COMPLETED</span>';
         else if(l.due_date&&new Date(l.due_date)<today)statusBadge='<span class="badge bg-danger badge-status">LATE</span>';
-        table.innerHTML+=`<tr><td>${i+1}</td><td><b>${l.fullname||"Unknown"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td class="text-danger fw-bold">${money(l.remaining_principal)}</td><td>${l.due_date||"-"}</td><td>${statusBadge}</td></tr>`;
+        table.innerHTML+=`<tr><td>${i+1}</td><td><b>${l.fullname||"Unknown"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td class="text-danger fw-bold">${money(l.remaining_principal)}</td><td>${formatDate(l.due_date)}</td><td>${statusBadge}</td></tr>`;
     });
 }
 
