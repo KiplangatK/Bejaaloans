@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account | Bejja Loan Credit</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+<style>
+body{background:linear-gradient(135deg,#0F4C81,#2563EB);font-family:'Poppins',sans-serif;min-height:100vh;padding:30px;position:relative;}
+.btn-back-home{position:absolute;top:20px;left:25px;background:rgba(255,255,255,0.2);color:white;padding:10px 20px;border-radius:25px;text-decoration:none;font-weight:600;font-size:15px;transition:.3s;z-index:10;}
+.btn-back-home:hover{background:rgba(255,255,255,0.35);color:white;}
+.card{max-width:950px;margin:auto;border:none;border-radius:20px;box-shadow:0 20px 40px rgba(0,0,0,.25);}
+.logo{font-size:60px;color:#2563EB;}
+.form-control{height:50px;border-radius:12px;}
+textarea.form-control{height:auto;}
+.btn-primary{height:50px;border-radius:12px;font-size:18px;font-weight:600;}
+.alert{display:none;}
+.upload-box{background:#f8f9fa;border-radius:15px;padding:20px;border:1px dashed #0F4C81;}
+.preview{width:120px;height:120px;border-radius:50%;object-fit:cover;display:none;margin-top:10px;border:3px solid #2563EB;}
+.id-preview{width:100%;max-height:200px;object-fit:contain;display:none;margin-top:10px;border-radius:10px;}
+.step-indicator{display:flex;justify-content:center;margin-bottom:30px;}
+.step{width:40px;height:40px;border-radius:50%;background:#ddd;color:#888;display:flex;align-items:center;justify-content:center;font-weight:bold;margin:0 15px;position:relative;}
+.step.active{background:#2563EB;color:white;}.step.done{background:#4caf50;color:white;}
+.step-line{position:absolute;top:50%;left:100%;width:30px;height:3px;background:#ddd;}.step.done .step-line{background:#4caf50;}
+</style>
+</head>
+<body>
+
+<a href="index.html" class="btn-back-home"><i class="fa fa-arrow-left"></i> Back Home</a>
+
+<div class="card"><div class="card-body p-5">
+<div class="text-center mb-4"><i class="fa-solid fa-building-columns logo"></i><h2 class="fw-bold mt-3">BEJJA LOAN CREDIT</h2><p class="text-muted">Create Client Account</p>
+<div class="step-indicator"><div class="step active" id="step1">1<span class="step-line"></span></div><div class="step" id="step2">2<span class="step-line"></span></div><div class="step" id="step3">3</div></div></div>
+<div id="errorBox" class="alert alert-danger"></div>
+
+<form id="registerForm">
+
+<div id="formStep1"><div class="row">
+<div class="col-md-6 mb-3"><label class="fw-semibold">Full Name <span class="text-danger">*</span></label><input type="text" id="fullname" class="form-control" placeholder="As per National ID" required></div>
+<div class="col-md-6 mb-3"><label class="fw-semibold">National ID Number <span class="text-danger">*</span></label><input type="text" id="nationalID" class="form-control" placeholder="e.g. 12345678" maxlength="10" required></div>
+<div class="col-md-6 mb-3"><label class="fw-semibold">Phone Number <span class="text-danger">*</span></label><input type="tel" id="phone" class="form-control" placeholder="07XXXXXXXX" required></div>
+<div class="col-md-6 mb-3"><label class="fw-semibold">Email</label><input type="email" id="email" class="form-control" placeholder="optional"></div>
+<div class="col-md-6 mb-3"><label class="fw-semibold">Occupation <span class="text-danger">*</span></label><input type="text" id="occupation" class="form-control" required></div>
+<div class="col-md-6 mb-3"><label class="fw-semibold">Employer / Business Name</label><input type="text" id="employer" class="form-control"></div>
+<div class="col-md-6 mb-3"><label class="fw-semibold">Monthly Income (KES) <span class="text-danger">*</span></label><input type="number" id="income" class="form-control" required></div>
+<div class="col-md-6 mb-3"><label class="fw-semibold">County <span class="text-danger">*</span></label><select id="county" class="form-control" required><option value="">Select County</option><option>Nairobi</option><option>Mombasa</option><option>Kisumu</option><option>Nakuru</option><option>Kiambu</option></select></div>
+<div class="col-12 mb-3"><label class="fw-semibold">Physical Address <span class="text-danger">*</span></label><textarea id="address" class="form-control" rows="3" required></textarea></div>
+<div class="col-md-6 mb-3"><label class="fw-semibold">Password <span class="text-danger">*</span></label><input type="password" id="password" class="form-control" placeholder="Min 4 characters" minlength="4" required></div>
+<div class="col-md-6 mb-4"><label class="fw-semibold">Confirm Password <span class="text-danger">*</span></label><input type="password" id="confirmPassword" class="form-control" required></div>
+</div>
+<div class="text-center"><button type="button" class="btn btn-primary w-50" onclick="goToStep2()"><i class="fa fa-arrow-right"></i> Next: Upload Documents</button></div>
+</div>
+
+<div id="formStep2" style="display:none;">
+<div class="col-12 mb-3"><h5 class="fw-bold"><i class="fa fa-file"></i>Upload Verification Documents</h5></div>
+<div class="row">
+<div class="col-md-4 mb-3"><div class="upload-box"><label class="fw-semibold">Profile Photo <span class="text-danger">*</span></label><input type="file" id="profilePhoto" class="form-control" accept="image/*" required><img id="profilePreview" class="preview"></div></div>
+<div class="col-md-4 mb-3"><div class="upload-box"><label class="fw-semibold">National ID Front <span class="text-danger">*</span></label><input type="file" id="idFront" class="form-control" accept="image/*" required><img id="frontPreview" class="id-preview"></div></div>
+<div class="col-md-4 mb-3"><div class="upload-box"><label class="fw-semibold">National ID Back <span class="text-danger">*</span></label><input type="file" id="idBack" class="form-control" accept="image/*" required><img id="backPreview" class="id-preview"></div></div>
+</div>
+<div class="text-center mt-3"><button type="button" class="btn btn-secondary me-2" onclick="goToStep1()"><i class="fa fa-arrow-left"></i> Back</button><button type="submit" class="btn btn-primary w-50"><i class="fa fa-user-plus"></i> Create Account</button></div>
+</div>
+
+</form>
+<div class="text-center mt-4">Already have an account? <a href="client-portal.html">Login Here</a></div>
+</div></div>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script>
+function goToStep1(){document.getElementById("formStep1").style.display="block";document.getElementById("formStep2").style.display="none";updateSteps(1);}
+function goToStep2(){let p=document.getElementById("password").value,c=document.getElementById("confirmPassword").value;if(p!==c){showError("Passwords do not match.");return;}document.getElementById("formStep1").style.display="none";document.getElementById("formStep2").style.display="block";updateSteps(2);}
+function updateSteps(s){for(let i=1;i<=3;i++){let st=document.getElementById("step"+i);st.classList.remove("active","done");if(i<s)st.classList.add("done");if(i===s)st.classList.add("active");}}
+function showError(m){let e=document.getElementById("errorBox");e.innerHTML=m;e.style.display="block";setTimeout(()=>e.style.display="none",4000);}
+function compressImage(f){return new Promise(r=>{let reader=new FileReader();reader.onload=function(e){let img=new Image();img.onload=function(){let c=document.createElement("canvas");let w=img.width,h=img.height,max=800;if(w>max){h=h*max/w;w=max;}c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);r(c.toDataURL("image/jpeg",0.7));};img.src=e.target.result;};reader.readAsDataURL(f);});}
+function previewImage(i,t){let f=i.files[0];if(!f)return;let r=new FileReader();r.onload=function(e){document.getElementById(t).src=e.target.result;document.getElementById(t).style.display="block";};r.readAsDataURL(f);}
+document.getElementById("profilePhoto").addEventListener("change",function(){previewImage(this,"profilePreview");});
+document.getElementById("idFront").addEventListener("change",function(){previewImage(this,"frontPreview");});
+document.getElementById("idBack").addEventListener("change",function(){previewImage(this,"backPreview");});
+
+document.getElementById("registerForm").addEventListener("submit",async function(e){
+e.preventDefault();
+let errorBox=document.getElementById("errorBox");
+let p=document.getElementById("password").value,c=document.getElementById("confirmPassword").value;
+if(p!==c){errorBox.innerHTML="Passwords do not match.";errorBox.style.display="block";return;}
+if(!document.getElementById("profilePhoto").files[0]){errorBox.innerHTML="Upload all documents.";errorBox.style.display="block";return;}
+
+let profile=await compressImage(document.getElementById("profilePhoto").files[0]);
+let front=await compressImage(document.getElementById("idFront").files[0]);
+let back=await compressImage(document.getElementById("idBack").files[0]);
+
+let result=await AUTH.registerClient({
+fullname:document.getElementById("fullname").value.trim(),
+nationalID:document.getElementById("nationalID").value.trim(),
+phone:document.getElementById("phone").value.trim(),
+email:document.getElementById("email").value.trim(),
+occupation:document.getElementById("occupation").value.trim(),
+employer:document.getElementById("employer").value.trim(),
+monthlyIncome:document.getElementById("income").value.trim(),
+county:document.getElementById("county").value,
+address:document.getElementById("address").value.trim(),
+profilePhoto:profile,idFront:front,idBack:back,
+password:p
+});
+
+if(!result.success){errorBox.innerHTML=result.message;errorBox.style.display="block";return;}
+
+document.body.innerHTML=`<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;"><div style="background:white;border-radius:25px;padding:50px 40px;text-align:center;max-width:500px;"><i class="fa-solid fa-circle-check" style="font-size:80px;color:#198754;margin-bottom:20px;"></i><h2 style="color:#0F4C81;">Account Created!</h2><p style="color:#666;margin-bottom:25px;">Your Bejja Credit account has been created.</p><a href="client-portal.html" style="background:#2563EB;color:white;padding:14px;border-radius:12px;text-decoration:none;font-weight:600;display:block;">Login Now</a></div></div>`;
+});
+</script>
+</body>
+</html>
