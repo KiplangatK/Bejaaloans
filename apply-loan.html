@@ -18,6 +18,11 @@ body{background:#edf4ff;font-family:'Segoe UI',sans-serif;}
 .interest-box{background:#198754;color:white;padding:20px;border-radius:15px;}
 .btn-submit{height:55px;font-size:18px;font-weight:bold;border-radius:15px;}
 .alert{display:none;}
+.verify-box{background:#e8f5e9;border:2px solid #4caf50;border-radius:15px;padding:15px;margin-top:10px;display:none;}
+.otp-input-small{width:42px;height:42px;text-align:center;font-size:18px;font-weight:bold;border-radius:8px;border:2px solid #2563EB;}
+.status-ok{color:#4caf50;font-size:12px;}.status-error{color:#dc3545;font-size:12px;}
+.verify-btn{height:50px;border-radius:12px;font-size:13px;white-space:nowrap;}
+.guarantor-card{border:2px solid #e0e0e0;border-radius:15px;padding:20px;margin-bottom:20px;background:#fafbff;}
 </style>
 </head>
 <body>
@@ -49,12 +54,30 @@ body{background:#edf4ff;font-family:'Segoe UI',sans-serif;}
 </div>
 <div class="interest-box"><h5>Monthly Interest (20%)</h5><h2 id="monthlyInterest">KES 0</h2></div>
 
-<h4 class="section-title mt-4"><i class="fa fa-users"></i>Guarantor Information</h4>
+<!-- GUARANTOR 1 -->
+<h4 class="section-title mt-4"><i class="fa fa-users"></i>Guarantor 1</h4>
+<div class="guarantor-card">
 <div class="row">
-<div class="col-md-6 mb-3"><label>Guarantor 1 Full Name</label><input id="g1_name" class="form-control"></div>
-<div class="col-md-6 mb-3"><label>Guarantor 1 Phone</label><input id="g1_phone" class="form-control"></div>
-<div class="col-md-6 mb-3"><label>Guarantor 2 Full Name</label><input id="g2_name" class="form-control"></div>
-<div class="col-md-6 mb-3"><label>Guarantor 2 Phone</label><input id="g2_phone" class="form-control"></div>
+<div class="col-md-6 mb-3"><label>Full Name</label><input id="g1_name" class="form-control" placeholder="Guarantor full name"></div>
+<div class="col-md-6 mb-3"><label>National ID</label><input id="g1_id" class="form-control" placeholder="ID number"></div>
+<div class="col-md-6 mb-3"><label>Phone Number</label><div class="input-group"><input id="g1_phone" class="form-control" placeholder="07XXXXXXXX"><button class="btn btn-outline-success verify-btn" type="button" id="g1_sendOTPBtn" onclick="sendGuarantorOTP('g1')"><i class="fa fa-paper-plane"></i> Verify</button></div><div id="g1_phoneStatus" class="mt-1"></div></div>
+<div class="col-md-6 mb-3"><div class="verify-box" id="g1_otpBox"><label class="fw-semibold">Enter Code</label><div class="d-flex gap-1 mt-1"><input type="text" id="g1_otp1" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g1_otp2')"><input type="text" id="g1_otp2" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g1_otp3')"><input type="text" id="g1_otp3" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g1_otp4')"><input type="text" id="g1_otp4" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g1_otp5')"><input type="text" id="g1_otp5" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g1_otp6')"><input type="text" id="g1_otp6" maxlength="1" class="otp-input-small"></div><button class="btn btn-success btn-sm w-100 mt-2" type="button" onclick="verifyGuarantorOTP('g1')"><i class="fa fa-check-circle"></i> Confirm</button><div id="g1_otpStatus" class="mt-1"></div></div></div>
+<div class="col-md-6 mb-3"><label>Relationship</label><input id="g1_relationship" class="form-control" placeholder="Friend / Relative"></div>
+<div class="col-md-12 mb-3"><label>Physical Address</label><textarea id="g1_address" class="form-control" rows="2" placeholder="Address"></textarea></div>
+</div>
+</div>
+
+<!-- GUARANTOR 2 -->
+<h4 class="section-title mt-4"><i class="fa fa-users"></i>Guarantor 2</h4>
+<div class="guarantor-card">
+<div class="row">
+<div class="col-md-6 mb-3"><label>Full Name</label><input id="g2_name" class="form-control" placeholder="Guarantor full name"></div>
+<div class="col-md-6 mb-3"><label>National ID</label><input id="g2_id" class="form-control" placeholder="ID number"></div>
+<div class="col-md-6 mb-3"><label>Phone Number</label><div class="input-group"><input id="g2_phone" class="form-control" placeholder="07XXXXXXXX"><button class="btn btn-outline-success verify-btn" type="button" id="g2_sendOTPBtn" onclick="sendGuarantorOTP('g2')"><i class="fa fa-paper-plane"></i> Verify</button></div><div id="g2_phoneStatus" class="mt-1"></div></div>
+<div class="col-md-6 mb-3"><div class="verify-box" id="g2_otpBox"><label class="fw-semibold">Enter Code</label><div class="d-flex gap-1 mt-1"><input type="text" id="g2_otp1" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g2_otp2')"><input type="text" id="g2_otp2" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g2_otp3')"><input type="text" id="g2_otp3" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g2_otp4')"><input type="text" id="g2_otp4" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g2_otp5')"><input type="text" id="g2_otp5" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g2_otp6')"><input type="text" id="g2_otp6" maxlength="1" class="otp-input-small"></div><button class="btn btn-success btn-sm w-100 mt-2" type="button" onclick="verifyGuarantorOTP('g2')"><i class="fa fa-check-circle"></i> Confirm</button><div id="g2_otpStatus" class="mt-1"></div></div></div>
+<div class="col-md-6 mb-3"><label>Relationship</label><input id="g2_relationship" class="form-control" placeholder="Friend / Relative"></div>
+<div class="col-md-12 mb-3"><label>Physical Address</label><textarea id="g2_address" class="form-control" rows="2" placeholder="Address"></textarea></div>
+</div>
 </div>
 
 <div class="text-center mt-4"><button id="submitBtn" onclick="submitLoanApplication()" class="btn btn-primary btn-submit w-100"><i class="fa fa-paper-plane"></i>Submit Loan Application</button></div>
@@ -65,6 +88,31 @@ document.addEventListener("DOMContentLoaded",()=>{let c=AUTH.currentClient();if(
 function calculateInterest(){let a=Number(document.getElementById("loanAmount").value)||0;document.getElementById("monthlyInterest").innerHTML="KES "+(a*0.20).toLocaleString();}
 function money(v){return"KES "+Number(v||0).toLocaleString();}
 
+// Guarantor phone verification
+const guarantorOTPs={};
+function sendGuarantorOTP(p){
+    let phone=document.getElementById(p+"_phone").value.trim();
+    if(!/^07\d{8}$/.test(phone)){document.getElementById(p+"_phoneStatus").innerHTML='<span class="status-error">Enter valid 07XXXXXXXX</span>';return;}
+    let otp=String(Math.floor(100000+Math.random()*900000));
+    guarantorOTPs[p]=otp;
+    console.log("OTP for "+p+":",otp);
+    document.getElementById(p+"_phoneStatus").innerHTML='<span class="status-ok">Code sent! (Demo: <b>'+otp+'</b>)</span>';
+    document.getElementById(p+"_otpBox").style.display="block";
+    document.getElementById(p+"_sendOTPBtn").disabled=true;
+    document.getElementById(p+"_sendOTPBtn").innerHTML='<i class="fa fa-clock"></i> Sent';
+}
+function otpNextG(c,n){if(c.value.length===1&&n)document.getElementById(n).focus();}
+function verifyGuarantorOTP(p){
+    let entered=document.getElementById(p+"_otp1").value+document.getElementById(p+"_otp2").value+document.getElementById(p+"_otp3").value+document.getElementById(p+"_otp4").value+document.getElementById(p+"_otp5").value+document.getElementById(p+"_otp6").value;
+    if(entered.length<6){document.getElementById(p+"_otpStatus").innerHTML='<span class="status-error">Enter complete code</span>';return;}
+    if(entered===guarantorOTPs[p]){
+        document.getElementById(p+"_otpStatus").innerHTML='<span class="status-ok"><i class="fa fa-check-circle"></i> Verified!</span>';
+        sessionStorage.setItem(p+"_phoneVerified","true");
+        document.getElementById(p+"_otpBox").style.display="none";
+        document.getElementById(p+"_sendOTPBtn").innerHTML='<i class="fa fa-check"></i> Done';
+    }else{document.getElementById(p+"_otpStatus").innerHTML='<span class="status-error">Incorrect code</span>';}
+}
+
 async function submitLoanApplication(){
 let errorBox=document.getElementById("errorBox"),btn=document.getElementById("submitBtn");
 errorBox.style.display="none";
@@ -72,15 +120,24 @@ let client=AUTH.currentClient();if(!client)return;
 let amount=Number(document.getElementById("loanAmount").value),purpose=document.getElementById("purpose").value.trim();
 if(amount<=0){errorBox.innerHTML="Enter a valid loan amount";errorBox.style.display="block";return;}
 if(!purpose){errorBox.innerHTML="Enter loan purpose";errorBox.style.display="block";return;}
+
+// Check guarantor fields
+let g1name=document.getElementById("g1_name").value.trim();
+let g2name=document.getElementById("g2_name").value.trim();
+if(!g1name||!g2name){errorBox.innerHTML="Complete both guarantor details";errorBox.style.display="block";return;}
+if(!sessionStorage.getItem("g1_phoneVerified")){errorBox.innerHTML="Verify Guarantor 1 phone number";errorBox.style.display="block";return;}
+if(!sessionStorage.getItem("g2_phoneVerified")){errorBox.innerHTML="Verify Guarantor 2 phone number";errorBox.style.display="block";return;}
+
 btn.disabled=true;btn.innerHTML="Submitting...";
 
 let result=await api.addApplication({
 amount:amount,purpose:purpose,
-guarantor1:{name:document.getElementById("g1_name").value,phone:document.getElementById("g1_phone").value},
-guarantor2:{name:document.getElementById("g2_name").value,phone:document.getElementById("g2_phone").value}
+guarantor1:{name:g1name,id:document.getElementById("g1_id").value,phone:document.getElementById("g1_phone").value,relationship:document.getElementById("g1_relationship").value,address:document.getElementById("g1_address").value},
+guarantor2:{name:g2name,id:document.getElementById("g2_id").value,phone:document.getElementById("g2_phone").value,relationship:document.getElementById("g2_relationship").value,address:document.getElementById("g2_address").value}
 });
 
 if(result.success){
+sessionStorage.removeItem("g1_phoneVerified");sessionStorage.removeItem("g2_phoneVerified");
 document.body.innerHTML=`<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;"><div style="background:white;border-radius:25px;padding:50px 40px;text-align:center;max-width:500px;"><i class="fa-solid fa-circle-check" style="font-size:80px;color:#198754;margin-bottom:20px;"></i><h2 style="color:#0F4C81;">Application Submitted!</h2><p style="color:#666;margin-bottom:25px;">Your loan application is under review.</p><a href="client-dashboard.html" style="background:#2563EB;color:white;padding:14px;border-radius:12px;text-decoration:none;font-weight:600;display:block;">Go to Dashboard</a></div></div>`;
 }else{errorBox.innerHTML=result.message;errorBox.style.display="block";btn.disabled=false;btn.innerHTML="Submit Loan Application";}
 }
