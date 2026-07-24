@@ -7,25 +7,18 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
 body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
-.sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#0F4C81;color:white;}
-.logo{padding:25px;font-size:25px;font-weight:bold;border-bottom:1px solid rgba(255,255,255,.2);}
-.logo i{margin-right:10px;}
-.sidebar a{display:block;padding:15px 25px;color:white;text-decoration:none;transition:.3s;}
-.sidebar a:hover{background:#2563EB;padding-left:35px;}.sidebar i{width:25px;}
-.main{margin-left:260px;}
-.topbar{height:70px;background:#2563EB;color:white;display:flex;align-items:center;justify-content:space-between;padding:0 30px;box-shadow:0 4px 15px rgba(0,0,0,.15);}
-.topbar .topbar-right{display:flex;align-items:center;gap:15px;}
-.topbar .btn-back{background:rgba(255,255,255,0.2);color:white;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:14px;font-weight:600;transition:.3s;}
-.topbar .btn-back:hover{background:rgba(255,255,255,0.35);color:white;}
-.content{padding:30px;}
-.profile-card{background:#fff;border-radius:20px;padding:30px;box-shadow:0 5px 15px rgba(0,0,0,.1);text-align:center;margin-bottom:30px;}
-.profile-card img{width:150px;height:150px;border-radius:50%;object-fit:cover;border:5px solid #2563EB;}
-.info-card{background:#fff;border-radius:20px;padding:25px;box-shadow:0 5px 15px rgba(0,0,0,.1);}
-.info-row{padding:12px 0;border-bottom:1px solid #eee;}
-.info-label{font-weight:bold;color:#0F4C81;}.info-value{color:#444;}
-.action-btn{height:50px;border-radius:12px;font-weight:bold;font-size:16px;}
+.header{background:linear-gradient(135deg,#0F4C81,#2563EB);color:white;padding:25px;border-radius:0 0 25px 25px;box-shadow:0 5px 20px rgba(0,0,0,.2);}
+.container{max-width:1100px;}
+.profile-card{background:white;border-radius:25px;padding:30px;box-shadow:0 10px 30px rgba(0,0,0,.12);}
+.profile-photo{width:160px;height:160px;border-radius:50%;object-fit:cover;border:5px solid #2563EB;}
+.name{font-size:28px;font-weight:bold;color:#0F4C81;}
+.status{padding:8px 20px;border-radius:20px;background:#198754;color:white;display:inline-block;}
+.section-title{background:#0F4C81;color:white;padding:12px 18px;border-radius:12px;margin-top:25px;}
+.detail-box{background:#f8fbff;padding:15px;border-radius:12px;border-left:4px solid #2563EB;margin-bottom:15px;}
+.detail-box label{font-weight:bold;color:#0F4C81;display:block;}
+.form-control{height:50px;border-radius:12px;}
+.btn-save{background:#2563EB;color:white;height:50px;border-radius:12px;font-size:18px;font-weight:bold;}
 </style>
 </head>
 <body>
@@ -34,31 +27,27 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 <script src="assets/js/auth.js"></script>
 <script>if(!AUTH.currentClient()){window.location.href="client-portal.html";}</script>
 
-<div class="sidebar">
-<div class="logo"><i class="fa-solid fa-building-columns"></i>Bejja Credit</div>
-<a href="client-dashboard.html"><i class="fa fa-home"></i>Dashboard</a>
-<a href="apply-loan.html"><i class="fa fa-hand-holding-dollar"></i>Apply Loan</a>
-<a href="my-loans.html"><i class="fa fa-money-bill-wave"></i>My Loans</a>
-<a href="client-profile.html"><i class="fa fa-user"></i>My Profile</a>
-<a href="#" onclick="AUTH.clientLogout()"><i class="fa fa-right-from-bracket"></i>Logout</a>
+<div class="header text-center"><h2><i class="fa-solid fa-building-columns"></i>BEJJA LOAN CREDIT</h2><p>My Profile</p></div>
+<div class="container py-4">
+<div class="mb-4"><a href="client-dashboard.html" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Back</a><a href="#" onclick="AUTH.clientLogout()" class="btn btn-danger float-end"><i class="fa fa-right-from-bracket"></i> Logout</a></div>
+<div class="profile-card">
+<div class="text-center"><img id="profilePhoto" class="profile-photo" src=""><h3 class="name mt-3" id="clientName"></h3><span class="status">ACTIVE CLIENT</span></div>
+<hr>
+<h5 class="section-title"><i class="fa fa-user"></i>Personal Information</h5>
+<div class="row">
+<div class="col-md-6"><div class="detail-box"><label>Full Name</label><input id="fullname" class="form-control" readonly></div></div>
+<div class="col-md-6"><div class="detail-box"><label>National ID</label><input id="nationalID" class="form-control" readonly></div></div>
+<div class="col-md-6"><div class="detail-box"><label>Phone</label><input id="phone" class="form-control"></div></div>
+<div class="col-md-6"><div class="detail-box"><label>Email</label><input id="email" class="form-control"></div></div>
 </div>
-
-<div class="main">
-<div class="topbar"><h3><i class="fa fa-user-circle"></i>My Profile</h3><div class="topbar-right"><a href="client-dashboard.html" class="btn-back"><i class="fa fa-arrow-left"></i> Back</a><span>Welcome, <strong id="topClientName"></strong></span></div></div>
-<div class="content">
-<div class="profile-card"><img id="profilePhoto" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"><h3 id="clientName"></h3><p id="clientPhone"></p><span class="badge bg-success">ACTIVE CLIENT</span></div>
-<div class="info-card"><div class="row">
-<div class="col-md-6"><div class="info-row"><div class="info-label">Full Name</div><div class="info-value" id="fullname"></div></div><div class="info-row"><div class="info-label">National ID</div><div class="info-value" id="nationalID"></div></div><div class="info-row"><div class="info-label">Phone</div><div class="info-value" id="phone"></div></div><div class="info-row"><div class="info-label">Email</div><div class="info-value" id="email"></div></div><div class="info-row"><div class="info-label">Occupation</div><div class="info-value" id="occupation"></div></div></div>
-<div class="col-md-6"><div class="info-row"><div class="info-label">Employer</div><div class="info-value" id="employer"></div></div><div class="info-row"><div class="info-label">Monthly Income</div><div class="info-value" id="income"></div></div><div class="info-row"><div class="info-label">County</div><div class="info-value" id="county"></div></div><div class="info-row"><div class="info-label">Address</div><div class="info-value" id="address"></div></div><div class="info-row"><div class="info-label">Registered</div><div class="info-value" id="createdDate"></div></div></div>
+<div class="text-center mt-4"><button onclick="saveProfile()" class="btn btn-save w-100"><i class="fa fa-save"></i>Save Profile Changes</button></div>
 </div>
-<hr class="my-4"><div class="text-center"><a href="client-dashboard.html" class="btn btn-success action-btn"><i class="fa fa-home"></i>Dashboard</a></div>
 </div>
-</div></div>
 
 <script>
 function money(v){return"KES "+Number(v||0).toLocaleString();}
-document.addEventListener("DOMContentLoaded",()=>{let c=AUTH.currentClient();if(!c)return;document.getElementById("topClientName").innerHTML=c.fullname||"-";document.getElementById("profilePhoto").src=c.profilePhoto||"https://cdn-icons-png.flaticon.com/512/3135/3135715.png";document.getElementById("clientName").innerHTML=c.fullname||"-";document.getElementById("clientPhone").innerHTML=c.phone||"-";document.getElementById("fullname").innerHTML=c.fullname||"-";document.getElementById("nationalID").innerHTML=c.nationalID||"-";document.getElementById("phone").innerHTML=c.phone||"-";document.getElementById("email").innerHTML=c.email||"-";document.getElementById("occupation").innerHTML=c.occupation||"-";document.getElementById("employer").innerHTML=c.employer||"-";document.getElementById("income").innerHTML=money(c.monthlyIncome);document.getElementById("county").innerHTML=c.county||"-";document.getElementById("address").innerHTML=c.address||"-";document.getElementById("createdDate").innerHTML=formatDate(c.createdAt);});
+document.addEventListener("DOMContentLoaded",()=>{let c=AUTH.currentClient();if(!c)return;document.getElementById("clientName").innerHTML=c.fullname;document.getElementById("profilePhoto").src=c.profilePhoto||"https://via.placeholder.com/160";document.getElementById("fullname").value=c.fullname||"";document.getElementById("nationalID").value=c.nationalID||"";document.getElementById("phone").value=c.phone||"";document.getElementById("email").value=c.email||"";});
+async function saveProfile(){let c=AUTH.currentClient();if(!c)return;let data={fullname:document.getElementById("fullname").value,phone:document.getElementById("phone").value,email:document.getElementById("email").value};await api.updateClient(c.id,data);await AUTH.refreshClientSession();alert("Profile updated!");}
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
