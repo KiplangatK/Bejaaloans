@@ -26,6 +26,10 @@ body{background:#edf4ff;font-family:'Segoe UI',sans-serif;}
 .upload-box{background:#f8f9fa;border-radius:12px;padding:15px;border:1px dashed #0F4C81;margin-bottom:10px;}
 .upload-box label{font-weight:600;font-size:13px;}
 .preview-img{width:100%;height:100px;object-fit:cover;border-radius:8px;margin-top:8px;display:none;border:1px solid #ddd;}
+.info-row{display:flex;flex-wrap:wrap;gap:10px 0;}
+.info-item{flex:0 0 50%;padding:5px 10px;}
+.info-item label{font-weight:600;color:#0F4C81;display:block;font-size:13px;}
+.info-item span{color:#333;font-size:14px;}
 </style>
 </head>
 <body>
@@ -45,9 +49,15 @@ body{background:#edf4ff;font-family:'Segoe UI',sans-serif;}
 
 <h4 class="section-title"><i class="fa fa-user"></i>Client Information</h4>
 <div class="row">
-<div class="col-md-6 mb-3"><label>Full Name</label><input id="fullname" class="form-control" readonly></div>
-<div class="col-md-6 mb-3"><label>National ID</label><input id="nationalID" class="form-control" readonly></div>
-<div class="col-md-6 mb-3"><label>Phone Number</label><input id="phone" class="form-control" readonly></div>
+<div class="col-md-6"><div class="info-item"><label>Full Name</label><span id="fullname">-</span></div></div>
+<div class="col-md-6"><div class="info-item"><label>National ID</label><span id="nationalID">-</span></div></div>
+<div class="col-md-6"><div class="info-item"><label>Phone Number</label><span id="phone">-</span></div></div>
+<div class="col-md-6"><div class="info-item"><label>Email</label><span id="email">-</span></div></div>
+<div class="col-md-6"><div class="info-item"><label>Occupation</label><span id="occupation">-</span></div></div>
+<div class="col-md-6"><div class="info-item"><label>Employer</label><span id="employer">-</span></div></div>
+<div class="col-md-6"><div class="info-item"><label>Monthly Income</label><span id="income">-</span></div></div>
+<div class="col-md-6"><div class="info-item"><label>County</label><span id="county">-</span></div></div>
+<div class="col-12"><div class="info-item"><label>Address</label><span id="address">-</span></div></div>
 </div>
 
 <h4 class="section-title"><i class="fa fa-money-bill"></i>Loan Details</h4>
@@ -57,10 +67,8 @@ body{background:#edf4ff;font-family:'Segoe UI',sans-serif;}
 </div>
 <div class="interest-box"><h5>Monthly Interest (20%)</h5><h2 id="monthlyInterest">KES 0</h2></div>
 
-<!-- GUARANTOR 1 -->
 <h4 class="section-title mt-4"><i class="fa fa-users"></i>Guarantor 1</h4>
-<div class="guarantor-card">
-<div class="row">
+<div class="guarantor-card"><div class="row">
 <div class="col-md-6 mb-3"><label>Full Name</label><input id="g1_name" class="form-control" placeholder="Guarantor full name"></div>
 <div class="col-md-6 mb-3"><label>National ID</label><input id="g1_id" class="form-control" placeholder="ID number"></div>
 <div class="col-md-6 mb-3"><label>Phone Number</label><div class="input-group"><input id="g1_phone" class="form-control" placeholder="07XXXXXXXX"><button class="btn btn-outline-success verify-btn" type="button" id="g1_sendOTPBtn" onclick="sendGuarantorOTP('g1')"><i class="fa fa-paper-plane"></i> Verify</button></div><div id="g1_phoneStatus" class="mt-1"></div></div>
@@ -68,18 +76,15 @@ body{background:#edf4ff;font-family:'Segoe UI',sans-serif;}
 <div class="col-md-6 mb-3"><label>Relationship</label><input id="g1_relationship" class="form-control" placeholder="Friend / Relative"></div>
 <div class="col-md-12 mb-3"><label>Physical Address</label><textarea id="g1_address" class="form-control" rows="2" placeholder="Address"></textarea></div>
 </div>
-<h6 class="fw-bold mt-3"><i class="fa fa-file-image"></i> Guarantor 1 Documents</h6>
+<h6 class="fw-bold mt-3"><i class="fa fa-file-image"></i> Documents</h6>
 <div class="row">
 <div class="col-md-4"><div class="upload-box"><label>Profile Photo</label><input type="file" id="g1_photo" class="form-control form-control-sm" accept="image/*" onchange="previewImg(this,'g1_photo_preview')"><img id="g1_photo_preview" class="preview-img"></div></div>
 <div class="col-md-4"><div class="upload-box"><label>ID Front</label><input type="file" id="g1_idfront" class="form-control form-control-sm" accept="image/*" onchange="previewImg(this,'g1_idfront_preview')"><img id="g1_idfront_preview" class="preview-img"></div></div>
 <div class="col-md-4"><div class="upload-box"><label>ID Back</label><input type="file" id="g1_idback" class="form-control form-control-sm" accept="image/*" onchange="previewImg(this,'g1_idback_preview')"><img id="g1_idback_preview" class="preview-img"></div></div>
-</div>
-</div>
+</div></div>
 
-<!-- GUARANTOR 2 -->
 <h4 class="section-title mt-4"><i class="fa fa-users"></i>Guarantor 2</h4>
-<div class="guarantor-card">
-<div class="row">
+<div class="guarantor-card"><div class="row">
 <div class="col-md-6 mb-3"><label>Full Name</label><input id="g2_name" class="form-control" placeholder="Guarantor full name"></div>
 <div class="col-md-6 mb-3"><label>National ID</label><input id="g2_id" class="form-control" placeholder="ID number"></div>
 <div class="col-md-6 mb-3"><label>Phone Number</label><div class="input-group"><input id="g2_phone" class="form-control" placeholder="07XXXXXXXX"><button class="btn btn-outline-success verify-btn" type="button" id="g2_sendOTPBtn" onclick="sendGuarantorOTP('g2')"><i class="fa fa-paper-plane"></i> Verify</button></div><div id="g2_phoneStatus" class="mt-1"></div></div>
@@ -87,21 +92,31 @@ body{background:#edf4ff;font-family:'Segoe UI',sans-serif;}
 <div class="col-md-6 mb-3"><label>Relationship</label><input id="g2_relationship" class="form-control" placeholder="Friend / Relative"></div>
 <div class="col-md-12 mb-3"><label>Physical Address</label><textarea id="g2_address" class="form-control" rows="2" placeholder="Address"></textarea></div>
 </div>
-<h6 class="fw-bold mt-3"><i class="fa fa-file-image"></i> Guarantor 2 Documents</h6>
+<h6 class="fw-bold mt-3"><i class="fa fa-file-image"></i> Documents</h6>
 <div class="row">
 <div class="col-md-4"><div class="upload-box"><label>Profile Photo</label><input type="file" id="g2_photo" class="form-control form-control-sm" accept="image/*" onchange="previewImg(this,'g2_photo_preview')"><img id="g2_photo_preview" class="preview-img"></div></div>
 <div class="col-md-4"><div class="upload-box"><label>ID Front</label><input type="file" id="g2_idfront" class="form-control form-control-sm" accept="image/*" onchange="previewImg(this,'g2_idfront_preview')"><img id="g2_idfront_preview" class="preview-img"></div></div>
 <div class="col-md-4"><div class="upload-box"><label>ID Back</label><input type="file" id="g2_idback" class="form-control form-control-sm" accept="image/*" onchange="previewImg(this,'g2_idback_preview')"><img id="g2_idback_preview" class="preview-img"></div></div>
-</div>
-</div>
+</div></div>
 
 <div class="text-center mt-4"><button id="submitBtn" onclick="submitLoanApplication()" class="btn btn-primary btn-submit w-100"><i class="fa fa-paper-plane"></i>Submit Loan Application</button></div>
 </div></div>
 
 <script>
-document.addEventListener("DOMContentLoaded",()=>{let c=AUTH.currentClient();if(!c)return;document.getElementById("fullname").value=c.fullname||"";document.getElementById("nationalID").value=c.nationalID||"";document.getElementById("phone").value=c.phone||"";});
-function calculateInterest(){let a=Number(document.getElementById("loanAmount").value)||0;document.getElementById("monthlyInterest").innerHTML="KES "+(a*0.20).toLocaleString();}
 function money(v){return"KES "+Number(v||0).toLocaleString();}
+document.addEventListener("DOMContentLoaded",()=>{
+    let c=AUTH.currentClient();if(!c)return;
+    document.getElementById("fullname").textContent=c.fullname||"-";
+    document.getElementById("nationalID").textContent=c.nationalID||"-";
+    document.getElementById("phone").textContent=c.phone||"-";
+    document.getElementById("email").textContent=c.email||"-";
+    document.getElementById("occupation").textContent=c.occupation||"-";
+    document.getElementById("employer").textContent=c.employer||"-";
+    document.getElementById("income").textContent=money(c.monthlyIncome);
+    document.getElementById("county").textContent=c.county||"-";
+    document.getElementById("address").textContent=c.address||"-";
+});
+function calculateInterest(){let a=Number(document.getElementById("loanAmount").value)||0;document.getElementById("monthlyInterest").innerHTML="KES "+(a*0.20).toLocaleString();}
 function previewImg(i,t){let f=i.files[0];if(!f)return;let r=new FileReader();r.onload=function(e){let img=document.getElementById(t);img.src=e.target.result;img.style.display="block";};r.readAsDataURL(f);}
 function compressImage(f){return new Promise(r=>{let reader=new FileReader();reader.onload=function(e){let img=new Image();img.onload=function(){let c=document.createElement("canvas");let w=img.width,h=img.height,max=800;if(w>max){h=h*max/w;w=max;}c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);r(c.toDataURL("image/jpeg",0.7));};img.src=e.target.result;};reader.readAsDataURL(f);});}
 
@@ -109,8 +124,7 @@ const guarantorOTPs={};
 function sendGuarantorOTP(p){
     let phone=document.getElementById(p+"_phone").value.trim();
     if(!/^07\d{8}$/.test(phone)){document.getElementById(p+"_phoneStatus").innerHTML='<span class="status-error">Enter valid 07XXXXXXXX</span>';return;}
-    let otp=String(Math.floor(100000+Math.random()*900000));
-    guarantorOTPs[p]=otp;
+    let otp=String(Math.floor(100000+Math.random()*900000));guarantorOTPs[p]=otp;
     console.log("OTP for "+p+":",otp);
     document.getElementById(p+"_phoneStatus").innerHTML='<span class="status-ok">Code sent! (Demo: <b>'+otp+'</b>)</span>';
     document.getElementById(p+"_otpBox").style.display="block";
@@ -121,54 +135,35 @@ function otpNextG(c,n){if(c.value.length===1&&n)document.getElementById(n).focus
 function verifyGuarantorOTP(p){
     let entered=document.getElementById(p+"_otp1").value+document.getElementById(p+"_otp2").value+document.getElementById(p+"_otp3").value+document.getElementById(p+"_otp4").value+document.getElementById(p+"_otp5").value+document.getElementById(p+"_otp6").value;
     if(entered.length<6){document.getElementById(p+"_otpStatus").innerHTML='<span class="status-error">Enter complete code</span>';return;}
-    if(entered===guarantorOTPs[p]){
-        document.getElementById(p+"_otpStatus").innerHTML='<span class="status-ok"><i class="fa fa-check-circle"></i> Verified!</span>';
-        sessionStorage.setItem(p+"_phoneVerified","true");
-        document.getElementById(p+"_otpBox").style.display="none";
-        document.getElementById(p+"_sendOTPBtn").innerHTML='<i class="fa fa-check"></i> Done';
-    }else{document.getElementById(p+"_otpStatus").innerHTML='<span class="status-error">Incorrect code</span>';}
+    if(entered===guarantorOTPs[p]){document.getElementById(p+"_otpStatus").innerHTML='<span class="status-ok"><i class="fa fa-check-circle"></i> Verified!</span>';sessionStorage.setItem(p+"_phoneVerified","true");document.getElementById(p+"_otpBox").style.display="none";document.getElementById(p+"_sendOTPBtn").innerHTML='<i class="fa fa-check"></i> Done';}
+    else{document.getElementById(p+"_otpStatus").innerHTML='<span class="status-error">Incorrect code</span>';}
 }
 
 async function submitLoanApplication(){
-let errorBox=document.getElementById("errorBox"),btn=document.getElementById("submitBtn");
-errorBox.style.display="none";
+let errorBox=document.getElementById("errorBox"),btn=document.getElementById("submitBtn");errorBox.style.display="none";
 let client=AUTH.currentClient();if(!client)return;
 let amount=Number(document.getElementById("loanAmount").value),purpose=document.getElementById("purpose").value.trim();
 if(amount<=0){errorBox.innerHTML="Enter a valid loan amount";errorBox.style.display="block";return;}
 if(!purpose){errorBox.innerHTML="Enter loan purpose";errorBox.style.display="block";return;}
-
-let g1name=document.getElementById("g1_name").value.trim();
-let g2name=document.getElementById("g2_name").value.trim();
+let g1name=document.getElementById("g1_name").value.trim(),g2name=document.getElementById("g2_name").value.trim();
 if(!g1name||!g2name){errorBox.innerHTML="Complete both guarantor details";errorBox.style.display="block";return;}
 if(!sessionStorage.getItem("g1_phoneVerified")){errorBox.innerHTML="Verify Guarantor 1 phone number";errorBox.style.display="block";return;}
 if(!sessionStorage.getItem("g2_phoneVerified")){errorBox.innerHTML="Verify Guarantor 2 phone number";errorBox.style.display="block";return;}
-
-btn.disabled=true;btn.innerHTML="Compressing images...";
-
-// Compress guarantor 1 images
-let g1photo="",g1front="",g1back="";
+btn.disabled=true;btn.innerHTML="Compressing...";
+let g1photo="",g1front="",g1back="",g2photo="",g2front="",g2back="";
 if(document.getElementById("g1_photo").files[0])g1photo=await compressImage(document.getElementById("g1_photo").files[0]);
 if(document.getElementById("g1_idfront").files[0])g1front=await compressImage(document.getElementById("g1_idfront").files[0]);
 if(document.getElementById("g1_idback").files[0])g1back=await compressImage(document.getElementById("g1_idback").files[0]);
-
-// Compress guarantor 2 images
-let g2photo="",g2front="",g2back="";
 if(document.getElementById("g2_photo").files[0])g2photo=await compressImage(document.getElementById("g2_photo").files[0]);
 if(document.getElementById("g2_idfront").files[0])g2front=await compressImage(document.getElementById("g2_idfront").files[0]);
 if(document.getElementById("g2_idback").files[0])g2back=await compressImage(document.getElementById("g2_idback").files[0]);
-
 btn.innerHTML="Submitting...";
-
-let result=await api.addApplication({
-amount:amount,purpose:purpose,
+let result=await api.addApplication({amount:amount,purpose:purpose,
 guarantor1:{name:g1name,id:document.getElementById("g1_id").value,phone:document.getElementById("g1_phone").value,relationship:document.getElementById("g1_relationship").value,address:document.getElementById("g1_address").value,photo:g1photo,idFront:g1front,idBack:g1back},
-guarantor2:{name:g2name,id:document.getElementById("g2_id").value,phone:document.getElementById("g2_phone").value,relationship:document.getElementById("g2_relationship").value,address:document.getElementById("g2_address").value,photo:g2photo,idFront:g2front,idBack:g2back}
-});
-
-if(result.success){
-sessionStorage.removeItem("g1_phoneVerified");sessionStorage.removeItem("g2_phoneVerified");
-document.body.innerHTML=`<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;"><div style="background:white;border-radius:25px;padding:50px 40px;text-align:center;max-width:500px;"><i class="fa-solid fa-circle-check" style="font-size:80px;color:#198754;margin-bottom:20px;"></i><h2 style="color:#0F4C81;">Application Submitted!</h2><p style="color:#666;margin-bottom:25px;">Your loan application is under review.</p><a href="client-dashboard.html" style="background:#2563EB;color:white;padding:14px;border-radius:12px;text-decoration:none;font-weight:600;display:block;">Go to Dashboard</a></div></div>`;
-}else{errorBox.innerHTML=result.message;errorBox.style.display="block";btn.disabled=false;btn.innerHTML="Submit Loan Application";}
+guarantor2:{name:g2name,id:document.getElementById("g2_id").value,phone:document.getElementById("g2_phone").value,relationship:document.getElementById("g2_relationship").value,address:document.getElementById("g2_address").value,photo:g2photo,idFront:g2front,idBack:g2back}});
+if(result.success){sessionStorage.removeItem("g1_phoneVerified");sessionStorage.removeItem("g2_phoneVerified");
+document.body.innerHTML=`<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;"><div style="background:white;border-radius:25px;padding:50px 40px;text-align:center;max-width:500px;"><i class="fa-solid fa-circle-check" style="font-size:80px;color:#198754;margin-bottom:20px;"></i><h2 style="color:#0F4C81;">Application Submitted!</h2><p style="color:#666;margin-bottom:25px;">Your loan application is under review.</p><a href="client-dashboard.html" style="background:#2563EB;color:white;padding:14px;border-radius:12px;text-decoration:none;font-weight:600;display:block;">Go to Dashboard</a></div></div>`;}
+else{errorBox.innerHTML=result.message;errorBox.style.display="block";btn.disabled=false;btn.innerHTML="Submit Loan Application";}
 }
 </script>
 </body>
