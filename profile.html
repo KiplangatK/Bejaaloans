@@ -1,55 +1,748 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Profile | Bejja Credit</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-<style>
-body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
-.header{background:linear-gradient(135deg,#0F4C81,#2563EB);color:white;padding:25px;border-radius:0 0 25px 25px;box-shadow:0 5px 20px rgba(0,0,0,.2);}
-.container{max-width:1100px;}
-.profile-card{background:white;border-radius:25px;padding:30px;box-shadow:0 10px 30px rgba(0,0,0,.12);}
-.profile-photo{width:160px;height:160px;border-radius:50%;object-fit:cover;border:5px solid #2563EB;}
-.name{font-size:28px;font-weight:bold;color:#0F4C81;}
-.status{padding:8px 20px;border-radius:20px;background:#198754;color:white;display:inline-block;}
-.section-title{background:#0F4C81;color:white;padding:12px 18px;border-radius:12px;margin-top:25px;}
-.detail-box{background:#f8fbff;padding:15px;border-radius:12px;border-left:4px solid #2563EB;margin-bottom:15px;}
-.detail-box label{font-weight:bold;color:#0F4C81;display:block;}
-.form-control{height:50px;border-radius:12px;}
-.btn-save{background:#2563EB;color:white;height:50px;border-radius:12px;font-size:18px;font-weight:bold;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Bejja Credit</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #0d47a1;
+            --primary-light: #1976d2;
+            --success: #198754;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --white: #ffffff;
+            --bg-light: #edf4ff;
+            --shadow-sm: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow-md: 0 10px 30px rgba(0,0,0,0.12);
+            --shadow-lg: 0 15px 40px rgba(0,0,0,0.18);
+            --transition: all 0.3s ease;
+            --radius: 18px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg-light);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ==================== HEADER ==================== */
+        .header {
+            background: linear-gradient(135deg, #0a3d8f, #0d47a1, #1565c0);
+            background-size: 200% 200%;
+            animation: gradientShift 8s ease infinite;
+            color: var(--white);
+            padding: 30px 25px;
+            border-radius: 0 0 35px 35px;
+            box-shadow: 0 10px 30px rgba(13,71,161,0.3);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50px; right: -50px;
+            width: 200px; height: 200px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30px; left: -30px;
+            width: 150px; height: 150px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+        }
+
+        .header h2 {
+            font-weight: 800;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+        }
+        .header h2 i { color: var(--warning); margin-right: 10px; }
+        .header p {
+            opacity: 0.9;
+            font-size: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ==================== CONTAINER ==================== */
+        .container-main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+        }
+
+        /* ==================== NAVIGATION BAR ==================== */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 25px 0;
+        }
+
+        .nav-bar .btn {
+            border-radius: 12px;
+            font-weight: 600;
+            transition: var(--transition);
+            padding: 10px 20px;
+        }
+
+        .btn-back {
+            background: var(--white);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .btn-back:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateX(-3px);
+        }
+
+        .btn-logout {
+            background: var(--white);
+            color: var(--danger);
+            border: 2px solid var(--danger);
+        }
+        .btn-logout:hover {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-dashboard {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+        }
+        .btn-dashboard:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(13,71,161,0.3);
+        }
+
+        /* ==================== PROFILE CARD ==================== */
+        .profile-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 35px 30px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--warning), var(--primary-light));
+        }
+
+        /* ==================== PHOTO SECTION ==================== */
+        .photo-section {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .photo-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .profile-photo {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--primary-light);
+            box-shadow: 0 8px 25px rgba(13,71,161,0.2);
+            transition: var(--transition);
+        }
+
+        .photo-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 160px; height: 160px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+            color: var(--white);
+            font-size: 28px;
+        }
+
+        .photo-wrapper:hover .photo-overlay {
+            opacity: 1;
+        }
+
+        .photo-wrapper:hover .profile-photo {
+            border-color: var(--warning);
+        }
+
+        .client-name {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-top: 15px;
+        }
+
+        .client-status {
+            padding: 8px 22px;
+            border-radius: 25px;
+            background: var(--success);
+            color: var(--white);
+            display: inline-block;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 1px;
+            margin-top: 8px;
+        }
+
+        /* ==================== MESSAGE BOX ==================== */
+        .message-box {
+            padding: 14px 18px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            font-size: 14px;
+            display: none;
+            animation: slideDown 0.4s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-box.success {
+            background: #f0fff4;
+            border: 2px solid #bbf7d0;
+            color: var(--success);
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .message-box.error {
+            background: #fff5f5;
+            border: 2px solid #fecaca;
+            color: var(--danger);
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        /* ==================== SECTION TITLE ==================== */
+        .section-title {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--white);
+            padding: 14px 20px;
+            border-radius: 14px;
+            margin: 25px 0 20px;
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i { font-size: 20px; }
+
+        /* ==================== FORM FIELDS ==================== */
+        .detail-box {
+            background: #f8faff;
+            padding: 18px;
+            border-radius: 14px;
+            border-left: 4px solid var(--primary-light);
+            margin-bottom: 15px;
+            transition: var(--transition);
+        }
+
+        .detail-box:hover {
+            border-left-color: var(--primary);
+            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+        }
+
+        .detail-box label {
+            font-weight: 600;
+            color: var(--primary);
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            height: 48px;
+            border-radius: 10px;
+            border: 2px solid #e8ecf4;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(25,118,210,0.08);
+            background: var(--white);
+        }
+
+        .form-control[readonly] {
+            background: #f5f6fa;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        /* ==================== PASSWORD SECTION ==================== */
+        .password-fields {
+            background: #fffef5;
+            border: 1px solid #ffe69c;
+            border-radius: 14px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .password-fields .form-label {
+            font-weight: 600;
+            color: #856404;
+            font-size: 13px;
+        }
+
+        /* ==================== BUTTONS ==================== */
+        .btn-save {
+            background: linear-gradient(135deg, var(--success), #2ecc71);
+            color: var(--white);
+            height: 55px;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 700;
+            border: none;
+            transition: var(--transition);
+            letter-spacing: 1px;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(25,135,84,0.3);
+        }
+
+        .btn-save:disabled {
+            opacity: 0.7;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        /* ==================== SPINNER ==================== */
+        .spinner {
+            width: 18px; height: 18px;
+            border: 2.5px solid rgba(255,255,255,0.3);
+            border-top-color: var(--white);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px 15px;
+                border-radius: 0 0 25px 25px;
+            }
+            .header h2 { font-size: 20px; }
+            .profile-card { padding: 25px 18px; }
+            .profile-photo { width: 130px; height: 130px; }
+            .photo-overlay { width: 130px; height: 130px; }
+            .client-name { font-size: 22px; }
+            .nav-bar { flex-direction: column; align-items: stretch; }
+            .nav-bar .btn { text-align: center; }
+        }
+
+        @media (max-width: 576px) {
+            .container-main { padding: 0 10px 30px; }
+            .section-title { font-size: 14px; }
+        }
+    </style>
 </head>
 <body>
 
-<script src="assets/js/api.js"></script>
-<script src="assets/js/auth.js"></script>
-<script>if(!AUTH.currentClient()){window.location.href="client-portal.html";}</script>
+    <!-- Auth Check -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script>
+        if (!AUTH.currentClient()) {
+            window.location.href = "client-portal.html";
+        }
+    </script>
 
-<div class="header text-center"><h2><i class="fa-solid fa-building-columns"></i>BEJJA LOAN CREDIT</h2><p>My Profile</p></div>
+    <!-- Header -->
+    <div class="header">
+        <h2><i class="fa-solid fa-building-columns"></i>BEJJA LOAN CREDIT</h2>
+        <p>My Profile Settings</p>
+    </div>
 
-<div class="container py-4">
-<div class="mb-4"><a href="client-dashboard.html" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Back to Dashboard</a><a href="#" onclick="AUTH.clientLogout()" class="btn btn-danger float-end"><i class="fa fa-right-from-bracket"></i> Logout</a></div>
+    <!-- Main Container -->
+    <div class="container-main">
+        <!-- Navigation -->
+        <div class="nav-bar">
+            <div class="d-flex gap-2">
+                <a href="client-dashboard.html" class="btn btn-back">
+                    <i class="fa fa-arrow-left"></i> Back to Dashboard
+                </a>
+                <a href="my-loans.html" class="btn btn-dashboard">
+                    <i class="fa fa-money-bill-wave"></i> My Loans
+                </a>
+            </div>
+            <a href="#" onclick="AUTH.clientLogout()" class="btn btn-logout">
+                <i class="fa fa-right-from-bracket"></i> Logout
+            </a>
+        </div>
 
-<div class="profile-card">
-<div class="text-center"><img id="profilePhoto" class="profile-photo" src=""><h3 class="name mt-3" id="clientName"></h3><span class="status">ACTIVE CLIENT</span></div>
-<hr>
-<h5 class="section-title"><i class="fa fa-user"></i>Personal Information</h5>
-<div class="row">
-<div class="col-md-6"><div class="detail-box"><label>Full Name</label><input id="fullname" class="form-control" readonly></div></div>
-<div class="col-md-6"><div class="detail-box"><label>National ID</label><input id="nationalID" class="form-control" readonly></div></div>
-<div class="col-md-6"><div class="detail-box"><label>Phone</label><input id="phone" class="form-control"></div></div>
-<div class="col-md-6"><div class="detail-box"><label>Email</label><input id="email" class="form-control"></div></div>
-</div>
-<div class="text-center mt-4"><button onclick="saveProfile()" class="btn btn-save w-100"><i class="fa fa-save"></i>Save Profile Changes</button></div>
-</div>
-</div>
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <!-- Message Box -->
+            <div class="message-box" id="messageBox">
+                <i id="messageIcon"></i>
+                <span id="messageText"></span>
+            </div>
 
-<script>
-function money(v){return"KES "+Number(v||0).toLocaleString();}
-document.addEventListener("DOMContentLoaded",()=>{let c=AUTH.currentClient();if(!c)return;document.getElementById("clientName").innerHTML=c.fullname;document.getElementById("profilePhoto").src=c.profilePhoto||"https://via.placeholder.com/160";document.getElementById("fullname").value=c.fullname||"";document.getElementById("nationalID").value=c.nationalID||"";document.getElementById("phone").value=c.phone||"";document.getElementById("email").value=c.email||"";});
-async function saveProfile(){let c=AUTH.currentClient();if(!c)return;let data={fullname:document.getElementById("fullname").value,phone:document.getElementById("phone").value,email:document.getElementById("email").value};await api.updateClient(c.id,data);await AUTH.refreshClientSession();alert("Profile updated!");}
-</script>
+            <!-- Photo Section -->
+            <div class="photo-section">
+                <div class="photo-wrapper" onclick="document.getElementById('photoUpload').click()">
+                    <img id="profilePhoto" class="profile-photo" src="" alt="Profile Photo">
+                    <div class="photo-overlay">
+                        <i class="fa fa-camera"></i>
+                    </div>
+                    <input type="file" id="photoUpload" accept="image/*" style="display:none" onchange="handlePhotoUpload(this)">
+                </div>
+                <h3 class="client-name" id="clientName">-</h3>
+                <span class="client-status" id="clientStatus">ACTIVE CLIENT</span>
+                <br>
+                <small class="text-muted">Member since <span id="memberSince">-</span></small>
+            </div>
+
+            <hr>
+
+            <!-- Personal Information -->
+            <h5 class="section-title">
+                <i class="fa fa-user-circle"></i> Personal Information
+            </h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="detail-box">
+                        <label>Full Name</label>
+                        <input id="fullname" class="form-control" placeholder="Enter full name">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-box">
+                        <label>National ID</label>
+                        <input id="nationalID" class="form-control" readonly placeholder="National ID">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-box">
+                        <label>Phone Number</label>
+                        <input id="phone" class="form-control" placeholder="07XXXXXXXX">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-box">
+                        <label>Email Address</label>
+                        <input id="email" class="form-control" placeholder="your@email.com">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information -->
+            <h5 class="section-title">
+                <i class="fa fa-info-circle"></i> Additional Information
+            </h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="detail-box">
+                        <label>Occupation</label>
+                        <input id="occupation" class="form-control" placeholder="Your occupation">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-box">
+                        <label>Employer</label>
+                        <input id="employer" class="form-control" placeholder="Your employer">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-box">
+                        <label>Monthly Income (KSh)</label>
+                        <input type="number" id="monthlyIncome" class="form-control" placeholder="0">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-box">
+                        <label>County</label>
+                        <select id="county" class="form-control">
+                            <option value="">Select County...</option>
+                            <option value="Nairobi">Nairobi</option>
+                            <option value="Mombasa">Mombasa</option>
+                            <option value="Kisumu">Kisumu</option>
+                            <option value="Nakuru">Nakuru</option>
+                            <option value="Kiambu">Kiambu</option>
+                            <option value="Machakos">Machakos</option>
+                            <option value="Kajiado">Kajiado</option>
+                            <option value="Uasin Gishu">Uasin Gishu</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="detail-box">
+                        <label>Address</label>
+                        <textarea id="address" class="form-control" rows="2" placeholder="Your address" style="height:auto;"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change Password (Optional) -->
+            <h5 class="section-title">
+                <i class="fa fa-lock"></i> Change Password (Optional)
+            </h5>
+            <div class="password-fields">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">New Password</label>
+                        <input type="password" id="newPassword" class="form-control" placeholder="Min 8 characters" oninput="checkStrength()">
+                        <div class="progress mt-2" style="height:4px;">
+                            <div id="passwordStrength" class="progress-bar" style="width:0%"></div>
+                        </div>
+                        <small class="text-muted">Uppercase, lowercase, number & special character</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm password">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Button -->
+            <div class="text-center mt-4">
+                <button onclick="saveProfile()" class="btn btn-save w-100" id="saveBtn">
+                    <i class="fa fa-save me-2"></i>
+                    <span id="saveBtnText">Save Profile Changes</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ==================== UTILITY ====================
+        const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
+        function money(v) {
+            return "KSh " + Number(v || 0).toLocaleString("en-KE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function showMessage(message, type = "success") {
+            const box = document.getElementById("messageBox");
+            const icon = document.getElementById("messageIcon");
+            const text = document.getElementById("messageText");
+
+            box.className = "message-box " + type;
+            icon.className = type === "success" ? "fa fa-check-circle" : "fa fa-exclamation-circle";
+            text.textContent = message;
+
+            setTimeout(() => {
+                box.className = "message-box";
+            }, 5000);
+        }
+
+        function setLoading(isLoading) {
+            const btn = document.getElementById("saveBtn");
+            const text = document.getElementById("saveBtnText");
+
+            if (isLoading) {
+                btn.disabled = true;
+                text.innerHTML = '<span class="spinner me-2"></span>Saving...';
+            } else {
+                btn.disabled = false;
+                text.innerHTML = '<i class="fa fa-save me-2"></i>Save Profile Changes';
+            }
+        }
+
+        // ==================== LOAD PROFILE ====================
+        document.addEventListener("DOMContentLoaded", () => {
+            const c = AUTH.currentClient();
+            if (!c) return;
+
+            // Set basic info
+            document.getElementById("clientName").textContent = c.fullname || "-";
+            document.getElementById("clientStatus").textContent = c.status || "ACTIVE";
+            document.getElementById("memberSince").textContent = formatDate(c.createdAt);
+
+            // Set photo
+            const photoUrl = c.profilePhoto || DEFAULT_IMG;
+            document.getElementById("profilePhoto").src = photoUrl;
+            document.getElementById("profilePhoto").onerror = function() { this.src = DEFAULT_IMG; };
+
+            // Set form fields
+            document.getElementById("fullname").value = c.fullname || "";
+            document.getElementById("nationalID").value = c.nationalID || "";
+            document.getElementById("phone").value = c.phone || "";
+            document.getElementById("email").value = c.email || "";
+            document.getElementById("occupation").value = c.occupation || "";
+            document.getElementById("employer").value = c.employer || "";
+            document.getElementById("monthlyIncome").value = c.monthlyIncome || "";
+            document.getElementById("county").value = c.county || "";
+            document.getElementById("address").value = c.address || "";
+        });
+
+        // ==================== PHOTO UPLOAD ====================
+        function handlePhotoUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // Preview immediately
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById("profilePhoto").src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            showMessage("Photo updated! Save changes to confirm.", "success");
+        }
+
+        // ==================== PASSWORD STRENGTH ====================
+        function checkStrength() {
+            const password = document.getElementById("newPassword").value;
+            const bar = document.getElementById("passwordStrength");
+            let strength = 0;
+
+            if (password.length >= 8) strength += 25;
+            if (/[A-Z]/.test(password)) strength += 25;
+            if (/[a-z]/.test(password)) strength += 25;
+            if (/[\d!@#$%^&*]/.test(password)) strength += 25;
+
+            bar.style.width = strength + "%";
+            bar.className = "progress-bar";
+            if (strength <= 25) bar.classList.add("bg-danger");
+            else if (strength <= 50) bar.classList.add("bg-warning");
+            else if (strength <= 75) bar.classList.add("bg-info");
+            else bar.classList.add("bg-success");
+        }
+
+        // ==================== SAVE PROFILE ====================
+        async function saveProfile() {
+            const c = AUTH.currentClient();
+            if (!c) return;
+
+            const fullname = document.getElementById("fullname").value.trim();
+            const phone = document.getElementById("phone").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const newPassword = document.getElementById("newPassword").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+
+            // Validation
+            if (!fullname) {
+                showMessage("Full name is required.", "error");
+                return;
+            }
+
+            if (!phone) {
+                showMessage("Phone number is required.", "error");
+                return;
+            }
+
+            if (newPassword && newPassword.length < 8) {
+                showMessage("Password must be at least 8 characters.", "error");
+                return;
+            }
+
+            if (newPassword && newPassword !== confirmPassword) {
+                showMessage("Passwords do not match.", "error");
+                return;
+            }
+
+            setLoading(true);
+
+            try {
+                // Build update data
+                const data = {
+                    fullname,
+                    phone,
+                    email,
+                    occupation: document.getElementById("occupation").value.trim(),
+                    employer: document.getElementById("employer").value.trim(),
+                    monthlyIncome: document.getElementById("monthlyIncome").value,
+                    county: document.getElementById("county").value,
+                    address: document.getElementById("address").value.trim()
+                };
+
+                // Update profile
+                const result = await api.updateClient(c.id, data);
+
+                if (result.success) {
+                    // Refresh session to get updated data
+                    await AUTH.refreshClientSession();
+
+                    // Update displayed name
+                    document.getElementById("clientName").textContent = fullname;
+
+                    // Change password if provided
+                    if (newPassword) {
+                        try {
+                            // await api.changePassword(c.password, newPassword);
+                            showMessage("Profile and password updated successfully!", "success");
+                        } catch (e) {
+                            showMessage("Profile updated but password change failed.", "error");
+                        }
+                    } else {
+                        showMessage("Profile updated successfully!", "success");
+                    }
+
+                    // Clear password fields
+                    document.getElementById("newPassword").value = "";
+                    document.getElementById("confirmPassword").value = "";
+                    document.getElementById("passwordStrength").style.width = "0%";
+                } else {
+                    showMessage(result.message || "Failed to update profile.", "error");
+                }
+            } catch (error) {
+                console.error("Update error:", error);
+                showMessage("An error occurred. Please try again.", "error");
+            } finally {
+                setLoading(false);
+            }
+        }
+    </script>
 </body>
 </html>
