@@ -141,59 +141,20 @@ async function viewLoan(id){
     let totalExpected=Number(loan.original_principal)+Number(loan.original_principal)*rate/100;
     let progress=totalExpected>0?Math.round((totalPaid/totalExpected)*100):0;
     
-    // Get full client details
     let clientResult=await api.getClient(loan.client_id);
     let client=clientResult.success?clientResult.client:{};
     
     document.getElementById("loanDetails").innerHTML=`
         <h5 class="text-primary">Client Information</h5><hr>
-        <div class="row">
-            <div class="col-md-3 text-center">
-                <img src="${client.profile_photo||DEFAULT_IMG}" class="profile-img-large mb-2">
-                <h5>${client.fullname||loan.fullname||"-"}</h5>
-            </div>
-            <div class="col-md-9">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><b>Phone:</b> ${client.phone||loan.phone||"-"}</p>
-                        <p><b>National ID:</b> ${client.national_id||"-"}</p>
-                        <p><b>Email:</b> ${client.email||"-"}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><b>Occupation:</b> ${client.occupation||"-"}</p>
-                        <p><b>Employer:</b> ${client.employer||"-"}</p>
-                        <p><b>Monthly Income:</b> ${money(client.monthly_income)}</p>
-                    </div>
-                </div>
-                <p><b>County:</b> ${client.county||"-"}</p>
-                <p><b>Address:</b> ${client.address||"-"}</p>
-            </div>
-        </div>
-        
+        <div class="row"><div class="col-md-3 text-center"><img src="${client.profile_photo||DEFAULT_IMG}" class="profile-img-large mb-2"><h5>${client.fullname||loan.fullname||"-"}</h5></div><div class="col-md-9"><div class="row"><div class="col-md-6"><p><b>Phone:</b> ${client.phone||loan.phone||"-"}</p><p><b>National ID:</b> ${client.national_id||"-"}</p><p><b>Email:</b> ${client.email||"-"}</p></div><div class="col-md-6"><p><b>Occupation:</b> ${client.occupation||"-"}</p><p><b>Employer:</b> ${client.employer||"-"}</p><p><b>Monthly Income:</b> ${money(client.monthly_income)}</p></div></div><p><b>County:</b> ${client.county||"-"}</p><p><b>Address:</b> ${client.address||"-"}</p></div></div>
         <h5 class="text-primary mt-4">Loan Information</h5><hr>
-        <div class="row">
-            <div class="col-md-6">
-                <p><b>Original:</b> ${money(loan.original_principal)}</p>
-                <p><b>Remaining:</b> ${money(balance)}</p>
-                <p><b>Monthly Interest:</b> ${money(currentInterest)}</p>
-                <p><b>Months Overdue:</b> <span class="text-danger fw-bold">${monthsOverdue} mo</span></p>
-            </div>
-            <div class="col-md-6">
-                <p><b>Total Paid:</b> <span class="text-success fw-bold">${money(totalPaid)}</span></p>
-                <p><b>Total Outstanding Interest:</b> <span class="text-danger fw-bold">${money(totalOutstandingInterest)}</span></p>
-                <p><b>Progress:</b> ${progress}%</p>
-            </div>
-        </div>
-        <p><b>Loan Date:</b> ${formatDate(loan.loan_date)}</p>
-        <p><b>Due Date:</b> <span class="text-danger fw-bold">${formatDate(loan.due_date)}</span></p>
-        <p><b>Status:</b> <span class="badge bg-danger">${loan.status}</span></p>
+        <div class="row"><div class="col-md-6"><p><b>Original:</b> ${money(loan.original_principal)}</p><p><b>Remaining:</b> ${money(balance)}</p><p><b>Monthly Interest:</b> ${money(currentInterest)}</p><p><b>Months Overdue:</b> <span class="text-danger fw-bold">${monthsOverdue} mo</span></p></div><div class="col-md-6"><p><b>Total Paid:</b> <span class="text-success fw-bold">${money(totalPaid)}</span></p><p><b>Total Outstanding Interest:</b> <span class="text-danger fw-bold">${money(totalOutstandingInterest)}</span></p><p><b>Progress:</b> ${progress}%</p></div></div>
+        <p><b>Loan Date:</b> ${formatDate(loan.loan_date)}</p><p><b>Due Date:</b> <span class="text-danger fw-bold">${formatDate(loan.due_date)}</span></p><p><b>Status:</b> <span class="badge bg-danger">${loan.status}</span></p>
         <div class="progress mt-2 mb-3" style="height:10px;"><div class="progress-bar bg-success" style="width:${progress}%"></div></div>
-        
         <div class="text-center mt-3 mb-3"><button class="btn btn-guarantors" onclick="toggleGuarantors(${loan.application_id||0})"><i class="fa fa-users"></i>View Guarantors</button></div>
         <div id="guarantorSection" style="display:none;"></div>
-        
         <h5 class="text-primary mt-4">Payment History</h5>
-        <table class="table table-bordered"><tr><th>Date</th><th>Amount</th><th>Principal</th><th>Interest</th><th>Balance</th></tr>${payments.length===0?'<tr><td colspan="5" class="text-center">No payments yet</td></tr>':payments.map(p=>`<tr><td>${formatDate(p.payment_date)}</td><td>${money(p.amount)}</td><td>${money(p.principal_paid)}</td><td>${money(p.interest_paid)}</td><td>${money(p.balance)}</td></tr>`).join("")}</table>`;
+        <table class="table table-bordered"><tr><th>Date</th><th>Amount</th><th>Principal</th><th>Interest</th><th>Balance</th><th>Note</th></tr>${payments.length===0?'<tr><td colspan="6" class="text-center">No payments yet</td></tr>':payments.map(p=>`<tr><td>${formatDate(p.payment_date)}</td><td>${money(p.amount)}</td><td>${money(p.principal_paid)}</td><td>${money(p.interest_paid)}</td><td>${money(p.balance)}</td><td>${p.note||"-"}</td></tr>`).join("")}</table>`;
     new bootstrap.Modal(document.getElementById("loanModal")).show();
 }
 
@@ -210,26 +171,8 @@ async function toggleGuarantors(appId){
 function showGuarantor(g,title){
     if(!g)return'<p class="text-muted">No '+title+' details.</p>';
     return`
-    <div class="detail-card">
-        <h5 class="text-primary">${title}</h5>
-        <div class="row">
-            <div class="col-md-4 text-center">
-                <img src="${g.photo||DEFAULT_IMG}" class="guarantor-photo">
-                <br><button class="btn btn-sm btn-outline-primary btn-doc mt-2" onclick="showFullImage('${g.photo||DEFAULT_IMG}','${title} Photo')"><i class="fa fa-search-plus"></i> View Full</button>
-            </div>
-            <div class="col-md-8">
-                <p><b>Name:</b> ${g.name||"-"}</p>
-                <p><b>National ID:</b> ${g.id||g.national_id||"-"}</p>
-                <p><b>Phone:</b> ${g.phone||"-"}</p>
-                <p><b>Relationship:</b> ${g.relationship||"-"}</p>
-                <p><b>Address:</b> ${g.address||"-"}</p>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-md-6 text-center"><p class="fw-bold mb-1">ID Front</p>${g.idFront||g.id_front?`<img src="${g.idFront||g.id_front}" class="document-img"><button class="btn btn-sm btn-outline-primary btn-doc mt-1" onclick="showFullImage('${g.idFront||g.id_front}','${title} ID Front')"><i class="fa fa-search-plus"></i> View Full</button>`:'<p class="text-muted">Not uploaded</p>'}</div>
-            <div class="col-md-6 text-center"><p class="fw-bold mb-1">ID Back</p>${g.idBack||g.id_back?`<img src="${g.idBack||g.id_back}" class="document-img"><button class="btn btn-sm btn-outline-primary btn-doc mt-1" onclick="showFullImage('${g.idBack||g.id_back}','${title} ID Back')"><i class="fa fa-search-plus"></i> View Full</button>`:'<p class="text-muted">Not uploaded</p>'}</div>
-        </div>
-    </div>`;
+    <div class="detail-card"><h5 class="text-primary">${title}</h5><div class="row"><div class="col-md-4 text-center"><img src="${g.photo||DEFAULT_IMG}" class="guarantor-photo"><br><button class="btn btn-sm btn-outline-primary btn-doc mt-2" onclick="showFullImage('${g.photo||DEFAULT_IMG}','${title} Photo')"><i class="fa fa-search-plus"></i> View Full</button></div><div class="col-md-8"><p><b>Name:</b> ${g.name||"-"}</p><p><b>National ID:</b> ${g.id||g.national_id||"-"}</p><p><b>Phone:</b> ${g.phone||"-"}</p><p><b>Relationship:</b> ${g.relationship||"-"}</p><p><b>Address:</b> ${g.address||"-"}</p></div></div>
+    <div class="row mt-3"><div class="col-md-6 text-center"><p class="fw-bold mb-1">ID Front</p>${g.idFront||g.id_front?`<img src="${g.idFront||g.id_front}" class="document-img"><button class="btn btn-sm btn-outline-primary btn-doc mt-1" onclick="showFullImage('${g.idFront||g.id_front}','${title} ID Front')"><i class="fa fa-search-plus"></i> View Full</button>`:'<p class="text-muted">Not uploaded</p>'}</div><div class="col-md-6 text-center"><p class="fw-bold mb-1">ID Back</p>${g.idBack||g.id_back?`<img src="${g.idBack||g.id_back}" class="document-img"><button class="btn btn-sm btn-outline-primary btn-doc mt-1" onclick="showFullImage('${g.idBack||g.id_back}','${title} ID Back')"><i class="fa fa-search-plus"></i> View Full</button>`:'<p class="text-muted">Not uploaded</p>'}</div></div></div>`;
 }
 
 function openPayment(id){document.getElementById("paymentLoanId").value=id;document.getElementById("paymentAmount").value="";document.getElementById("paymentDate").value=new Date().toISOString().split("T")[0];new bootstrap.Modal(document.getElementById("paymentModal")).show();}
@@ -247,7 +190,11 @@ async function savePayment(){
     if(loan.due_date){let dueDate=new Date(loan.due_date);dueDate.setHours(0,0,0,0);let today=new Date();today.setHours(0,0,0,0);let checkDate=new Date(dueDate);while(true){checkDate.setMonth(checkDate.getMonth()+1);if(today<checkDate)break;monthsOverdue++;}monthsOverdue++;}
     let monthlyInterest=(balance*rate)/100,totalOutstanding=monthlyInterest*monthsOverdue;
     
-    await api.addPayment({loanId,amount,paymentDate:date,method});
+    // Set note - carried forward as early payment for active cycle
+    let note="";
+    if(amount>0&&loan.due_date){let pd=new Date(date+"T00:00:00"),dd=new Date(loan.due_date);if(pd<dd)note="Early payment (carried from late loan clearance)";}
+    
+    await api.addPayment({loanId,amount,paymentDate:date,method,note});
     
     let pResult=await api.getLoanPayments(loanId);let totalPaid=0;
     if(pResult.success&&Array.isArray(pResult.payments))pResult.payments.forEach(p=>{totalPaid+=Number(p.amount||0);});
