@@ -10,26 +10,27 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 .sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#0F4C81;color:white;}
-.logo{padding:25px;font-size:25px;font-weight:bold;border-bottom:1px solid rgba(255,255,255,.2);}
-.logo i{margin-right:10px;}
-.sidebar a{display:block;padding:15px 25px;color:white;text-decoration:none;transition:.3s;}
-.sidebar a:hover{background:#2563EB;padding-left:35px;}.sidebar i{width:25px;}
-.main{margin-left:260px;}
-.topbar{height:60px;background:#2563EB;color:white;display:flex;align-items:center;justify-content:space-between;padding:0 25px;box-shadow:0 4px 15px rgba(0,0,0,.2);}
-.topbar .topbar-right{display:flex;align-items:center;gap:15px;}
-.topbar .btn-back{background:rgba(255,255,255,0.2);color:white;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:14px;font-weight:600;transition:.3s;}
+.logo{padding:20px;font-size:22px;font-weight:bold;border-bottom:1px solid rgba(255,255,255,.2);}
+.logo i{margin-right:8px;}
+.sidebar a{display:block;padding:12px 20px;color:white;text-decoration:none;transition:.3s;font-size:14px;}
+.sidebar a:hover{background:#2563EB;padding-left:28px;}.sidebar i{width:22px;}
+.main{margin-left:260px;height:100vh;display:flex;flex-direction:column;}
+.topbar{height:50px;background:#2563EB;color:white;display:flex;align-items:center;justify-content:space-between;padding:0 20px;box-shadow:0 2px 10px rgba(0,0,0,.15);flex-shrink:0;}
+.topbar h3{font-size:18px;}.topbar .topbar-right{display:flex;align-items:center;gap:12px;font-size:13px;}
+.topbar .btn-back{background:rgba(255,255,255,0.2);color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-size:12px;font-weight:600;transition:.3s;}
 .topbar .btn-back:hover{background:rgba(255,255,255,0.35);color:white;}
-.content{padding:25px;}
-.profile-card{background:#fff;border-radius:20px;padding:25px;box-shadow:0 5px 15px rgba(0,0,0,.1);text-align:center;margin-bottom:20px;}
-.profile-card img{width:130px;height:130px;border-radius:50%;object-fit:cover;border:5px solid #2563EB;}
-.profile-card h3{font-weight:bold;color:#0F4C81;margin-top:10px;}
-.info-card{background:#fff;border-radius:20px;padding:25px;box-shadow:0 5px 15px rgba(0,0,0,.1);}
-.info-row{display:flex;border-bottom:1px solid #eee;padding:12px 0;}
+.content{flex:1;display:flex;flex-direction:column;padding:12px;gap:10px;overflow:hidden;}
+.profile-header{display:flex;align-items:center;gap:12px;background:#fff;border-radius:10px;padding:10px 18px;box-shadow:0 2px 8px rgba(0,0,0,.06);flex-shrink:0;}
+.profile-header img{width:45px;height:45px;border-radius:50%;object-fit:cover;border:2px solid #2563EB;}
+.profile-header h3{font-size:16px;color:#0F4C81;margin:0;}
+.profile-header p{color:#777;font-size:12px;margin:0;}
+.info-card{background:#fff;border-radius:10px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.06);flex:1;overflow-y:auto;}
+.section-title{font-size:15px;font-weight:bold;color:#0F4C81;margin-bottom:12px;border-bottom:2px solid #2563EB;padding-bottom:6px;}
+.info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px 20px;}
+.info-row{display:flex;padding:6px 0;border-bottom:1px solid #f0f0f0;}
 .info-row:last-child{border-bottom:none;}
-.info-label{font-weight:bold;color:#0F4C81;width:200px;flex-shrink:0;}
-.info-value{color:#444;}
-.section-title{font-size:20px;font-weight:bold;color:#0F4C81;margin-bottom:20px;border-bottom:2px solid #2563EB;padding-bottom:10px;}
-.action-btn{height:45px;border-radius:10px;font-weight:bold;font-size:15px;}
+.info-label{font-weight:bold;color:#0F4C81;width:140px;flex-shrink:0;font-size:13px;}
+.info-value{color:#444;font-size:13px;}
 </style>
 </head>
 <body>
@@ -48,31 +49,31 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 </div>
 
 <div class="main">
-<div class="topbar"><h3><i class="fa fa-user-circle"></i>My Profile</h3><div class="topbar-right"><a href="client-dashboard.html" class="btn-back"><i class="fa fa-arrow-left"></i> Back</a><span>Welcome, <strong id="topClientName"></strong></span></div></div>
+<div class="topbar"><h3><i class="fa fa-user-circle"></i> My Profile</h3><div class="topbar-right"><a href="client-dashboard.html" class="btn-back"><i class="fa fa-arrow-left"></i> Back</a><span>Welcome, <strong id="topClientName"></strong></span></div></div>
 <div class="content">
 
-<div class="profile-card">
+<div class="profile-header">
 <img id="profilePhoto" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
-<h3 id="clientName"></h3>
-<p id="clientPhone" class="text-muted"></p>
-<span class="badge bg-success">ACTIVE CLIENT</span>
+<div><h3 id="clientName"></h3><p id="clientPhone"></p></div>
+<span class="badge bg-success ms-auto">ACTIVE</span>
+<a href="client-dashboard.html" class="btn btn-success btn-sm ms-2" style="border-radius:8px;font-size:12px;"><i class="fa fa-home"></i> Dashboard</a>
 </div>
 
 <div class="info-card">
-<h4 class="section-title"><i class="fa fa-address-card"></i>Personal Information</h4>
+<h4 class="section-title"><i class="fa fa-address-card"></i> Personal Information</h4>
+<div class="info-grid">
 <div class="info-row"><div class="info-label">Full Name</div><div class="info-value" id="vFullname">-</div></div>
 <div class="info-row"><div class="info-label">National ID</div><div class="info-value" id="vNationalID">-</div></div>
 <div class="info-row"><div class="info-label">Phone Number</div><div class="info-value" id="vPhone">-</div></div>
 <div class="info-row"><div class="info-label">Email Address</div><div class="info-value" id="vEmail">-</div></div>
 <div class="info-row"><div class="info-label">Occupation</div><div class="info-value" id="vOccupation">-</div></div>
-<div class="info-row"><div class="info-label">Employer / Business</div><div class="info-value" id="vEmployer">-</div></div>
+<div class="info-row"><div class="info-label">Employer</div><div class="info-value" id="vEmployer">-</div></div>
 <div class="info-row"><div class="info-label">Monthly Income</div><div class="info-value" id="vIncome">-</div></div>
 <div class="info-row"><div class="info-label">County</div><div class="info-value" id="vCounty">-</div></div>
-<div class="info-row"><div class="info-label">Physical Address</div><div class="info-value" id="vAddress">-</div></div>
-<div class="info-row"><div class="info-label">Account Created</div><div class="info-value" id="vCreated">-</div></div>
+<div class="info-row"><div class="info-label">Address</div><div class="info-value" id="vAddress">-</div></div>
+<div class="info-row"><div class="info-label">Registered</div><div class="info-value" id="vCreated">-</div></div>
 </div>
-
-<div class="text-center mt-4"><a href="client-dashboard.html" class="btn btn-success action-btn px-4"><i class="fa fa-home"></i> Dashboard</a></div>
+</div>
 
 </div></div>
 
