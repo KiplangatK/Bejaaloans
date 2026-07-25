@@ -26,9 +26,10 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 .btn-guarantors:hover{background:#5a3399;color:white;}
 .section-title{background:#0d47a1;color:white;padding:10px 15px;border-radius:10px;margin-top:15px;}
 .detail-card{background:#f8fbff;border-radius:15px;padding:15px;margin-bottom:15px;border:1px solid #dbeafe;}
-.document-img{width:100%;height:160px;object-fit:contain;border-radius:10px;border:1px solid #ddd;}
+.document-img{width:100%;height:160px;object-fit:contain;border-radius:10px;border:1px solid #ddd;margin-top:5px;}
 .guarantor-photo{width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid #2563eb;}
 .form-control{height:50px;border-radius:12px;}
+.btn-doc{font-size:12px;padding:4px 10px;}
 </style>
 </head>
 <body>
@@ -57,6 +58,8 @@ if(!AUTH.currentAdmin()){window.location.href="admin-login.html";}
 let admin=AUTH.currentAdmin();if(admin)document.getElementById("adminName").innerHTML=admin.username;
 function money(v){return"KES "+Number(v||0).toLocaleString();}
 const DEFAULT_IMG="https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
+function showFullImage(src,title){if(!src){alert("No image available");return;}let m=document.createElement("div");m.style.cssText="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:99999;cursor:pointer;";m.innerHTML=`<div style="max-width:90%;max-height:90%;text-align:center;"><h5 style="color:white;margin-bottom:10px;">${title}</h5><img src="${src}" style="max-width:100%;max-height:80vh;border-radius:10px;"><br><small style="color:#ccc;">Click anywhere to close</small></div>`;m.onclick=function(){document.body.removeChild(m);};document.body.appendChild(m);}
 
 async function loadApplications(){
     let result=await api.getApplications();let table=document.getElementById("applicationsTable");table.innerHTML="";
@@ -97,7 +100,33 @@ async function toggleGuarantors(appId){
 
 function showGuarantor(g,title){
     if(!g)return'<p class="text-muted">No '+title+' details.</p>';
-    return`<div class="detail-card"><h5 class="text-primary">${title}</h5><div class="row"><div class="col-md-4 text-center"><img src="${g.photo||DEFAULT_IMG}" class="guarantor-photo"></div><div class="col-md-8"><p><b>Name:</b> ${g.name||"-"}</p><p><b>National ID:</b> ${g.id||g.national_id||"-"}</p><p><b>Phone:</b> ${g.phone||"-"}</p><p><b>Relationship:</b> ${g.relationship||"-"}</p><p><b>Address:</b> ${g.address||"-"}</p></div></div>${g.idFront||g.id_front?`<div class="row mt-3"><div class="col-md-6"><h6>ID Front</h6><img src="${g.idFront||g.id_front}" class="document-img"></div><div class="col-md-6"><h6>ID Back</h6><img src="${g.idBack||g.id_back}" class="document-img"></div></div>`:''}</div>`;
+    return`
+    <div class="detail-card">
+        <h5 class="text-primary">${title}</h5>
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <img src="${g.photo||DEFAULT_IMG}" class="guarantor-photo">
+                <br><button class="btn btn-sm btn-outline-primary btn-doc mt-2" onclick="showFullImage('${g.photo||DEFAULT_IMG}','${title} Photo')"><i class="fa fa-search-plus"></i> View Full</button>
+            </div>
+            <div class="col-md-8">
+                <p><b>Name:</b> ${g.name||"-"}</p>
+                <p><b>National ID:</b> ${g.id||g.national_id||"-"}</p>
+                <p><b>Phone:</b> ${g.phone||"-"}</p>
+                <p><b>Relationship:</b> ${g.relationship||"-"}</p>
+                <p><b>Address:</b> ${g.address||"-"}</p>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-6 text-center">
+                <p class="fw-bold mb-1">ID Front</p>
+                ${g.idFront||g.id_front?`<img src="${g.idFront||g.id_front}" class="document-img"><button class="btn btn-sm btn-outline-primary btn-doc mt-1" onclick="showFullImage('${g.idFront||g.id_front}','${title} ID Front')"><i class="fa fa-search-plus"></i> View Full</button>`:'<p class="text-muted">Not uploaded</p>'}
+            </div>
+            <div class="col-md-6 text-center">
+                <p class="fw-bold mb-1">ID Back</p>
+                ${g.idBack||g.id_back?`<img src="${g.idBack||g.id_back}" class="document-img"><button class="btn btn-sm btn-outline-primary btn-doc mt-1" onclick="showFullImage('${g.idBack||g.id_back}','${title} ID Back')"><i class="fa fa-search-plus"></i> View Full</button>`:'<p class="text-muted">Not uploaded</p>'}
+            </div>
+        </div>
+    </div>`;
 }
 
 async function approveApplication(id){
