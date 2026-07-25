@@ -1,46 +1,993 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Client Portal | Bejja Loan Credit</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
-<style>
-body{background:linear-gradient(135deg,#0F4C81,#2563EB);font-family:'Poppins',sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:center;}
-.login-card{width:430px;border:none;border-radius:20px;box-shadow:0 20px 40px rgba(0,0,0,.25);}
-.logo{font-size:60px;color:#2563EB;}
-.form-control{height:50px;border-radius:12px;}
-.input-group-text{border-radius:12px 0 0 12px;}
-.btn-login{height:50px;border-radius:12px;font-size:18px;font-weight:600;}
-#errorMessage{display:none;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Portal | Bejja Loan Credit</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #0d47a1;
+            --primary-light: #1976d2;
+            --primary-dark: #0a3d8f;
+            --success: #198754;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --white: #ffffff;
+            --shadow-lg: 0 25px 50px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animated {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a3d8f, #0d47a1, #1565c0, #1976d2);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            z-index: -2;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 100% 0%; }
+            50% { background-position: 100% 100%; }
+            75% { background-position: 0% 100%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating Shapes */
+        .shape {
+            position: fixed;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.04);
+            z-index: -1;
+            animation: float 20s infinite;
+        }
+
+        .shape-1 {
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            right: -100px;
+        }
+
+        .shape-2 {
+            width: 300px;
+            height: 300px;
+            bottom: -80px;
+            left: -80px;
+            animation-delay: -7s;
+            background: rgba(255, 193, 7, 0.05);
+        }
+
+        .shape-3 {
+            width: 200px;
+            height: 200px;
+            top: 50%;
+            left: 60%;
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(5deg); }
+            66% { transform: translate(-20px, 20px) rotate(-3deg); }
+        }
+
+        /* Portal Container */
+        .portal-container {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            z-index: 1;
+        }
+
+        /* Portal Card */
+        .portal-card {
+            background: var(--white);
+            border-radius: 28px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            position: relative;
+            animation: slideUp 0.8s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--warning), var(--primary-light));
+        }
+
+        .card-body {
+            padding: 40px 35px;
+        }
+
+        /* Logo Section */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 85px;
+            height: 85px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            font-size: 40px;
+            color: var(--white);
+            box-shadow: 0 12px 25px rgba(13, 71, 161, 0.3);
+            position: relative;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, var(--warning), transparent);
+            z-index: -1;
+            animation: borderGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .logo-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: 1px;
+        }
+
+        .logo-subtitle {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 500;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            background: #f5f7fa;
+            border-radius: 14px;
+            padding: 4px;
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #888;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tab-btn.active {
+            background: var(--white);
+            color: var(--primary);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--primary-light);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeSlideIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateX(15px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .input-group {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: var(--transition);
+        }
+
+        .input-group:focus-within {
+            box-shadow: 0 4px 15px rgba(13, 71, 161, 0.15);
+        }
+
+        .input-group-text {
+            background: #f8faff;
+            border: 2px solid #e8ecf4;
+            border-right: none;
+            color: var(--primary);
+            font-size: 15px;
+            padding: 0 15px;
+            transition: var(--transition);
+        }
+
+        .input-group:focus-within .input-group-text {
+            border-color: var(--primary-light);
+            background: #e8f0ff;
+        }
+
+        .form-control {
+            height: 50px;
+            border: 2px solid #e8ecf4;
+            border-left: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            background: #fafbfe;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-light);
+            box-shadow: none;
+            background: var(--white);
+        }
+
+        .form-control::placeholder {
+            color: #bbb;
+            font-weight: 400;
+        }
+
+        /* Password Toggle */
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #999;
+            z-index: 10;
+            background: none;
+            border: none;
+            padding: 5px;
+            transition: var(--transition);
+        }
+
+        .password-toggle:hover {
+            color: var(--primary);
+        }
+
+        /* OTP Input */
+        .otp-container {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .otp-input {
+            width: 44px;
+            height: 50px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            transition: var(--transition);
+        }
+
+        .otp-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1);
+            outline: none;
+        }
+
+        /* Buttons */
+        .btn {
+            border-radius: 12px;
+            font-weight: 600;
+            transition: var(--transition);
+            padding: 12px 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border: none;
+            height: 52px;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(13, 71, 161, 0.35);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .btn-outline-primary {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            height: 50px;
+            font-size: 15px;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-success {
+            background: var(--success);
+            border: none;
+            height: 50px;
+            font-size: 15px;
+        }
+
+        /* Error/Success Box */
+        .message-box {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            font-size: 13px;
+            font-weight: 500;
+            display: none;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .message-box.error {
+            background: #fff5f5;
+            border: 2px solid #fecaca;
+            color: var(--danger);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .message-box.success {
+            background: #f0fff4;
+            border: 2px solid #bbf7d0;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Footer */
+        .card-footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .back-link {
+            color: #888;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        .back-link:hover i {
+            transform: translateX(-3px);
+        }
+
+        .back-link i {
+            transition: var(--transition);
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: var(--white);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 576px) {
+            .portal-container {
+                padding: 10px;
+            }
+            
+            .card-body {
+                padding: 25px 18px;
+            }
+            
+            .logo-icon {
+                width: 65px;
+                height: 65px;
+                font-size: 30px;
+                border-radius: 20px;
+            }
+            
+            .logo-title {
+                font-size: 17px;
+            }
+            
+            .otp-input {
+                width: 38px;
+                height: 44px;
+                font-size: 18px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<div class="card login-card"><div class="card-body p-5">
-<div class="text-center mb-4"><i class="fa-solid fa-building-columns logo"></i><h3 class="fw-bold mt-3">BEJJA LOAN CREDIT</h3><p class="text-muted">Client Portal Login</p></div>
-<div id="errorMessage" class="alert alert-danger"></div>
-<form id="loginForm">
-<div class="mb-3"><label class="fw-semibold">Phone Number</label><div class="input-group"><span class="input-group-text"><i class="fa fa-phone"></i></span><input type="tel" id="phone" class="form-control" placeholder="07XXXXXXXX" required></div></div>
-<div class="mb-3"><label class="fw-semibold">Password</label><div class="input-group"><span class="input-group-text"><i class="fa fa-lock"></i></span><input type="password" id="password" class="form-control" placeholder="Enter Password" required></div></div>
-<button type="submit" class="btn btn-primary w-100 btn-login"><i class="fa fa-right-to-bracket"></i>Login</button>
-</form>
-<hr>
-<div class="text-center"><p>Don't have an account?</p><a href="register.html" class="btn btn-outline-primary rounded-pill"><i class="fa fa-user-plus"></i>Create New Account</a><br><br><a href="index.html" class="text-decoration-none"><i class="fa fa-arrow-left"></i>Back to Homepage</a></div>
-</div></div>
+    <!-- Animated Background -->
+    <div class="bg-animated"></div>
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
 
-<script src="assets/js/api.js"></script>
-<script src="assets/js/auth.js"></script>
-<script>
-document.getElementById("loginForm").addEventListener("submit",async function(e){
-e.preventDefault();
-let errorBox=document.getElementById("errorMessage");
-errorBox.style.display="none";errorBox.innerHTML="";
-let result=await AUTH.clientLogin(document.getElementById("phone").value.trim(),document.getElementById("password").value.trim());
-if(!result.success){errorBox.innerHTML=result.message;errorBox.style.display="block";return;}
-window.location.href="client-dashboard.html";
-});
-</script>
+    <!-- Portal Container -->
+    <div class="portal-container">
+        <div class="card portal-card">
+            <div class="card-body">
+                <!-- Logo Section -->
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+                    <h3 class="logo-title">BEJJA LOAN CREDIT</h3>
+                    <p class="logo-subtitle">Client Portal</p>
+                </div>
+
+                <!-- Tab Navigation -->
+                <div class="tab-nav">
+                    <button class="tab-btn active" onclick="switchTab('login')" id="loginTabBtn">
+                        <i class="fa fa-right-to-bracket me-1"></i> Login
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('register')" id="registerTabBtn">
+                        <i class="fa fa-user-plus me-1"></i> Register
+                    </button>
+                </div>
+
+                <!-- Message Box -->
+                <div class="message-box" id="messageBox">
+                    <i id="messageIcon"></i>
+                    <span id="messageText"></span>
+                </div>
+
+                <!-- Login Tab -->
+                <div class="tab-content active" id="loginTab">
+                    <form id="loginForm" autocomplete="off">
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                                <input type="tel" id="loginPhone" class="form-control" 
+                                       placeholder="07XXXXXXXX" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group position-relative">
+                            <label class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa fa-lock"></i></span>
+                                <input type="password" id="loginPassword" class="form-control" 
+                                       placeholder="Enter password" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)" tabindex="-1">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <label class="form-check-label" style="font-size:13px;color:#666;cursor:pointer;">
+                                <input type="checkbox" id="rememberMe" class="form-check-input">
+                                Remember me
+                            </label>
+                            <a href="#" onclick="forgotPassword()" style="font-size:13px;color:var(--primary-light);text-decoration:none;font-weight:600;">
+                                Forgot Password?
+                            </a>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100" id="loginBtn">
+                            <i class="fa fa-right-to-bracket me-2"></i>
+                            <span id="loginBtnText">Secure Login</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Register Tab -->
+                <div class="tab-content" id="registerTab">
+                    <form id="registerForm" autocomplete="off">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa fa-user"></i></span>
+                                <input type="text" id="regFullname" class="form-control" 
+                                       placeholder="Enter full name" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">National ID</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa fa-id-card"></i></span>
+                                <input type="text" id="regNationalID" class="form-control" 
+                                       placeholder="ID number" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                                <input type="tel" id="regPhone" class="form-control" 
+                                       placeholder="07XXXXXXXX" required>
+                                <button type="button" class="btn btn-outline-success btn-sm" 
+                                        onclick="sendRegistrationOTP()" id="sendOTPBtn"
+                                        style="border-radius:0 12px 12px 0;border:2px solid #e8ecf4;border-left:none;">
+                                    <i class="fa fa-paper-plane"></i> Verify
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- OTP Section -->
+                        <div id="otpSection" style="display:none;">
+                            <label class="form-label text-center d-block">Enter Verification Code</label>
+                            <div class="otp-container">
+                                <input type="text" id="otp1" maxlength="1" class="otp-input" oninput="otpNext(this, 'otp2')">
+                                <input type="text" id="otp2" maxlength="1" class="otp-input" oninput="otpNext(this, 'otp3')">
+                                <input type="text" id="otp3" maxlength="1" class="otp-input" oninput="otpNext(this, 'otp4')">
+                                <input type="text" id="otp4" maxlength="1" class="otp-input" oninput="otpNext(this, 'otp5')">
+                                <input type="text" id="otp5" maxlength="1" class="otp-input" oninput="otpNext(this, 'otp6')">
+                                <input type="text" id="otp6" maxlength="1" class="otp-input">
+                            </div>
+                            <button type="button" class="btn btn-success btn-sm w-100 mb-3" onclick="verifyOTP()">
+                                <i class="fa fa-check-circle"></i> Confirm Code
+                            </button>
+                            <div id="otpStatus" class="text-center mb-2"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Email (Optional)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                                <input type="email" id="regEmail" class="form-control" 
+                                       placeholder="your@email.com">
+                            </div>
+                        </div>
+
+                        <div class="form-group position-relative">
+                            <label class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa fa-lock"></i></span>
+                                <input type="password" id="regPassword" class="form-control" 
+                                       placeholder="Min 8 characters" required minlength="8">
+                                <button type="button" class="password-toggle" onclick="togglePassword('regPassword', this)" tabindex="-1">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted">Must contain uppercase, lowercase, number & special character</small>
+                        </div>
+
+                        <div class="form-group position-relative">
+                            <label class="form-label">Confirm Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa fa-lock"></i></span>
+                                <input type="password" id="regConfirmPassword" class="form-control" 
+                                       placeholder="Confirm password" required>
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                            <label class="form-check-label" for="agreeTerms" style="font-size:12px;color:#666;">
+                                I agree to the <a href="#" style="color:var(--primary);">Terms & Conditions</a>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100" id="registerBtn">
+                            <i class="fa fa-user-plus me-2"></i>
+                            <span id="registerBtnText">Create Account</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Footer -->
+                <div class="card-footer">
+                    <a href="index.html" class="back-link">
+                        <i class="fa fa-arrow-left"></i> Back to Homepage
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ==================== GLOBAL STATE ====================
+        let currentOTP = null;
+        let isPhoneVerified = false;
+
+        // ==================== UTILITY FUNCTIONS ====================
+        function showMessage(message, type = "error") {
+            const box = document.getElementById("messageBox");
+            const icon = document.getElementById("messageIcon");
+            const text = document.getElementById("messageText");
+
+            box.className = "message-box " + type;
+            icon.className = type === "error" ? "fa fa-exclamation-circle" : "fa fa-check-circle";
+            text.textContent = message;
+
+            setTimeout(() => {
+                box.className = "message-box";
+            }, 6000);
+        }
+
+        function hideMessage() {
+            document.getElementById("messageBox").className = "message-box";
+        }
+
+        function setButtonLoading(btnId, textId, isLoading, loadingText = "Processing...") {
+            const btn = document.getElementById(btnId);
+            const text = document.getElementById(textId);
+
+            if (isLoading) {
+                btn.disabled = true;
+                text.innerHTML = '<span class="spinner me-2"></span>' + loadingText;
+            } else {
+                btn.disabled = false;
+                text.innerHTML = text.dataset.original || text.textContent;
+            }
+        }
+
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector("i");
+
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+
+        function otpNext(currentInput, nextId) {
+            if (currentInput.value.length === 1 && nextId) {
+                document.getElementById(nextId).focus();
+            }
+        }
+
+        // ==================== TAB SWITCHING ====================
+        function switchTab(tab) {
+            hideMessage();
+
+            // Update tab buttons
+            document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+            document.getElementById(tab + "TabBtn").classList.add("active");
+
+            // Update tab content
+            document.querySelectorAll(".tab-content").forEach(content => content.classList.remove("active"));
+            document.getElementById(tab + "Tab").classList.add("active");
+
+            // Reset OTP state when switching tabs
+            if (tab === "register") {
+                isPhoneVerified = false;
+                document.getElementById("otpSection").style.display = "none";
+                document.getElementById("sendOTPBtn").disabled = false;
+                document.getElementById("sendOTPBtn").innerHTML = '<i class="fa fa-paper-plane"></i> Verify';
+            }
+        }
+
+        // ==================== CHECK AUTH STATE ====================
+        if (AUTH.currentClient()) {
+            window.location.href = "client-dashboard.html";
+        }
+
+        // Pre-fill remembered phone
+        const rememberedPhone = localStorage.getItem("bejja_client_remembered");
+        if (rememberedPhone) {
+            document.getElementById("loginPhone").value = rememberedPhone;
+            document.getElementById("rememberMe").checked = true;
+        }
+
+        // ==================== LOGIN ====================
+        document.getElementById("loginForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            hideMessage();
+
+            const phone = document.getElementById("loginPhone").value.trim();
+            const password = document.getElementById("loginPassword").value;
+            const rememberMe = document.getElementById("rememberMe").checked;
+
+            // Basic validation
+            if (!phone) {
+                showMessage("Please enter your phone number.");
+                return;
+            }
+            if (!password) {
+                showMessage("Please enter your password.");
+                return;
+            }
+
+            // Store original button text
+            const btnText = document.getElementById("loginBtnText");
+            btnText.dataset.original = btnText.textContent;
+            setButtonLoading("loginBtn", "loginBtnText", true, "Authenticating...");
+
+            try {
+                const result = await AUTH.clientLogin(phone, password);
+
+                if (!result.success) {
+                    showMessage(result.message || "Login failed. Please check your credentials.");
+                    setButtonLoading("loginBtn", "loginBtnText", false);
+                    document.getElementById("loginPassword").value = "";
+                    return;
+                }
+
+                // Save remembered phone
+                if (rememberMe) {
+                    localStorage.setItem("bejja_client_remembered", phone);
+                } else {
+                    localStorage.removeItem("bejja_client_remembered");
+                }
+
+                // Redirect to dashboard
+                window.location.href = "client-dashboard.html";
+
+            } catch (error) {
+                console.error("Login error:", error);
+                showMessage("An unexpected error occurred. Please try again.");
+                setButtonLoading("loginBtn", "loginBtnText", false);
+            }
+        });
+
+        // ==================== OTP FOR REGISTRATION ====================
+        async function sendRegistrationOTP() {
+            const phone = document.getElementById("regPhone").value.trim();
+            const phoneRegex = /^07\d{8}$/;
+
+            if (!phoneRegex.test(phone)) {
+                showMessage("Please enter a valid phone number (07XXXXXXXX).");
+                return;
+            }
+
+            // Generate OTP (in production, this would be sent via SMS)
+            currentOTP = String(Math.floor(100000 + Math.random() * 900000));
+            console.log("Registration OTP:", currentOTP);
+
+            // Show OTP section
+            document.getElementById("otpSection").style.display = "block";
+            document.getElementById("sendOTPBtn").disabled = true;
+            document.getElementById("sendOTPBtn").innerHTML = '<i class="fa fa-clock"></i> Sent';
+            document.getElementById("otp1").focus();
+
+            // Show demo OTP
+            document.getElementById("otpStatus").innerHTML = 
+                '<span style="color:#198754;font-size:12px;"><i class="fa fa-check-circle"></i> Code sent! (Demo: <b>' + currentOTP + '</b>)</span>';
+
+            showMessage("Verification code sent to your phone.", "success");
+        }
+
+        function verifyOTP() {
+            // Collect OTP digits
+            let entered = "";
+            for (let i = 1; i <= 6; i++) {
+                entered += document.getElementById("otp" + i).value;
+            }
+
+            if (entered.length < 6) {
+                document.getElementById("otpStatus").innerHTML = 
+                    '<span style="color:#dc3545;font-size:12px;">Enter complete 6-digit code</span>';
+                return;
+            }
+
+            if (entered === currentOTP) {
+                isPhoneVerified = true;
+                document.getElementById("otpStatus").innerHTML = 
+                    '<span style="color:#198754;font-size:12px;"><i class="fa fa-check-circle"></i> Phone verified!</span>';
+                document.getElementById("otpSection").style.display = "none";
+                document.getElementById("sendOTPBtn").innerHTML = '<i class="fa fa-check"></i> Verified';
+                document.getElementById("sendOTPBtn").classList.remove("btn-outline-success");
+                document.getElementById("sendOTPBtn").classList.add("btn-success");
+                showMessage("Phone number verified successfully!", "success");
+            } else {
+                document.getElementById("otpStatus").innerHTML = 
+                    '<span style="color:#dc3545;font-size:12px;">Incorrect code. Please try again.</span>';
+            }
+        }
+
+        // ==================== REGISTRATION ====================
+        document.getElementById("registerForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            hideMessage();
+
+            const fullname = document.getElementById("regFullname").value.trim();
+            const nationalID = document.getElementById("regNationalID").value.trim();
+            const phone = document.getElementById("regPhone").value.trim();
+            const email = document.getElementById("regEmail").value.trim();
+            const password = document.getElementById("regPassword").value;
+            const confirmPassword = document.getElementById("regConfirmPassword").value;
+            const agreeTerms = document.getElementById("agreeTerms").checked;
+
+            // Validation
+            if (!fullname || fullname.length < 3) {
+                showMessage("Full name must be at least 3 characters.");
+                return;
+            }
+            if (!/^\d{6,8}$/.test(nationalID)) {
+                showMessage("Please enter a valid National ID (6-8 digits).");
+                return;
+            }
+            if (!isPhoneVerified) {
+                showMessage("Please verify your phone number first.");
+                return;
+            }
+            if (password.length < 8) {
+                showMessage("Password must be at least 8 characters.");
+                return;
+            }
+            if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/.test(password)) {
+                showMessage("Password must contain uppercase, lowercase, number, and special character.");
+                return;
+            }
+            if (password !== confirmPassword) {
+                showMessage("Passwords do not match.");
+                return;
+            }
+            if (!agreeTerms) {
+                showMessage("You must agree to the Terms & Conditions.");
+                return;
+            }
+
+            const btnText = document.getElementById("registerBtnText");
+            btnText.dataset.original = btnText.textContent;
+            setButtonLoading("registerBtn", "registerBtnText", true, "Creating account...");
+
+            try {
+                const result = await AUTH.registerClient({
+                    fullname,
+                    nationalID,
+                    phone,
+                    email,
+                    password,
+                    confirmPassword
+                });
+
+                if (!result.success) {
+                    showMessage(result.message || "Registration failed. Please try again.");
+                    setButtonLoading("registerBtn", "registerBtnText", false);
+                    return;
+                }
+
+                // Show success and switch to login
+                showMessage("Account created successfully! You can now login.", "success");
+                setButtonLoading("registerBtn", "registerBtnText", false);
+
+                // Switch to login tab after delay
+                setTimeout(() => {
+                    switchTab("login");
+                    document.getElementById("loginPhone").value = phone;
+                    document.getElementById("loginPassword").focus();
+                }, 2000);
+
+            } catch (error) {
+                console.error("Registration error:", error);
+                showMessage("An unexpected error occurred. Please try again.");
+                setButtonLoading("registerBtn", "registerBtnText", false);
+            }
+        });
+
+        // ==================== FORGOT PASSWORD ====================
+        function forgotPassword() {
+            alert("Please contact Bejja Credit support to reset your password.\n\nPhone: +254 700 000000\nEmail: support@bejjacredit.com");
+        }
+
+        // ==================== KEYBOARD NAVIGATION ====================
+        document.getElementById("loginPhone").addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                document.getElementById("loginPassword").focus();
+            }
+        });
+
+        // Clear messages on input
+        document.querySelectorAll("input").forEach(input => {
+            input.addEventListener("input", hideMessage);
+        });
+    </script>
 </body>
 </html>
