@@ -71,53 +71,19 @@ document.addEventListener("DOMContentLoaded",()=>{let c=AUTH.currentClient();if(
 
 async function loadMyLoans(){
     let loansResult=await api.getMyLoans();
-    let appsResult=await api.getApplications();
-    
+    let appsResult=await api.getMyApplications();
     let loans=loansResult.success?loansResult.loans:[];
-    let applications=appsResult.success?appsResult.applications.filter(a=>a.client_id===AUTH.currentClient()?.id):[];
-    
+    let applications=appsResult.success?(appsResult.applications||[]):[];
     let table=document.getElementById("myLoansTable");table.innerHTML="";
-    let allItems=[];
-    let totalBorrowed=0,outstanding=0,activeCount=0,today=new Date();
+    let allItems=[],totalBorrowed=0,outstanding=0,activeCount=0,today=new Date();
     
-    // Add approved loans
-    if(Array.isArray(loans)){
-        loans.forEach(l=>{
-            let amount=Number(l.original_principal||0),balance=Number(l.remaining_principal||0);
-            totalBorrowed+=amount;outstanding+=balance;
-            let realStatus=l.status;if(l.status==="COMPLETED"||balance<=0)realStatus="COMPLETED";else if(l.due_date&&new Date(l.due_date)<today)realStatus="LATE";
-            if(realStatus==="ACTIVE")activeCount++;
-            allItems.push({date:l.loan_date||l.created_at,type:"Loan",amount:amount,balance:balance,dueDate:l.due_date,status:realStatus,id:l.id,isLoan:true});
-        });
-    }
-    
-    // Add pending/rejected applications
-    if(Array.isArray(applications)){
-        applications.forEach(a=>{
-            if(a.status==="APPROVED")return; // Skip approved, already shown as loan
-            allItems.push({date:a.application_date,type:"Application",amount:Number(a.amount||0),balance:0,dueDate:"-",status:a.status,id:a.id,isLoan:false});
-        });
-    }
+    if(Array.isArray(loans)){loans.forEach(l=>{let amount=Number(l.original_principal||0),balance=Number(l.remaining_principal||0);totalBorrowed+=amount;outstanding+=balance;let realStatus=l.status;if(l.status==="COMPLETED"||balance<=0)realStatus="COMPLETED";else if(l.due_date&&new Date(l.due_date)<today)realStatus="LATE";if(realStatus==="ACTIVE")activeCount++;allItems.push({date:l.loan_date||l.created_at,type:"Loan",amount:amount,balance:balance,dueDate:l.due_date,status:realStatus,id:l.id,isLoan:true});});}
+    if(Array.isArray(applications)){applications.forEach(a=>{if(a.status==="APPROVED")return;allItems.push({date:a.application_date,type:"Application",amount:Number(a.amount||0),balance:0,dueDate:"-",status:a.status,id:a.id,isLoan:false});});}
     
     if(allItems.length===0){table.innerHTML='<tr><td colspan="7" class="text-center text-muted p-4">No loans or applications found.</td></tr>';updateSummary(0,0,0,0);return;}
-    
     allItems.sort((a,b)=>b.date.localeCompare(a.date));
     
-    allItems.forEach(item=>{
-        let sc="bg-secondary";
-        if(item.status==="ACTIVE")sc="bg-success";
-        if(item.status==="COMPLETED")sc="bg-info";
-        if(item.status==="LATE")sc="bg-danger";
-        if(item.status==="PENDING")sc="bg-warning text-dark";
-        if(item.status==="REJECTED")sc="bg-danger";
-        
-        let action='-';
-        if(item.isLoan){action=`<button class="btn btn-payment btn-sm" onclick="viewPayments(${item.id},'${money(item.amount)}')"><i class="fa fa-list"></i> Payments</button>`;}
-        else{action=`<span class="text-muted small">Awaiting review</span>`;}
-        
-        table.innerHTML+=`<tr><td>${formatDate(item.date)}</td><td>${item.type}</td><td>${money(item.amount)}</td><td>${item.isLoan?money(item.balance):"-"}</td><td>${item.isLoan?formatDate(item.dueDate):"-"}</td><td><span class="badge ${sc}">${item.status}</span></td><td>${action}</td></tr>`;
-    });
-    
+    allItems.forEach(item=>{let sc="bg-secondary";if(item.status==="ACTIVE")sc="bg-success";if(item.status==="COMPLETED")sc="bg-info";if(item.status==="LATE")sc="bg-danger";if(item.status==="PENDING")sc="bg-warning text-dark";if(item.status==="REJECTED")sc="bg-danger";let action=item.isLoan?`<button class="btn btn-payment btn-sm" onclick="viewPayments(${item.id},'${money(item.amount)}')"><i class="fa fa-list"></i> Payments</button>`:'<span class="text-muted small">Awaiting review</span>';table.innerHTML+=`<tr><td>${formatDate(item.date)}</td><td>${item.type}</td><td>${money(item.amount)}</td><td>${item.isLoan?money(item.balance):"-"}</td><td>${item.isLoan?formatDate(item.dueDate):"-"}</td><td><span class="badge ${sc}">${item.status}</span></td><td>${action}</td></tr>`;});
     updateSummary(allItems.length,activeCount,totalBorrowed,outstanding);
 }
 
