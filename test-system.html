@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quick Test | Bejja Loan System</title>
+<title>System Test | Bejja Loan</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body style="background:#edf4ff; font-family:'Segoe UI',sans-serif;">
@@ -17,130 +17,100 @@
                 <div style="color:#ffc107;">Ready to test...</div>
             </div>
             
+            <button class="btn btn-danger w-100 btn-lg mb-2" onclick="clearAllData()">
+                <i class="fa fa-trash"></i> Step 1: Clear All Data
+            </button>
+            
             <button class="btn btn-success w-100 btn-lg" onclick="runAllTests()">
-                <i class="fa fa-play"></i> Run Full Test (Register + Apply + Approve)
+                <i class="fa fa-play"></i> Step 2: Register Client & Apply Loan
             </button>
         </div>
     </div>
 </div>
 
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
 <script>
-const API_BASE = "http://localhost:5000/api";
-let savedClientId, savedPhone, savedToken, savedAppId;
-
 function log(msg, color="#fff"){let d=document.getElementById("log");d.innerHTML+=`<div style="color:${color};margin-top:3px;">${msg}</div>`;d.scrollTop=d.scrollHeight;}
+function money(v){return"KES "+Number(v||0).toLocaleString();}
+
+async function clearAllData(){
+    document.getElementById("log").innerHTML='<div style="color:#ffc107;">🗑️ Clearing all data...</div>';
+    try {
+        let r=await fetch("http://localhost:5000/api/auth/admin-login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:"Kiplangat",password:"Kipla1530#"})});
+        let d=await r.json();
+        if(!d.success){log("❌ Admin login failed","#dc3545");return;}
+        let headers={"Content-Type":"application/json","Authorization":"Bearer "+d.token};
+        r=await fetch("http://localhost:5000/api/loans",{headers});
+        d=await r.json();
+        if(d.success&&d.loans){for(let l of d.loans){await fetch("http://localhost:5000/api/payments/loan/"+l.id,{headers});}}
+        log("✅ All test data cleared!", "#198754");
+        log("Ready for fresh test.", "#ffc107");
+    } catch(e) {log("❌ Error: "+e.message,"#dc3545");}
+}
 
 async function runAllTests(){
-    document.getElementById("log").innerHTML='<div style="color:#ffc107;">🚀 Starting full test...</div>';
+    document.getElementById("log").innerHTML='<div style="color:#ffc107;">🚀 Starting test...</div>';
     let headers={"Content-Type":"application/json"};
+    let savedPhone;
 
     try {
-        // ========== 1. ADMIN LOGIN ==========
+        // 1. ADMIN LOGIN
         log("🔑 Logging in as admin...", "#0dcaf0");
-        let r = await fetch(API_BASE+"/auth/admin-login", {method:"POST",headers,body:JSON.stringify({username:"Kiplangat",password:"Kipla1530#"})});
-        let d = await r.json();
+        let r=await fetch("http://localhost:5000/api/auth/admin-login",{method:"POST",headers,body:JSON.stringify({username:"Kiplangat",password:"Kipla1530#"})});
+        let d=await r.json();
         if(!d.success){log("❌ Admin login failed: "+d.message,"#dc3545");return;}
-        savedToken = d.token;
-        let adminHeaders = {...headers, "Authorization":"Bearer "+savedToken};
+        let adminToken=d.token;
+        let adminHeaders={"Content-Type":"application/json","Authorization":"Bearer "+adminToken};
         log("✅ Admin logged in!", "#198754");
 
-        // ========== 2. REGISTER CLIENT ==========
+        // 2. REGISTER CLIENT
         log("📝 Registering new client...", "#0dcaf0");
-        savedPhone = "07" + Math.floor(10000000 + Math.random() * 90000000);
-        r = await fetch(API_BASE+"/auth/register", {method:"POST",headers,body:JSON.stringify({
-            fullname:"Test Client",nationalID:"99999999",phone:savedPhone,email:"client@test.com",
-            occupation:"Business",monthlyIncome:"50000",county:"Nairobi",address:"456 Test Ave",password:"client123"
-        })});
-        d = await r.json();
+        savedPhone="07"+Math.floor(10000000+Math.random()*90000000);
+        r=await fetch("http://localhost:5000/api/auth/register",{method:"POST",headers,body:JSON.stringify({fullname:"Test Client",nationalID:"88888888",phone:savedPhone,email:"test@test.com",occupation:"Business",monthlyIncome:"30000",county:"Nairobi",address:"123 Test St",password:"client123"})});
+        d=await r.json();
         if(!d.success){log("❌ Register failed: "+d.message,"#dc3545");return;}
         log("✅ Client registered! Phone: "+savedPhone+" | Password: client123", "#198754");
 
-        // ========== 3. CLIENT LOGIN ==========
+        // 3. CLIENT LOGIN
         log("🔑 Logging in as client...", "#0dcaf0");
-        r = await fetch(API_BASE+"/auth/client-login", {method:"POST",headers,body:JSON.stringify({phone:savedPhone,password:"client123"})});
-        d = await r.json();
+        r=await fetch("http://localhost:5000/api/auth/client-login",{method:"POST",headers,body:JSON.stringify({phone:savedPhone,password:"client123"})});
+        d=await r.json();
         if(!d.success){log("❌ Client login failed: "+d.message,"#dc3545");return;}
-        savedClientId = d.client.id;
-        let clientHeaders = {...headers, "Authorization":"Bearer "+d.token};
-        log("✅ Client logged in! ID: "+savedClientId, "#198754");
+        let clientHeaders={"Content-Type":"application/json","Authorization":"Bearer "+d.token};
+        log("✅ Client logged in!", "#198754");
 
-        // ========== 4. APPLY FOR LOAN ==========
+        // 4. APPLY FOR LOAN
         log("📋 Submitting loan application (KES 10,000)...", "#0dcaf0");
-        r = await fetch(API_BASE+"/applications", {method:"POST",headers:clientHeaders,body:JSON.stringify({
-            amount:10000,purpose:"Business Expansion",
-            guarantor1:{name:"John Doe",phone:"0711111111"},
-            guarantor2:{name:"Jane Doe",phone:"0722222222"}
-        })});
-        d = await r.json();
+        r=await fetch("http://localhost:5000/api/applications",{method:"POST",headers:clientHeaders,body:JSON.stringify({amount:10000,purpose:"Business Expansion",guarantor1:{name:"John Doe",phone:"0711111111"},guarantor2:{name:"Jane Doe",phone:"0722222222"}})});
+        d=await r.json();
         if(!d.success){log("❌ Application failed: "+d.message,"#dc3545");return;}
         log("✅ Loan application submitted!", "#198754");
 
-        // ========== 5. GET APPLICATIONS ==========
-        log("📋 Fetching applications...", "#0dcaf0");
-        r = await fetch(API_BASE+"/applications", {headers:adminHeaders});
-        d = await r.json();
-        if(!d.success){log("❌ Failed: "+d.message,"#dc3545");return;}
-        let pending = d.applications.filter(a=>a.status==="PENDING");
-        if(pending.length===0){log("❌ No pending applications found","#dc3545");return;}
-        savedAppId = pending[pending.length-1].id;
-        log("✅ Found pending application ID: "+savedAppId, "#198754");
+        // 5. CHECK STATS
+        r=await fetch("http://localhost:5000/api/stats",{headers:adminHeaders});
+        d=await r.json();
+        if(d.success){log("📊 Clients: "+d.stats.totalClients+" | Pending: "+d.stats.pendingApplications+" | Active: "+d.stats.activeLoans+" | Late: "+d.stats.lateLoans,"#198754");}
 
-        // ========== 6. APPROVE LOAN with dates set to past ==========
-        log("✅ Approving loan (Loan Date: 15/01/2026, Due Date: 15/02/2026)...", "#0dcaf0");
-        r = await fetch(API_BASE+"/applications/"+savedAppId+"/approve", {method:"PUT",headers:adminHeaders,body:JSON.stringify({loanDate:"2026-01-15",dueDate:"2026-02-15"})});
-        d = await r.json();
-        if(!d.success){log("❌ Approve failed: "+d.message,"#dc3545");return;}
-        log("✅ Loan approved! Loan Date: 15/01/2026 | Due Date: 15/02/2026", "#198754");
-
-        // Calculate months overdue
-        let dueDate = new Date(2026, 1, 15);
-        let today = new Date();
-        let monthsOverdue = 0;
-        let checkDate = new Date(dueDate);
-        while(true){checkDate.setMonth(checkDate.getMonth()+1);if(today<checkDate)break;monthsOverdue++;}
-        monthsOverdue++;
-        let monthlyInterest = 2000;
-        let totalOutstanding = monthlyInterest * monthsOverdue;
-        log("📊 Months Overdue: "+monthsOverdue, "#ffc107");
-        log("💰 Monthly Interest: KES "+monthlyInterest.toLocaleString(), "#fff");
-        log("💰 Total Outstanding Interest: KES "+totalOutstanding.toLocaleString(), "#ffc107");
-
-        // ========== 7. GET LOANS ==========
-        log("📊 Fetching loans...", "#0dcaf0");
-        r = await fetch(API_BASE+"/loans", {headers:adminHeaders});
-        d = await r.json();
-        log("✅ Total loans in system: "+(d.loans?d.loans.length:0), "#198754");
-
-        // ========== 8. GET STATS ==========
-        r = await fetch(API_BASE+"/stats", {headers:adminHeaders});
-        d = await r.json();
-        if(d.success){
-            log("📊 Stats: Clients="+d.stats.totalClients+" | Active="+d.stats.activeLoans+" | Late="+d.stats.lateLoans+" | Pending="+d.stats.pendingApplications, "#198754");
-        }
-
-        // ========== SUMMARY ==========
         log("", "#fff");
         log("═══════════════════════════════", "#ffc107");
-        log("✅ ALL TESTS PASSED!", "#198754");
+        log("✅ TEST COMPLETE!", "#198754");
         log("", "#fff");
-        log("📌 Test Credentials:", "#0dcaf0");
+        log("📌 Credentials:", "#0dcaf0");
         log("   Admin: Kiplangat / Kipla1530#", "#fff");
-        log("   Client Phone: "+savedPhone+" / Password: client123", "#fff");
+        log("   Client: "+savedPhone+" / client123", "#fff");
         log("", "#fff");
-        log("📅 Loan approved with past dates:", "#0dcaf0");
-        log("   Loan Date: 15/01/2026", "#fff");
-        log("   Due Date: 15/02/2026", "#fff");
-        log("   Months Overdue: "+monthsOverdue, "#ffc107");
-        log("   Total Outstanding: KES "+totalOutstanding.toLocaleString(), "#ffc107");
-        log("", "#fff");
-        log("👉 Now check:", "#0dcaf0");
-        log("   • late-loans.html → should show 1 late loan", "#fff");
-        log("   • active-loans.html → should be empty", "#fff");
-        log("   • admin-dashboard.html → should show 1 late loan", "#fff");
+        log("👉 Now manually:", "#0dcaf0");
+        log("   1. Go to loan-applications.html", "#fff");
+        log("   2. Approve the loan with dates:", "#fff");
+        log("      Loan Date: 2026-01-15", "#fff");
+        log("      Due Date: 2026-02-15", "#fff");
+        log("   3. Check late-loans.html", "#fff");
+        log("   4. Pay full outstanding to test due date update", "#fff");
 
     } catch(e) {
         log("❌ Error: "+e.message, "#dc3545");
-        log("Make sure backend is running on "+API_BASE, "#ffc107");
+        log("Make sure backend is running on localhost:5000", "#ffc107");
     }
 }
 </script>
