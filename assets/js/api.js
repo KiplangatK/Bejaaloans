@@ -30,12 +30,10 @@ const api = {
         const token = localStorage.getItem("bejja_token");
         const headers = { "Content-Type": "application/json" };
         if (token) headers["Authorization"] = `Bearer ${token}`;
-
         const response = await fetch(`${API_BASE}${endpoint}`, {
             ...options,
             headers: { ...headers, ...options.headers }
         });
-
         return await response.json();
     },
 
@@ -51,6 +49,7 @@ const api = {
     deleteClient: (id) => api.request(`/clients/${id}`, { method: "DELETE" }),
 
     getApplications: () => api.request("/applications"),
+    getMyApplications: () => api.request("/applications/my-applications"),
     addApplication: (data) => api.request("/applications", { method: "POST", body: JSON.stringify(data) }),
     approveApplication: (id, data) => api.request(`/applications/${id}/approve`, { method: "PUT", body: JSON.stringify(data) }),
     rejectApplication: (id) => api.request(`/applications/${id}/reject`, { method: "PUT" }),
