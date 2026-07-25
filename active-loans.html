@@ -85,9 +85,10 @@ async function viewLoan(id){
     let balance=Number(loan.remaining_principal||0),rate=Number(loan.interest_rate||20),currentInterest=(balance*rate)/100;
     let pResult=await api.getLoanPayments(id);let payments=pResult.success?pResult.payments:[];
     if(!Array.isArray(payments))payments=[];
+    
+    // Early payments = payments made BEFORE the current due date on this ACTIVE loan
+    let earlyPaid=payments.filter(p=>{if(!p.payment_date||!loan.due_date)return false;return new Date(p.payment_date)<new Date(loan.due_date);}).reduce((s,p)=>s+Number(p.amount||0),0);
     let totalPaid=payments.reduce((s,p)=>s+Number(p.amount||0),0);
-    let totalExpected=Number(loan.original_principal)+Number(loan.original_principal)*rate/100;
-    let progress=totalExpected>0?Math.round((totalPaid/totalExpected)*100):0;
     
     // Get client details
     let clientResult=await api.getClient(loan.client_id);
@@ -98,14 +99,13 @@ async function viewLoan(id){
         <div class="row"><div class="col-md-3 text-center"><img src="${client.profile_photo||DEFAULT_IMG}" class="profile-img-large mb-2"><h5>${client.fullname||loan.fullname||"-"}</h5></div><div class="col-md-9"><div class="row"><div class="col-md-6"><p><b>Phone:</b> ${client.phone||loan.phone||"-"}</p><p><b>National ID:</b> ${client.national_id||"-"}</p><p><b>Email:</b> ${client.email||"-"}</p></div><div class="col-md-6"><p><b>Occupation:</b> ${client.occupation||"-"}</p><p><b>Employer:</b> ${client.employer||"-"}</p><p><b>Monthly Income:</b> ${money(client.monthly_income)}</p></div></div><p><b>County:</b> ${client.county||"-"}</p><p><b>Address:</b> ${client.address||"-"}</p></div></div>
         
         <h5 class="text-primary mt-4">Loan Information</h5><hr>
-        <div class="row"><div class="col-md-6"><p><b>Original:</b> ${money(loan.original_principal)}</p><p><b>Remaining:</b> ${money(balance)}</p><p><b>Current Interest:</b> ${money(currentInterest)}</p><p><b>Rate:</b> ${rate}%</p></div><div class="col-md-6"><p><b>Progress:</b> ${progress}%</p><p><b>Loan Date:</b> ${formatDate(loan.loan_date)}</p><p><b>Due Date:</b> <span class="badge bg-success">${formatDate(loan.due_date)}</span></p><p><b>Status:</b> <span class="badge bg-success">${loan.status}</span></p></div></div>
-        <div class="progress mt-2 mb-3" style="height:10px;"><div class="progress-bar bg-success" style="width:${progress}%"></div></div>
+        <div class="row"><div class="col-md-6"><p><b>Original:</b> ${money(loan.original_principal)}</p><p><b>Remaining:</b> ${money(balance)}</p><p><b>Current Interest:</b> ${money(currentInterest)}</p><p><b>Rate:</b> ${rate}%</p></div><div class="col-md-6"><p><b>Early Payments:</b> <span class="text-primary fw-bold">${money(earlyPaid)}</span></p><p><b>Loan Date:</b> ${formatDate(loan.loan_date)}</p><p><b>Due Date:</b> <span class="badge bg-success">${formatDate(loan.due_date)}</span></p><p><b>Status:</b> <span class="badge bg-success">${loan.status}</span></p></div></div>
         
         <div class="text-center mt-3 mb-3"><button class="btn btn-guarantors" onclick="toggleGuarantors(${loan.application_id||0})"><i class="fa fa-users"></i>View Guarantors</button></div>
         <div id="guarantorSection" style="display:none;"></div>
         
         <h5 class="text-primary mt-4">Payment History</h5>
-        <table class="table table-bordered"><tr><th>Date</th><th>Amount</th><th>Principal</th><th>Interest</th><th>Balance</th><th>Note</th></tr>${payments.length===0?'<tr><td colspan="6" class="text-center">No payments yet</td></tr>':payments.map(p=>`<tr><td>${formatDate(p.payment_date)}</td><td>${money(p.amount)}</td><td>${money(p.principal_paid)}</td><td>${money(p.interest_paid)}</td><td>${money(p.balance)}</td><td>${p.note||"-"}</td></tr>`).join("")}</table>`;
+        <table class="table table-bordered"><tr><th>Date</th><th>Amount</th><th>Principal</th><th>Interest</th><th>Balance</th><th>Type</th><th>Note</th></tr>${payments.length===0?'<tr><td colspan="7" class="text-center">No payments yet</td></tr>':payments.map(p=>{let typeBadge='<span class="badge bg-warning text-dark">Payment</span>';if(p.payment_date&&loan.due_date){let pd=new Date(p.payment_date),dd=new Date(loan.due_date);if(pd<dd)typeBadge='<span class="badge bg-primary">Early</span>';else typeBadge='<span class="badge bg-warning text-dark">Regular</span>';}return`<tr><td>${formatDate(p.payment_date)}</td><td>${money(p.amount)}</td><td>${money(p.principal_paid)}</td><td>${money(p.interest_paid)}</td><td>${money(p.balance)}</td><td>${typeBadge}</td><td>${p.note||"-"}</td></tr>`;}).join("")}</table>`;
     new bootstrap.Modal(document.getElementById("loanModal")).show();
 }
 
