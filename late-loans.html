@@ -16,33 +16,34 @@ body{background:#edf4ff;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;}
 .sidebar ul{list-style:none;padding:15px 0;}
 .sidebar ul li a{display:block;color:white;padding:15px 25px;text-decoration:none;transition:.3s;}
 .sidebar ul li a:hover{background:#1565c0;padding-left:35px;}.sidebar ul li i{width:25px;}
-.main{margin-left:260px;width:100%;}
-.topbar{height:70px;background:#1976d2;color:white;display:flex;justify-content:space-between;align-items:center;padding:0 30px;box-shadow:0 2px 10px rgba(0,0,0,.15);}
-.topbar h2{font-size:28px;}.topbar a{color:white;text-decoration:none;}
-.content{padding:35px;width:100%;}
-.dashboard-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:25px;margin-bottom:35px;}
-.card-box{background:white;border-radius:15px;padding:25px;box-shadow:0 8px 20px rgba(0,0,0,.08);transition:.3s;text-align:center;}
-.card-box:hover{transform:translateY(-5px);}.card-box i{font-size:35px;color:#d32f2f;}
-.card-title{margin-top:15px;font-size:18px;font-weight:600;}
-.card-number{font-size:32px;font-weight:700;color:#d32f2f;margin-top:12px;}
-.table-card{background:white;border-radius:15px;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.08);}
-.table-header{background:#1976d2;color:white;padding:20px 25px;font-size:22px;font-weight:bold;}
-.table-responsive{overflow-x:auto;}.table{min-width:1400px;}
-.table thead th{background:#e3f2fd;color:#0d47a1;text-align:center;}
-.table tbody td{text-align:center;vertical-align:middle;}
+.main{margin-left:260px;width:calc(100% - 260px);}
+.topbar{height:60px;background:#1976d2;color:white;display:flex;justify-content:space-between;align-items:center;padding:0 25px;box-shadow:0 2px 10px rgba(0,0,0,.15);}
+.topbar h2{font-size:24px;}.topbar a{color:white;text-decoration:none;}
+.content{padding:20px;}
+.dashboard-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:20px;}
+.card-box{background:white;border-radius:12px;padding:15px;box-shadow:0 3px 10px rgba(0,0,0,.06);transition:.3s;text-align:center;}
+.card-box:hover{transform:translateY(-3px);}.card-box i{font-size:24px;color:#d32f2f;}
+.card-title{margin-top:8px;font-size:14px;font-weight:600;color:#666;}
+.card-number{font-size:24px;font-weight:700;color:#d32f2f;margin-top:5px;}
+.table-card{background:white;border-radius:12px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.06);}
+.table-header{background:#1976d2;color:white;padding:14px 20px;font-size:18px;font-weight:bold;}
+.table-responsive{overflow-x:auto;}
+.table{margin-bottom:0;}
+.table thead th{background:#e3f2fd;color:#0d47a1;text-align:center;font-size:13px;padding:10px 8px;white-space:nowrap;}
+.table tbody td{text-align:center;vertical-align:middle;font-size:13px;padding:10px 8px;}
 .table-danger{background:#ffebee!important;}
-.action-btn{margin:3px;padding:6px 10px;border-radius:8px;font-size:13px;}
+.action-btn{margin:2px;padding:5px 8px;border-radius:6px;font-size:12px;}
 .btn-view{background:#1976d2;color:white;border-radius:20px;}
 .btn-payment{background:#198754;color:white;border-radius:20px;}
-.btn-guarantors{background:#6f42c1;color:white;border-radius:20px;}
+.btn-guarantors{background:#6f42c1;color:white;border-radius:20px;font-size:13px;padding:8px 16px;}
 .btn-guarantors:hover{background:#5a3399;color:white;}
-.section-title{background:#0d47a1;color:white;padding:10px 15px;border-radius:10px;margin-top:15px;font-weight:bold;}
-.detail-card{background:#f8fbff;border-radius:15px;padding:15px;margin-bottom:15px;border:1px solid #dbeafe;}
-.document-img{width:100%;height:160px;object-fit:contain;border-radius:10px;border:1px solid #ddd;margin-top:5px;}
-.guarantor-photo{width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid #2563eb;}
-.profile-img-large{width:150px;height:150px;border-radius:50%;object-fit:cover;border:4px solid #1976d2;}
-.btn-doc{font-size:12px;padding:4px 10px;}
-@media(max-width:768px){.sidebar{width:220px;}.main{margin-left:220px;}.dashboard-cards{grid-template-columns:1fr;}}
+.section-title{background:#0d47a1;color:white;padding:8px 12px;border-radius:8px;margin-top:12px;font-weight:bold;font-size:15px;}
+.detail-card{background:#f8fbff;border-radius:12px;padding:12px;margin-bottom:12px;border:1px solid #dbeafe;}
+.document-img{width:100%;height:140px;object-fit:contain;border-radius:8px;border:1px solid #ddd;margin-top:4px;}
+.guarantor-photo{width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #2563eb;}
+.profile-img-large{width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #1976d2;}
+.btn-doc{font-size:11px;padding:3px 8px;}
+@media(max-width:768px){.sidebar{width:220px;}.main{margin-left:220px;}.dashboard-cards{grid-template-columns:repeat(2,1fr);}}
 </style>
 </head>
 <body>
@@ -65,16 +66,16 @@ body{background:#edf4ff;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;}
 <div class="main">
 <div class="topbar"><h2><i class="fa-solid fa-triangle-exclamation text-warning"></i>Late Loans</h2><div>Welcome, <strong id="adminName">Admin</strong> | <a href="#" onclick="logout()">Logout</a></div></div>
 <div class="content">
-<div class="mb-4"><a href="admin-dashboard.html" class="btn btn-primary"><i class="fa-solid fa-arrow-left"></i>Back to Dashboard</a></div>
+<div class="mb-3"><a href="admin-dashboard.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrow-left"></i> Back</a></div>
 
 <div class="dashboard-cards">
-<div class="card-box"><i class="fa-solid fa-triangle-exclamation"></i><div class="card-title">Total Late Loans</div><div class="card-number" id="totalLateLoans">0</div></div>
-<div class="card-box"><i class="fa-solid fa-wallet"></i><div class="card-title">Outstanding Principal</div><div class="card-number" id="totalOutstanding">KES 0</div></div>
+<div class="card-box"><i class="fa-solid fa-triangle-exclamation"></i><div class="card-title">Total Late</div><div class="card-number" id="totalLateLoans">0</div></div>
+<div class="card-box"><i class="fa-solid fa-wallet"></i><div class="card-title">Outstanding</div><div class="card-number" id="totalOutstanding">KES 0</div></div>
 <div class="card-box"><i class="fa-solid fa-percent"></i><div class="card-title">Interest Owed</div><div class="card-number" id="expectedInterest">KES 0</div></div>
-<div class="card-box"><i class="fa-solid fa-money-bill-wave"></i><div class="card-title">Total Overdue</div><div class="card-number" id="totalDue">KES 0</div></div>
+<div class="card-box"><i class="fa-solid fa-money-bill-wave"></i><div class="card-title">Overdue</div><div class="card-number" id="totalDue">KES 0</div></div>
 </div>
 
-<div class="table-card"><div class="table-header">Late Loan Clients</div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>#</th><th>Client</th><th>Phone</th><th>Amount</th><th>Balance</th><th>Interest/mo</th><th>Overdue</th><th>Due Date</th><th>Days Late</th><th>Action</th></tr></thead><tbody id="lateLoansTable"><tr><td colspan="10" class="text-center text-muted p-5">Loading...</td></tr></tbody></table></div></div>
+<div class="table-card"><div class="table-header">Late Loan Clients</div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>#</th><th>Client</th><th>Phone</th><th>Amount</th><th>Balance</th><th>Int/mo</th><th>Overdue</th><th>Due Date</th><th>Days</th><th>Act</th></tr></thead><tbody id="lateLoansTable"><tr><td colspan="10" class="text-center text-muted p-5">Loading...</td></tr></tbody></table></div></div>
 </div></div></div>
 
 <div class="modal fade" id="loanModal"><div class="modal-dialog modal-xl"><div class="modal-content"><div class="modal-header bg-primary text-white"><h5 class="modal-title"><i class="fa fa-file-invoice-dollar"></i>Loan Details</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body" id="loanDetails"></div></div></div></div>
@@ -96,31 +97,25 @@ async function loadLateLoans(){
     if(!result.success||!result.loans){table.innerHTML='<tr><td colspan="10" class="text-center text-muted p-5">No late loans.</td></tr>';updateCards(0,0,0,0);return;}
     let today=new Date();today.setHours(0,0,0,0);
     let lateCount=0,outstanding=0,interestOwed=0,totalDue=0;
-    
     for(let l of result.loans){
         if(l.status!=="ACTIVE"||Number(l.remaining_principal||0)<=0||!l.due_date)continue;
         let dueDate=new Date(l.due_date);dueDate.setHours(0,0,0,0);
         if(dueDate>=today)continue;
-        
         let balance=Number(l.remaining_principal||0),rate=Number(l.interest_rate||20);
         let monthsDiff=0,checkDate=new Date(dueDate);
         while(true){checkDate.setMonth(checkDate.getMonth()+1);if(today<checkDate)break;monthsDiff++;}
         monthsDiff++;
         let monthlyInterest=(balance*rate)/100,totalOutstandingInterest=monthlyInterest*monthsDiff;
-        
         let pResult=await api.getLoanPayments(l.id);
         let totalPaid=0;
         if(pResult.success&&Array.isArray(pResult.payments))pResult.payments.forEach(p=>{totalPaid+=Number(p.amount||0);});
-        
         let remaining=totalOutstandingInterest-totalPaid;
         if(remaining<=0)continue;
-        
         lateCount++;outstanding+=balance;interestOwed+=totalOutstandingInterest;totalDue+=remaining;
         let daysLate=Math.floor((today-dueDate)/(1000*60*60*24));
         let paidInfo=totalPaid>0?`<br><small class="text-warning">Paid: ${money(totalPaid)}</small>`:"";
-        let monthInfo=monthsDiff>1?`<br><small class="text-muted">${monthsDiff}mo × ${money(monthlyInterest)}</small>`:"";
-        
-        table.innerHTML+=`<tr class="table-danger"><td>${lateCount}</td><td>${l.fullname||"Unknown"}</td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td>${money(balance)}</td><td class="fw-bold text-danger">${money(monthlyInterest)}/mo</td><td class="fw-bold">${money(remaining)}${monthInfo}${paidInfo}</td><td>${formatDate(l.due_date)}</td><td class="text-danger fw-bold">${daysLate} Days (${monthsDiff}mo)</td><td><button class="btn btn-view btn-sm action-btn" onclick="viewLoan(${l.id})"><i class="fa fa-eye"></i></button><button class="btn btn-payment btn-sm action-btn" onclick="openPayment(${l.id})"><i class="fa fa-money-bill"></i></button></td></tr>`;
+        let monthInfo=monthsDiff>1?`<br><small class="text-muted">${monthsDiff}mo</small>`:"";
+        table.innerHTML+=`<tr class="table-danger"><td>${lateCount}</td><td><b>${l.fullname||"?"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td>${money(balance)}</td><td>${money(monthlyInterest)}</td><td class="fw-bold">${money(remaining)}${monthInfo}${paidInfo}</td><td>${formatDate(l.due_date)}</td><td class="text-danger fw-bold">${daysLate}d</td><td><button class="btn btn-view btn-sm action-btn" onclick="viewLoan(${l.id})"><i class="fa fa-eye"></i></button><button class="btn btn-payment btn-sm action-btn" onclick="openPayment(${l.id})"><i class="fa fa-money-bill"></i></button></td></tr>`;
     }
     updateCards(lateCount,outstanding,interestOwed,totalDue);
     if(lateCount===0)table.innerHTML='<tr><td colspan="10" class="text-center text-muted p-5">No late loans.</td></tr>';
@@ -129,8 +124,7 @@ async function loadLateLoans(){
 function updateCards(c,p,i,d){document.getElementById("totalLateLoans").innerHTML=c;document.getElementById("totalOutstanding").innerHTML="KES "+p.toLocaleString();document.getElementById("expectedInterest").innerHTML="KES "+i.toLocaleString();document.getElementById("totalDue").innerHTML="KES "+d.toLocaleString();}
 
 async function viewLoan(id){
-    let r=await api.getLoans();if(!r.success)return;
-    let loan=r.loans.find(l=>l.id==id);if(!loan)return;
+    let r=await api.getLoans();if(!r.success)return;let loan=r.loans.find(l=>l.id==id);if(!loan)return;
     let balance=Number(loan.remaining_principal||0),rate=Number(loan.interest_rate||20),currentInterest=(balance*rate)/100;
     let pResult=await api.getLoanPayments(id);
     let totalPaid=0,payments=pResult.success?pResult.payments:[];
@@ -140,10 +134,8 @@ async function viewLoan(id){
     let totalOutstandingInterest=currentInterest*monthsOverdue;
     let totalExpected=Number(loan.original_principal)+Number(loan.original_principal)*rate/100;
     let progress=totalExpected>0?Math.round((totalPaid/totalExpected)*100):0;
-    
     let clientResult=await api.getClient(loan.client_id);
     let client=clientResult.success?clientResult.client:{};
-    
     document.getElementById("loanDetails").innerHTML=`
         <h5 class="text-primary">Client Information</h5><hr>
         <div class="row"><div class="col-md-3 text-center"><img src="${client.profile_photo||DEFAULT_IMG}" class="profile-img-large mb-2"><h5>${client.fullname||loan.fullname||"-"}</h5></div><div class="col-md-9"><div class="row"><div class="col-md-6"><p><b>Phone:</b> ${client.phone||loan.phone||"-"}</p><p><b>National ID:</b> ${client.national_id||"-"}</p><p><b>Email:</b> ${client.email||"-"}</p></div><div class="col-md-6"><p><b>Occupation:</b> ${client.occupation||"-"}</p><p><b>Employer:</b> ${client.employer||"-"}</p><p><b>Monthly Income:</b> ${money(client.monthly_income)}</p></div></div><p><b>County:</b> ${client.county||"-"}</p><p><b>Address:</b> ${client.address||"-"}</p></div></div>
@@ -162,7 +154,7 @@ async function toggleGuarantors(appId){
     let section=document.getElementById("guarantorSection");
     if(section.style.display==="block"){section.style.display="none";return;}
     if(!appId||appId===0){section.innerHTML='<p class="text-muted">No guarantor details available.</p>';section.style.display="block";return;}
-    section.innerHTML='<p class="text-center text-muted">Loading guarantor details...</p>';section.style.display="block";
+    section.innerHTML='<p class="text-center text-muted">Loading...</p>';section.style.display="block";
     let result=await api.getApplications();if(!result.success)return;
     let app=result.applications.find(a=>a.id==appId);if(!app){section.innerHTML='<p class="text-muted">No guarantor details available.</p>';return;}
     section.innerHTML=`<hr><h5 class="text-primary"><i class="fa fa-users"></i>Guarantor Details</h5>${showGuarantor(app.guarantor1,"Guarantor 1")}${showGuarantor(app.guarantor2,"Guarantor 2")}`;
@@ -170,9 +162,7 @@ async function toggleGuarantors(appId){
 
 function showGuarantor(g,title){
     if(!g)return'<p class="text-muted">No '+title+' details.</p>';
-    return`
-    <div class="detail-card"><h5 class="text-primary">${title}</h5><div class="row"><div class="col-md-4 text-center"><img src="${g.photo||DEFAULT_IMG}" class="guarantor-photo"><br><button class="btn btn-sm btn-outline-primary btn-doc mt-2" onclick="showFullImage('${g.photo||DEFAULT_IMG}','${title} Photo')"><i class="fa fa-search-plus"></i> View Full</button></div><div class="col-md-8"><p><b>Name:</b> ${g.name||"-"}</p><p><b>National ID:</b> ${g.id||g.national_id||"-"}</p><p><b>Phone:</b> ${g.phone||"-"}</p><p><b>Relationship:</b> ${g.relationship||"-"}</p><p><b>Address:</b> ${g.address||"-"}</p></div></div>
-    <div class="row mt-3"><div class="col-md-6 text-center"><p class="fw-bold mb-1">ID Front</p>${g.idFront||g.id_front?`<img src="${g.idFront||g.id_front}" class="document-img"><button class="btn btn-sm btn-outline-primary btn-doc mt-1" onclick="showFullImage('${g.idFront||g.id_front}','${title} ID Front')"><i class="fa fa-search-plus"></i> View Full</button>`:'<p class="text-muted">Not uploaded</p>'}</div><div class="col-md-6 text-center"><p class="fw-bold mb-1">ID Back</p>${g.idBack||g.id_back?`<img src="${g.idBack||g.id_back}" class="document-img"><button class="btn btn-sm btn-outline-primary btn-doc mt-1" onclick="showFullImage('${g.idBack||g.id_back}','${title} ID Back')"><i class="fa fa-search-plus"></i> View Full</button>`:'<p class="text-muted">Not uploaded</p>'}</div></div></div>`;
+    return`<div class="detail-card"><h5 class="text-primary">${title}</h5><div class="row"><div class="col-md-4 text-center"><img src="${g.photo||DEFAULT_IMG}" class="guarantor-photo"><br><button class="btn btn-sm btn-outline-primary btn-doc mt-2" onclick="showFullImage('${g.photo||DEFAULT_IMG}','${title} Photo')"><i class="fa fa-search-plus"></i> View Full</button></div><div class="col-md-8"><p><b>Name:</b> ${g.name||"-"}</p><p><b>National ID:</b> ${g.id||g.national_id||"-"}</p><p><b>Phone:</b> ${g.phone||"-"}</p><p><b>Relationship:</b> ${g.relationship||"-"}</p><p><b>Address:</b> ${g.address||"-"}</p></div></div><div class="row mt-3"><div class="col-md-6 text-center"><p class="fw-bold mb-1">ID Front</p>${g.idFront||g.id_front?`<img src="${g.idFront||g.id_front}" class="document-img"><button class="btn btn-sm btn-outline-primary btn-doc mt-1" onclick="showFullImage('${g.idFront||g.id_front}','${title} ID Front')"><i class="fa fa-search-plus"></i> View Full</button>`:'<p class="text-muted">Not uploaded</p>'}</div><div class="col-md-6 text-center"><p class="fw-bold mb-1">ID Back</p>${g.idBack||g.id_back?`<img src="${g.idBack||g.id_back}" class="document-img"><button class="btn btn-sm btn-outline-primary btn-doc mt-1" onclick="showFullImage('${g.idBack||g.id_back}','${title} ID Back')"><i class="fa fa-search-plus"></i> View Full</button>`:'<p class="text-muted">Not uploaded</p>'}</div></div></div>`;
 }
 
 function openPayment(id){document.getElementById("paymentLoanId").value=id;document.getElementById("paymentAmount").value="";document.getElementById("paymentDate").value=new Date().toISOString().split("T")[0];new bootstrap.Modal(document.getElementById("paymentModal")).show();}
@@ -183,26 +173,18 @@ async function savePayment(){
     let date=document.getElementById("paymentDate").value;
     let method=document.getElementById("paymentMethod").value;
     if(amount<=0){alert("Enter amount");return;}
-    
     let r=await api.getLoans();let loan=r.loans.find(l=>l.id==loanId);if(!loan)return;
     let balance=Number(loan.remaining_principal||0),rate=Number(loan.interest_rate||20);
     let monthsOverdue=0;
     if(loan.due_date){let dueDate=new Date(loan.due_date);dueDate.setHours(0,0,0,0);let today=new Date();today.setHours(0,0,0,0);let checkDate=new Date(dueDate);while(true){checkDate.setMonth(checkDate.getMonth()+1);if(today<checkDate)break;monthsOverdue++;}monthsOverdue++;}
     let monthlyInterest=(balance*rate)/100,totalOutstanding=monthlyInterest*monthsOverdue;
-    
-    // Set note - carried forward as early payment for active cycle
-    let note="";
-    if(amount>0&&loan.due_date){let pd=new Date(date+"T00:00:00"),dd=new Date(loan.due_date);if(pd<dd)note="Early payment (carried from late loan clearance)";}
-    
+    let note="";if(amount>0&&loan.due_date){let pd=new Date(date+"T00:00:00"),dd=new Date(loan.due_date);if(pd<dd)note="Early payment (carried from late loan clearance)";}
     await api.addPayment({loanId,amount,paymentDate:date,method,note});
-    
     let pResult=await api.getLoanPayments(loanId);let totalPaid=0;
     if(pResult.success&&Array.isArray(pResult.payments))pResult.payments.forEach(p=>{totalPaid+=Number(p.amount||0);});
     let remaining=totalOutstanding-totalPaid;
-    
     if(remaining<=0){let updatedLoan=await api.getLoan(loanId);alert("✅ Outstanding Cleared!\n\nNew due date: "+formatDate(updatedLoan.success?updatedLoan.loan.due_date:null)+"\nLoan moved to Active Loans.");}
     else{alert("Payment recorded! Remaining: "+money(remaining));}
-    
     bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();loadLateLoans();
 }
 
