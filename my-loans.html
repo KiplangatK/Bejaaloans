@@ -9,22 +9,28 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
-.header{background:linear-gradient(135deg,#0F4C81,#2563EB);color:white;padding:20px 25px;border-radius:0 0 20px 20px;box-shadow:0 3px 10px rgba(0,0,0,.15);position:relative;}
-.header h2{font-weight:700;font-size:22px;}
-.header .btn-back{position:absolute;top:18px;right:20px;background:rgba(255,255,255,0.2);color:white;padding:8px 16px;border-radius:20px;text-decoration:none;font-weight:600;font-size:14px;transition:.3s;}
-.header .btn-back:hover{background:rgba(255,255,255,0.35);color:white;}
-.container{max-width:1100px;}
-.summary-card{border-radius:14px;padding:18px;color:white;height:110px;}
-.summary-card h2{font-size:26px;font-weight:bold;margin:0;}
-.summary-card h5{font-size:13px;margin:0 0 5px 0;opacity:0.9;}
+.sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#0F4C81;color:white;}
+.logo{padding:20px;font-size:22px;font-weight:bold;border-bottom:1px solid rgba(255,255,255,.2);}
+.logo i{margin-right:8px;}
+.sidebar a{display:block;padding:12px 20px;color:white;text-decoration:none;transition:.3s;font-size:14px;}
+.sidebar a:hover{background:#2563EB;padding-left:28px;}.sidebar i{width:22px;}
+.main{margin-left:260px;height:100vh;display:flex;flex-direction:column;}
+.topbar{height:50px;background:#2563EB;color:white;display:flex;align-items:center;justify-content:space-between;padding:0 20px;box-shadow:0 2px 10px rgba(0,0,0,.15);flex-shrink:0;}
+.topbar h3{font-size:18px;}.topbar .topbar-right{display:flex;align-items:center;gap:12px;font-size:14px;}
+.topbar .btn-home{background:rgba(255,255,255,0.2);color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-size:13px;font-weight:600;transition:.3s;}
+.topbar .btn-home:hover{background:rgba(255,255,255,0.35);color:white;}
+.topbar .btn-logout{color:#ffc107;font-weight:600;cursor:pointer;text-decoration:none;font-size:13px;}.topbar .btn-logout:hover{color:#fff;}
+.content{flex:1;padding:15px;overflow-y:auto;}
+.summary-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:15px;}
+.summary-card{border-radius:12px;padding:15px;color:white;height:100px;display:flex;flex-direction:column;justify-content:center;}
+.summary-card h2{font-size:24px;font-weight:bold;margin:0;}.summary-card h5{font-size:12px;margin:0 0 4px 0;opacity:0.9;}
 .total{background:#1565c0;}.active{background:#198754;}.borrowed{background:#6f42c1;}.balance{background:#dc3545;}
-.table-card{background:white;border-radius:15px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.08);}
-.table-header{background:#0F4C81;color:white;padding:14px 18px;font-size:18px;font-weight:bold;}
-.table th{background:#e3f2fd;color:#0F4C81;font-size:13px;padding:10px;}.table td{padding:10px;font-size:13px;vertical-align:middle;}
-.badge{font-size:12px;padding:6px 10px;}
-.btn-view{background:#2563EB;color:white;border-radius:15px;font-size:12px;padding:5px 10px;}
-.btn-payment{background:#198754;color:white;border-radius:15px;font-size:12px;padding:5px 10px;}
-.btn-view:hover{background:#0F4C81;color:white;}.btn-payment:hover{background:#146c43;color:white;}
+.table-card{background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.table-header{background:#0F4C81;color:white;padding:12px 16px;font-size:16px;font-weight:bold;}
+.table th{background:#e3f2fd;color:#0F4C81;font-size:12px;padding:8px;}.table td{padding:8px;font-size:13px;vertical-align:middle;}
+.badge{font-size:11px;padding:5px 8px;}
+.btn-view{background:#2563EB;color:white;border-radius:15px;font-size:11px;padding:4px 8px;}
+.btn-payment{background:#198754;color:white;border-radius:15px;font-size:11px;padding:4px 8px;}
 </style>
 </head>
 <body>
@@ -33,27 +39,35 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 <script src="assets/js/auth.js"></script>
 <script>if(!AUTH.currentClient()){window.location.href="client-portal.html";}</script>
 
-<div class="header text-center">
-<a href="client-dashboard.html" class="btn-back"><i class="fa fa-arrow-left"></i> Back</a>
-<h2><i class="fa-solid fa-building-columns"></i> BEJJA LOAN CREDIT</h2>
-<p style="margin:0;font-size:14px;">My Loans</p>
+<div class="sidebar">
+<div class="logo"><i class="fa-solid fa-building-columns"></i>Bejja Credit</div>
+<a href="client-dashboard.html"><i class="fa fa-home"></i>Dashboard</a>
+<a href="apply-loan.html"><i class="fa fa-hand-holding-dollar"></i>Apply Loan</a>
+<a href="my-loans.html"><i class="fa fa-money-bill-wave"></i>My Loans</a>
+<a href="client-profile.html"><i class="fa fa-user"></i>My Profile</a>
+<a href="#" onclick="AUTH.clientLogout()"><i class="fa fa-right-from-bracket"></i>Logout</a>
 </div>
 
-<div class="container py-3">
-<div class="row g-3 mb-3">
-<div class="col-md-3"><div class="summary-card total"><h5>Total Loans</h5><h2 id="totalLoans">0</h2></div></div>
-<div class="col-md-3"><div class="summary-card active"><h5>Active</h5><h2 id="activeLoans">0</h2></div></div>
-<div class="col-md-3"><div class="summary-card borrowed"><h5>Total Borrowed</h5><h2 id="totalBorrowed">KES 0</h2></div></div>
-<div class="col-md-3"><div class="summary-card balance"><h5>Outstanding</h5><h2 id="outstanding">KES 0</h2></div></div>
+<div class="main">
+<div class="topbar"><h3><i class="fa fa-money-bill-wave"></i> My Loans</h3><div class="topbar-right"><a href="index.html" class="btn-home"><i class="fa fa-home"></i> Home</a><span>Welcome, <strong id="clientNameTop"></strong></span><a href="#" class="btn-logout" onclick="AUTH.clientLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></div></div>
+<div class="content">
+
+<div class="summary-cards">
+<div class="summary-card total"><h5>Total Loans</h5><h2 id="totalLoans">0</h2></div>
+<div class="summary-card active"><h5>Active</h5><h2 id="activeLoans">0</h2></div>
+<div class="summary-card borrowed"><h5>Total Borrowed</h5><h2 id="totalBorrowed">KES 0</h2></div>
+<div class="summary-card balance"><h5>Outstanding</h5><h2 id="outstanding">KES 0</h2></div>
 </div>
 
-<div class="table-card"><div class="table-header"><i class="fa fa-money-bill-wave"></i> My Loan History</div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Date</th><th>Amount</th><th>Balance</th><th>Due Date</th><th>Status</th><th>Action</th></tr></thead><tbody id="myLoansTable"><tr><td colspan="6" class="text-center text-muted p-4">Loading...</td></tr></tbody></table></div></div>
-</div>
+<div class="table-card"><div class="table-header"><i class="fa fa-list"></i> My Loan History</div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Date</th><th>Amount</th><th>Balance</th><th>Due Date</th><th>Status</th><th>Action</th></tr></thead><tbody id="myLoansTable"><tr><td colspan="6" class="text-center text-muted p-4">Loading...</td></tr></tbody></table></div></div>
+
+</div></div>
 
 <div class="modal fade" id="paymentModal"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header bg-success text-white"><h5 class="modal-title">Payment History</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><h5 id="paymentLoanTitle" class="mb-3"></h5><table class="table table-bordered"><thead class="table-success"><tr><th>Date</th><th>Amount</th><th>Principal</th><th>Interest</th><th>Balance</th><th>Note</th></tr></thead><tbody id="paymentTable"></tbody></table></div></div></div></div>
 
 <script>
 function money(v){return"KES "+Number(v||0).toLocaleString();}
+document.addEventListener("DOMContentLoaded",()=>{let c=AUTH.currentClient();if(c)document.getElementById("clientNameTop").textContent=c.fullname||"-";});
 async function loadMyLoans(){
     let result=await api.getMyLoans();let table=document.getElementById("myLoansTable");table.innerHTML="";
     if(!result.success||!result.loans||result.loans.length===0){table.innerHTML='<tr><td colspan="6" class="text-center text-muted p-4">No loans found.</td></tr>';updateSummary(0,0,0,0);return;}
