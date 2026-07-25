@@ -1,170 +1,1181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Apply Loan | Bejja Credit</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
-<style>
-body{background:#edf4ff;font-family:'Segoe UI',sans-serif;}
-.header{background:linear-gradient(135deg,#0d47a1,#1976d2);color:white;padding:25px;border-radius:0 0 25px 25px;position:relative;}
-.header .btn-back{position:absolute;top:20px;right:25px;background:rgba(255,255,255,0.2);color:white;padding:10px 20px;border-radius:25px;text-decoration:none;font-weight:600;font-size:15px;transition:.3s;}
-.header .btn-back:hover{background:rgba(255,255,255,0.35);color:white;}
-.container{max-width:1100px;}
-.card{border:none;border-radius:20px;box-shadow:0 8px 25px rgba(0,0,0,.12);}
-.section-title{background:#0d47a1;color:white;padding:12px 18px;border-radius:12px;margin-top:20px;}
-.form-control{height:50px;border-radius:12px;}
-.interest-box{background:#198754;color:white;padding:20px;border-radius:15px;}
-.btn-submit{height:55px;font-size:18px;font-weight:bold;border-radius:15px;}
-.alert{display:none;}
-.verify-box{background:#e8f5e9;border:2px solid #4caf50;border-radius:15px;padding:15px;margin-top:10px;display:none;}
-.otp-input-small{width:42px;height:42px;text-align:center;font-size:18px;font-weight:bold;border-radius:8px;border:2px solid #2563EB;}
-.status-ok{color:#4caf50;font-size:12px;}.status-error{color:#dc3545;font-size:12px;}
-.verify-btn{height:50px;border-radius:12px;font-size:13px;white-space:nowrap;}
-.guarantor-card{border:2px solid #e0e0e0;border-radius:15px;padding:20px;margin-bottom:20px;background:#fafbff;}
-.upload-box{background:#f8f9fa;border-radius:12px;padding:15px;border:1px dashed #0F4C81;margin-bottom:10px;}
-.upload-box label{font-weight:600;font-size:13px;}
-.preview-img{width:100%;height:100px;object-fit:cover;border-radius:8px;margin-top:8px;display:none;border:1px solid #ddd;}
-.info-row{display:flex;flex-wrap:wrap;gap:10px 0;}
-.info-item{flex:0 0 50%;padding:5px 10px;}
-.info-item label{font-weight:600;color:#0F4C81;display:block;font-size:13px;}
-.info-item span{color:#333;font-size:14px;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for Loan | Bejja Credit</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #0d47a1;
+            --primary-light: #1976d2;
+            --primary-dark: #0a3d8f;
+            --success: #198754;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --white: #ffffff;
+            --bg-light: #edf4ff;
+            --text-dark: #1a1a1a;
+            --text-muted: #666;
+            --shadow-sm: 0 5px 15px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 8px 25px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+            --radius: 15px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg-light);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary), var(--primary-light));
+            color: var(--white);
+            padding: 30px 25px;
+            border-radius: 0 0 30px 30px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(13, 71, 161, 0.3);
+        }
+
+        .header .btn-back {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .header .btn-back:hover {
+            background: rgba(255, 255, 255, 0.35);
+            color: var(--white);
+            transform: translateX(-3px);
+        }
+
+        .header h2 {
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 15px;
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: -30px auto 30px;
+            position: relative;
+            z-index: 10;
+            max-width: 700px;
+            padding: 0 20px;
+        }
+
+        .step-indicator {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .step-circle {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--white);
+            border: 3px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-weight: 700;
+            font-size: 18px;
+            color: #999;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .step-indicator.active .step-circle {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: var(--white);
+            box-shadow: 0 5px 20px rgba(13, 71, 161, 0.3);
+        }
+
+        .step-indicator.completed .step-circle {
+            border-color: var(--success);
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .step-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .step-indicator.active .step-label { color: var(--primary); }
+        .step-indicator.completed .step-label { color: var(--success); }
+
+        .step-line {
+            position: absolute;
+            top: 22px;
+            left: 60%;
+            width: 80%;
+            height: 3px;
+            background: #ddd;
+            z-index: -1;
+        }
+
+        .step-indicator:last-child .step-line { display: none; }
+        .step-indicator.completed .step-line { background: var(--success); }
+
+        /* Container */
+        .container-main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+        }
+
+        .form-card {
+            background: var(--white);
+            border-radius: 25px;
+            padding: 35px 30px;
+            box-shadow: var(--shadow-md);
+            border: none;
+        }
+
+        /* Form Steps */
+        .form-step { display: none; }
+        .form-step.active { display: block; animation: fadeSlideIn 0.5s ease; }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Section Title */
+        .section-title {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--white);
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i { font-size: 20px; }
+
+        /* Client Info */
+        .client-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .info-item {
+            background: #f8faff;
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .info-item label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .info-item span {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        /* Form Controls */
+        .form-control, .form-select {
+            height: 52px;
+            border-radius: 12px;
+            border: 2px solid #e8ecf4;
+            font-size: 15px;
+            font-weight: 500;
+            transition: var(--transition);
+            background: #fafbfe;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1);
+            background: var(--white);
+        }
+
+        textarea.form-control {
+            height: auto;
+            min-height: 80px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        /* Interest Box */
+        .interest-box {
+            background: linear-gradient(135deg, var(--success), #2ecc71);
+            color: var(--white);
+            padding: 25px;
+            border-radius: 18px;
+            text-align: center;
+            margin-top: 20px;
+            box-shadow: 0 10px 25px rgba(25, 135, 84, 0.2);
+        }
+
+        .interest-box h5 { font-weight: 600; opacity: 0.9; }
+        .interest-box h2 { font-weight: 800; font-size: 36px; }
+
+        /* Guarantor Card */
+        .guarantor-card {
+            border: 2px solid #e8ecf4;
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 25px;
+            background: #fafbfe;
+            transition: var(--transition);
+        }
+
+        .guarantor-card:hover {
+            border-color: var(--primary-light);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .guarantor-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .guarantor-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        /* OTP */
+        .verify-box {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            border-radius: 15px;
+            padding: 18px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .otp-input-small {
+            width: 44px;
+            height: 48px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 10px;
+            border: 2px solid var(--primary-light);
+            transition: var(--transition);
+        }
+
+        .otp-input-small:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.15);
+            outline: none;
+        }
+
+        /* Upload Box */
+        .upload-box {
+            background: #f8f9fa;
+            border-radius: 14px;
+            padding: 18px;
+            border: 2px dashed #c0cfe0;
+            margin-bottom: 12px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .upload-box:hover {
+            border-color: var(--primary-light);
+            background: #e8f0ff;
+        }
+
+        .upload-box label {
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .preview-img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-top: 10px;
+            display: none;
+            border: 2px solid #ddd;
+        }
+
+        /* Buttons */
+        .btn {
+            border-radius: 12px;
+            font-weight: 600;
+            transition: var(--transition);
+            padding: 12px 24px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border: none;
+            height: 55px;
+            font-size: 17px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(13, 71, 161, 0.3);
+        }
+
+        .btn-outline-primary {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            height: 55px;
+            font-size: 17px;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-nav {
+            height: 50px;
+            font-size: 15px;
+            min-width: 120px;
+        }
+
+        /* Alerts */
+        .error-box {
+            background: #fff5f5;
+            border: 2px solid #fecaca;
+            color: var(--danger);
+            padding: 14px 18px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .error-box.show { display: flex; align-items: center; gap: 8px; }
+
+        /* Status */
+        .status-ok { color: #4caf50; font-size: 12px; font-weight: 600; }
+        .status-error { color: #dc3545; font-size: 12px; font-weight: 600; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-card { padding: 20px 15px; }
+            .header { padding: 20px 15px; }
+            .header h2 { font-size: 20px; }
+            .step-circle { width: 35px; height: 35px; font-size: 14px; }
+            .step-label { font-size: 9px; }
+            .client-info-grid { grid-template-columns: 1fr; }
+            .interest-box h2 { font-size: 28px; }
+        }
+    </style>
 </head>
 <body>
 
-<script src="assets/js/api.js"></script>
-<script src="assets/js/auth.js"></script>
-<script>if(!AUTH.currentClient()){window.location.href="client-portal.html";}</script>
+    <!-- Header -->
+    <div class="header text-center">
+        <a href="client-dashboard.html" class="btn-back">
+            <i class="fa fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <h2><i class="fa-solid fa-building-columns me-2"></i>BEJJA CREDIT</h2>
+        <p class="mb-0">Loan Application Form</p>
+    </div>
 
-<div class="header text-center">
-<a href="client-dashboard.html" class="btn-back"><i class="fa fa-arrow-left"></i> Back</a>
-<h2><i class="fa-solid fa-building-columns"></i>BEJJA CREDIT</h2>
-<p>Loan Application Form</p>
-</div>
+    <!-- Progress Steps -->
+    <div class="progress-steps">
+        <div class="step-indicator active" id="stepIndicator1">
+            <div class="step-circle">1</div>
+            <div class="step-label">Loan Details</div>
+            <div class="step-line"></div>
+        </div>
+        <div class="step-indicator" id="stepIndicator2">
+            <div class="step-circle">2</div>
+            <div class="step-label">Guarantor 1</div>
+            <div class="step-line"></div>
+        </div>
+        <div class="step-indicator" id="stepIndicator3">
+            <div class="step-circle">3</div>
+            <div class="step-label">Guarantor 2</div>
+            <div class="step-line"></div>
+        </div>
+        <div class="step-indicator" id="stepIndicator4">
+            <div class="step-circle">4</div>
+            <div class="step-label">Review</div>
+        </div>
+    </div>
 
-<div class="container py-4"><div class="card p-4">
-<div id="errorBox" class="alert alert-danger"></div>
+    <!-- Main Content -->
+    <div class="container-main">
+        <div class="form-card">
+            <!-- Error Box -->
+            <div class="error-box" id="errorBox">
+                <i class="fa fa-exclamation-circle"></i>
+                <span id="errorMessage"></span>
+            </div>
 
-<h4 class="section-title"><i class="fa fa-user"></i>Client Information</h4>
-<div class="row">
-<div class="col-md-6"><div class="info-item"><label>Full Name</label><span id="fullname">-</span></div></div>
-<div class="col-md-6"><div class="info-item"><label>National ID</label><span id="nationalID">-</span></div></div>
-<div class="col-md-6"><div class="info-item"><label>Phone Number</label><span id="phone">-</span></div></div>
-<div class="col-md-6"><div class="info-item"><label>Email</label><span id="email">-</span></div></div>
-<div class="col-md-6"><div class="info-item"><label>Occupation</label><span id="occupation">-</span></div></div>
-<div class="col-md-6"><div class="info-item"><label>Employer</label><span id="employer">-</span></div></div>
-<div class="col-md-6"><div class="info-item"><label>Monthly Income</label><span id="income">-</span></div></div>
-<div class="col-md-6"><div class="info-item"><label>County</label><span id="county">-</span></div></div>
-<div class="col-12"><div class="info-item"><label>Address</label><span id="address">-</span></div></div>
-</div>
+            <form id="loanApplicationForm" autocomplete="off">
+                
+                <!-- Step 1: Loan Details -->
+                <div class="form-step active" id="step1">
+                    <h4 class="section-title">
+                        <i class="fa fa-user"></i> Client Information
+                    </h4>
+                    <div class="client-info-grid">
+                        <div class="info-item"><label>Full Name</label><span id="fullname">-</span></div>
+                        <div class="info-item"><label>National ID</label><span id="nationalID">-</span></div>
+                        <div class="info-item"><label>Phone Number</label><span id="phone">-</span></div>
+                        <div class="info-item"><label>Email</label><span id="email">-</span></div>
+                        <div class="info-item"><label>Occupation</label><span id="occupation">-</span></div>
+                        <div class="info-item"><label>Employer</label><span id="employer">-</span></div>
+                        <div class="info-item"><label>Monthly Income</label><span id="income" class="text-success fw-bold">-</span></div>
+                        <div class="info-item"><label>County</label><span id="county">-</span></div>
+                        <div class="info-item" style="grid-column: 1 / -1;"><label>Address</label><span id="address">-</span></div>
+                    </div>
 
-<h4 class="section-title"><i class="fa fa-money-bill"></i>Loan Details</h4>
-<div class="row">
-<div class="col-md-6 mb-3"><label>Loan Amount (KES)</label><input type="number" id="loanAmount" class="form-control" placeholder="Enter amount" oninput="calculateInterest()"></div>
-<div class="col-md-6 mb-3"><label>Loan Purpose</label><input id="purpose" class="form-control" placeholder="Business / Emergency"></div>
-</div>
-<div class="interest-box"><h5>Monthly Interest (20%)</h5><h2 id="monthlyInterest">KES 0</h2></div>
+                    <h4 class="section-title">
+                        <i class="fa fa-money-bill"></i> Loan Details
+                    </h4>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Loan Amount (KSh)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">KSh</span>
+                                <input type="number" id="loanAmount" class="form-control" 
+                                       placeholder="Enter amount (1,000 - 100,000)" 
+                                       min="1000" max="100000" oninput="calculateInterest()">
+                            </div>
+                            <small class="text-muted">Min: KSh 1,000 | Max: KSh 100,000</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Loan Purpose</label>
+                            <select id="purpose" class="form-select" onchange="handlePurposeChange()">
+                                <option value="">Select purpose...</option>
+                                <option value="Business Expansion">Business Expansion</option>
+                                <option value="Education">Education/School Fees</option>
+                                <option value="Emergency">Emergency/Medical</option>
+                                <option value="Agriculture">Agriculture/Farming</option>
+                                <option value="Home Improvement">Home Improvement</option>
+                                <option value="Debt Consolidation">Debt Consolidation</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-12 mb-3" id="otherPurposeDiv" style="display:none;">
+                            <label class="form-label">Specify Purpose</label>
+                            <input type="text" id="otherPurpose" class="form-control" placeholder="Please specify...">
+                        </div>
+                    </div>
 
-<h4 class="section-title mt-4"><i class="fa fa-users"></i>Guarantor 1</h4>
-<div class="guarantor-card"><div class="row">
-<div class="col-md-6 mb-3"><label>Full Name</label><input id="g1_name" class="form-control" placeholder="Guarantor full name"></div>
-<div class="col-md-6 mb-3"><label>National ID</label><input id="g1_id" class="form-control" placeholder="ID number"></div>
-<div class="col-md-6 mb-3"><label>Phone Number</label><div class="input-group"><input id="g1_phone" class="form-control" placeholder="07XXXXXXXX"><button class="btn btn-outline-success verify-btn" type="button" id="g1_sendOTPBtn" onclick="sendGuarantorOTP('g1')"><i class="fa fa-paper-plane"></i> Verify</button></div><div id="g1_phoneStatus" class="mt-1"></div></div>
-<div class="col-md-6 mb-3"><div class="verify-box" id="g1_otpBox"><label class="fw-semibold">Enter Code</label><div class="d-flex gap-1 mt-1"><input type="text" id="g1_otp1" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g1_otp2')"><input type="text" id="g1_otp2" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g1_otp3')"><input type="text" id="g1_otp3" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g1_otp4')"><input type="text" id="g1_otp4" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g1_otp5')"><input type="text" id="g1_otp5" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g1_otp6')"><input type="text" id="g1_otp6" maxlength="1" class="otp-input-small"></div><button class="btn btn-success btn-sm w-100 mt-2" type="button" onclick="verifyGuarantorOTP('g1')"><i class="fa fa-check-circle"></i> Confirm</button><div id="g1_otpStatus" class="mt-1"></div></div></div>
-<div class="col-md-6 mb-3"><label>Relationship</label><input id="g1_relationship" class="form-control" placeholder="Friend / Relative"></div>
-<div class="col-md-12 mb-3"><label>Physical Address</label><textarea id="g1_address" class="form-control" rows="2" placeholder="Address"></textarea></div>
-</div>
-<h6 class="fw-bold mt-3"><i class="fa fa-file-image"></i> Documents</h6>
-<div class="row">
-<div class="col-md-4"><div class="upload-box"><label>Profile Photo</label><input type="file" id="g1_photo" class="form-control form-control-sm" accept="image/*" onchange="previewImg(this,'g1_photo_preview')"><img id="g1_photo_preview" class="preview-img"></div></div>
-<div class="col-md-4"><div class="upload-box"><label>ID Front</label><input type="file" id="g1_idfront" class="form-control form-control-sm" accept="image/*" onchange="previewImg(this,'g1_idfront_preview')"><img id="g1_idfront_preview" class="preview-img"></div></div>
-<div class="col-md-4"><div class="upload-box"><label>ID Back</label><input type="file" id="g1_idback" class="form-control form-control-sm" accept="image/*" onchange="previewImg(this,'g1_idback_preview')"><img id="g1_idback_preview" class="preview-img"></div></div>
-</div></div>
+                    <!-- Interest Calculation -->
+                    <div class="interest-box">
+                        <h5><i class="fa fa-calculator me-2"></i>Interest Calculation (20% Monthly)</h5>
+                        <h2 id="monthlyInterest">KSh 0.00</h2>
+                        <small>Total repayable: <strong id="totalRepayable">KSh 0.00</strong></small>
+                    </div>
 
-<h4 class="section-title mt-4"><i class="fa fa-users"></i>Guarantor 2</h4>
-<div class="guarantor-card"><div class="row">
-<div class="col-md-6 mb-3"><label>Full Name</label><input id="g2_name" class="form-control" placeholder="Guarantor full name"></div>
-<div class="col-md-6 mb-3"><label>National ID</label><input id="g2_id" class="form-control" placeholder="ID number"></div>
-<div class="col-md-6 mb-3"><label>Phone Number</label><div class="input-group"><input id="g2_phone" class="form-control" placeholder="07XXXXXXXX"><button class="btn btn-outline-success verify-btn" type="button" id="g2_sendOTPBtn" onclick="sendGuarantorOTP('g2')"><i class="fa fa-paper-plane"></i> Verify</button></div><div id="g2_phoneStatus" class="mt-1"></div></div>
-<div class="col-md-6 mb-3"><div class="verify-box" id="g2_otpBox"><label class="fw-semibold">Enter Code</label><div class="d-flex gap-1 mt-1"><input type="text" id="g2_otp1" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g2_otp2')"><input type="text" id="g2_otp2" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g2_otp3')"><input type="text" id="g2_otp3" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g2_otp4')"><input type="text" id="g2_otp4" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g2_otp5')"><input type="text" id="g2_otp5" maxlength="1" class="otp-input-small" oninput="otpNextG(this,'g2_otp6')"><input type="text" id="g2_otp6" maxlength="1" class="otp-input-small"></div><button class="btn btn-success btn-sm w-100 mt-2" type="button" onclick="verifyGuarantorOTP('g2')"><i class="fa fa-check-circle"></i> Confirm</button><div id="g2_otpStatus" class="mt-1"></div></div></div>
-<div class="col-md-6 mb-3"><label>Relationship</label><input id="g2_relationship" class="form-control" placeholder="Friend / Relative"></div>
-<div class="col-md-12 mb-3"><label>Physical Address</label><textarea id="g2_address" class="form-control" rows="2" placeholder="Address"></textarea></div>
-</div>
-<h6 class="fw-bold mt-3"><i class="fa fa-file-image"></i> Documents</h6>
-<div class="row">
-<div class="col-md-4"><div class="upload-box"><label>Profile Photo</label><input type="file" id="g2_photo" class="form-control form-control-sm" accept="image/*" onchange="previewImg(this,'g2_photo_preview')"><img id="g2_photo_preview" class="preview-img"></div></div>
-<div class="col-md-4"><div class="upload-box"><label>ID Front</label><input type="file" id="g2_idfront" class="form-control form-control-sm" accept="image/*" onchange="previewImg(this,'g2_idfront_preview')"><img id="g2_idfront_preview" class="preview-img"></div></div>
-<div class="col-md-4"><div class="upload-box"><label>ID Back</label><input type="file" id="g2_idback" class="form-control form-control-sm" accept="image/*" onchange="previewImg(this,'g2_idback_preview')"><img id="g2_idback_preview" class="preview-img"></div></div>
-</div></div>
+                    <div class="text-end mt-4">
+                        <button type="button" class="btn btn-primary btn-nav" onclick="nextStep(2)">
+                            Next <i class="fa fa-arrow-right ms-1"></i>
+                        </button>
+                    </div>
+                </div>
 
-<div class="text-center mt-4"><button id="submitBtn" onclick="submitLoanApplication()" class="btn btn-primary btn-submit w-100"><i class="fa fa-paper-plane"></i>Submit Loan Application</button></div>
-</div></div>
+                <!-- Step 2: Guarantor 1 -->
+                <div class="form-step" id="step2">
+                    <h4 class="section-title">
+                        <i class="fa fa-users"></i> Guarantor 1 Details
+                    </h4>
+                    <div class="guarantor-card">
+                        <div class="guarantor-header">
+                            <div class="guarantor-avatar">G1</div>
+                            <div>
+                                <h5 class="mb-0">Primary Guarantor</h5>
+                                <small class="text-muted">Must be a Kenyan citizen with valid ID</small>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Full Name *</label>
+                                <input id="g1_name" class="form-control" placeholder="Enter full name">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">National ID *</label>
+                                <input id="g1_id" class="form-control" placeholder="ID number (6-8 digits)">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Phone Number *</label>
+                                <div class="input-group">
+                                    <input id="g1_phone" class="form-control" placeholder="07XXXXXXXX">
+                                    <button class="btn btn-outline-success" type="button" 
+                                            onclick="sendGuarantorOTP('g1')" id="g1_sendOTPBtn">
+                                        <i class="fa fa-paper-plane"></i> Verify
+                                    </button>
+                                </div>
+                                <div id="g1_phoneStatus" class="mt-1"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="verify-box" id="g1_otpBox">
+                                    <label class="fw-semibold">Enter 6-digit Code</label>
+                                    <div class="d-flex gap-2 mt-2 justify-content-center">
+                                        <input type="text" id="g1_otp1" maxlength="1" class="otp-input-small" oninput="otpNext('g1', this, 'g1_otp2')">
+                                        <input type="text" id="g1_otp2" maxlength="1" class="otp-input-small" oninput="otpNext('g1', this, 'g1_otp3')">
+                                        <input type="text" id="g1_otp3" maxlength="1" class="otp-input-small" oninput="otpNext('g1', this, 'g1_otp4')">
+                                        <input type="text" id="g1_otp4" maxlength="1" class="otp-input-small" oninput="otpNext('g1', this, 'g1_otp5')">
+                                        <input type="text" id="g1_otp5" maxlength="1" class="otp-input-small" oninput="otpNext('g1', this, 'g1_otp6')">
+                                        <input type="text" id="g1_otp6" maxlength="1" class="otp-input-small">
+                                    </div>
+                                    <button class="btn btn-success btn-sm w-100 mt-3" type="button" onclick="verifyGuarantorOTP('g1')">
+                                        <i class="fa fa-check-circle"></i> Confirm Code
+                                    </button>
+                                    <div id="g1_otpStatus" class="mt-2 text-center"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Relationship</label>
+                                <select id="g1_relationship" class="form-select">
+                                    <option value="">Select...</option>
+                                    <option value="Parent">Parent</option>
+                                    <option value="Sibling">Sibling</option>
+                                    <option value="Spouse">Spouse</option>
+                                    <option value="Friend">Friend</option>
+                                    <option value="Colleague">Colleague</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Physical Address</label>
+                                <textarea id="g1_address" class="form-control" rows="2" placeholder="Enter full address"></textarea>
+                            </div>
+                        </div>
 
-<script>
-function money(v){return"KES "+Number(v||0).toLocaleString();}
-document.addEventListener("DOMContentLoaded",()=>{
-    let c=AUTH.currentClient();if(!c)return;
-    document.getElementById("fullname").textContent=c.fullname||"-";
-    document.getElementById("nationalID").textContent=c.nationalID||"-";
-    document.getElementById("phone").textContent=c.phone||"-";
-    document.getElementById("email").textContent=c.email||"-";
-    document.getElementById("occupation").textContent=c.occupation||"-";
-    document.getElementById("employer").textContent=c.employer||"-";
-    document.getElementById("income").textContent=money(c.monthlyIncome);
-    document.getElementById("county").textContent=c.county||"-";
-    document.getElementById("address").textContent=c.address||"-";
-});
-function calculateInterest(){let a=Number(document.getElementById("loanAmount").value)||0;document.getElementById("monthlyInterest").innerHTML="KES "+(a*0.20).toLocaleString();}
-function previewImg(i,t){let f=i.files[0];if(!f)return;let r=new FileReader();r.onload=function(e){let img=document.getElementById(t);img.src=e.target.result;img.style.display="block";};r.readAsDataURL(f);}
-function compressImage(f){return new Promise(r=>{let reader=new FileReader();reader.onload=function(e){let img=new Image();img.onload=function(){let c=document.createElement("canvas");let w=img.width,h=img.height,max=800;if(w>max){h=h*max/w;w=max;}c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);r(c.toDataURL("image/jpeg",0.7));};img.src=e.target.result;};reader.readAsDataURL(f);});}
+                        <h6 class="fw-bold mt-3 mb-3"><i class="fa fa-file-image me-2"></i>Documents</h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="upload-box">
+                                    <label><i class="fa fa-camera me-1"></i>Profile Photo</label>
+                                    <input type="file" id="g1_photo" class="form-control form-control-sm mt-2" 
+                                           accept="image/*" onchange="previewImg(this, 'g1_photo_preview')">
+                                    <img id="g1_photo_preview" class="preview-img">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="upload-box">
+                                    <label><i class="fa fa-id-card me-1"></i>ID Front</label>
+                                    <input type="file" id="g1_idfront" class="form-control form-control-sm mt-2" 
+                                           accept="image/*" onchange="previewImg(this, 'g1_idfront_preview')">
+                                    <img id="g1_idfront_preview" class="preview-img">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="upload-box">
+                                    <label><i class="fa fa-id-card me-1"></i>ID Back</label>
+                                    <input type="file" id="g1_idback" class="form-control form-control-sm mt-2" 
+                                           accept="image/*" onchange="previewImg(this, 'g1_idback_preview')">
+                                    <img id="g1_idback_preview" class="preview-img">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-const guarantorOTPs={};
-function sendGuarantorOTP(p){
-    let phone=document.getElementById(p+"_phone").value.trim();
-    if(!/^07\d{8}$/.test(phone)){document.getElementById(p+"_phoneStatus").innerHTML='<span class="status-error">Enter valid 07XXXXXXXX</span>';return;}
-    let otp=String(Math.floor(100000+Math.random()*900000));guarantorOTPs[p]=otp;
-    console.log("OTP for "+p+":",otp);
-    document.getElementById(p+"_phoneStatus").innerHTML='<span class="status-ok">Code sent! (Demo: <b>'+otp+'</b>)</span>';
-    document.getElementById(p+"_otpBox").style.display="block";
-    document.getElementById(p+"_sendOTPBtn").disabled=true;
-    document.getElementById(p+"_sendOTPBtn").innerHTML='<i class="fa fa-clock"></i> Sent';
-}
-function otpNextG(c,n){if(c.value.length===1&&n)document.getElementById(n).focus();}
-function verifyGuarantorOTP(p){
-    let entered=document.getElementById(p+"_otp1").value+document.getElementById(p+"_otp2").value+document.getElementById(p+"_otp3").value+document.getElementById(p+"_otp4").value+document.getElementById(p+"_otp5").value+document.getElementById(p+"_otp6").value;
-    if(entered.length<6){document.getElementById(p+"_otpStatus").innerHTML='<span class="status-error">Enter complete code</span>';return;}
-    if(entered===guarantorOTPs[p]){document.getElementById(p+"_otpStatus").innerHTML='<span class="status-ok"><i class="fa fa-check-circle"></i> Verified!</span>';sessionStorage.setItem(p+"_phoneVerified","true");document.getElementById(p+"_otpBox").style.display="none";document.getElementById(p+"_sendOTPBtn").innerHTML='<i class="fa fa-check"></i> Done';}
-    else{document.getElementById(p+"_otpStatus").innerHTML='<span class="status-error">Incorrect code</span>';}
-}
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-outline-primary btn-nav" onclick="prevStep(1)">
+                            <i class="fa fa-arrow-left me-1"></i> Back
+                        </button>
+                        <button type="button" class="btn btn-primary btn-nav" onclick="nextStep(3)">
+                            Next <i class="fa fa-arrow-right ms-1"></i>
+                        </button>
+                    </div>
+                </div>
 
-async function submitLoanApplication(){
-let errorBox=document.getElementById("errorBox"),btn=document.getElementById("submitBtn");errorBox.style.display="none";
-let client=AUTH.currentClient();if(!client)return;
-let amount=Number(document.getElementById("loanAmount").value),purpose=document.getElementById("purpose").value.trim();
-if(amount<=0){errorBox.innerHTML="Enter a valid loan amount";errorBox.style.display="block";return;}
-if(!purpose){errorBox.innerHTML="Enter loan purpose";errorBox.style.display="block";return;}
-let g1name=document.getElementById("g1_name").value.trim(),g2name=document.getElementById("g2_name").value.trim();
-if(!g1name||!g2name){errorBox.innerHTML="Complete both guarantor details";errorBox.style.display="block";return;}
-if(!sessionStorage.getItem("g1_phoneVerified")){errorBox.innerHTML="Verify Guarantor 1 phone number";errorBox.style.display="block";return;}
-if(!sessionStorage.getItem("g2_phoneVerified")){errorBox.innerHTML="Verify Guarantor 2 phone number";errorBox.style.display="block";return;}
-btn.disabled=true;btn.innerHTML="Compressing...";
-let g1photo="",g1front="",g1back="",g2photo="",g2front="",g2back="";
-if(document.getElementById("g1_photo").files[0])g1photo=await compressImage(document.getElementById("g1_photo").files[0]);
-if(document.getElementById("g1_idfront").files[0])g1front=await compressImage(document.getElementById("g1_idfront").files[0]);
-if(document.getElementById("g1_idback").files[0])g1back=await compressImage(document.getElementById("g1_idback").files[0]);
-if(document.getElementById("g2_photo").files[0])g2photo=await compressImage(document.getElementById("g2_photo").files[0]);
-if(document.getElementById("g2_idfront").files[0])g2front=await compressImage(document.getElementById("g2_idfront").files[0]);
-if(document.getElementById("g2_idback").files[0])g2back=await compressImage(document.getElementById("g2_idback").files[0]);
-btn.innerHTML="Submitting...";
-let result=await api.addApplication({amount:amount,purpose:purpose,
-guarantor1:{name:g1name,id:document.getElementById("g1_id").value,phone:document.getElementById("g1_phone").value,relationship:document.getElementById("g1_relationship").value,address:document.getElementById("g1_address").value,photo:g1photo,idFront:g1front,idBack:g1back},
-guarantor2:{name:g2name,id:document.getElementById("g2_id").value,phone:document.getElementById("g2_phone").value,relationship:document.getElementById("g2_relationship").value,address:document.getElementById("g2_address").value,photo:g2photo,idFront:g2front,idBack:g2back}});
-if(result.success){sessionStorage.removeItem("g1_phoneVerified");sessionStorage.removeItem("g2_phoneVerified");
-document.body.innerHTML=`<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;"><div style="background:white;border-radius:25px;padding:50px 40px;text-align:center;max-width:500px;"><i class="fa-solid fa-circle-check" style="font-size:80px;color:#198754;margin-bottom:20px;"></i><h2 style="color:#0F4C81;">Application Submitted!</h2><p style="color:#666;margin-bottom:25px;">Your loan application is under review.</p><a href="client-dashboard.html" style="background:#2563EB;color:white;padding:14px;border-radius:12px;text-decoration:none;font-weight:600;display:block;">Go to Dashboard</a></div></div>`;}
-else{errorBox.innerHTML=result.message;errorBox.style.display="block";btn.disabled=false;btn.innerHTML="Submit Loan Application";}
-}
-</script>
+                <!-- Step 3: Guarantor 2 -->
+                <div class="form-step" id="step3">
+                    <h4 class="section-title">
+                        <i class="fa fa-users"></i> Guarantor 2 Details
+                    </h4>
+                    <div class="guarantor-card">
+                        <div class="guarantor-header">
+                            <div class="guarantor-avatar" style="background: #6f42c1;">G2</div>
+                            <div>
+                                <h5 class="mb-0">Secondary Guarantor</h5>
+                                <small class="text-muted">Must be different from Guarantor 1</small>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Full Name *</label>
+                                <input id="g2_name" class="form-control" placeholder="Enter full name">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">National ID *</label>
+                                <input id="g2_id" class="form-control" placeholder="ID number (6-8 digits)">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Phone Number *</label>
+                                <div class="input-group">
+                                    <input id="g2_phone" class="form-control" placeholder="07XXXXXXXX">
+                                    <button class="btn btn-outline-success" type="button" 
+                                            onclick="sendGuarantorOTP('g2')" id="g2_sendOTPBtn">
+                                        <i class="fa fa-paper-plane"></i> Verify
+                                    </button>
+                                </div>
+                                <div id="g2_phoneStatus" class="mt-1"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="verify-box" id="g2_otpBox">
+                                    <label class="fw-semibold">Enter 6-digit Code</label>
+                                    <div class="d-flex gap-2 mt-2 justify-content-center">
+                                        <input type="text" id="g2_otp1" maxlength="1" class="otp-input-small" oninput="otpNext('g2', this, 'g2_otp2')">
+                                        <input type="text" id="g2_otp2" maxlength="1" class="otp-input-small" oninput="otpNext('g2', this, 'g2_otp3')">
+                                        <input type="text" id="g2_otp3" maxlength="1" class="otp-input-small" oninput="otpNext('g2', this, 'g2_otp4')">
+                                        <input type="text" id="g2_otp4" maxlength="1" class="otp-input-small" oninput="otpNext('g2', this, 'g2_otp5')">
+                                        <input type="text" id="g2_otp5" maxlength="1" class="otp-input-small" oninput="otpNext('g2', this, 'g2_otp6')">
+                                        <input type="text" id="g2_otp6" maxlength="1" class="otp-input-small">
+                                    </div>
+                                    <button class="btn btn-success btn-sm w-100 mt-3" type="button" onclick="verifyGuarantorOTP('g2')">
+                                        <i class="fa fa-check-circle"></i> Confirm Code
+                                    </button>
+                                    <div id="g2_otpStatus" class="mt-2 text-center"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Relationship</label>
+                                <select id="g2_relationship" class="form-select">
+                                    <option value="">Select...</option>
+                                    <option value="Parent">Parent</option>
+                                    <option value="Sibling">Sibling</option>
+                                    <option value="Spouse">Spouse</option>
+                                    <option value="Friend">Friend</option>
+                                    <option value="Colleague">Colleague</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Physical Address</label>
+                                <textarea id="g2_address" class="form-control" rows="2" placeholder="Enter full address"></textarea>
+                            </div>
+                        </div>
+
+                        <h6 class="fw-bold mt-3 mb-3"><i class="fa fa-file-image me-2"></i>Documents</h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="upload-box">
+                                    <label><i class="fa fa-camera me-1"></i>Profile Photo</label>
+                                    <input type="file" id="g2_photo" class="form-control form-control-sm mt-2" 
+                                           accept="image/*" onchange="previewImg(this, 'g2_photo_preview')">
+                                    <img id="g2_photo_preview" class="preview-img">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="upload-box">
+                                    <label><i class="fa fa-id-card me-1"></i>ID Front</label>
+                                    <input type="file" id="g2_idfront" class="form-control form-control-sm mt-2" 
+                                           accept="image/*" onchange="previewImg(this, 'g2_idfront_preview')">
+                                    <img id="g2_idfront_preview" class="preview-img">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="upload-box">
+                                    <label><i class="fa fa-id-card me-1"></i>ID Back</label>
+                                    <input type="file" id="g2_idback" class="form-control form-control-sm mt-2" 
+                                           accept="image/*" onchange="previewImg(this, 'g2_idback_preview')">
+                                    <img id="g2_idback_preview" class="preview-img">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-outline-primary btn-nav" onclick="prevStep(2)">
+                            <i class="fa fa-arrow-left me-1"></i> Back
+                        </button>
+                        <button type="button" class="btn btn-primary btn-nav" onclick="nextStep(4)">
+                            Review <i class="fa fa-arrow-right ms-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Review & Submit -->
+                <div class="form-step" id="step4">
+                    <h4 class="section-title">
+                        <i class="fa fa-clipboard-check"></i> Review Your Application
+                    </h4>
+                    
+                    <div id="reviewContent" class="mb-4"></div>
+
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle me-2"></i>
+                        By submitting this application, you confirm that all information provided is accurate. 
+                        False information may lead to application rejection.
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-outline-primary btn-nav" onclick="prevStep(3)">
+                            <i class="fa fa-arrow-left me-1"></i> Back
+                        </button>
+                        <button type="button" class="btn btn-success btn-nav" id="submitBtn" onclick="submitLoanApplication()">
+                            <i class="fa fa-paper-plane me-1"></i> Submit Application
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    
+    <script>
+        // ==================== AUTH CHECK ====================
+        if (!AUTH.currentClient()) {
+            window.location.href = "client-portal.html";
+        }
+
+        // ==================== GLOBAL STATE ====================
+        let currentStep = 1;
+        const guarantorOTPs = {};
+
+        // ==================== UTILITY FUNCTIONS ====================
+        function money(v) {
+            return "KSh " + Number(v || 0).toLocaleString("en-KE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function showError(message) {
+            const errorBox = document.getElementById("errorBox");
+            document.getElementById("errorMessage").textContent = message;
+            errorBox.classList.add("show");
+            setTimeout(() => errorBox.classList.remove("show"), 5000);
+        }
+
+        function hideError() {
+            document.getElementById("errorBox").classList.remove("show");
+        }
+
+        // ==================== CLIENT DATA ====================
+        document.addEventListener("DOMContentLoaded", () => {
+            const c = AUTH.currentClient();
+            if (!c) return;
+
+            document.getElementById("fullname").textContent = c.fullname || "-";
+            document.getElementById("nationalID").textContent = c.nationalID || "-";
+            document.getElementById("phone").textContent = c.phone || "-";
+            document.getElementById("email").textContent = c.email || "-";
+            document.getElementById("occupation").textContent = c.occupation || "-";
+            document.getElementById("employer").textContent = c.employer || "-";
+            document.getElementById("income").textContent = money(c.monthlyIncome);
+            document.getElementById("county").textContent = c.county || "-";
+            document.getElementById("address").textContent = c.address || "-";
+        });
+
+        // ==================== INTEREST CALCULATION ====================
+        function calculateInterest() {
+            const amount = Number(document.getElementById("loanAmount").value) || 0;
+            const interest = amount * 0.20;
+            const total = amount + interest;
+            
+            document.getElementById("monthlyInterest").textContent = money(interest);
+            document.getElementById("totalRepayable").textContent = money(total);
+        }
+
+        function handlePurposeChange() {
+            const purpose = document.getElementById("purpose").value;
+            document.getElementById("otherPurposeDiv").style.display = 
+                purpose === "Other" ? "block" : "none";
+        }
+
+        // ==================== STEP NAVIGATION ====================
+        function nextStep(step) {
+            // Validate current step before proceeding
+            if (!validateStep(currentStep)) return;
+
+            // Hide all steps
+            document.querySelectorAll(".form-step").forEach(el => el.classList.remove("active"));
+            
+            // Show target step
+            document.getElementById("step" + step).classList.add("active");
+            
+            // Update progress indicators
+            updateProgress(step);
+            
+            // Update review content if going to step 4
+            if (step === 4) updateReviewContent();
+            
+            currentStep = step;
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            hideError();
+        }
+
+        function prevStep(step) {
+            document.querySelectorAll(".form-step").forEach(el => el.classList.remove("active"));
+            document.getElementById("step" + step).classList.add("active");
+            updateProgress(step);
+            currentStep = step;
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            hideError();
+        }
+
+        function updateProgress(activeStep) {
+            for (let i = 1; i <= 4; i++) {
+                const indicator = document.getElementById("stepIndicator" + i);
+                indicator.classList.remove("active", "completed");
+                
+                if (i < activeStep) indicator.classList.add("completed");
+                if (i === activeStep) indicator.classList.add("active");
+            }
+        }
+
+        // ==================== VALIDATION ====================
+        function validateStep(step) {
+            switch (step) {
+                case 1:
+                    const amount = Number(document.getElementById("loanAmount").value) || 0;
+                    const purpose = document.getElementById("purpose").value;
+                    
+                    if (amount < 1000) {
+                        showError("Minimum loan amount is KSh 1,000");
+                        return false;
+                    }
+                    if (amount > 100000) {
+                        showError("Maximum loan amount is KSh 100,000");
+                        return false;
+                    }
+                    if (!purpose) {
+                        showError("Please select a loan purpose");
+                        return false;
+                    }
+                    if (purpose === "Other" && !document.getElementById("otherPurpose").value.trim()) {
+                        showError("Please specify the loan purpose");
+                        return false;
+                    }
+                    return true;
+
+                case 2:
+                    if (!document.getElementById("g1_name").value.trim()) {
+                        showError("Please enter Guarantor 1 full name");
+                        return false;
+                    }
+                    if (!document.getElementById("g1_id").value.trim()) {
+                        showError("Please enter Guarantor 1 National ID");
+                        return false;
+                    }
+                    if (!sessionStorage.getItem("g1_phoneVerified")) {
+                        showError("Please verify Guarantor 1 phone number");
+                        return false;
+                    }
+                    return true;
+
+                case 3:
+                    if (!document.getElementById("g2_name").value.trim()) {
+                        showError("Please enter Guarantor 2 full name");
+                        return false;
+                    }
+                    if (!document.getElementById("g2_id").value.trim()) {
+                        showError("Please enter Guarantor 2 National ID");
+                        return false;
+                    }
+                    // Check if same as Guarantor 1
+                    if (document.getElementById("g2_id").value === document.getElementById("g1_id").value) {
+                        showError("Guarantor 2 must be different from Guarantor 1");
+                        return false;
+                    }
+                    if (!sessionStorage.getItem("g2_phoneVerified")) {
+                        showError("Please verify Guarantor 2 phone number");
+                        return false;
+                    }
+                    return true;
+
+                default:
+                    return true;
+            }
+        }
+
+        // ==================== REVIEW CONTENT ====================
+        function updateReviewContent() {
+            const amount = document.getElementById("loanAmount").value;
+            const purpose = document.getElementById("purpose").value === "Other" ? 
+                document.getElementById("otherPurpose").value : 
+                document.getElementById("purpose").value;
+            const interest = Number(amount) * 0.20;
+
+            document.getElementById("reviewContent").innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-primary">Loan Details</h6>
+                        <p><b>Amount:</b> ${money(amount)}</p>
+                        <p><b>Purpose:</b> ${purpose}</p>
+                        <p><b>Interest (20%):</b> ${money(interest)}</p>
+                        <p><b>Total Repayable:</b> ${money(Number(amount) + interest)}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-primary">Guarantors</h6>
+                        <p><b>Guarantor 1:</b> ${document.getElementById("g1_name").value}</p>
+                        <p><b>Guarantor 2:</b> ${document.getElementById("g2_name").value}</p>
+                        <p class="text-success"><i class="fa fa-check-circle"></i> Both phones verified</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==================== IMAGE HANDLING ====================
+        function previewImg(input, previewId) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById(previewId);
+                img.src = e.target.result;
+                img.style.display = "block";
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function compressImage(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement("canvas");
+                        let w = img.width, h = img.height;
+                        const max = 800;
+                        if (w > max) { h = h * max / w; w = max; }
+                        canvas.width = w;
+                        canvas.height = h;
+                        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL("image/jpeg", 0.7));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ==================== OTP HANDLING ====================
+        function sendGuarantorOTP(prefix) {
+            const phone = document.getElementById(prefix + "_phone").value.trim();
+            const phoneRegex = /^07\d{8}$/;
+
+            if (!phoneRegex.test(phone)) {
+                document.getElementById(prefix + "_phoneStatus").innerHTML = 
+                    '<span class="status-error">Enter valid phone (07XXXXXXXX)</span>';
+                return;
+            }
+
+            // Generate OTP
+            const otp = String(Math.floor(100000 + Math.random() * 900000));
+            guarantorOTPs[prefix] = otp;
+
+            // Show OTP in demo mode
+            console.log("OTP for " + prefix + ":", otp);
+            document.getElementById(prefix + "_phoneStatus").innerHTML = 
+                '<span class="status-ok"><i class="fa fa-check-circle"></i> Code sent! (Demo: <b>' + otp + '</b>)</span>';
+            
+            // Show OTP input box
+            document.getElementById(prefix + "_otpBox").style.display = "block";
+            
+            // Disable send button
+            const sendBtn = document.getElementById(prefix + "_sendOTPBtn");
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fa fa-clock"></i> Sent';
+            
+            // Focus first OTP input
+            document.getElementById(prefix + "_otp1").focus();
+        }
+
+        function otpNext(prefix, currentInput, nextId) {
+            if (currentInput.value.length === 1 && nextId) {
+                document.getElementById(nextId).focus();
+            }
+        }
+
+        function verifyGuarantorOTP(prefix) {
+            // Collect OTP digits
+            let entered = "";
+            for (let i = 1; i <= 6; i++) {
+                entered += document.getElementById(prefix + "_otp" + i).value;
+            }
+
+            if (entered.length < 6) {
+                document.getElementById(prefix + "_otpStatus").innerHTML = 
+                    '<span class="status-error">Enter complete 6-digit code</span>';
+                return;
+            }
+
+            if (entered === guarantorOTPs[prefix]) {
+                document.getElementById(prefix + "_otpStatus").innerHTML = 
+                    '<span class="status-ok"><i class="fa fa-check-circle"></i> Verified successfully!</span>';
+                sessionStorage.setItem(prefix + "_phoneVerified", "true");
+                
+                // Hide OTP box
+                document.getElementById(prefix + "_otpBox").style.display = "none";
+                
+                // Update button
+                const sendBtn = document.getElementById(prefix + "_sendOTPBtn");
+                sendBtn.innerHTML = '<i class="fa fa-check"></i> Verified';
+                sendBtn.classList.remove("btn-outline-success");
+                sendBtn.classList.add("btn-success");
+            } else {
+                document.getElementById(prefix + "_otpStatus").innerHTML = 
+                    '<span class="status-error">Incorrect code. Please try again.</span>';
+            }
+        }
+
+        // ==================== FORM SUBMISSION ====================
+        async function submitLoanApplication() {
+            const submitBtn = document.getElementById("submitBtn");
+            const client = AUTH.currentClient();
+            if (!client) return;
+
+            // Get loan details
+            const amount = Number(document.getElementById("loanAmount").value);
+            let purpose = document.getElementById("purpose").value;
+            if (purpose === "Other") {
+                purpose = document.getElementById("otherPurpose").value.trim();
+            }
+
+            // Validate again
+            if (!validateStep(1) || !validateStep(2) || !validateStep(3)) return;
+
+            // Disable button
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Compressing images...';
+
+            try {
+                // Compress images
+                const g1photo = await getCompressedImage("g1_photo");
+                const g1front = await getCompressedImage("g1_idfront");
+                const g1back = await getCompressedImage("g1_idback");
+                const g2photo = await getCompressedImage("g2_photo");
+                const g2front = await getCompressedImage("g2_idfront");
+                const g2back = await getCompressedImage("g2_idback");
+
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting application...';
+
+                // Submit application
+                const result = await api.addApplication({
+                    amount,
+                    purpose,
+                    guarantor1: {
+                        name: document.getElementById("g1_name").value.trim(),
+                        id: document.getElementById("g1_id").value.trim(),
+                        phone: document.getElementById("g1_phone").value.trim(),
+                        relationship: document.getElementById("g1_relationship").value,
+                        address: document.getElementById("g1_address").value.trim(),
+                        photo: g1photo,
+                        idFront: g1front,
+                        idBack: g1back
+                    },
+                    guarantor2: {
+                        name: document.getElementById("g2_name").value.trim(),
+                        id: document.getElementById("g2_id").value.trim(),
+                        phone: document.getElementById("g2_phone").value.trim(),
+                        relationship: document.getElementById("g2_relationship").value,
+                        address: document.getElementById("g2_address").value.trim(),
+                        photo: g2photo,
+                        idFront: g2front,
+                        idBack: g2back
+                    }
+                });
+
+                if (result.success) {
+                    // Save application data for success page
+                    sessionStorage.setItem("lastApplication", JSON.stringify({
+                        referenceNumber: "BEJ-APP-" + (result.applicationId || Date.now().toString(36).toUpperCase()),
+                        amount,
+                        applicationDate: new Date().toISOString()
+                    }));
+
+                    // Clean up
+                    sessionStorage.removeItem("g1_phoneVerified");
+                    sessionStorage.removeItem("g2_phoneVerified");
+
+                    // Redirect to success page
+                    window.location.href = "application-success.html?amount=" + amount + "&appId=" + (result.applicationId || "");
+                } else {
+                    showError(result.message || "Failed to submit application. Please try again.");
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fa fa-paper-plane me-1"></i> Submit Application';
+                }
+            } catch (error) {
+                console.error("Submission error:", error);
+                showError("An unexpected error occurred. Please try again.");
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fa fa-paper-plane me-1"></i> Submit Application';
+            }
+        }
+
+        async function getCompressedImage(elementId) {
+            const fileInput = document.getElementById(elementId);
+            if (fileInput.files[0]) {
+                return await compressImage(fileInput.files[0]);
+            }
+            return "";
+        }
+    </script>
 </body>
 </html>
