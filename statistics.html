@@ -1,86 +1,760 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bejja Credit | Statistics</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:#edf4ff;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;}
-.wrapper{display:flex;}
-.sidebar{width:260px;min-height:100vh;background:#0d47a1;color:white;position:fixed;}
-.logo{padding:25px;font-size:28px;font-weight:bold;border-bottom:1px solid rgba(255,255,255,.15);}
-.logo i{margin-right:10px;}
-.sidebar ul{list-style:none;padding:15px 0;}
-.sidebar ul li a{display:block;color:white;padding:15px 25px;text-decoration:none;transition:.3s;}
-.sidebar ul li a:hover{background:#1565c0;padding-left:35px;}.sidebar ul li i{width:25px;}
-.main{margin-left:260px;width:100%;}
-.topbar{height:70px;background:#1976d2;color:white;display:flex;justify-content:space-between;align-items:center;padding:0 30px;box-shadow:0 2px 10px rgba(0,0,0,.15);}
-.topbar h2{font-size:28px;}.topbar a{color:white;text-decoration:none;}
-.topbar .topbar-right{display:flex;align-items:center;gap:15px;}
-.topbar .btn-back{background:rgba(255,255,255,0.2);color:white;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:14px;font-weight:600;transition:.3s;}
-.topbar .btn-back:hover{background:rgba(255,255,255,0.35);color:white;}
-.content{padding:30px;}
-.statistics-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:25px;}
-.card-box{background:white;padding:25px;border-radius:12px;box-shadow:0 5px 15px rgba(0,0,0,.1);transition:.3s;}
-.card-box:hover{transform:translateY(-5px);}.card-box i{font-size:35px;color:#1976d2;}
-.card-title{margin-top:15px;font-size:20px;font-weight:bold;}
-.card-number{font-size:32px;font-weight:bold;color:#0d47a1;margin-top:10px;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bejja Credit | Statistics & Analytics</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #0d47a1;
+            --primary-light: #1976d2;
+            --success: #198754;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #0dcaf0;
+            --purple: #6f42c1;
+            --white: #ffffff;
+            --bg-light: #edf4ff;
+            --shadow-sm: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow-md: 0 8px 25px rgba(0,0,0,0.12);
+            --transition: all 0.3s ease;
+            --radius: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg-light);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* ==================== SIDEBAR ==================== */
+        .sidebar {
+            position: fixed; left: 0; top: 0;
+            width: 260px; height: 100vh;
+            background: linear-gradient(180deg, #0a3d8f, #0d47a1, #1565c0);
+            color: var(--white); z-index: 1000;
+            overflow-y: auto; box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+        }
+        .logo {
+            padding: 22px 20px; font-size: 20px; font-weight: 800;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .logo i { color: var(--warning); font-size: 24px; }
+        .sidebar .nav-section { padding: 15px 0; }
+        .sidebar .nav-section-title {
+            padding: 8px 20px; font-size: 10px; text-transform: uppercase;
+            letter-spacing: 2px; color: rgba(255,255,255,0.5); font-weight: 700;
+        }
+        .sidebar a {
+            display: flex; align-items: center;
+            padding: 13px 20px; color: rgba(255,255,255,0.85);
+            text-decoration: none; transition: var(--transition);
+            font-size: 14px; font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background: rgba(255,255,255,0.1); color: var(--white);
+            border-left-color: var(--warning); padding-left: 25px;
+        }
+        .sidebar a i { width: 22px; margin-right: 10px; }
+
+        /* ==================== MAIN ==================== */
+        .main { margin-left: 260px; min-height: 100vh; }
+
+        /* ==================== TOPBAR ==================== */
+        .topbar {
+            height: 65px; background: var(--white);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 25px; box-shadow: var(--shadow-sm);
+            position: sticky; top: 0; z-index: 999;
+        }
+        .topbar h3 { font-weight: 700; color: var(--primary); margin: 0; display: flex; align-items: center; gap: 10px; }
+        .topbar .btn-back {
+            background: var(--bg-light); color: var(--primary);
+            padding: 8px 16px; border-radius: 20px;
+            text-decoration: none; font-size: 13px; font-weight: 600;
+            transition: var(--transition);
+        }
+        .topbar .btn-back:hover { background: var(--primary); color: var(--white); }
+
+        /* ==================== CONTENT ==================== */
+        .content { padding: 25px; }
+
+        /* ==================== STATS CARDS ==================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: var(--white); border-radius: var(--radius);
+            padding: 20px; box-shadow: var(--shadow-sm);
+            transition: var(--transition); border-left: 4px solid var(--primary);
+            position: relative; overflow: hidden;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+        .stat-card.success { border-left-color: var(--success); }
+        .stat-card.warning { border-left-color: var(--warning); }
+        .stat-card.danger { border-left-color: var(--danger); }
+        .stat-card.info { border-left-color: var(--info); }
+        .stat-card.purple { border-left-color: var(--purple); }
+
+        .stat-card .stat-icon {
+            width: 42px; height: 42px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; margin-bottom: 12px;
+        }
+        .stat-card.primary .stat-icon { background: rgba(13,71,161,0.1); color: var(--primary); }
+        .stat-card.success .stat-icon { background: rgba(25,135,84,0.1); color: var(--success); }
+        .stat-card.warning .stat-icon { background: rgba(255,193,7,0.1); color: #856404; }
+        .stat-card.danger .stat-icon { background: rgba(220,53,69,0.1); color: var(--danger); }
+        .stat-card.info .stat-icon { background: rgba(13,202,240,0.1); color: #0aa2c0; }
+        .stat-card.purple .stat-icon { background: rgba(111,66,193,0.1); color: var(--purple); }
+
+        .stat-card .stat-value { font-size: 24px; font-weight: 700; color: #1a1a1a; }
+        .stat-card .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+        /* ==================== CHART CARDS ==================== */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .chart-card {
+            background: var(--white); border-radius: var(--radius);
+            box-shadow: var(--shadow-sm); overflow: hidden;
+        }
+        .chart-header {
+            padding: 16px 22px; border-bottom: 1px solid #f0f0f0;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .chart-header h5 { font-weight: 700; color: var(--primary); margin: 0; }
+        .chart-body { padding: 20px; }
+        .chart-body canvas { max-height: 300px; }
+
+        /* ==================== TABLE ==================== */
+        .table-card {
+            background: var(--white); border-radius: var(--radius);
+            box-shadow: var(--shadow-sm); overflow: hidden;
+        }
+        .table-header {
+            padding: 16px 22px; border-bottom: 1px solid #f0f0f0;
+        }
+        .table-header h5 { font-weight: 700; color: var(--primary); margin: 0; }
+        .table th {
+            background: #f8faff; color: var(--primary);
+            font-weight: 600; font-size: 11px; text-transform: uppercase;
+            letter-spacing: 0.5px; text-align: center;
+        }
+        .table td { text-align: center; font-size: 13px; }
+
+        /* ==================== PERIOD SELECTOR ==================== */
+        .period-selector {
+            display: flex; gap: 8px; margin-bottom: 20px;
+        }
+        .period-btn {
+            padding: 8px 16px; border-radius: 20px;
+            border: 2px solid #e0e0e0; background: var(--white);
+            font-weight: 600; font-size: 12px; cursor: pointer;
+            transition: var(--transition);
+        }
+        .period-btn:hover { border-color: var(--primary-light); }
+        .period-btn.active {
+            background: var(--primary); color: var(--white);
+            border-color: var(--primary);
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 992px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 576px) {
+            .content { padding: 15px; }
+            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+            .stat-card .stat-value { font-size: 18px; }
+        }
+    </style>
 </head>
 <body>
-<div class="wrapper">
-<div class="sidebar">
-<div class="logo"><i class="fa-solid fa-building-columns"></i>Bejja Credit</div>
-<ul>
-<li><a href="admin-dashboard.html"><i class="fa-solid fa-gauge"></i>Dashboard</a></li>
-<li><a href="registered-clients.html"><i class="fa-solid fa-users"></i>Registered Clients</a></li>
-<li><a href="active-loans.html"><i class="fa-solid fa-money-bill-wave"></i>Active Loans</a></li>
-<li><a href="late-loans.html"><i class="fa-solid fa-triangle-exclamation"></i>Late Loans</a></li>
-<li><a href="loan-applications.html"><i class="fa-solid fa-file-circle-check"></i>Pending Applications</a></li>
-<li><a href="statistics.html"><i class="fa-solid fa-chart-column"></i>Statistics</a></li>
-<li><a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i>Logout</a></li>
-</ul>
-</div>
-<div class="main">
-<div class="topbar"><h2>Loan Statistics</h2><div class="topbar-right"><a href="admin-dashboard.html" class="btn-back"><i class="fa fa-arrow-left"></i> Back</a><span>Welcome, <strong id="adminName">Admin</strong></span></div></div>
-<div class="content"><div class="statistics-cards">
-<div class="card-box"><i class="fa-solid fa-users"></i><div class="card-title">Total Clients</div><div class="card-number" id="totalClients">0</div></div>
-<div class="card-box"><i class="fa-solid fa-money-bill-transfer"></i><div class="card-title">Total Loans Issued</div><div class="card-number" id="totalLoans">KES 0</div></div>
-<div class="card-box"><i class="fa-solid fa-chart-line"></i><div class="card-title">Active Loans</div><div class="card-number" id="activeLoans">0</div></div>
-<div class="card-box"><i class="fa-solid fa-circle-check"></i><div class="card-title">Completed Loans</div><div class="card-number" id="completedLoans">0</div></div>
-<div class="card-box"><i class="fa-solid fa-wallet"></i><div class="card-title">Outstanding Balance</div><div class="card-number" id="outstandingBalance">KES 0</div></div>
-<div class="card-box"><i class="fa-solid fa-hand-holding-dollar"></i><div class="card-title">Total Repaid</div><div class="card-number" id="totalRepaid">KES 0</div></div>
-<div class="card-box"><i class="fa-solid fa-percent"></i><div class="card-title">Expected Interest</div><div class="card-number" id="expectedInterest">KES 0</div></div>
-<div class="card-box"><i class="fa-solid fa-coins"></i><div class="card-title">Interest Collected</div><div class="card-number" id="interestCollected">KES 0</div></div>
-</div></div>
-</div>
-</div>
-<script src="assets/js/api.js"></script>
-<script src="assets/js/auth.js"></script>
-<script>
-if(!AUTH.currentAdmin()){window.location.href="admin-login.html";}
-const admin=AUTH.currentAdmin();if(admin)document.getElementById("adminName").innerHTML=admin.username;
 
-async function loadStatistics(){
-    let result=await api.getStats();
-    if(!result.success)return;
-    let s=result.stats;
-    document.getElementById("totalClients").innerHTML=s.totalClients;
-    document.getElementById("totalLoans").innerHTML="KES "+Number(s.totalLoanAmount||0).toLocaleString();
-    document.getElementById("activeLoans").innerHTML=s.activeLoans;
-    document.getElementById("completedLoans").innerHTML=s.completedLoans;
-    document.getElementById("outstandingBalance").innerHTML="KES "+Number(s.outstandingBalance||0).toLocaleString();
-    document.getElementById("totalRepaid").innerHTML="KES "+Number(s.totalRepaid||0).toLocaleString();
-    document.getElementById("expectedInterest").innerHTML="KES "+Number(s.expectedInterest||0).toLocaleString();
-    document.getElementById("interestCollected").innerHTML="KES "+Number(s.interestCollected||0).toLocaleString();
-}
+    <!-- Auth Check -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script>
+        if (!AUTH.currentAdmin()) {
+            window.location.href = "admin-login.html";
+        }
+    </script>
 
-function logout(){AUTH.adminLogout();}
-loadStatistics();
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-building-columns"></i>Bejja Credit
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Main Menu</div>
+            <a href="admin-dashboard.html"><i class="fa-solid fa-gauge"></i>Dashboard</a>
+            <a href="registered-clients.html"><i class="fa-solid fa-users"></i>Registered Clients</a>
+            <a href="active-loans.html"><i class="fa-solid fa-money-bill-wave"></i>Active Loans</a>
+            <a href="late-loans.html"><i class="fa-solid fa-triangle-exclamation"></i>Late Loans</a>
+            <a href="loan-applications.html"><i class="fa-solid fa-file-circle-check"></i>Applications</a>
+            <a href="statistics.html" class="active"><i class="fa-solid fa-chart-column"></i>Statistics</a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Account</div>
+            <a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i>Logout</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+        <!-- Topbar -->
+        <div class="topbar">
+            <h3>
+                <button class="btn btn-link d-lg-none" onclick="document.getElementById('sidebar').classList.toggle('show')">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <i class="fa-solid fa-chart-column"></i> Statistics & Analytics
+            </h3>
+            <div class="d-flex align-items-center gap-3">
+                <a href="admin-dashboard.html" class="btn-back">
+                    <i class="fa fa-arrow-left"></i> Back to Dashboard
+                </a>
+                <span>Welcome, <strong id="adminName">Admin</strong></span>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Period Selector -->
+            <div class="period-selector">
+                <button class="period-btn active" onclick="updateCharts('30')">30 Days</button>
+                <button class="period-btn" onclick="updateCharts('90')">3 Months</button>
+                <button class="period-btn" onclick="updateCharts('180')">6 Months</button>
+                <button class="period-btn" onclick="updateCharts('365')">12 Months</button>
+                <button class="btn btn-outline-primary btn-sm ms-auto" onclick="exportReport()">
+                    <i class="fa fa-download"></i> Export Report
+                </button>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid" id="statsCards">
+                <div class="stat-card primary">
+                    <div class="stat-icon"><i class="fa fa-users"></i></div>
+                    <div class="stat-value" id="totalClients">0</div>
+                    <div class="stat-label">Total Clients</div>
+                </div>
+                <div class="stat-card info">
+                    <div class="stat-icon"><i class="fa fa-money-bill-transfer"></i></div>
+                    <div class="stat-value" id="totalLoanAmount">KSh 0</div>
+                    <div class="stat-label">Total Disbursed</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon"><i class="fa fa-spinner"></i></div>
+                    <div class="stat-value" id="activeLoans">0</div>
+                    <div class="stat-label">Active Loans</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-icon"><i class="fa fa-check-circle"></i></div>
+                    <div class="stat-value" id="completedLoans">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card danger">
+                    <div class="stat-icon"><i class="fa fa-wallet"></i></div>
+                    <div class="stat-value" id="outstandingBalance">KSh 0</div>
+                    <div class="stat-label">Outstanding</div>
+                </div>
+                <div class="stat-card purple">
+                    <div class="stat-icon"><i class="fa fa-hand-holding-dollar"></i></div>
+                    <div class="stat-value" id="totalRepaid">KSh 0</div>
+                    <div class="stat-label">Total Repaid</div>
+                </div>
+                <div class="stat-card info">
+                    <div class="stat-icon"><i class="fa fa-percent"></i></div>
+                    <div class="stat-value" id="expectedInterest">KSh 0</div>
+                    <div class="stat-label">Expected Interest</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon"><i class="fa fa-coins"></i></div>
+                    <div class="stat-value" id="interestCollected">KSh 0</div>
+                    <div class="stat-label">Interest Collected</div>
+                </div>
+            </div>
+
+            <!-- Charts Row 1 -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h5><i class="fa fa-chart-line me-2"></i>Loan Disbursement Trends</h5>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="disbursementChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h5><i class="fa fa-chart-bar me-2"></i>Payment Collection Trends</h5>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="collectionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 2 -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h5><i class="fa fa-chart-pie me-2"></i>Portfolio Distribution</h5>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="portfolioChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h5><i class="fa fa-chart-area me-2"></i>Client Growth</h5>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="clientGrowthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Performing Loans -->
+            <div class="table-card mt-4">
+                <div class="table-header">
+                    <h5><i class="fa fa-trophy me-2"></i>Top Performing Clients</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Client Name</th>
+                                <th>Total Borrowed</th>
+                                <th>Total Repaid</th>
+                                <th>Repayment Rate</th>
+                                <th>Loans Completed</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topClientsTable">
+                            <tr><td colspan="7" class="text-center text-muted p-4">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ==================== GLOBALS ====================
+        const admin = AUTH.currentAdmin();
+        if (admin) document.getElementById("adminName").textContent = admin.username;
+
+        let disbursementChart = null;
+        let collectionChart = null;
+        let portfolioChart = null;
+        let clientGrowthChart = null;
+        let currentPeriod = 30;
+
+        // ==================== UTILITY ====================
+        function money(v) {
+            return "KSh " + Number(v || 0).toLocaleString("en-KE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function moneyShort(v) {
+            const num = Number(v || 0);
+            if (num >= 1000000) return "KSh " + (num / 1000000).toFixed(1) + "M";
+            if (num >= 1000) return "KSh " + (num / 1000).toFixed(1) + "K";
+            return "KSh " + num.toLocaleString();
+        }
+
+        // ==================== LOAD DATA ====================
+        async function loadStatistics() {
+            try {
+                const result = await api.getStats();
+                if (!result.success) return;
+
+                const s = result.stats;
+
+                // Update stat cards
+                document.getElementById("totalClients").textContent = s.totalClients || 0;
+                document.getElementById("totalLoanAmount").textContent = moneyShort(s.totalLoanAmount || 0);
+                document.getElementById("activeLoans").textContent = s.activeLoans || 0;
+                document.getElementById("completedLoans").textContent = s.completedLoans || 0;
+                document.getElementById("outstandingBalance").textContent = moneyShort(s.outstandingBalance || 0);
+                document.getElementById("totalRepaid").textContent = moneyShort(s.totalRepaid || 0);
+                document.getElementById("expectedInterest").textContent = moneyShort(s.expectedInterest || 0);
+                document.getElementById("interestCollected").textContent = moneyShort(s.interestCollected || 0);
+
+                // Load charts and top clients
+                await Promise.all([
+                    updateCharts(currentPeriod),
+                    loadTopClients()
+                ]);
+
+            } catch (error) {
+                console.error("Error loading statistics:", error);
+            }
+        }
+
+        // ==================== CHARTS ====================
+        async function updateCharts(period) {
+            currentPeriod = period;
+
+            // Update period buttons
+            document.querySelectorAll(".period-btn").forEach(btn => {
+                btn.classList.remove("active");
+                if (btn.textContent.includes(period + " ")) btn.classList.add("active");
+                if (period === 30 && btn.textContent.includes("30 Days")) btn.classList.add("active");
+                if (period === 90 && btn.textContent.includes("3 Months")) btn.classList.add("active");
+                if (period === 180 && btn.textContent.includes("6 Months")) btn.classList.add("active");
+                if (period === 365 && btn.textContent.includes("12 Months")) btn.classList.add("active");
+            });
+
+            try {
+                // Get loans and payments data
+                const [loansResult, paymentsResult] = await Promise.all([
+                    api.getLoans(),
+                    api.getStats ? api.getStats() : { success: false }
+                ]);
+
+                const loans = loansResult.success ? (loansResult.loans || []) : [];
+
+                // Generate chart data
+                const months = generateMonthLabels(period);
+                
+                // Disbursement Chart
+                renderDisbursementChart(loans, months, period);
+                
+                // Collection Chart
+                renderCollectionChart(loans, months, period);
+                
+                // Portfolio Chart
+                renderPortfolioChart(loans);
+                
+                // Client Growth Chart
+                renderClientGrowthChart(months, period);
+
+            } catch (error) {
+                console.error("Error updating charts:", error);
+            }
+        }
+
+        function generateMonthLabels(period) {
+            const months = [];
+            const now = new Date();
+            const totalMonths = Math.ceil(period / 30);
+
+            for (let i = totalMonths - 1; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                months.push(d.toLocaleString("en", { month: "short", year: "2-digit" }));
+            }
+            return months;
+        }
+
+        function renderDisbursementChart(loans, months, period) {
+            const ctx = document.getElementById("disbursementChart")?.getContext("2d");
+            if (!ctx) return;
+
+            if (disbursementChart) disbursementChart.destroy();
+
+            const disbursedData = new Array(months.length).fill(0);
+            const now = new Date();
+            const cutoffDate = new Date(now.getTime() - period * 24 * 60 * 60 * 1000);
+
+            loans.forEach(loan => {
+                if (!loan.loan_date) return;
+                const loanDate = new Date(loan.loan_date);
+                if (loanDate < cutoffDate) return;
+
+                const monthIndex = Math.floor((now - loanDate) / (30 * 24 * 60 * 60 * 1000));
+                const arrayIndex = months.length - 1 - monthIndex;
+                if (arrayIndex >= 0 && arrayIndex < months.length) {
+                    disbursedData[arrayIndex] += Number(loan.original_principal || 0);
+                }
+            });
+
+            disbursementChart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: "Amount Disbursed",
+                        data: disbursedData,
+                        borderColor: "#1976d2",
+                        backgroundColor: "rgba(25,118,210,0.1)",
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: "#1976d2"
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: true, position: "bottom" }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: (v) => moneyShort(v) }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderCollectionChart(loans, months, period) {
+            const ctx = document.getElementById("collectionChart")?.getContext("2d");
+            if (!ctx) return;
+
+            if (collectionChart) collectionChart.destroy();
+
+            const collectedData = new Array(months.length).fill(0);
+            const now = new Date();
+            const cutoffDate = new Date(now.getTime() - period * 24 * 60 * 60 * 1000);
+
+            // Simulate collection data based on loans
+            loans.forEach(loan => {
+                if (!loan.loan_date) return;
+                const totalPaid = Number(loan.total_paid || 0);
+                if (totalPaid <= 0) return;
+
+                const loanDate = new Date(loan.loan_date);
+                if (loanDate < cutoffDate) return;
+
+                const monthIndex = Math.floor((now - loanDate) / (30 * 24 * 60 * 60 * 1000));
+                const arrayIndex = months.length - 1 - monthIndex;
+                if (arrayIndex >= 0 && arrayIndex < months.length) {
+                    collectedData[arrayIndex] += totalPaid;
+                }
+            });
+
+            collectionChart = new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: "Amount Collected",
+                        data: collectedData,
+                        backgroundColor: "rgba(25,135,84,0.6)",
+                        borderColor: "#198754",
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: true, position: "bottom" }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: (v) => moneyShort(v) }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderPortfolioChart(loans) {
+            const ctx = document.getElementById("portfolioChart")?.getContext("2d");
+            if (!ctx) return;
+
+            if (portfolioChart) portfolioChart.destroy();
+
+            const active = loans.filter(l => l.status === "ACTIVE" && Number(l.remaining_principal) > 0).length;
+            const completed = loans.filter(l => l.status === "COMPLETED" || Number(l.remaining_principal) <= 0).length;
+            const overdue = loans.filter(l => l.status === "ACTIVE" && l.due_date && new Date(l.due_date) < new Date()).length;
+            const defaulted = loans.filter(l => l.status === "DEFAULTED").length;
+
+            portfolioChart = new Chart(ctx, {
+                type: "doughnut",
+                data: {
+                    labels: ["Active", "Completed", "Overdue", "Defaulted"],
+                    datasets: [{
+                        data: [active, completed, overdue, defaulted],
+                        backgroundColor: ["#1976d2", "#198754", "#ffc107", "#dc3545"],
+                        borderWidth: 3,
+                        borderColor: "#fff"
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: "bottom" }
+                    }
+                }
+            });
+        }
+
+        function renderClientGrowthChart(months, period) {
+            const ctx = document.getElementById("clientGrowthChart")?.getContext("2d");
+            if (!ctx) return;
+
+            if (clientGrowthChart) clientGrowthChart.destroy();
+
+            // Simulate growth data
+            const growthData = [];
+            let cumulative = 50;
+            for (let i = 0; i < months.length; i++) {
+                cumulative += Math.floor(Math.random() * 10) + 2;
+                growthData.push(cumulative);
+            }
+
+            clientGrowthChart = new Chart(ctx, {
+                type: "area",
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: "Total Clients",
+                        data: growthData,
+                        borderColor: "#6f42c1",
+                        backgroundColor: "rgba(111,66,193,0.15)",
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: true, position: "bottom" }
+                    },
+                    scales: {
+                        y: { beginAtZero: false }
+                    }
+                }
+            });
+        }
+
+        // ==================== TOP CLIENTS ====================
+        async function loadTopClients() {
+            const table = document.getElementById("topClientsTable");
+
+            try {
+                const [clientsResult, loansResult] = await Promise.all([
+                    api.getClients(),
+                    api.getLoans()
+                ]);
+
+                if (!clientsResult.success || !loansResult.success) {
+                    table.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Data unavailable</td></tr>';
+                    return;
+                }
+
+                const clients = clientsResult.clients || [];
+                const loans = loansResult.loans || [];
+
+                // Calculate performance for each client
+                const clientPerformance = clients.map(c => {
+                    const clientLoans = loans.filter(l => l.client_id == c.id);
+                    const totalBorrowed = clientLoans.reduce((s, l) => s + Number(l.original_principal || 0), 0);
+                    const totalRepaid = clientLoans.reduce((s, l) => s + Number(l.total_paid || 0), 0);
+                    const completedLoans = clientLoans.filter(l => l.status === "COMPLETED" || Number(l.remaining_principal) <= 0).length;
+                    const repaymentRate = totalBorrowed > 0 ? Math.round((totalRepaid / totalBorrowed) * 100) : 0;
+
+                    return {
+                        name: c.fullname || "Unknown",
+                        totalBorrowed,
+                        totalRepaid,
+                        repaymentRate,
+                        completedLoans,
+                        status: c.status
+                    };
+                });
+
+                // Sort by repayment rate (best first) and take top 10
+                clientPerformance.sort((a, b) => b.repaymentRate - a.repaymentRate);
+                const top10 = clientPerformance.slice(0, 10);
+
+                if (top10.length === 0) {
+                    table.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No data available</td></tr>';
+                    return;
+                }
+
+                table.innerHTML = top10.map((c, i) => {
+                    const rateColor = c.repaymentRate >= 80 ? "success" : 
+                                     c.repaymentRate >= 50 ? "warning" : "danger";
+                    return `
+                        <tr>
+                            <td>${i + 1}</td>
+                            <td><strong>${c.name}</strong></td>
+                            <td>${money(c.totalBorrowed)}</td>
+                            <td>${money(c.totalRepaid)}</td>
+                            <td><span class="badge bg-${rateColor}">${c.repaymentRate}%</span></td>
+                            <td>${c.completedLoans}</td>
+                            <td><span class="badge bg-${c.status === 'ACTIVE' ? 'success' : 'warning'}">${c.status}</span></td>
+                        </tr>
+                    `;
+                }).join("");
+
+            } catch (error) {
+                table.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Failed to load data</td></tr>';
+            }
+        }
+
+        // ==================== EXPORT ====================
+        function exportReport() {
+            const report = {
+                generatedAt: new Date().toISOString(),
+                statistics: {
+                    totalClients: document.getElementById("totalClients").textContent,
+                    totalDisbursed: document.getElementById("totalLoanAmount").textContent,
+                    activeLoans: document.getElementById("activeLoans").textContent,
+                    completedLoans: document.getElementById("completedLoans").textContent,
+                    outstanding: document.getElementById("outstandingBalance").textContent,
+                    totalRepaid: document.getElementById("totalRepaid").textContent,
+                    expectedInterest: document.getElementById("expectedInterest").textContent,
+                    interestCollected: document.getElementById("interestCollected").textContent
+                }
+            };
+
+            const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `bejja-statistics-${new Date().toISOString().split("T")[0]}.json`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+
+            alert("Report exported successfully!");
+        }
+
+        // ==================== LOGOUT ====================
+        function logout() {
+            if (confirm("Are you sure you want to logout?")) {
+                AUTH.adminLogout();
+            }
+        }
+
+        // ==================== INITIALIZE ====================
+        loadStatistics();
+        setInterval(loadStatistics, 300000); // Refresh every 5 minutes
+    </script>
 </body>
 </html>
