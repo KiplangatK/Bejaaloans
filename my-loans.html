@@ -29,8 +29,8 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 .table-header{background:#0F4C81;color:white;padding:13px 18px;font-size:17px;font-weight:bold;}
 .table th{background:#e3f2fd;color:#0F4C81;font-size:13px;padding:10px 8px;}.table td{padding:10px 8px;font-size:14px;vertical-align:middle;}
 .badge{font-size:12px;padding:6px 10px;}
-.btn-view{background:#2563EB;color:white;border-radius:15px;font-size:12px;padding:5px 10px;}
 .btn-payment{background:#198754;color:white;border-radius:15px;font-size:12px;padding:5px 10px;}
+.btn-payment:hover{background:#146c43;color:white;}
 </style>
 </head>
 <body>
@@ -53,13 +53,13 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 <div class="content">
 
 <div class="summary-cards">
-<div class="summary-card total"><h5>Total Loans</h5><h2 id="totalLoans">0</h2></div>
+<div class="summary-card total"><h5>Total</h5><h2 id="totalLoans">0</h2></div>
 <div class="summary-card active"><h5>Active</h5><h2 id="activeLoans">0</h2></div>
-<div class="summary-card borrowed"><h5>Total Borrowed</h5><h2 id="totalBorrowed">KES 0</h2></div>
+<div class="summary-card borrowed"><h5>Borrowed</h5><h2 id="totalBorrowed">KES 0</h2></div>
 <div class="summary-card balance"><h5>Outstanding</h5><h2 id="outstanding">KES 0</h2></div>
 </div>
 
-<div class="table-card"><div class="table-header"><i class="fa fa-list"></i> My Loan History</div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Date</th><th>Amount</th><th>Balance</th><th>Due Date</th><th>Status</th><th>Action</th></tr></thead><tbody id="myLoansTable"><tr><td colspan="6" class="text-center text-muted p-4">Loading...</td></tr></tbody></table></div></div>
+<div class="table-card"><div class="table-header"><i class="fa fa-list"></i> My Loans & Applications</div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Balance</th><th>Due Date</th><th>Status</th><th>Action</th></tr></thead><tbody id="myLoansTable"><tr><td colspan="7" class="text-center text-muted p-4">Loading...</td></tr></tbody></table></div></div>
 
 </div></div>
 
@@ -68,20 +68,59 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 <script>
 function money(v){return"KES "+Number(v||0).toLocaleString();}
 document.addEventListener("DOMContentLoaded",()=>{let c=AUTH.currentClient();if(c)document.getElementById("clientNameTop").textContent=c.fullname||"-";});
+
 async function loadMyLoans(){
-    let result=await api.getMyLoans();let table=document.getElementById("myLoansTable");table.innerHTML="";
-    if(!result.success||!result.loans||result.loans.length===0){table.innerHTML='<tr><td colspan="6" class="text-center text-muted p-4">No loans found.</td></tr>';updateSummary(0,0,0,0);return;}
+    let loansResult=await api.getMyLoans();
+    let appsResult=await api.getApplications();
+    
+    let loans=loansResult.success?loansResult.loans:[];
+    let applications=appsResult.success?appsResult.applications.filter(a=>a.client_id===AUTH.currentClient()?.id):[];
+    
+    let table=document.getElementById("myLoansTable");table.innerHTML="";
+    let allItems=[];
     let totalBorrowed=0,outstanding=0,activeCount=0,today=new Date();
-    result.loans.reverse().forEach(l=>{
-        let amount=Number(l.original_principal||0),balance=Number(l.remaining_principal||0);
-        totalBorrowed+=amount;outstanding+=balance;
-        let realStatus=l.status;if(l.status==="COMPLETED"||balance<=0)realStatus="COMPLETED";else if(l.due_date&&new Date(l.due_date)<today)realStatus="LATE";
-        if(realStatus==="ACTIVE")activeCount++;
-        let sc="bg-secondary";if(realStatus==="ACTIVE")sc="bg-success";if(realStatus==="COMPLETED")sc="bg-info";if(realStatus==="LATE")sc="bg-danger";
-        table.innerHTML+=`<tr><td>${formatDate(l.loan_date)}</td><td>${money(amount)}</td><td>${money(balance)}</td><td>${formatDate(l.due_date)}</td><td><span class="badge ${sc}">${realStatus}</span></td><td><button class="btn btn-view btn-sm me-1" onclick="window.location.href='active-loans.html'"><i class="fa fa-eye"></i></button><button class="btn btn-payment btn-sm" onclick="viewPayments(${l.id},'${money(amount)}')"><i class="fa fa-list"></i> Payments</button></td></tr>`;
+    
+    // Add approved loans
+    if(Array.isArray(loans)){
+        loans.forEach(l=>{
+            let amount=Number(l.original_principal||0),balance=Number(l.remaining_principal||0);
+            totalBorrowed+=amount;outstanding+=balance;
+            let realStatus=l.status;if(l.status==="COMPLETED"||balance<=0)realStatus="COMPLETED";else if(l.due_date&&new Date(l.due_date)<today)realStatus="LATE";
+            if(realStatus==="ACTIVE")activeCount++;
+            allItems.push({date:l.loan_date||l.created_at,type:"Loan",amount:amount,balance:balance,dueDate:l.due_date,status:realStatus,id:l.id,isLoan:true});
+        });
+    }
+    
+    // Add pending/rejected applications
+    if(Array.isArray(applications)){
+        applications.forEach(a=>{
+            if(a.status==="APPROVED")return; // Skip approved, already shown as loan
+            allItems.push({date:a.application_date,type:"Application",amount:Number(a.amount||0),balance:0,dueDate:"-",status:a.status,id:a.id,isLoan:false});
+        });
+    }
+    
+    if(allItems.length===0){table.innerHTML='<tr><td colspan="7" class="text-center text-muted p-4">No loans or applications found.</td></tr>';updateSummary(0,0,0,0);return;}
+    
+    allItems.sort((a,b)=>b.date.localeCompare(a.date));
+    
+    allItems.forEach(item=>{
+        let sc="bg-secondary";
+        if(item.status==="ACTIVE")sc="bg-success";
+        if(item.status==="COMPLETED")sc="bg-info";
+        if(item.status==="LATE")sc="bg-danger";
+        if(item.status==="PENDING")sc="bg-warning text-dark";
+        if(item.status==="REJECTED")sc="bg-danger";
+        
+        let action='-';
+        if(item.isLoan){action=`<button class="btn btn-payment btn-sm" onclick="viewPayments(${item.id},'${money(item.amount)}')"><i class="fa fa-list"></i> Payments</button>`;}
+        else{action=`<span class="text-muted small">Awaiting review</span>`;}
+        
+        table.innerHTML+=`<tr><td>${formatDate(item.date)}</td><td>${item.type}</td><td>${money(item.amount)}</td><td>${item.isLoan?money(item.balance):"-"}</td><td>${item.isLoan?formatDate(item.dueDate):"-"}</td><td><span class="badge ${sc}">${item.status}</span></td><td>${action}</td></tr>`;
     });
-    updateSummary(result.loans.length,activeCount,totalBorrowed,outstanding);
+    
+    updateSummary(allItems.length,activeCount,totalBorrowed,outstanding);
 }
+
 function updateSummary(t,a,b,o){document.getElementById("totalLoans").innerHTML=t;document.getElementById("activeLoans").innerHTML=a;document.getElementById("totalBorrowed").innerHTML=money(b);document.getElementById("outstanding").innerHTML=money(o);}
 
 async function viewPayments(loanId,loanAmount){
