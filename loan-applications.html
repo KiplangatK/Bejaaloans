@@ -22,6 +22,8 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 .card-box{background:white;padding:25px;border-radius:20px;box-shadow:0 8px 25px rgba(0,0,0,.12);}
 .table thead th{background:#e3f2fd;color:#0d47a1;}.table td,.table th{padding:15px;vertical-align:middle;}
 .btn-view{background:#1976d2;color:white;border-radius:20px;}
+.btn-guarantors{background:#6f42c1;color:white;border-radius:20px;}
+.btn-guarantors:hover{background:#5a3399;color:white;}
 .section-title{background:#0d47a1;color:white;padding:10px 15px;border-radius:10px;margin-top:15px;}
 .detail-card{background:#f8fbff;border-radius:15px;padding:15px;margin-bottom:15px;border:1px solid #dbeafe;}
 .document-img{width:100%;height:160px;object-fit:contain;border-radius:10px;border:1px solid #ddd;}
@@ -54,6 +56,7 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 if(!AUTH.currentAdmin()){window.location.href="admin-login.html";}
 let admin=AUTH.currentAdmin();if(admin)document.getElementById("adminName").innerHTML=admin.username;
 function money(v){return"KES "+Number(v||0).toLocaleString();}
+const DEFAULT_IMG="https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
 async function loadApplications(){
     let result=await api.getApplications();let table=document.getElementById("applicationsTable");table.innerHTML="";
@@ -67,9 +70,34 @@ async function viewApplication(id){
     let result=await api.getApplications();if(!result.success)return;
     let app=result.applications.find(a=>a.id==id);if(!app)return;
     let c=app.client||{};
-    document.getElementById("applicationDetails").innerHTML=`<div class="section-title"><i class="fa fa-user"></i>Client Information</div><div class="detail-card"><div class="row"><div class="col-md-4 text-center"><img src="${c.profile_photo||'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" class="guarantor-photo"><h5 class="mt-3">${c.fullname||"-"}</h5></div><div class="col-md-8"><p><b>National ID:</b> ${c.national_id||"-"}</p><p><b>Phone:</b> ${c.phone||"-"}</p></div></div></div><div class="section-title"><i class="fa fa-money-bill"></i>Loan Information</div><div class="detail-card"><p><b>Amount:</b> ${money(app.amount)}</p><p><b>Purpose:</b> ${app.purpose||"-"}</p><p><b>Date:</b> ${formatDate(app.application_date)}</p></div><div class="section-title mt-4"><i class="fa fa-calendar-check"></i>Approval Details</div><div class="detail-card"><div class="row"><div class="col-md-6 mb-3"><label class="fw-bold">Loan Date</label><input type="date" id="approvalDate_${app.id}" class="form-control"></div><div class="col-md-6 mb-3"><label class="fw-bold">Due Date</label><input type="date" id="dueDate_${app.id}" class="form-control"></div></div></div><div class="text-center mt-4"><button class="btn btn-success me-2" onclick="approveApplication(${app.id})"><i class="fa fa-check"></i>Approve</button><button class="btn btn-danger" onclick="rejectApplication(${app.id})"><i class="fa fa-times"></i>Reject</button></div>`;
+    document.getElementById("applicationDetails").innerHTML=`
+        <div class="section-title"><i class="fa fa-user"></i>Client Information</div>
+        <div class="detail-card"><div class="row"><div class="col-md-4 text-center"><img src="${c.profile_photo||DEFAULT_IMG}" class="guarantor-photo"><h5 class="mt-3">${c.fullname||"-"}</h5></div><div class="col-md-8"><p><b>National ID:</b> ${c.national_id||"-"}</p><p><b>Phone:</b> ${c.phone||"-"}</p></div></div></div>
+        <div class="section-title"><i class="fa fa-money-bill"></i>Loan Information</div>
+        <div class="detail-card"><p><b>Amount:</b> ${money(app.amount)}</p><p><b>Purpose:</b> ${app.purpose||"-"}</p><p><b>Date:</b> ${formatDate(app.application_date)}</p></div>
+        
+        <div class="text-center mt-3 mb-3"><button class="btn btn-guarantors" onclick="toggleGuarantors('${app.id}')"><i class="fa fa-users"></i>View Guarantors</button></div>
+        <div id="guarantorSection" style="display:none;"></div>
+        
+        <div class="section-title mt-4"><i class="fa fa-calendar-check"></i>Approval Details</div>
+        <div class="detail-card"><div class="row"><div class="col-md-6 mb-3"><label class="fw-bold">Loan Date</label><input type="date" id="approvalDate_${app.id}" class="form-control"></div><div class="col-md-6 mb-3"><label class="fw-bold">Due Date</label><input type="date" id="dueDate_${app.id}" class="form-control"></div></div></div>
+        <div class="text-center mt-4"><button class="btn btn-success me-2" onclick="approveApplication(${app.id})"><i class="fa fa-check"></i>Approve</button><button class="btn btn-danger" onclick="rejectApplication(${app.id})"><i class="fa fa-times"></i>Reject</button></div>`;
     new bootstrap.Modal(document.getElementById("applicationModal")).show();
     setTimeout(()=>{document.getElementById("approvalDate_"+app.id).value=new Date().toISOString().split("T")[0];document.getElementById("dueDate_"+app.id).value=new Date(Date.now()+30*24*60*60*1000).toISOString().split("T")[0];},300);
+}
+
+async function toggleGuarantors(appId){
+    let section=document.getElementById("guarantorSection");
+    if(section.style.display==="block"){section.style.display="none";return;}
+    section.innerHTML='<p class="text-center text-muted">Loading guarantor details...</p>';section.style.display="block";
+    let result=await api.getApplications();if(!result.success)return;
+    let app=result.applications.find(a=>a.id==appId);if(!app)return;
+    section.innerHTML=`<hr><h5 class="text-primary"><i class="fa fa-users"></i>Guarantor Details</h5>${showGuarantor(app.guarantor1,"Guarantor 1")}${showGuarantor(app.guarantor2,"Guarantor 2")}`;
+}
+
+function showGuarantor(g,title){
+    if(!g)return'<p class="text-muted">No '+title+' details.</p>';
+    return`<div class="detail-card"><h5 class="text-primary">${title}</h5><div class="row"><div class="col-md-4 text-center"><img src="${g.photo||DEFAULT_IMG}" class="guarantor-photo"></div><div class="col-md-8"><p><b>Name:</b> ${g.name||"-"}</p><p><b>National ID:</b> ${g.id||g.national_id||"-"}</p><p><b>Phone:</b> ${g.phone||"-"}</p><p><b>Relationship:</b> ${g.relationship||"-"}</p><p><b>Address:</b> ${g.address||"-"}</p></div></div>${g.idFront||g.id_front?`<div class="row mt-3"><div class="col-md-6"><h6>ID Front</h6><img src="${g.idFront||g.id_front}" class="document-img"></div><div class="col-md-6"><h6>ID Back</h6><img src="${g.idBack||g.id_back}" class="document-img"></div></div>`:''}</div>`;
 }
 
 async function approveApplication(id){
