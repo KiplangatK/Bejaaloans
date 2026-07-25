@@ -33,7 +33,9 @@ body{background:#edf4ff;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;he
 .status-suspended{background:#dc3545;color:white;padding:6px 12px;border-radius:15px;font-size:12px;font-weight:600;}
 .btn-view{background:#1976d2;color:white;border-radius:15px;font-size:13px;padding:7px 14px;font-weight:600;}
 .btn-view:hover{background:#0d47a1;color:white;}
-.profile-img-large{width:150px;height:150px;border-radius:50%;object-fit:cover;border:5px solid #1976d2;margin-bottom:10px;}
+.profile-img-large{width:140px;height:140px;border-radius:50%;object-fit:cover;border:5px solid #1976d2;flex-shrink:0;}
+.client-detail-layout{display:flex;gap:25px;align-items:flex-start;}
+.client-info-list{flex:1;}
 .info-list{display:flex;flex-direction:column;}
 .info-row{display:flex;padding:11px 0;border-bottom:1px solid #e8e8e8;font-size:16px;}
 .info-row:last-child{border-bottom:none;}
@@ -124,18 +126,26 @@ async function viewClient(id){
     let totalOutstanding=activeLoans.reduce((s,l)=>s+Number(l.remaining_principal||0),0);
     
     document.getElementById("clientDetails").innerHTML=`
-        <div style="text-align:center;margin-bottom:20px;"><img src="${c.profile_photo||DEFAULT_IMG}" class="profile-img-large"><h4 style="margin-top:8px;">${c.fullname||"-"}</h4><span class="badge ${c.status==='ACTIVE'?'bg-success':'bg-danger'} mt-2" style="font-size:15px;padding:8px 18px;">${c.status||'ACTIVE'}</span></div>
-        <hr>
-        <div class="info-list">
-            <div class="info-row"><div class="info-label">Phone</div><div class="info-value">${c.phone||"-"}</div></div>
-            <div class="info-row"><div class="info-label">National ID</div><div class="info-value">${c.national_id||"-"}</div></div>
-            <div class="info-row"><div class="info-label">Email</div><div class="info-value">${c.email||"Not Provided"}</div></div>
-            <div class="info-row"><div class="info-label">Occupation</div><div class="info-value">${c.occupation||"-"}</div></div>
-            <div class="info-row"><div class="info-label">Employer</div><div class="info-value">${c.employer||"Not Provided"}</div></div>
-            <div class="info-row"><div class="info-label">Monthly Income</div><div class="info-value">${money(c.monthly_income)}</div></div>
-            <div class="info-row"><div class="info-label">County</div><div class="info-value">${c.county||"-"}</div></div>
-            <div class="info-row"><div class="info-label">Address</div><div class="info-value">${c.address||"-"}</div></div>
-            <div class="info-row"><div class="info-label">Registered</div><div class="info-value">${formatDate(c.created_at)}</div></div>
+        <div class="client-detail-layout">
+            <div class="client-info-list" style="flex:1;">
+                <h4 style="margin-bottom:15px;color:#0F4C81;">${c.fullname||"-"}</h4>
+                <span class="badge ${c.status==='ACTIVE'?'bg-success':'bg-danger'} mb-3" style="font-size:14px;padding:7px 16px;">${c.status||'ACTIVE'}</span>
+                <hr>
+                <div class="info-list">
+                    <div class="info-row"><div class="info-label">Phone</div><div class="info-value">${c.phone||"-"}</div></div>
+                    <div class="info-row"><div class="info-label">National ID</div><div class="info-value">${c.national_id||"-"}</div></div>
+                    <div class="info-row"><div class="info-label">Email</div><div class="info-value">${c.email||"Not Provided"}</div></div>
+                    <div class="info-row"><div class="info-label">Occupation</div><div class="info-value">${c.occupation||"-"}</div></div>
+                    <div class="info-row"><div class="info-label">Employer</div><div class="info-value">${c.employer||"Not Provided"}</div></div>
+                    <div class="info-row"><div class="info-label">Monthly Income</div><div class="info-value">${money(c.monthly_income)}</div></div>
+                    <div class="info-row"><div class="info-label">County</div><div class="info-value">${c.county||"-"}</div></div>
+                    <div class="info-row"><div class="info-label">Address</div><div class="info-value">${c.address||"-"}</div></div>
+                    <div class="info-row"><div class="info-label">Registered</div><div class="info-value">${formatDate(c.created_at)}</div></div>
+                </div>
+            </div>
+            <div style="text-align:center;flex-shrink:0;">
+                <img src="${c.profile_photo||DEFAULT_IMG}" class="profile-img-large">
+            </div>
         </div>`;
     
     let btnDelete=document.getElementById("btnDelete");
