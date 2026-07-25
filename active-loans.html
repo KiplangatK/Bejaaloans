@@ -27,11 +27,13 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 .btn-payment{background:#198754;color:white;border-radius:20px;}
 .btn-guarantors{background:#6f42c1;color:white;border-radius:20px;}
 .btn-guarantors:hover{background:#5a3399;color:white;}
-.section-title{background:#0d47a1;color:white;padding:12px;border-radius:10px;margin-top:15px;font-weight:bold;}
-.detail-box{background:#f8fbff;border-radius:15px;padding:15px;margin-bottom:15px;border:1px solid #dbeafe;}
-.document-img{width:100%;height:160px;object-fit:contain;border-radius:10px;border:1px solid #ddd;}
+.section-title{background:#0d47a1;color:white;padding:10px 15px;border-radius:10px;margin-top:15px;font-weight:bold;}
+.detail-card{background:#f8fbff;border-radius:15px;padding:15px;margin-bottom:15px;border:1px solid #dbeafe;}
+.document-img{width:100%;height:160px;object-fit:contain;border-radius:10px;border:1px solid #ddd;margin-top:5px;}
 .guarantor-photo{width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid #2563eb;}
+.profile-img-large{width:150px;height:150px;border-radius:50%;object-fit:cover;border:4px solid #1976d2;}
 .payment-note{background:#fff3cd;border:1px solid #ffc107;border-radius:10px;padding:10px 15px;margin-top:10px;font-size:14px;color:#856404;}
+.btn-doc{font-size:12px;padding:4px 10px;}
 </style>
 </head>
 <body>
@@ -62,6 +64,9 @@ body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
 if(!AUTH.currentAdmin()){window.location.href="admin-login.html";}
 let admin=AUTH.currentAdmin();if(admin)document.getElementById("adminName").innerHTML=admin.username;
 function money(v){return"KES "+Number(v||0).toLocaleString();}
+const DEFAULT_IMG="https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
+function showFullImage(src,title){if(!src){alert("No image available");return;}let m=document.createElement("div");m.style.cssText="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:99999;cursor:pointer;";m.innerHTML=`<div style="max-width:90%;max-height:90%;text-align:center;"><h5 style="color:white;margin-bottom:10px;">${title}</h5><img src="${src}" style="max-width:100%;max-height:80vh;border-radius:10px;"><br><small style="color:#ccc;">Click anywhere to close</small></div>`;m.onclick=function(){document.body.removeChild(m);};document.body.appendChild(m);}
 
 async function loadActiveLoans(){
     let result=await api.getLoans();let table=document.getElementById("activeLoansTable");table.innerHTML="";
@@ -71,7 +76,7 @@ async function loadActiveLoans(){
     if(active.length===0){table.innerHTML='<tr><td colspan="7" class="text-center text-muted p-4">No active loans.</td></tr>';return;}
     for(let l of active.reverse()){
         let bal=Number(l.remaining_principal||0),rate=Number(l.interest_rate||20),interest=(bal*rate)/100;
-        table.innerHTML+=`<tr><td><b>${l.fullname||"Unknown"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td class="text-danger fw-bold">${money(bal)}</td><td>${money(interest)} (${rate}%)</td><td><span class="badge bg-success">${formatDate(l.due_date)}</span></td><td><button class="btn btn-view btn-sm" onclick="viewLoan(${l.id})"><i class="fa fa-eye"></i></button><button class="btn btn-payment btn-sm" onclick="openPayment(${l.id},'${l.due_date||""}')"><i class="fa fa-money-bill"></i></button></td></tr>`;
+        table.innerHTML+=`<tr><td><b>${l.fullname||"Unknown"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td class="text-danger fw-bold">${money(bal)}</td><td>${money(interest)} (${rate}%)</td><td><span class="badge bg-success">${formatDate(l.due_date)}</span></td><td><button class="btn btn-view btn-sm" onclick="viewLoan(${l.id})"><i class="fa fa-eye"></i> Details</button><button class="btn btn-payment btn-sm" onclick="openPayment(${l.id},'${l.due_date||""}')"><i class="fa fa-money-bill"></i></button></td></tr>`;
     }
 }
 
@@ -83,8 +88,60 @@ async function viewLoan(id){
     let totalPaid=payments.reduce((s,p)=>s+Number(p.amount||0),0);
     let totalExpected=Number(loan.original_principal)+Number(loan.original_principal)*rate/100;
     let progress=totalExpected>0?Math.round((totalPaid/totalExpected)*100):0;
-    document.getElementById("loanDetails").innerHTML=`<h5 class="text-primary">Client Information</h5><hr><p><b>Name:</b> ${loan.fullname||"-"}</p><p><b>Phone:</b> ${loan.phone||"-"}</p><h5 class="text-primary mt-4">Loan Information</h5><hr><div class="row"><div class="col-md-6"><p><b>Original:</b> ${money(loan.original_principal)}</p><p><b>Remaining:</b> ${money(balance)}</p><p><b>Current Interest:</b> ${money(currentInterest)}</p><p><b>Rate:</b> ${rate}%</p></div><div class="col-md-6"><p><b>Progress:</b> ${progress}%</p></div></div><p><b>Loan Date:</b> ${formatDate(loan.loan_date)}</p><p><b>Due Date:</b> <span class="badge bg-success">${formatDate(loan.due_date)}</span></p><p><b>Status:</b> <span class="badge bg-success">${loan.status}</span></p><div class="progress mt-2 mb-3" style="height:10px;"><div class="progress-bar bg-success" style="width:${progress}%"></div></div><div class="text-center mt-3 mb-3"><button class="btn btn-guarantors" onclick="toggleGuarantors(${loan.application_id||0})"><i class="fa fa-users"></i>View Guarantors</button></div><div id="guarantorSection" style="display:none;"></div><h5 class="text-primary mt-4">Payment History</h5><table class="table table-bordered"><tr><th>Date</th><th>Amount</th><th>Principal</th><th>Interest</th><th>Balance</th><th>Note</th></tr>${payments.length===0?'<tr><td colspan="6" class="text-center">No payments yet</td></tr>':payments.map(p=>`<tr><td>${formatDate(p.payment_date)}</td><td>${money(p.amount)}</td><td>${money(p.principal_paid)}</td><td>${money(p.interest_paid)}</td><td>${money(p.balance)}</td><td>${p.note||"-"}</td></tr>`).join("")}</table>`;
+    
+    // Get client details
+    let clientResult=await api.getClient(loan.client_id);
+    let client=clientResult.success?clientResult.client:{};
+    
+    document.getElementById("loanDetails").innerHTML=`
+        <h5 class="text-primary">Client Information</h5><hr>
+        <div class="row"><div class="col-md-3 text-center"><img src="${client.profile_photo||DEFAULT_IMG}" class="profile-img-large mb-2"><h5>${client.fullname||loan.fullname||"-"}</h5></div><div class="col-md-9"><div class="row"><div class="col-md-6"><p><b>Phone:</b> ${client.phone||loan.phone||"-"}</p><p><b>National ID:</b> ${client.national_id||"-"}</p><p><b>Email:</b> ${client.email||"-"}</p></div><div class="col-md-6"><p><b>Occupation:</b> ${client.occupation||"-"}</p><p><b>Employer:</b> ${client.employer||"-"}</p><p><b>Monthly Income:</b> ${money(client.monthly_income)}</p></div></div><p><b>County:</b> ${client.county||"-"}</p><p><b>Address:</b> ${client.address||"-"}</p></div></div>
+        
+        <h5 class="text-primary mt-4">Loan Information</h5><hr>
+        <div class="row"><div class="col-md-6"><p><b>Original:</b> ${money(loan.original_principal)}</p><p><b>Remaining:</b> ${money(balance)}</p><p><b>Current Interest:</b> ${money(currentInterest)}</p><p><b>Rate:</b> ${rate}%</p></div><div class="col-md-6"><p><b>Progress:</b> ${progress}%</p><p><b>Loan Date:</b> ${formatDate(loan.loan_date)}</p><p><b>Due Date:</b> <span class="badge bg-success">${formatDate(loan.due_date)}</span></p><p><b>Status:</b> <span class="badge bg-success">${loan.status}</span></p></div></div>
+        <div class="progress mt-2 mb-3" style="height:10px;"><div class="progress-bar bg-success" style="width:${progress}%"></div></div>
+        
+        <div class="text-center mt-3 mb-3"><button class="btn btn-guarantors" onclick="toggleGuarantors(${loan.application_id||0})"><i class="fa fa-users"></i>View Guarantors</button></div>
+        <div id="guarantorSection" style="display:none;"></div>
+        
+        <h5 class="text-primary mt-4">Payment History</h5>
+        <table class="table table-bordered"><tr><th>Date</th><th>Amount</th><th>Principal</th><th>Interest</th><th>Balance</th><th>Note</th></tr>${payments.length===0?'<tr><td colspan="6" class="text-center">No payments yet</td></tr>':payments.map(p=>`<tr><td>${formatDate(p.payment_date)}</td><td>${money(p.amount)}</td><td>${money(p.principal_paid)}</td><td>${money(p.interest_paid)}</td><td>${money(p.balance)}</td><td>${p.note||"-"}</td></tr>`).join("")}</table>`;
     new bootstrap.Modal(document.getElementById("loanModal")).show();
+}
+
+async function toggleGuarantors(appId){
+    let section=document.getElementById("guarantorSection");
+    if(section.style.display==="block"){section.style.display="none";return;}
+    if(!appId||appId===0){section.innerHTML='<p class="text-muted">No guarantor details available.</p>';section.style.display="block";return;}
+    section.innerHTML='<p class="text-center text-muted">Loading guarantor details...</p>';section.style.display="block";
+    let result=await api.getApplications();if(!result.success)return;
+    let app=result.applications.find(a=>a.id==appId);if(!app){section.innerHTML='<p class="text-muted">No guarantor details available.</p>';return;}
+    section.innerHTML=`<hr><h5 class="text-primary"><i class="fa fa-users"></i>Guarantor Details</h5>${showGuarantor(app.guarantor1,"Guarantor 1")}${showGuarantor(app.guarantor2,"Guarantor 2")}`;
+}
+
+function showGuarantor(g,title){
+    if(!g)return'<p class="text-muted">No '+title+' details.</p>';
+    return`
+    <div class="detail-card">
+        <h5 class="text-primary">${title}</h5>
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <img src="${g.photo||DEFAULT_IMG}" class="guarantor-photo">
+                <br><button class="btn btn-sm btn-outline-primary btn-doc mt-2" onclick="showFullImage('${g.photo||DEFAULT_IMG}','${title} Photo')"><i class="fa fa-search-plus"></i> View Full</button>
+            </div>
+            <div class="col-md-8">
+                <p><b>Name:</b> ${g.name||"-"}</p>
+                <p><b>National ID:</b> ${g.id||g.national_id||"-"}</p>
+                <p><b>Phone:</b> ${g.phone||"-"}</p>
+                <p><b>Relationship:</b> ${g.relationship||"-"}</p>
+                <p><b>Address:</b> ${g.address||"-"}</p>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-6 text-center"><p class="fw-bold mb-1">ID Front</p>${g.idFront||g.id_front?`<img src="${g.idFront||g.id_front}" class="document-img"><button class="btn btn-sm btn-outline-primary btn-doc mt-1" onclick="showFullImage('${g.idFront||g.id_front}','${title} ID Front')"><i class="fa fa-search-plus"></i> View Full</button>`:'<p class="text-muted">Not uploaded</p>'}</div>
+            <div class="col-md-6 text-center"><p class="fw-bold mb-1">ID Back</p>${g.idBack||g.id_back?`<img src="${g.idBack||g.id_back}" class="document-img"><button class="btn btn-sm btn-outline-primary btn-doc mt-1" onclick="showFullImage('${g.idBack||g.id_back}','${title} ID Back')"><i class="fa fa-search-plus"></i> View Full</button>`:'<p class="text-muted">Not uploaded</p>'}</div>
+        </div>
+    </div>`;
 }
 
 function openPayment(id,dueDate){document.getElementById("paymentLoanId").value=id;document.getElementById("paymentLoanDueDate").value=dueDate;document.getElementById("paymentAmount").value="";document.getElementById("paymentDate").value=new Date().toISOString().split("T")[0];document.getElementById("paymentComment").value="";document.getElementById("earlyPaymentNote").style.display="none";updatePaymentNote();new bootstrap.Modal(document.getElementById("paymentModal")).show();}
