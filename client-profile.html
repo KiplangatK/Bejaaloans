@@ -1,102 +1,879 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Profile | Bejja Credit</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
-.sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#0F4C81;color:white;}
-.logo{padding:20px;font-size:22px;font-weight:bold;border-bottom:1px solid rgba(255,255,255,.2);}
-.logo i{margin-right:8px;}
-.sidebar a{display:block;padding:12px 20px;color:white;text-decoration:none;transition:.3s;font-size:14px;}
-.sidebar a:hover{background:#2563EB;padding-left:28px;}.sidebar i{width:22px;}
-.main{margin-left:260px;height:100vh;display:flex;flex-direction:column;}
-.topbar{height:50px;background:#2563EB;color:white;display:flex;align-items:center;justify-content:space-between;padding:0 20px;box-shadow:0 2px 10px rgba(0,0,0,.15);flex-shrink:0;}
-.topbar h3{font-size:18px;}.topbar .topbar-right{display:flex;align-items:center;gap:12px;font-size:14px;}
-.topbar .btn-back{background:rgba(255,255,255,0.2);color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-size:13px;font-weight:600;transition:.3s;}
-.topbar .btn-back:hover{background:rgba(255,255,255,0.35);color:white;}
-.content{flex:1;display:flex;flex-direction:column;padding:15px;gap:12px;overflow:hidden;min-height:0;}
-.profile-header{display:flex;align-items:center;gap:15px;background:#fff;border-radius:10px;padding:14px 20px;box-shadow:0 2px 8px rgba(0,0,0,.06);flex-shrink:0;}
-.profile-header img{width:55px;height:55px;border-radius:50%;object-fit:cover;border:3px solid #2563EB;}
-.profile-header h3{font-size:18px;color:#0F4C81;margin:0;}
-.profile-header p{color:#777;font-size:13px;margin:0;}
-.info-card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06);flex:1;overflow-y:auto;min-height:0;}
-.section-title{font-size:17px;font-weight:bold;color:#0F4C81;margin-bottom:14px;border-bottom:2px solid #2563EB;padding-bottom:8px;}
-.info-list{display:flex;flex-direction:column;gap:2px;}
-.info-row{display:flex;padding:10px 0;border-bottom:1px solid #f0f0f0;}
-.info-row:last-child{border-bottom:none;}
-.info-label{font-weight:bold;color:#0F4C81;width:170px;flex-shrink:0;font-size:15px;}
-.info-value{color:#444;font-size:15px;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Bejja Credit</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #0d47a1;
+            --primary-light: #1976d2;
+            --success: #198754;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --white: #ffffff;
+            --bg-light: #edf4ff;
+            --shadow-sm: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow-md: 0 8px 25px rgba(0,0,0,0.12);
+            --transition: all 0.3s ease;
+            --radius: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg-light);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* ==================== SIDEBAR ==================== */
+        .sidebar {
+            position: fixed;
+            left: 0; top: 0;
+            width: 260px; height: 100vh;
+            background: linear-gradient(180deg, #0a3d8f, #0d47a1, #1565c0);
+            color: var(--white);
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+        }
+
+        .logo {
+            padding: 22px 20px;
+            font-size: 20px;
+            font-weight: 800;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+        .logo i { color: var(--warning); font-size: 24px; }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 13px 20px;
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 14px;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background: rgba(255,255,255,0.1);
+            color: var(--white);
+            border-left-color: var(--warning);
+            padding-left: 25px;
+        }
+        .sidebar a i { width: 22px; margin-right: 10px; }
+
+        /* ==================== MAIN ==================== */
+        .main {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        /* ==================== TOPBAR ==================== */
+        .topbar {
+            height: 65px;
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+        .topbar h3 { font-weight: 700; color: var(--primary); margin: 0; display: flex; align-items: center; gap: 8px; }
+        .topbar .btn-back {
+            background: var(--bg-light);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .topbar .btn-back:hover { background: var(--primary); color: var(--white); }
+
+        /* ==================== CONTENT ==================== */
+        .content {
+            padding: 25px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* ==================== CARDS ==================== */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow-sm);
+            border: none;
+        }
+
+        .card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .section-title {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 17px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e8ecf4;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i { color: var(--primary-light); }
+
+        /* ==================== PROFILE HEADER ==================== */
+        .profile-header {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: -50px; right: -50px;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(25,118,210,0.06) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .profile-photo-container {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .profile-photo {
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-light);
+            box-shadow: 0 5px 20px rgba(13,71,161,0.2);
+            transition: var(--transition);
+        }
+
+        .profile-photo-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+            color: var(--white);
+            font-size: 24px;
+        }
+
+        .profile-photo-container:hover .profile-photo-overlay {
+            opacity: 1;
+        }
+
+        .profile-info h3 {
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 5px;
+            font-size: 22px;
+        }
+
+        .profile-info p {
+            color: #888;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        /* ==================== INFO LIST ==================== */
+        .info-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+            align-items: center;
+        }
+
+        .info-row:last-child { border-bottom: none; }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--primary);
+            width: 160px;
+            flex-shrink: 0;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            color: #444;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .info-value.text-muted { color: #aaa; font-style: italic; }
+
+        /* ==================== FORM CONTROLS ==================== */
+        .form-control, .form-select {
+            height: 48px;
+            border-radius: 10px;
+            border: 2px solid #e8ecf4;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            background: #fafbfe;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(25,118,210,0.1);
+            background: var(--white);
+        }
+
+        textarea.form-control {
+            height: auto;
+            min-height: 80px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        /* ==================== BUTTONS ==================== */
+        .btn {
+            border-radius: 10px;
+            font-weight: 600;
+            transition: var(--transition);
+            padding: 10px 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border: none;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(13,71,161,0.3);
+        }
+
+        .btn-outline-primary {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-sm { padding: 8px 16px; font-size: 13px; }
+
+        /* ==================== DOCUMENT CARDS ==================== */
+        .document-card {
+            background: #f8faff;
+            border: 2px dashed #d0d8e8;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .document-card:hover {
+            border-color: var(--primary-light);
+            background: #e8f0ff;
+        }
+
+        .document-card img {
+            width: 100%;
+            height: 120px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-top: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* ==================== MESSAGE BOX ==================== */
+        .message-box {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message-box.success {
+            background: #f0fff4;
+            border: 2px solid #bbf7d0;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .message-box.error {
+            background: #fff5f5;
+            border: 2px solid #fecaca;
+            color: var(--danger);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ==================== PROGRESS ==================== */
+        .password-strength {
+            height: 6px;
+            border-radius: 3px;
+            margin-top: 6px;
+            transition: var(--transition);
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 992px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .content { grid-template-columns: 1fr; padding: 15px; }
+            .profile-header { flex-direction: column; text-align: center; }
+            .info-row { flex-direction: column; gap: 4px; }
+            .info-label { width: 100%; }
+        }
+
+        @media (max-width: 576px) {
+            .topbar h3 { font-size: 16px; }
+            .card { padding: 18px; }
+            .profile-photo { width: 80px; height: 80px; }
+        }
+    </style>
 </head>
 <body>
 
-<script src="assets/js/api.js"></script>
-<script src="assets/js/auth.js"></script>
-<script>if(!AUTH.currentClient()){window.location.href="client-portal.html";}</script>
+    <!-- Auth Check -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script>
+        if (!AUTH.currentClient()) {
+            window.location.href = "client-portal.html";
+        }
+    </script>
 
-<div class="sidebar">
-<div class="logo"><i class="fa-solid fa-building-columns"></i>Bejja Credit</div>
-<a href="client-dashboard.html"><i class="fa fa-home"></i>Dashboard</a>
-<a href="apply-loan.html"><i class="fa fa-hand-holding-dollar"></i>Apply Loan</a>
-<a href="my-loans.html"><i class="fa fa-money-bill-wave"></i>My Loans</a>
-<a href="client-profile.html"><i class="fa fa-user"></i>My Profile</a>
-<a href="#" onclick="AUTH.clientLogout()"><i class="fa fa-right-from-bracket"></i>Logout</a>
-</div>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-building-columns"></i>Bejja Credit
+        </div>
+        <a href="client-dashboard.html"><i class="fa fa-dashboard"></i>Dashboard</a>
+        <a href="apply-loan.html"><i class="fa fa-hand-holding-dollar"></i>Apply Loan</a>
+        <a href="my-loans.html"><i class="fa fa-money-bill-wave"></i>My Loans</a>
+        <a href="client-profile.html" class="active"><i class="fa fa-user"></i>My Profile</a>
+        <a href="#" onclick="AUTH.clientLogout()"><i class="fa fa-right-from-bracket"></i>Logout</a>
+    </div>
 
-<div class="main">
-<div class="topbar"><h3><i class="fa fa-user-circle"></i> My Profile</h3><div class="topbar-right"><a href="client-dashboard.html" class="btn-back"><i class="fa fa-arrow-left"></i> Back</a><span>Welcome, <strong id="topClientName"></strong></span></div></div>
-<div class="content">
+    <!-- Main Content -->
+    <div class="main">
+        <!-- Topbar -->
+        <div class="topbar">
+            <h3>
+                <button class="btn btn-link d-lg-none" onclick="document.getElementById('sidebar').classList.toggle('show')">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <i class="fa fa-user-circle"></i> My Profile
+            </h3>
+            <div class="d-flex align-items-center gap-3">
+                <a href="client-dashboard.html" class="btn-back">
+                    <i class="fa fa-arrow-left"></i> Back to Dashboard
+                </a>
+                <span class="d-none d-md-inline">Welcome, <strong id="topClientName">-</strong></span>
+            </div>
+        </div>
 
-<div class="profile-header">
-<img id="profilePhoto" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
-<div><h3 id="clientName"></h3><p id="clientPhone"></p></div>
-<span class="badge bg-success ms-auto">ACTIVE</span>
-<a href="client-dashboard.html" class="btn btn-success btn-sm ms-2" style="border-radius:8px;font-size:13px;"><i class="fa fa-home"></i> Dashboard</a>
-</div>
+        <!-- Content -->
+        <div class="content">
+            <!-- Profile Header -->
+            <div class="card profile-header">
+                <div class="profile-photo-container" onclick="document.getElementById('photoUpload').click()">
+                    <img id="profilePhoto" class="profile-photo" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profile Photo">
+                    <div class="profile-photo-overlay">
+                        <i class="fa fa-camera"></i>
+                    </div>
+                    <input type="file" id="photoUpload" accept="image/*" style="display:none" onchange="uploadProfilePhoto(this)">
+                </div>
+                <div class="profile-info">
+                    <h3 id="clientName">-</h3>
+                    <p><i class="fa fa-phone me-2"></i><span id="clientPhone">-</span></p>
+                    <p><i class="fa fa-envelope me-2"></i><span id="clientEmail">-</span></p>
+                    <span class="badge bg-success" id="clientStatus">ACTIVE</span>
+                </div>
+                <div class="ms-auto text-end d-none d-md-block">
+                    <small class="text-muted">Member since</small>
+                    <br>
+                    <strong id="memberSince">-</strong>
+                </div>
+            </div>
 
-<div class="info-card">
-<h4 class="section-title"><i class="fa fa-address-card"></i> Personal Information</h4>
-<div class="info-list">
-<div class="info-row"><div class="info-label">Full Name</div><div class="info-value" id="vFullname">-</div></div>
-<div class="info-row"><div class="info-label">National ID</div><div class="info-value" id="vNationalID">-</div></div>
-<div class="info-row"><div class="info-label">Phone Number</div><div class="info-value" id="vPhone">-</div></div>
-<div class="info-row"><div class="info-label">Email Address</div><div class="info-value" id="vEmail">-</div></div>
-<div class="info-row"><div class="info-label">Occupation</div><div class="info-value" id="vOccupation">-</div></div>
-<div class="info-row"><div class="info-label">Employer</div><div class="info-value" id="vEmployer">-</div></div>
-<div class="info-row"><div class="info-label">Monthly Income</div><div class="info-value" id="vIncome">-</div></div>
-<div class="info-row"><div class="info-label">County</div><div class="info-value" id="vCounty">-</div></div>
-<div class="info-row"><div class="info-label">Address</div><div class="info-value" id="vAddress">-</div></div>
-<div class="info-row"><div class="info-label">Registered</div><div class="info-value" id="vCreated">-</div></div>
-</div>
-</div>
+            <!-- Personal Information -->
+            <div class="card">
+                <h4 class="section-title"><i class="fa fa-address-card"></i> Personal Information</h4>
+                <div class="info-list" id="viewMode">
+                    <div class="info-row"><div class="info-label">Full Name</div><div class="info-value" id="vFullname">-</div></div>
+                    <div class="info-row"><div class="info-label">National ID</div><div class="info-value" id="vNationalID">-</div></div>
+                    <div class="info-row"><div class="info-label">Phone Number</div><div class="info-value" id="vPhone">-</div></div>
+                    <div class="info-row"><div class="info-label">Email</div><div class="info-value" id="vEmail">-</div></div>
+                    <div class="info-row"><div class="info-label">Occupation</div><div class="info-value" id="vOccupation">-</div></div>
+                    <div class="info-row"><div class="info-label">Employer</div><div class="info-value" id="vEmployer">-</div></div>
+                    <div class="info-row"><div class="info-label">Monthly Income</div><div class="info-value" id="vIncome">-</div></div>
+                    <div class="info-row"><div class="info-label">County</div><div class="info-value" id="vCounty">-</div></div>
+                    <div class="info-row"><div class="info-label">Address</div><div class="info-value" id="vAddress">-</div></div>
+                </div>
 
-</div></div>
+                <!-- Edit Form (Hidden by default) -->
+                <form id="editForm" style="display:none;">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" id="editFullname" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" id="editEmail" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Occupation</label>
+                            <input type="text" id="editOccupation" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Employer</label>
+                            <input type="text" id="editEmployer" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Monthly Income (KSh)</label>
+                            <input type="number" id="editIncome" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">County</label>
+                            <select id="editCounty" class="form-select">
+                                <option value="">Select County...</option>
+                                <option value="Nairobi">Nairobi</option>
+                                <option value="Mombasa">Mombasa</option>
+                                <option value="Kisumu">Kisumu</option>
+                                <option value="Nakuru">Nakuru</option>
+                                <option value="Kiambu">Kiambu</option>
+                                <option value="Machakos">Machakos</option>
+                                <option value="Kajiado">Kajiado</option>
+                                <option value="Uasin Gishu">Uasin Gishu</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Address</label>
+                            <textarea id="editAddress" class="form-control" rows="2"></textarea>
+                        </div>
+                    </div>
+                </form>
 
-<script>
-function money(v){return"KES "+Number(v||0).toLocaleString();}
-document.addEventListener("DOMContentLoaded",()=>{
-    let c=AUTH.currentClient();if(!c)return;
-    document.getElementById("topClientName").textContent=c.fullname||"-";
-    document.getElementById("profilePhoto").src=c.profilePhoto||"https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-    document.getElementById("clientName").textContent=c.fullname||"-";
-    document.getElementById("clientPhone").textContent=c.phone||"-";
-    document.getElementById("vFullname").textContent=c.fullname||"-";
-    document.getElementById("vNationalID").textContent=c.nationalID||"-";
-    document.getElementById("vPhone").textContent=c.phone||"-";
-    document.getElementById("vEmail").textContent=c.email||"Not Provided";
-    document.getElementById("vOccupation").textContent=c.occupation||"-";
-    document.getElementById("vEmployer").textContent=c.employer||"Not Provided";
-    document.getElementById("vIncome").textContent=money(c.monthlyIncome);
-    document.getElementById("vCounty").textContent=c.county||"-";
-    document.getElementById("vAddress").textContent=c.address||"-";
-    document.getElementById("vCreated").textContent=formatDate(c.createdAt);
-});
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+                <div class="d-flex gap-2 mt-3">
+                    <button class="btn btn-primary btn-sm" id="editBtn" onclick="toggleEdit()">
+                        <i class="fa fa-edit"></i> Edit Profile
+                    </button>
+                    <button class="btn btn-success btn-sm" id="saveBtn" style="display:none;" onclick="saveProfile()">
+                        <i class="fa fa-save"></i> Save Changes
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" id="cancelBtn" style="display:none;" onclick="toggleEdit()">
+                        <i class="fa fa-times"></i> Cancel
+                    </button>
+                </div>
+            </div>
+
+            <!-- Documents -->
+            <div class="card">
+                <h4 class="section-title"><i class="fa fa-id-card"></i> My Documents</h4>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="document-card" onclick="document.getElementById('idFrontUpload').click()">
+                            <label><i class="fa fa-upload me-1"></i> ID Front</label>
+                            <input type="file" id="idFrontUpload" accept="image/*" style="display:none" onchange="previewDocument(this, 'idFrontPreview')">
+                            <img id="idFrontPreview" src="" style="display:none;">
+                            <small class="text-muted d-block mt-1" id="idFrontPlaceholder">Click to upload</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="document-card" onclick="document.getElementById('idBackUpload').click()">
+                            <label><i class="fa fa-upload me-1"></i> ID Back</label>
+                            <input type="file" id="idBackUpload" accept="image/*" style="display:none" onchange="previewDocument(this, 'idBackPreview')">
+                            <img id="idBackPreview" src="" style="display:none;">
+                            <small class="text-muted d-block mt-1" id="idBackPlaceholder">Click to upload</small>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="uploadDocuments()">
+                    <i class="fa fa-upload"></i> Upload Documents
+                </button>
+            </div>
+
+            <!-- Change Password -->
+            <div class="card">
+                <h4 class="section-title"><i class="fa fa-lock"></i> Change Password</h4>
+                <div class="message-box" id="passwordMessage"></div>
+                <form id="passwordForm">
+                    <div class="mb-3">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" id="currentPassword" class="form-control" placeholder="Enter current password">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        <input type="password" id="newPassword" class="form-control" placeholder="Min 8 characters" oninput="checkPasswordStrength()">
+                        <div class="progress password-strength mt-2" style="height:5px;">
+                            <div id="passwordStrengthBar" class="progress-bar" style="width:0%"></div>
+                        </div>
+                        <small class="text-muted">Must contain uppercase, lowercase, number & special character</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" id="confirmNewPassword" class="form-control" placeholder="Confirm new password">
+                    </div>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="changePassword()">
+                        <i class="fa fa-key"></i> Update Password
+                    </button>
+                </form>
+            </div>
+
+            <!-- Account Summary -->
+            <div class="card full-width">
+                <h4 class="section-title"><i class="fa fa-chart-bar"></i> Account Summary</h4>
+                <div class="row text-center" id="accountSummary">
+                    <div class="col-md-3 mb-3">
+                        <h3 class="text-primary fw-bold" id="summaryLoans">0</h3>
+                        <small class="text-muted">Total Loans</small>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <h3 class="text-success fw-bold" id="summaryPaid">KSh 0</h3>
+                        <small class="text-muted">Total Repaid</small>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <h3 class="text-warning fw-bold" id="summaryActive">0</h3>
+                        <small class="text-muted">Active Loans</small>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <h3 class="text-danger fw-bold" id="summaryOverdue">0</h3>
+                        <small class="text-muted">Overdue</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONSTANTS ====================
+        const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+        let isEditing = false;
+        let clientData = null;
+
+        // ==================== UTILITY ====================
+        function money(v) {
+            return "KSh " + Number(v || 0).toLocaleString("en-KE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function showMessage(elementId, message, type = "success") {
+            const el = document.getElementById(elementId);
+            el.className = "message-box " + type;
+            el.innerHTML = '<i class="fa fa-' + (type === "success" ? "check-circle" : "exclamation-circle") + '"></i> ' + message;
+            setTimeout(() => { el.className = "message-box"; }, 5000);
+        }
+
+        // ==================== LOAD DATA ====================
+        async function loadProfile() {
+            const client = AUTH.currentClient();
+            if (!client) return;
+
+            clientData = client;
+
+            // Set basic info
+            document.getElementById("topClientName").textContent = client.fullname || "-";
+            document.getElementById("clientName").textContent = client.fullname || "-";
+            document.getElementById("clientPhone").textContent = client.phone || "-";
+            document.getElementById("clientEmail").textContent = client.email || "Not provided";
+            document.getElementById("clientStatus").textContent = client.status || "ACTIVE";
+            document.getElementById("memberSince").textContent = formatDate(client.createdAt);
+
+            // Set profile photo
+            const photoUrl = client.profilePhoto || DEFAULT_IMG;
+            document.getElementById("profilePhoto").src = photoUrl;
+            document.getElementById("profilePhoto").onerror = function() { this.src = DEFAULT_IMG; };
+
+            // Set view mode values
+            document.getElementById("vFullname").textContent = client.fullname || "-";
+            document.getElementById("vNationalID").textContent = client.nationalID || "-";
+            document.getElementById("vPhone").textContent = client.phone || "-";
+            document.getElementById("vEmail").textContent = client.email || "Not provided";
+            document.getElementById("vOccupation").textContent = client.occupation || "Not provided";
+            document.getElementById("vEmployer").textContent = client.employer || "Not provided";
+            document.getElementById("vIncome").textContent = money(client.monthlyIncome);
+            document.getElementById("vCounty").textContent = client.county || "Not provided";
+            document.getElementById("vAddress").textContent = client.address || "Not provided";
+
+            // Set document previews
+            if (client.idFront) {
+                document.getElementById("idFrontPreview").src = client.idFront;
+                document.getElementById("idFrontPreview").style.display = "block";
+                document.getElementById("idFrontPlaceholder").style.display = "none";
+            }
+            if (client.idBack) {
+                document.getElementById("idBackPreview").src = client.idBack;
+                document.getElementById("idBackPreview").style.display = "block";
+                document.getElementById("idBackPlaceholder").style.display = "none";
+            }
+
+            // Load account summary
+            await loadAccountSummary();
+        }
+
+        async function loadAccountSummary() {
+            try {
+                const result = await api.getMyLoans();
+                if (result.success && result.loans) {
+                    const loans = result.loans;
+                    const totalLoans = loans.length;
+                    const activeLoans = loans.filter(l => l.status === "ACTIVE" && Number(l.remaining_principal) > 0).length;
+                    const overdueLoans = loans.filter(l => l.status === "ACTIVE" && l.due_date && new Date(l.due_date) < new Date()).length;
+                    const totalPaid = loans.reduce((sum, l) => {
+                        const original = Number(l.original_principal || 0);
+                        const remaining = Number(l.remaining_principal || 0);
+                        return sum + (original - remaining);
+                    }, 0);
+
+                    document.getElementById("summaryLoans").textContent = totalLoans;
+                    document.getElementById("summaryPaid").textContent = money(totalPaid);
+                    document.getElementById("summaryActive").textContent = activeLoans;
+                    document.getElementById("summaryOverdue").textContent = overdueLoans;
+                }
+            } catch (error) {
+                console.error("Failed to load summary:", error);
+            }
+        }
+
+        // ==================== EDIT PROFILE ====================
+        function toggleEdit() {
+            isEditing = !isEditing;
+
+            document.getElementById("viewMode").style.display = isEditing ? "none" : "block";
+            document.getElementById("editForm").style.display = isEditing ? "block" : "none";
+            document.getElementById("editBtn").style.display = isEditing ? "none" : "inline-block";
+            document.getElementById("saveBtn").style.display = isEditing ? "inline-block" : "none";
+            document.getElementById("cancelBtn").style.display = isEditing ? "inline-block" : "none";
+
+            if (isEditing && clientData) {
+                // Populate form
+                document.getElementById("editFullname").value = clientData.fullname || "";
+                document.getElementById("editEmail").value = clientData.email || "";
+                document.getElementById("editOccupation").value = clientData.occupation || "";
+                document.getElementById("editEmployer").value = clientData.employer || "";
+                document.getElementById("editIncome").value = clientData.monthlyIncome || "";
+                document.getElementById("editCounty").value = clientData.county || "";
+                document.getElementById("editAddress").value = clientData.address || "";
+            }
+        }
+
+        async function saveProfile() {
+            const data = {
+                fullname: document.getElementById("editFullname").value.trim(),
+                email: document.getElementById("editEmail").value.trim(),
+                occupation: document.getElementById("editOccupation").value.trim(),
+                employer: document.getElementById("editEmployer").value.trim(),
+                monthlyIncome: document.getElementById("editIncome").value,
+                county: document.getElementById("editCounty").value,
+                address: document.getElementById("editAddress").value.trim()
+            };
+
+            try {
+                // Update via API
+                const result = await api.updateClient(clientData.id, data);
+                
+                if (result.success) {
+                    // Update local storage
+                    const updatedClient = { ...clientData, ...data };
+                    localStorage.setItem("bejja_client", JSON.stringify(updatedClient));
+                    clientData = updatedClient;
+
+                    // Refresh display
+                    toggleEdit();
+                    loadProfile();
+                    
+                    showMessage("passwordMessage", "Profile updated successfully!", "success");
+                } else {
+                    showMessage("passwordMessage", result.message || "Failed to update profile.", "error");
+                }
+            } catch (error) {
+                console.error("Update error:", error);
+                showMessage("passwordMessage", "Failed to update profile. Please try again.", "error");
+            }
+        }
+
+        // ==================== PHOTO UPLOAD ====================
+        function previewDocument(input, previewId) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById(previewId);
+                img.src = e.target.result;
+                img.style.display = "block";
+                
+                // Hide placeholder
+                const placeholder = document.getElementById(previewId.replace("Preview", "Placeholder"));
+                if (placeholder) placeholder.style.display = "none";
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function uploadProfilePhoto(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // Preview immediately
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById("profilePhoto").src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            // Upload to server
+            try {
+                const formData = new FormData();
+                formData.append("profilePhoto", file);
+                
+                // Use your API endpoint for photo upload
+                // const result = await api.uploadFile("/clients/" + clientData.id + "/upload-documents", formData);
+                
+                showMessage("passwordMessage", "Profile photo updated!", "success");
+            } catch (error) {
+                console.error("Upload error:", error);
+            }
+        }
+
+        async function uploadDocuments() {
+            const idFront = document.getElementById("idFrontUpload").files[0];
+            const idBack = document.getElementById("idBackUpload").files[0];
+
+            if (!idFront && !idBack) {
+                showMessage("passwordMessage", "Please select files to upload.", "error");
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                if (idFront) formData.append("idFront", idFront);
+                if (idBack) formData.append("idBack", idBack);
+
+                // Use your API endpoint for document upload
+                // const result = await api.uploadFile("/clients/" + clientData.id + "/upload-documents", formData);
+
+                showMessage("passwordMessage", "Documents uploaded successfully!", "success");
+            } catch (error) {
+                console.error("Upload error:", error);
+                showMessage("passwordMessage", "Failed to upload documents.", "error");
+            }
+        }
+
+        // ==================== PASSWORD ====================
+        function checkPasswordStrength() {
+            const password = document.getElementById("newPassword").value;
+            const bar = document.getElementById("passwordStrengthBar");
+            let strength = 0;
+
+            if (password.length >= 8) strength += 25;
+            if (/[A-Z]/.test(password)) strength += 25;
+            if (/[a-z]/.test(password)) strength += 25;
+            if (/[\d!@#$%^&*]/.test(password)) strength += 25;
+
+            bar.style.width = strength + "%";
+            bar.className = "progress-bar";
+            if (strength <= 25) bar.classList.add("bg-danger");
+            else if (strength <= 50) bar.classList.add("bg-warning");
+            else if (strength <= 75) bar.classList.add("bg-info");
+            else bar.classList.add("bg-success");
+        }
+
+        async function changePassword() {
+            const currentPassword = document.getElementById("currentPassword").value;
+            const newPassword = document.getElementById("newPassword").value;
+            const confirmPassword = document.getElementById("confirmNewPassword").value;
+
+            // Validation
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showMessage("passwordMessage", "All fields are required.", "error");
+                return;
+            }
+
+            if (newPassword.length < 8) {
+                showMessage("passwordMessage", "Password must be at least 8 characters.", "error");
+                return;
+            }
+
+            if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/.test(newPassword)) {
+                showMessage("passwordMessage", "Password must contain uppercase, lowercase, number & special character.", "error");
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showMessage("passwordMessage", "Passwords do not match.", "error");
+                return;
+            }
+
+            try {
+                // Use your API endpoint for password change
+                // const result = await api.changePassword(currentPassword, newPassword);
+
+                showMessage("passwordMessage", "Password changed successfully!", "success");
+                
+                // Clear form
+                document.getElementById("currentPassword").value = "";
+                document.getElementById("newPassword").value = "";
+                document.getElementById("confirmNewPassword").value = "";
+                document.getElementById("passwordStrengthBar").style.width = "0%";
+            } catch (error) {
+                showMessage("passwordMessage", "Failed to change password.", "error");
+            }
+        }
+
+        // ==================== INITIALIZE ====================
+        loadProfile();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
