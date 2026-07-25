@@ -1,76 +1,657 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bejja Credit | Total Loans</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
-.sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#0d47a1;color:white;}
-.logo{padding:25px;font-size:26px;font-weight:bold;border-bottom:1px solid rgba(255,255,255,.2);}
-.logo i{margin-right:10px;}
-.sidebar a{display:block;padding:15px 25px;color:white;text-decoration:none;transition:.3s;}
-.sidebar a:hover{background:#1565c0;padding-left:35px;}.sidebar i{width:25px;}
-.main{margin-left:260px;}
-.topbar{height:70px;background:#1976d2;color:white;display:flex;justify-content:space-between;align-items:center;padding:0 30px;box-shadow:0 4px 12px rgba(0,0,0,.15);}
-.topbar h2{font-weight:700;}.topbar .topbar-right{display:flex;align-items:center;gap:15px;}
-.topbar .btn-back{background:rgba(255,255,255,0.2);color:white;padding:8px 16px;border-radius:20px;text-decoration:none;font-size:14px;font-weight:600;transition:.3s;}
-.topbar .btn-back:hover{background:rgba(255,255,255,0.35);color:white;}
-.content{padding:30px;}
-.table-card{background:white;border-radius:20px;overflow:hidden;box-shadow:0 8px 25px rgba(0,0,0,.12);}
-.table-header{background:#1976d2;color:white;padding:18px 25px;font-size:22px;font-weight:bold;}
-.table th{background:#e3f2fd;color:#0d47a1;}.table td,.table th{padding:15px;vertical-align:middle;}
-.profile-img{width:45px;height:45px;border-radius:50%;object-fit:cover;border:2px solid #1976d2;}
-.btn-view{background:#1976d2;color:white;border-radius:20px;padding:6px 15px;font-size:13px;}
-.badge-status{font-size:12px;padding:5px 10px;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bejja Credit | Total Loans</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #0d47a1;
+            --primary-light: #1976d2;
+            --success: #198754;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #0dcaf0;
+            --white: #ffffff;
+            --bg-light: #edf4ff;
+            --shadow-sm: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow-md: 0 8px 25px rgba(0,0,0,0.12);
+            --transition: all 0.3s ease;
+            --radius: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg-light);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* ==================== SIDEBAR ==================== */
+        .sidebar {
+            position: fixed; left: 0; top: 0;
+            width: 260px; height: 100vh;
+            background: linear-gradient(180deg, #0a3d8f, #0d47a1, #1565c0);
+            color: var(--white); z-index: 1000;
+            overflow-y: auto; box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+        }
+        .logo {
+            padding: 22px 20px; font-size: 20px; font-weight: 800;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .logo i { color: var(--warning); font-size: 24px; }
+        .sidebar .nav-section { padding: 15px 0; }
+        .sidebar .nav-section-title {
+            padding: 8px 20px; font-size: 10px; text-transform: uppercase;
+            letter-spacing: 2px; color: rgba(255,255,255,0.5); font-weight: 700;
+        }
+        .sidebar a {
+            display: flex; align-items: center;
+            padding: 13px 20px; color: rgba(255,255,255,0.85);
+            text-decoration: none; transition: var(--transition);
+            font-size: 14px; font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background: rgba(255,255,255,0.1); color: var(--white);
+            border-left-color: var(--warning); padding-left: 25px;
+        }
+        .sidebar a i { width: 22px; margin-right: 10px; }
+
+        /* ==================== MAIN ==================== */
+        .main { margin-left: 260px; min-height: 100vh; }
+
+        /* ==================== TOPBAR ==================== */
+        .topbar {
+            height: 65px; background: var(--white);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 25px; box-shadow: var(--shadow-sm);
+            position: sticky; top: 0; z-index: 999;
+        }
+        .topbar h3 { font-weight: 700; color: var(--primary); margin: 0; display: flex; align-items: center; gap: 10px; }
+        .topbar .btn-back {
+            background: var(--bg-light); color: var(--primary);
+            padding: 8px 16px; border-radius: 20px;
+            text-decoration: none; font-size: 13px; font-weight: 600;
+            transition: var(--transition);
+        }
+        .topbar .btn-back:hover { background: var(--primary); color: var(--white); }
+
+        /* ==================== CONTENT ==================== */
+        .content { padding: 25px; }
+
+        /* ==================== STATS CARDS ==================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: var(--white); border-radius: var(--radius);
+            padding: 18px; box-shadow: var(--shadow-sm);
+            transition: var(--transition); border-left: 4px solid var(--primary);
+            cursor: pointer;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+        .stat-card.success { border-left-color: var(--success); }
+        .stat-card.warning { border-left-color: var(--warning); }
+        .stat-card.danger { border-left-color: var(--danger); }
+        .stat-card .stat-icon {
+            width: 38px; height: 38px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; margin-bottom: 10px;
+        }
+        .stat-card.primary .stat-icon { background: rgba(13,71,161,0.1); color: var(--primary); }
+        .stat-card.success .stat-icon { background: rgba(25,135,84,0.1); color: var(--success); }
+        .stat-card.warning .stat-icon { background: rgba(255,193,7,0.1); color: #856404; }
+        .stat-card.danger .stat-icon { background: rgba(220,53,69,0.1); color: var(--danger); }
+        .stat-card .stat-value { font-size: 22px; font-weight: 700; }
+        .stat-card .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* ==================== TABS ==================== */
+        .tab-nav {
+            display: flex; gap: 8px;
+            margin-bottom: 15px; flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 10px 20px; border-radius: 25px;
+            border: 2px solid #e0e0e0; background: var(--white);
+            font-weight: 600; font-size: 13px; cursor: pointer;
+            transition: var(--transition); color: #666;
+        }
+        .tab-btn:hover { border-color: var(--primary-light); color: var(--primary); }
+        .tab-btn.active {
+            background: var(--primary); color: var(--white);
+            border-color: var(--primary);
+        }
+
+        /* ==================== FILTER BAR ==================== */
+        .filter-bar {
+            display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;
+        }
+        .filter-bar .form-control, .filter-bar .form-select {
+            height: 40px; border-radius: 10px;
+            border: 2px solid #e8ecf4; font-size: 13px;
+            max-width: 220px;
+        }
+
+        /* ==================== TABLE CARD ==================== */
+        .table-card {
+            background: var(--white); border-radius: var(--radius);
+            box-shadow: var(--shadow-sm); overflow: hidden;
+        }
+        .table-header {
+            padding: 16px 22px; border-bottom: 1px solid #f0f0f0;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .table-header h5 { font-weight: 700; color: var(--primary); margin: 0; }
+        .table th {
+            background: #f8faff; color: var(--primary);
+            font-weight: 600; font-size: 11px; text-transform: uppercase;
+            letter-spacing: 0.5px; white-space: nowrap; text-align: center;
+            padding: 12px 10px;
+        }
+        .table td { text-align: center; vertical-align: middle; font-size: 13px; padding: 10px; }
+        .table tbody tr { transition: var(--transition); cursor: pointer; }
+        .table tbody tr:hover { background: #f8fbff; }
+
+        .client-avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            object-fit: cover; margin-right: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        .btn {
+            border-radius: 10px; font-weight: 600;
+            transition: var(--transition); font-size: 12px;
+            padding: 6px 14px;
+        }
+        .btn-view { background: var(--primary-light); color: var(--white); }
+        .btn-view:hover { background: var(--primary); color: var(--white); }
+        .btn-payment { background: var(--success); color: var(--white); }
+        .btn-payment:hover { background: #157347; color: var(--white); }
+
+        /* ==================== MODAL ==================== */
+        .modal-header { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: var(--white); }
+        .modal-header .btn-close { filter: brightness(0) invert(1); }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 992px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .filter-bar { flex-direction: column; }
+            .filter-bar .form-control, .filter-bar .form-select { max-width: 100%; }
+        }
+        @media (max-width: 576px) {
+            .content { padding: 15px; }
+            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+            .stat-card .stat-value { font-size: 18px; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="sidebar">
-<div class="logo"><i class="fa-solid fa-building-columns"></i>Bejja Credit</div>
-<a href="admin-dashboard.html"><i class="fa fa-dashboard"></i>Dashboard</a>
-<a href="registered-clients.html"><i class="fa fa-users"></i>Registered Clients</a>
-<a href="active-loans.html"><i class="fa fa-money-bill-wave"></i>Active Loans</a>
-<a href="late-loans.html"><i class="fa fa-triangle-exclamation"></i>Late Loans</a>
-<a href="total-loans.html"><i class="fa fa-file-invoice"></i>Total Loans</a>
-<a href="loan-applications.html"><i class="fa fa-file-circle-check"></i>Loan Applications</a>
-<a href="statistics.html"><i class="fa fa-chart-column"></i>Statistics</a>
-<a href="#" onclick="logout()"><i class="fa fa-right-from-bracket"></i>Logout</a>
-</div>
+    <!-- Auth Check -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script>
+        if (!AUTH.currentAdmin()) {
+            window.location.href = "admin-login.html";
+        }
+    </script>
 
-<div class="main">
-<div class="topbar"><h2><i class="fa fa-file-invoice"></i>Total Loans</h2><div class="topbar-right"><a href="admin-dashboard.html" class="btn-back"><i class="fa fa-arrow-left"></i> Back</a><span>Welcome, <strong id="adminName">Admin</strong></span></div></div>
-<div class="content"><div class="table-card"><div class="table-header"><i class="fa fa-list"></i>All Loans — Client List</div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>#</th><th>Photo</th><th>Client Name</th><th>Phone</th><th>Loan Amount</th><th>Balance</th><th>Due Date</th><th>Status</th><th>Action</th></tr></thead><tbody id="allLoansTable"><tr><td colspan="9" class="text-center text-muted p-4">Loading all loans...</td></tr></tbody></table></div></div></div>
-</div>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-building-columns"></i>Bejja Credit
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Main Menu</div>
+            <a href="admin-dashboard.html"><i class="fa-solid fa-gauge"></i>Dashboard</a>
+            <a href="registered-clients.html"><i class="fa-solid fa-users"></i>Registered Clients</a>
+            <a href="active-loans.html"><i class="fa-solid fa-money-bill-wave"></i>Active Loans</a>
+            <a href="late-loans.html"><i class="fa-solid fa-triangle-exclamation"></i>Late Loans</a>
+            <a href="total-loans.html" class="active"><i class="fa-solid fa-file-invoice"></i>Total Loans</a>
+            <a href="loan-applications.html"><i class="fa-solid fa-file-circle-check"></i>Applications</a>
+            <a href="statistics.html"><i class="fa-solid fa-chart-column"></i>Statistics</a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Account</div>
+            <a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i>Logout</a>
+        </div>
+    </div>
 
-<script src="assets/js/api.js"></script>
-<script src="assets/js/auth.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-if(!AUTH.currentAdmin()){window.location.href="admin-login.html";}
-let admin=AUTH.currentAdmin();if(admin)document.getElementById("adminName").innerHTML=admin.username;
-function money(v){return"KES "+Number(v||0).toLocaleString();}
+    <!-- Main Content -->
+    <div class="main">
+        <!-- Topbar -->
+        <div class="topbar">
+            <h3>
+                <button class="btn btn-link d-lg-none" onclick="document.getElementById('sidebar').classList.toggle('show')">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <i class="fa fa-file-invoice"></i> Total Loans
+            </h3>
+            <div class="d-flex align-items-center gap-3">
+                <a href="admin-dashboard.html" class="btn-back">
+                    <i class="fa fa-arrow-left"></i> Back to Dashboard
+                </a>
+                <span>Welcome, <strong id="adminName">Admin</strong></span>
+            </div>
+        </div>
 
-async function loadAllLoans(){
-    let result=await api.getLoans();let table=document.getElementById("allLoansTable");table.innerHTML="";
-    if(!result.success||!result.loans||result.loans.length===0){table.innerHTML='<tr><td colspan="9" class="text-center text-muted p-4">No loans found.</td></tr>';return;}
-    let today=new Date();today.setHours(0,0,0,0);
-    const DEFAULT_IMG="https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-    result.loans.reverse().forEach((l,i)=>{
-        let photo=l.profile_photo||DEFAULT_IMG;
-        let statusBadge='<span class="badge bg-success badge-status">ACTIVE</span>';
-        if(l.status==="COMPLETED"||Number(l.remaining_principal||0)<=0)statusBadge='<span class="badge bg-secondary badge-status">COMPLETED</span>';
-        else if(l.due_date&&new Date(l.due_date)<today)statusBadge='<span class="badge bg-danger badge-status">LATE</span>';
-        table.innerHTML+=`<tr><td>${i+1}</td><td><img src="${photo}" class="profile-img"></td><td><b>${l.fullname||"Unknown"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td class="text-danger fw-bold">${money(l.remaining_principal)}</td><td>${formatDate(l.due_date)}</td><td>${statusBadge}</td><td><button class="btn btn-view btn-sm" onclick="window.location.href='active-loans.html'"><i class="fa fa-eye"></i> View Details</button></td></tr>`;
-    });
-}
+        <!-- Content -->
+        <div class="content">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card primary" onclick="switchTab('ALL')">
+                    <div class="stat-icon"><i class="fa fa-list"></i></div>
+                    <div class="stat-value" id="statTotal">0</div>
+                    <div class="stat-label">Total Loans</div>
+                </div>
+                <div class="stat-card success" onclick="switchTab('ACTIVE')">
+                    <div class="stat-icon"><i class="fa fa-spinner"></i></div>
+                    <div class="stat-value" id="statActive">0</div>
+                    <div class="stat-label">Active</div>
+                </div>
+                <div class="stat-card warning" onclick="switchTab('OVERDUE')">
+                    <div class="stat-icon"><i class="fa fa-exclamation-triangle"></i></div>
+                    <div class="stat-value" id="statOverdue">0</div>
+                    <div class="stat-label">Overdue</div>
+                </div>
+                <div class="stat-card success" onclick="switchTab('COMPLETED')">
+                    <div class="stat-icon"><i class="fa fa-check-circle"></i></div>
+                    <div class="stat-value" id="statCompleted">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+            </div>
 
-function logout(){AUTH.adminLogout();}
-loadAllLoans();
-</script>
+            <!-- Tabs -->
+            <div class="tab-nav">
+                <button class="tab-btn active" onclick="switchTab('ALL')" id="tabALL">All Loans</button>
+                <button class="tab-btn" onclick="switchTab('ACTIVE')" id="tabACTIVE">Active</button>
+                <button class="tab-btn" onclick="switchTab('OVERDUE')" id="tabOVERDUE">Overdue</button>
+                <button class="tab-btn" onclick="switchTab('COMPLETED')" id="tabCOMPLETED">Completed</button>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <input type="text" class="form-control" id="searchInput" placeholder="Search name, phone..." oninput="renderTable()">
+                <select class="form-select" id="sortOrder" onchange="renderTable()">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="amount_desc">Highest Amount</option>
+                    <option value="amount_asc">Lowest Amount</option>
+                </select>
+                <button class="btn btn-outline-primary btn-sm" onclick="exportToCSV()">
+                    <i class="fa fa-download"></i> Export CSV
+                </button>
+            </div>
+
+            <!-- Loans Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h5><i class="fa fa-list"></i> <span id="tableTitle">All Loans</span></h5>
+                    <span class="text-muted" id="resultCount">0 results</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Client</th>
+                                <th>Phone</th>
+                                <th>Amount</th>
+                                <th>Balance</th>
+                                <th>Interest</th>
+                                <th>Loan Date</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allLoansTable">
+                            <tr>
+                                <td colspan="10" class="text-center text-muted p-5">
+                                    <div class="spinner-border spinner-border-sm me-2"></div>Loading all loans...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loan Details Modal -->
+    <div class="modal fade" id="loanDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fa fa-file-invoice-dollar"></i> Loan Details</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="loanDetailContent">
+                    <p class="text-center text-muted">Loading...</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ==================== GLOBALS ====================
+        const admin = AUTH.currentAdmin();
+        if (admin) document.getElementById("adminName").textContent = admin.username;
+
+        const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+        let allLoans = [];
+        let currentTab = "ALL";
+
+        // ==================== UTILITY ====================
+        function money(v) {
+            return "KSh " + Number(v || 0).toLocaleString("en-KE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // ==================== LOAD DATA ====================
+        async function loadAllLoans() {
+            try {
+                const result = await api.getLoans();
+                const table = document.getElementById("allLoansTable");
+
+                if (!result.success || !result.loans) {
+                    table.innerHTML = '<tr><td colspan="10" class="text-center text-muted p-4">No loans found.</td></tr>';
+                    updateStats(0, 0, 0, 0);
+                    return;
+                }
+
+                allLoans = result.loans;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                // Calculate stats
+                const active = allLoans.filter(l => l.status === "ACTIVE" && Number(l.remaining_principal) > 0 && 
+                    (!l.due_date || new Date(l.due_date) >= today)).length;
+                const overdue = allLoans.filter(l => l.status === "ACTIVE" && Number(l.remaining_principal) > 0 && 
+                    l.due_date && new Date(l.due_date) < today).length;
+                const completed = allLoans.filter(l => l.status === "COMPLETED" || Number(l.remaining_principal) <= 0).length;
+
+                updateStats(allLoans.length, active, overdue, completed);
+                renderTable();
+            } catch (error) {
+                console.error("Error loading loans:", error);
+                document.getElementById("allLoansTable").innerHTML = 
+                    '<tr><td colspan="10" class="text-center text-danger p-4">Failed to load loans.</td></tr>';
+            }
+        }
+
+        function updateStats(total, active, overdue, completed) {
+            document.getElementById("statTotal").textContent = total;
+            document.getElementById("statActive").textContent = active;
+            document.getElementById("statOverdue").textContent = overdue;
+            document.getElementById("statCompleted").textContent = completed;
+        }
+
+        // ==================== TAB SWITCHING ====================
+        function switchTab(tab) {
+            currentTab = tab;
+
+            document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+            document.getElementById("tab" + tab).classList.add("active");
+
+            const titles = {
+                "ALL": "All Loans",
+                "ACTIVE": "Active Loans",
+                "OVERDUE": "Overdue Loans",
+                "COMPLETED": "Completed Loans"
+            };
+            document.getElementById("tableTitle").textContent = titles[tab] || "All Loans";
+
+            renderTable();
+        }
+
+        // ==================== RENDER TABLE ====================
+        function renderTable() {
+            const table = document.getElementById("allLoansTable");
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Filter by tab
+            let filtered = [...allLoans];
+            switch (currentTab) {
+                case "ACTIVE":
+                    filtered = filtered.filter(l => l.status === "ACTIVE" && Number(l.remaining_principal) > 0 &&
+                        (!l.due_date || new Date(l.due_date) >= today));
+                    break;
+                case "OVERDUE":
+                    filtered = filtered.filter(l => l.status === "ACTIVE" && Number(l.remaining_principal) > 0 &&
+                        l.due_date && new Date(l.due_date) < today);
+                    break;
+                case "COMPLETED":
+                    filtered = filtered.filter(l => l.status === "COMPLETED" || Number(l.remaining_principal) <= 0);
+                    break;
+            }
+
+            // Search filter
+            const search = document.getElementById("searchInput").value.toLowerCase();
+            if (search) {
+                filtered = filtered.filter(l =>
+                    (l.fullname || "").toLowerCase().includes(search) ||
+                    (l.phone || "").includes(search) ||
+                    String(l.id).includes(search)
+                );
+            }
+
+            // Sort
+            const sortOrder = document.getElementById("sortOrder").value;
+            switch (sortOrder) {
+                case "newest":
+                    filtered.sort((a, b) => new Date(b.created_at || b.loan_date) - new Date(a.created_at || a.loan_date));
+                    break;
+                case "oldest":
+                    filtered.sort((a, b) => new Date(a.created_at || a.loan_date) - new Date(b.created_at || b.loan_date));
+                    break;
+                case "amount_desc":
+                    filtered.sort((a, b) => Number(b.original_principal) - Number(a.original_principal));
+                    break;
+                case "amount_asc":
+                    filtered.sort((a, b) => Number(a.original_principal) - Number(b.original_principal));
+                    break;
+            }
+
+            document.getElementById("resultCount").textContent = filtered.length + " loan(s)";
+
+            if (filtered.length === 0) {
+                table.innerHTML = `<tr><td colspan="10" class="text-center text-muted p-5">
+                    <i class="fa fa-inbox" style="font-size:40px;"></i>
+                    <h5 class="mt-3">No ${currentTab.toLowerCase()} loans found.</h5>
+                </td></tr>`;
+                return;
+            }
+
+            const statusColors = {
+                "ACTIVE": "success",
+                "COMPLETED": "info",
+                "DEFAULTED": "danger"
+            };
+
+            table.innerHTML = filtered.map((l, i) => {
+                const bal = Number(l.remaining_principal || 0);
+                const rate = Number(l.interest_rate || 20);
+                const interest = (bal * rate) / 100;
+
+                // Determine status
+                let realStatus = l.status;
+                let badgeColor = statusColors[l.status] || "primary";
+                if (l.status === "ACTIVE" && bal <= 0) {
+                    realStatus = "COMPLETED";
+                    badgeColor = "info";
+                } else if (l.status === "ACTIVE" && l.due_date && new Date(l.due_date) < today && bal > 0) {
+                    realStatus = "OVERDUE";
+                    badgeColor = "danger";
+                }
+
+                const photo = l.profile_photo || DEFAULT_IMG;
+
+                return `
+                    <tr onclick="viewLoanDetails(${l.id})">
+                        <td>${i + 1}</td>
+                        <td>
+                            <div class="d-flex align-items-center justify-content-center">
+                                <img src="${photo}" class="client-avatar" onerror="this.src='${DEFAULT_IMG}'">
+                                <strong>${l.fullname || "Unknown"}</strong>
+                            </div>
+                        </td>
+                        <td>${l.phone || "-"}</td>
+                        <td><strong>${money(l.original_principal)}</strong></td>
+                        <td class="${bal > 0 ? 'text-danger fw-bold' : 'text-success'}">${money(bal)}</td>
+                        <td>${money(interest)} <small>(${rate}%)</small></td>
+                        <td>${formatDate(l.loan_date)}</td>
+                        <td>${formatDate(l.due_date)}</td>
+                        <td><span class="badge bg-${badgeColor}">${realStatus}</span></td>
+                        <td>
+                            <button class="btn btn-view btn-sm" onclick="event.stopPropagation(); viewLoanDetails(${l.id})">
+                                <i class="fa fa-eye"></i> View
+                            </button>
+                            ${realStatus === "ACTIVE" || realStatus === "OVERDUE" ? `
+                                <button class="btn btn-payment btn-sm" onclick="event.stopPropagation(); openPaymentModal(${l.id})">
+                                    <i class="fa fa-money-bill"></i>
+                                </button>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        // ==================== VIEW LOAN DETAILS ====================
+        async function viewLoanDetails(loanId) {
+            try {
+                document.getElementById("loanDetailContent").innerHTML = 
+                    '<p class="text-center text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Loading...</p>';
+                new bootstrap.Modal(document.getElementById("loanDetailModal")).show();
+
+                const loan = allLoans.find(l => l.id == loanId);
+                if (!loan) {
+                    document.getElementById("loanDetailContent").innerHTML = '<p class="text-danger">Loan not found.</p>';
+                    return;
+                }
+
+                // Get payments
+                let payments = [];
+                try {
+                    const pResult = await api.getLoanPayments(loanId);
+                    payments = pResult.success ? (pResult.payments || []) : [];
+                } catch (e) { /* ignore */ }
+
+                const bal = Number(loan.remaining_principal || 0);
+                const original = Number(loan.original_principal || 0);
+                const rate = Number(loan.interest_rate || 20);
+                const interest = (bal * rate) / 100;
+                const paid = original - bal;
+                const progressPct = original > 0 ? Math.round((paid / original) * 100) : 0;
+
+                document.getElementById("loanDetailContent").innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary fw-bold">Loan Information</h6>
+                            <table class="table table-bordered">
+                                <tr><td><b>Client</b></td><td>${loan.fullname || "Unknown"}</td></tr>
+                                <tr><td><b>Phone</b></td><td>${loan.phone || "-"}</td></tr>
+                                <tr><td><b>Original Amount</b></td><td class="fw-bold">${money(original)}</td></tr>
+                                <tr><td><b>Remaining Balance</b></td><td class="text-danger fw-bold">${money(bal)}</td></tr>
+                                <tr><td><b>Interest Rate</b></td><td>${rate}%</td></tr>
+                                <tr><td><b>Monthly Interest</b></td><td>${money(interest)}</td></tr>
+                                <tr><td><b>Amount Repaid</b></td><td class="text-success fw-bold">${money(paid)}</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary fw-bold">Dates & Status</h6>
+                            <table class="table table-bordered">
+                                <tr><td><b>Loan Date</b></td><td>${formatDate(loan.loan_date)}</td></tr>
+                                <tr><td><b>Due Date</b></td><td>${formatDate(loan.due_date)}</td></tr>
+                                <tr><td><b>Status</b></td><td><span class="badge bg-${loan.status === 'ACTIVE' ? 'success' : 'info'}">${loan.status}</span></td></tr>
+                                <tr><td><b>Created</b></td><td>${formatDate(loan.created_at)}</td></tr>
+                            </table>
+                            <h6 class="text-primary fw-bold mt-3">Repayment Progress</h6>
+                            <div class="progress" style="height:20px;">
+                                <div class="progress-bar bg-success" style="width:${progressPct}%">${progressPct}%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="text-primary fw-bold mt-3">Payment History (${payments.length} payments)</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-light">
+                                <tr><th>Date</th><th>Amount</th><th>Principal</th><th>Interest</th><th>Balance</th><th>Method</th></tr>
+                            </thead>
+                            <tbody>
+                                ${payments.length === 0 ? '<tr><td colspan="6" class="text-center text-muted">No payments recorded</td></tr>' :
+                                payments.map(p => `
+                                    <tr>
+                                        <td>${formatDate(p.payment_date)}</td>
+                                        <td class="fw-bold">${money(p.amount)}</td>
+                                        <td>${money(p.principal_paid)}</td>
+                                        <td>${money(p.interest_paid)}</td>
+                                        <td>${money(p.balance)}</td>
+                                        <td>${p.payment_method || p.method || "-"}</td>
+                                    </tr>
+                                `).join("")}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById("loanDetailContent").innerHTML = '<p class="text-danger">Failed to load details.</p>';
+            }
+        }
+
+        // ==================== EXPORT ====================
+        function exportToCSV() {
+            if (allLoans.length === 0) {
+                alert("No data to export.");
+                return;
+            }
+
+            let csv = "Client Name,Phone,Amount,Balance,Interest Rate,Loan Date,Due Date,Status\n";
+            allLoans.forEach(l => {
+                csv += `"${l.fullname || ""}","${l.phone || ""}",${l.original_principal},${l.remaining_principal},${l.interest_rate}%,"${formatDate(l.loan_date)}","${formatDate(l.due_date)}",${l.status}\n`;
+            });
+
+            const blob = new Blob([csv], { type: "text/csv" });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `total-loans-${new Date().toISOString().split("T")[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // ==================== LOGOUT ====================
+        function logout() {
+            if (confirm("Are you sure you want to logout?")) {
+                AUTH.adminLogout();
+            }
+        }
+
+        // ==================== INITIALIZE ====================
+        loadAllLoans();
+        setInterval(loadAllLoans, 300000);
+    </script>
 </body>
 </html>
