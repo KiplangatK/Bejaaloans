@@ -63,3 +63,5 @@ const api = {
 
     getStats: () => api.request("/stats")
 };
+sendOTP: (phone) => api.request("/auth/send-otp", { method: "POST", body: JSON.stringify({ phone }) }),
+verifyOTP: (phone, code) => api.request("/auth/verify-otp", { method: "POST", body: JSON.stringify({ phone, code }) }),
