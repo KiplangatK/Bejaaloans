@@ -3,153 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Client Flow | Bejja Credit</title>
+    <title>Admin Test | Bejja Credit</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        body { background: #f5f7fa; font-family: 'Segoe UI', sans-serif; }
+        .step-card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); }
+        .step-number { width: 40px; height: 40px; border-radius: 50%; background: #0d47a1; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; }
+        .btn { border-radius: 10px; font-weight: 600; }
+        .log-box { background: #1a1a2e; color: #e0e0e0; padding: 15px; border-radius: 10px; max-height: 400px; overflow-y: auto; font-family: monospace; font-size: 13px; }
+        .log-success { color: #4caf50; }
+        .log-error { color: #f44336; }
+        .log-info { color: #2196f3; }
+    </style>
 </head>
-<body class="bg-light p-4">
-    <div class="container" style="max-width:800px;">
-        <h2 class="mb-4 text-primary">
-            <i class="fa fa-flask"></i> Bejja Credit - Test Client Flow
-        </h2>
+<body>
+    <div class="container py-4" style="max-width:900px;">
+        <h2 class="mb-1 text-primary"><i class="fa fa-shield-halved"></i> Admin Test Panel</h2>
+        <p class="text-muted mb-4">Test the complete flow: Login → Register Client → Apply Loan → Approve → View</p>
 
-        <!-- Step 1: Register -->
-        <div class="card mb-3">
-            <div class="card-header bg-primary text-white fw-bold">Step 1: Register New Client</div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <label>Full Name</label>
-                        <input id="fullname" class="form-control" value="John Doe" placeholder="Full name">
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <label>National ID</label>
-                        <input id="nationalID" class="form-control" value="12345678" placeholder="ID number">
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <label>Phone</label>
-                        <input id="phone" class="form-control" value="0712345678" placeholder="07XXXXXXXX">
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <label>Password</label>
-                        <input id="password" class="form-control" value="Test@123" type="password">
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <label>County</label>
-                        <input id="county" class="form-control" value="Nairobi">
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <label>Monthly Income (KSh)</label>
-                        <input id="income" class="form-control" value="50000" type="number">
-                    </div>
-                </div>
-                <button class="btn btn-primary mt-2" onclick="registerClient()">
-                    <i class="fa fa-user-plus"></i> Register Client
-                </button>
-                <div id="registerResult" class="mt-2"></div>
+        <!-- Step 1: Admin Login -->
+        <div class="step-card">
+            <div class="d-flex align-items-center mb-3">
+                <div class="step-number me-3">1</div>
+                <h5 class="mb-0">Admin Login</h5>
             </div>
+            <div class="row">
+                <div class="col-md-4 mb-2">
+                    <input id="adminUser" class="form-control" value="Kiplangat" placeholder="Username">
+                </div>
+                <div class="col-md-4 mb-2">
+                    <input id="adminPass" class="form-control" value="Admin@123" type="password" placeholder="Password">
+                </div>
+                <div class="col-md-4 mb-2">
+                    <button class="btn btn-primary w-100" onclick="adminLogin()">
+                        <i class="fa fa-right-to-bracket"></i> Login as Admin
+                    </button>
+                </div>
+            </div>
+            <div id="step1Result" class="mt-2"></div>
         </div>
 
-        <!-- Step 2: Login -->
-        <div class="card mb-3">
-            <div class="card-header bg-success text-white fw-bold">Step 2: Client Login</div>
-            <div class="card-body">
-                <button class="btn btn-success" onclick="clientLogin()">
-                    <i class="fa fa-right-to-bracket"></i> Login as Client
-                </button>
-                <div id="loginResult" class="mt-2"></div>
+        <!-- Step 2: Register Test Client -->
+        <div class="step-card">
+            <div class="d-flex align-items-center mb-3">
+                <div class="step-number me-3">2</div>
+                <h5 class="mb-0">Register Test Client</h5>
             </div>
+            <button class="btn btn-success" onclick="registerClient()">
+                <i class="fa fa-user-plus"></i> Auto-Register Test Client
+            </button>
+            <small class="text-muted ms-2">Creates: John Doe / 0712345678 / Test@123</small>
+            <div id="step2Result" class="mt-2"></div>
         </div>
 
         <!-- Step 3: Apply for Loan -->
-        <div class="card mb-3">
-            <div class="card-header bg-warning text-dark fw-bold">Step 3: Apply for Loan</div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <label>Loan Amount (KSh)</label>
-                        <input id="loanAmount" class="form-control" value="10000" type="number">
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <label>Purpose</label>
-                        <input id="purpose" class="form-control" value="Business Expansion">
-                    </div>
-                </div>
-                <button class="btn btn-warning mt-2" onclick="applyLoan()">
-                    <i class="fa fa-paper-plane"></i> Submit Loan Application
-                </button>
-                <div id="applyResult" class="mt-2"></div>
+        <div class="step-card">
+            <div class="d-flex align-items-center mb-3">
+                <div class="step-number me-3">3</div>
+                <h5 class="mb-0">Apply for Loan (as Client)</h5>
             </div>
+            <div class="row">
+                <div class="col-md-4 mb-2">
+                    <input id="loanAmount" class="form-control" value="10000" type="number" placeholder="Amount">
+                </div>
+                <div class="col-md-4 mb-2">
+                    <input id="loanPurpose" class="form-control" value="Business Expansion" placeholder="Purpose">
+                </div>
+                <div class="col-md-4 mb-2">
+                    <button class="btn btn-warning w-100" onclick="applyLoan()">
+                        <i class="fa fa-paper-plane"></i> Submit Application
+                    </button>
+                </div>
+            </div>
+            <div id="step3Result" class="mt-2"></div>
         </div>
 
-        <!-- Step 4: Admin Approve -->
-        <div class="card mb-3">
-            <div class="card-header bg-info text-white fw-bold">Step 4: Admin Login & Approve</div>
-            <div class="card-body">
-                <button class="btn btn-info me-2" onclick="adminLogin()">
-                    <i class="fa fa-lock"></i> Admin Login
-                </button>
-                <button class="btn btn-success" onclick="approveApplication()">
-                    <i class="fa fa-check"></i> Approve Latest Application
-                </button>
-                <div id="adminResult" class="mt-2"></div>
+        <!-- Step 4: Approve Application -->
+        <div class="step-card">
+            <div class="d-flex align-items-center mb-3">
+                <div class="step-number me-3">4</div>
+                <h5 class="mb-0">Approve Pending Application</h5>
             </div>
+            <button class="btn btn-info text-white" onclick="approveLatest()">
+                <i class="fa fa-check-circle"></i> Approve Latest Pending Application
+            </button>
+            <div id="step4Result" class="mt-2"></div>
         </div>
 
         <!-- Step 5: View Results -->
-        <div class="card">
-            <div class="card-header bg-dark text-white fw-bold">Step 5: View My Loans</div>
-            <div class="card-body">
-                <button class="btn btn-dark" onclick="viewMyLoans()">
-                    <i class="fa fa-list"></i> View My Loans
-                </button>
-                <div id="loansResult" class="mt-2"></div>
+        <div class="step-card">
+            <div class="d-flex align-items-center mb-3">
+                <div class="step-number me-3">5</div>
+                <h5 class="mb-0">View All Data</h5>
             </div>
+            <button class="btn btn-secondary me-2" onclick="viewStats()">
+                <i class="fa fa-chart-bar"></i> View Statistics
+            </button>
+            <button class="btn btn-secondary me-2" onclick="viewClients()">
+                <i class="fa fa-users"></i> View Clients
+            </button>
+            <button class="btn btn-secondary me-2" onclick="viewLoans()">
+                <i class="fa fa-list"></i> View All Loans
+            </button>
+            <button class="btn btn-secondary" onclick="viewApplications()">
+                <i class="fa fa-file-alt"></i> View Applications
+            </button>
+            <div id="step5Result" class="mt-3"></div>
         </div>
 
-        <!-- Full Log -->
-        <div class="card mt-3">
-            <div class="card-header fw-bold">📋 Activity Log</div>
-            <div class="card-body">
-                <pre id="log" style="background:#1a1a2e;color:#e0e0e0;padding:15px;border-radius:8px;max-height:300px;overflow-y:auto;font-size:13px;">Waiting for actions...</pre>
-            </div>
+        <!-- Full Reset -->
+        <div class="step-card text-center">
+            <button class="btn btn-outline-danger" onclick="resetAll()">
+                <i class="fa fa-refresh"></i> Reset & Run Full Test
+            </button>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="step-card">
+            <h6 class="fw-bold mb-2"><i class="fa fa-terminal"></i> Activity Log</h6>
+            <div class="log-box" id="log">Waiting for actions...</div>
         </div>
     </div>
 
     <script>
         const API = "http://localhost:5000";
-        let clientToken = "";
         let adminToken = "";
-        let clientPhone = "";
-        let latestApplicationId = null;
+        let clientToken = "";
+        let testPhone = "0712345678";
+        let testPassword = "Test@123";
 
-        function log(message, data) {
+        function log(msg, type = "info") {
             const logEl = document.getElementById("log");
             const time = new Date().toLocaleTimeString();
-            logEl.textContent += `\n[${time}] ${message}`;
-            if (data) logEl.textContent += "\n" + JSON.stringify(data, null, 2);
-            logEl.textContent += "\n" + "─".repeat(50);
+            const color = type === "success" ? "log-success" : type === "error" ? "log-error" : "log-info";
+            logEl.innerHTML += `\n<span class="${color}">[${time}] ${msg}</span>`;
             logEl.scrollTop = logEl.scrollHeight;
         }
 
-        // ==================== STEP 1: REGISTER ====================
+        function showResult(id, success, message) {
+            const el = document.getElementById(id);
+            el.innerHTML = success 
+                ? `<div class="alert alert-success py-1">✅ ${message}</div>`
+                : `<div class="alert alert-warning py-1">⚠️ ${message}</div>`;
+        }
+
+        // ==================== STEP 1: ADMIN LOGIN ====================
+        async function adminLogin() {
+            const username = document.getElementById("adminUser").value;
+            const password = document.getElementById("adminPass").value;
+
+            log("🔵 Logging in as admin: " + username);
+
+            try {
+                const res = await fetch(API + "/api/auth/admin-login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+
+                if (data.success && data.token) {
+                    adminToken = data.token;
+                    showResult("step1Result", true, "Admin logged in! Role: " + data.admin.role);
+                    log("✅ Admin login SUCCESS", "success");
+                } else {
+                    showResult("step1Result", false, data.message || "Login failed");
+                    log("❌ Admin login FAILED: " + data.message, "error");
+                }
+            } catch (e) {
+                showResult("step1Result", false, e.message);
+                log("❌ Error: " + e.message, "error");
+            }
+        }
+
+        // ==================== STEP 2: REGISTER CLIENT ====================
         async function registerClient() {
-            const phone = document.getElementById("phone").value;
-            clientPhone = phone;
-            
             const data = {
-                fullname: document.getElementById("fullname").value,
-                nationalID: document.getElementById("nationalID").value,
-                phone: phone,
-                password: document.getElementById("password").value,
-                county: document.getElementById("county").value,
-                monthlyIncome: document.getElementById("income").value,
-                email: phone + "@test.com",
-                occupation: "Business",
+                fullname: "John Doe",
+                nationalID: "12345678",
+                phone: testPhone,
+                email: "john@test.com",
+                password: testPassword,
+                occupation: "Business Owner",
                 employer: "Self Employed",
-                address: "Test Address, Nairobi"
+                monthlyIncome: "50000",
+                county: "Nairobi",
+                address: "123 Test Street, Nairobi"
             };
 
-            log("🔵 Registering client: " + phone, data);
+            log("🔵 Registering client: " + testPhone);
 
             try {
                 const res = await fetch(API + "/api/auth/register", {
@@ -158,86 +201,73 @@
                     body: JSON.stringify(data)
                 });
                 const result = await res.json();
-                
+
                 if (result.success) {
-                    document.getElementById("registerResult").innerHTML = 
-                        '<div class="alert alert-success">✅ Registration successful!</div>';
-                    log("✅ Registration SUCCESS", result);
+                    showResult("step2Result", true, "Client registered: John Doe / " + testPhone);
+                    log("✅ Client registered SUCCESS", "success");
+                    
+                    // Auto-login as client
+                    await clientLogin();
                 } else {
-                    document.getElementById("registerResult").innerHTML = 
-                        '<div class="alert alert-warning">⚠️ ' + result.message + '</div>';
-                    log("⚠️ Registration: " + result.message, result);
+                    showResult("step2Result", false, result.message);
+                    log("⚠️ " + result.message, "error");
+                    
+                    // If already exists, just login
+                    if (result.message.includes("already registered")) {
+                        log("ℹ️ Client exists, logging in...", "info");
+                        await clientLogin();
+                    }
                 }
             } catch (e) {
-                document.getElementById("registerResult").innerHTML = 
-                    '<div class="alert alert-danger">❌ Error: ' + e.message + '</div>';
-                log("❌ Registration ERROR: " + e.message);
+                showResult("step2Result", false, e.message);
+                log("❌ Error: " + e.message, "error");
             }
         }
 
-        // ==================== STEP 2: LOGIN ====================
         async function clientLogin() {
-            const phone = document.getElementById("phone").value;
-            const password = document.getElementById("password").value;
-
-            log("🔵 Logging in client: " + phone);
+            log("🔵 Logging in as client: " + testPhone);
 
             try {
                 const res = await fetch(API + "/api/auth/client-login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ phone, password })
+                    body: JSON.stringify({ phone: testPhone, password: testPassword })
                 });
-                const result = await res.json();
-                
-                if (result.success && result.token) {
-                    clientToken = result.token;
-                    document.getElementById("loginResult").innerHTML = 
-                        '<div class="alert alert-success">✅ Login successful! Client: ' + 
-                        result.client.fullname + '</div>';
-                    log("✅ Login SUCCESS. Token: " + result.token.substring(0, 30) + "...");
+                const data = await res.json();
+
+                if (data.success && data.token) {
+                    clientToken = data.token;
+                    log("✅ Client login SUCCESS", "success");
                 } else {
-                    document.getElementById("loginResult").innerHTML = 
-                        '<div class="alert alert-warning">⚠️ ' + result.message + '</div>';
-                    log("⚠️ Login failed: " + result.message);
+                    log("❌ Client login FAILED: " + data.message, "error");
                 }
             } catch (e) {
-                document.getElementById("loginResult").innerHTML = 
-                    '<div class="alert alert-danger">❌ Error: ' + e.message + '</div>';
-                log("❌ Login ERROR: " + e.message);
+                log("❌ Error: " + e.message, "error");
             }
         }
 
         // ==================== STEP 3: APPLY LOAN ====================
         async function applyLoan() {
             if (!clientToken) {
-                alert("Please login first (Step 2)!");
-                return;
+                // Try to login first
+                await clientLogin();
+                if (!clientToken) {
+                    showResult("step3Result", false, "Please register/login client first (Step 2)");
+                    return;
+                }
             }
 
             const amount = document.getElementById("loanAmount").value;
-            const purpose = document.getElementById("purpose").value;
+            const purpose = document.getElementById("loanPurpose").value;
 
             const data = {
                 amount: Number(amount),
                 purpose: purpose,
-                guarantor1: {
-                    name: "Jane Guarantor",
-                    id: "87654321",
-                    phone: "0722222222",
-                    relationship: "Sister",
-                    address: "456 Test Ave"
-                },
-                guarantor2: {
-                    name: "Bob Guarantor",
-                    id: "11223344",
-                    phone: "0733333333",
-                    relationship: "Friend",
-                    address: "789 Test Rd"
-                }
+                guarantor1: { name: "Jane Smith", id: "87654321", phone: "0722222222", relationship: "Sister", address: "456 Nairobi" },
+                guarantor2: { name: "Bob Jones", id: "11223344", phone: "0733333333", relationship: "Friend", address: "789 Nairobi" }
             };
 
-            log("🔵 Applying for loan: KSh " + amount, data);
+            log(`🔵 Applying for loan: KSh ${amount} - ${purpose}`);
 
             try {
                 const res = await fetch(API + "/api/applications", {
@@ -249,160 +279,168 @@
                     body: JSON.stringify(data)
                 });
                 const result = await res.json();
-                
+
                 if (result.success) {
-                    latestApplicationId = result.applicationId;
-                    document.getElementById("applyResult").innerHTML = 
-                        '<div class="alert alert-success">✅ Loan application submitted! Application ID: ' + 
-                        result.applicationId + '</div>';
-                    log("✅ Application SUCCESS. ID: " + result.applicationId, result);
+                    showResult("step3Result", true, `Application submitted! ID: ${result.applicationId}`);
+                    log(`✅ Application SUCCESS. ID: ${result.applicationId}`, "success");
                 } else {
-                    document.getElementById("applyResult").innerHTML = 
-                        '<div class="alert alert-warning">⚠️ ' + (result.message || 'Failed') + '</div>';
-                    log("⚠️ Application failed: " + result.message);
+                    showResult("step3Result", false, result.message);
+                    log("❌ Application FAILED: " + result.message, "error");
                 }
             } catch (e) {
-                document.getElementById("applyResult").innerHTML = 
-                    '<div class="alert alert-danger">❌ Error: ' + e.message + '</div>';
-                log("❌ Application ERROR: " + e.message);
+                showResult("step3Result", false, e.message);
+                log("❌ Error: " + e.message, "error");
             }
         }
 
-        // ==================== STEP 4: ADMIN APPROVE ====================
-        async function adminLogin() {
-            log("🔵 Admin login");
-
-            try {
-                const res = await fetch(API + "/api/auth/admin-login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ username: "Kiplangat", password: "Admin@123" })
-                });
-                const result = await res.json();
-                
-                if (result.success && result.token) {
-                    adminToken = result.token;
-                    document.getElementById("adminResult").innerHTML = 
-                        '<div class="alert alert-success">✅ Admin login successful!</div>';
-                    log("✅ Admin login SUCCESS");
-                } else {
-                    document.getElementById("adminResult").innerHTML = 
-                        '<div class="alert alert-warning">⚠️ Admin login failed</div>';
-                    log("⚠️ Admin login failed: " + result.message);
-                }
-            } catch (e) {
-                document.getElementById("adminResult").innerHTML = 
-                    '<div class="alert alert-danger">❌ Error: ' + e.message + '</div>';
-                log("❌ Admin login ERROR: " + e.message);
-            }
-        }
-
-        async function approveApplication() {
+        // ==================== STEP 4: APPROVE APPLICATION ====================
+        async function approveLatest() {
             if (!adminToken) {
-                alert("Please login as admin first!");
-                return;
+                await adminLogin();
+                if (!adminToken) {
+                    showResult("step4Result", false, "Please login as admin first (Step 1)");
+                    return;
+                }
             }
 
-            // First get all applications to find the latest pending one
-            log("🔵 Fetching applications...");
-            
+            log("🔵 Fetching pending applications...");
+
             try {
                 const res = await fetch(API + "/api/applications", {
                     headers: { "Authorization": "Bearer " + adminToken }
                 });
                 const result = await res.json();
-                
-                if (result.success && result.applications) {
-                    const pending = result.applications.filter(a => a.status === "PENDING");
-                    
-                    if (pending.length === 0) {
-                        document.getElementById("adminResult").innerHTML += 
-                            '<div class="alert alert-warning mt-2">No pending applications found.</div>';
-                        log("⚠️ No pending applications");
-                        return;
-                    }
 
-                    // Get the latest pending application
-                    const latest = pending[pending.length - 1];
-                    const appId = latest.id;
-                    latestApplicationId = appId;
+                if (!result.success || !result.applications) {
+                    showResult("step4Result", false, "No applications found");
+                    return;
+                }
 
-                    log("🔵 Approving application ID: " + appId, { amount: latest.amount });
+                const pending = result.applications.filter(a => a.status === "PENDING");
 
-                    // Approve it
-                    const approveRes = await fetch(API + "/api/applications/" + appId + "/approve", {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": "Bearer " + adminToken
-                        },
-                        body: JSON.stringify({
-                            loanDate: new Date().toISOString().split("T")[0],
-                            dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-                            interestRate: 20
-                        })
-                    });
-                    const approveResult = await approveRes.json();
-                    
-                    if (approveResult.success) {
-                        document.getElementById("adminResult").innerHTML += 
-                            '<div class="alert alert-success mt-2">✅ Loan APPROVED! Amount: KSh ' + 
-                            latest.amount + ' | Loan ID: ' + (approveResult.loanId || 'N/A') + '</div>';
-                        log("✅ Loan APPROVED successfully!", approveResult);
-                    } else {
-                        document.getElementById("adminResult").innerHTML += 
-                            '<div class="alert alert-warning mt-2">⚠️ ' + approveResult.message + '</div>';
-                        log("⚠️ Approval failed: " + approveResult.message);
-                    }
+                if (pending.length === 0) {
+                    showResult("step4Result", false, "No pending applications. Submit one first (Step 3)");
+                    log("⚠️ No pending applications", "error");
+                    return;
+                }
+
+                const app = pending[pending.length - 1];
+                log(`🔵 Approving application #${app.id} for KSh ${app.amount}`);
+
+                const approveRes = await fetch(API + "/api/applications/" + app.id + "/approve", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + adminToken
+                    },
+                    body: JSON.stringify({
+                        loanDate: new Date().toISOString().split("T")[0],
+                        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+                        interestRate: 20
+                    })
+                });
+                const approveResult = await approveRes.json();
+
+                if (approveResult.success) {
+                    showResult("step4Result", true, 
+                        `Loan APPROVED! Amount: KSh ${app.amount} | Loan ID: ${approveResult.loanId || 'N/A'}`);
+                    log(`✅ Loan APPROVED! Amount: KSh ${app.amount}`, "success");
+                } else {
+                    showResult("step4Result", false, approveResult.message);
+                    log("❌ Approval FAILED: " + approveResult.message, "error");
                 }
             } catch (e) {
-                document.getElementById("adminResult").innerHTML += 
-                    '<div class="alert alert-danger mt-2">❌ Error: ' + e.message + '</div>';
-                log("❌ Approval ERROR: " + e.message);
+                showResult("step4Result", false, e.message);
+                log("❌ Error: " + e.message, "error");
             }
         }
 
-        // ==================== STEP 5: VIEW LOANS ====================
-        async function viewMyLoans() {
-            if (!clientToken) {
-                alert("Please login as client first (Step 2)!");
-                return;
-            }
-
-            log("🔵 Fetching my loans...");
-
+        // ==================== STEP 5: VIEW DATA ====================
+        async function viewStats() {
+            if (!adminToken) { await adminLogin(); }
+            log("🔵 Fetching statistics...");
             try {
-                const res = await fetch(API + "/api/loans/my-loans", {
-                    headers: { "Authorization": "Bearer " + clientToken }
+                const res = await fetch(API + "/api/stats", {
+                    headers: { "Authorization": "Bearer " + adminToken }
                 });
-                const result = await res.json();
-                
-                if (result.success && result.loans) {
-                    document.getElementById("loansResult").innerHTML = 
-                        '<div class="alert alert-success">✅ Found ' + result.loans.length + ' loan(s)</div>';
-                    
-                    result.loans.forEach((loan, i) => {
-                        document.getElementById("loansResult").innerHTML += `
-                            <div class="card mb-2">
-                                <div class="card-body p-2">
-                                    <strong>Loan #${loan.id}</strong> | 
-                                    Amount: KSh ${Number(loan.original_principal).toLocaleString()} | 
-                                    Balance: KSh ${Number(loan.remaining_principal).toLocaleString()} | 
-                                    Status: <span class="badge bg-${loan.status === 'ACTIVE' ? 'success' : 'info'}">${loan.status}</span>
-                                </div>
-                            </div>`;
-                    });
-                    
-                    log("✅ Loans fetched: " + result.loans.length);
-                } else {
-                    document.getElementById("loansResult").innerHTML = 
-                        '<div class="alert alert-warning">No loans found.</div>';
-                }
+                const data = await res.json();
+                displayResult("step5Result", data);
+                log("✅ Stats loaded", "success");
             } catch (e) {
-                document.getElementById("loansResult").innerHTML = 
-                    '<div class="alert alert-danger">❌ Error: ' + e.message + '</div>';
-                log("❌ Fetch loans ERROR: " + e.message);
+                log("❌ Error: " + e.message, "error");
             }
+        }
+
+        async function viewClients() {
+            if (!adminToken) { await adminLogin(); }
+            log("🔵 Fetching clients...");
+            try {
+                const res = await fetch(API + "/api/clients", {
+                    headers: { "Authorization": "Bearer " + adminToken }
+                });
+                const data = await res.json();
+                displayResult("step5Result", data);
+                log("✅ Clients loaded: " + (data.clients?.length || 0), "success");
+            } catch (e) {
+                log("❌ Error: " + e.message, "error");
+            }
+        }
+
+        async function viewLoans() {
+            if (!adminToken) { await adminLogin(); }
+            log("🔵 Fetching loans...");
+            try {
+                const res = await fetch(API + "/api/loans", {
+                    headers: { "Authorization": "Bearer " + adminToken }
+                });
+                const data = await res.json();
+                displayResult("step5Result", data);
+                log("✅ Loans loaded: " + (data.loans?.length || 0), "success");
+            } catch (e) {
+                log("❌ Error: " + e.message, "error");
+            }
+        }
+
+        async function viewApplications() {
+            if (!adminToken) { await adminLogin(); }
+            log("🔵 Fetching applications...");
+            try {
+                const res = await fetch(API + "/api/applications", {
+                    headers: { "Authorization": "Bearer " + adminToken }
+                });
+                const data = await res.json();
+                displayResult("step5Result", data);
+                log("✅ Applications loaded: " + (data.applications?.length || 0), "success");
+            } catch (e) {
+                log("❌ Error: " + e.message, "error");
+            }
+        }
+
+        function displayResult(id, data) {
+            document.getElementById(id).innerHTML = 
+                `<div class="card"><div class="card-body p-2"><pre style="max-height:250px;overflow-y:auto;font-size:12px;margin:0;">${JSON.stringify(data, null, 2)}</pre></div></div>`;
+        }
+
+        // ==================== FULL RESET ====================
+        async function resetAll() {
+            document.getElementById("log").innerHTML = "Starting full test...";
+            document.getElementById("step1Result").innerHTML = "";
+            document.getElementById("step2Result").innerHTML = "";
+            document.getElementById("step3Result").innerHTML = "";
+            document.getElementById("step4Result").innerHTML = "";
+            document.getElementById("step5Result").innerHTML = "";
+
+            await adminLogin();
+            await new Promise(r => setTimeout(r, 500));
+            await registerClient();
+            await new Promise(r => setTimeout(r, 500));
+            await applyLoan();
+            await new Promise(r => setTimeout(r, 500));
+            await approveLatest();
+            await new Promise(r => setTimeout(r, 500));
+            await viewLoans();
+
+            log("🎉 FULL TEST COMPLETE!", "success");
         }
     </script>
 </body>
