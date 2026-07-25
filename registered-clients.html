@@ -18,28 +18,30 @@ body{background:#edf4ff;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;}
 .sidebar ul li a:hover{background:#1565c0;padding-left:28px;}.sidebar ul li i{width:22px;}
 .main{margin-left:260px;width:calc(100% - 260px);}
 .topbar{height:55px;background:#1976d2;color:white;display:flex;align-items:center;justify-content:space-between;padding:0 20px;box-shadow:0 2px 10px rgba(0,0,0,.12);}
-.topbar h2{font-size:20px;}.topbar .topbar-right{display:flex;align-items:center;gap:12px;font-size:14px;}
+.topbar h2{font-size:22px;}.topbar .topbar-right{display:flex;align-items:center;gap:12px;font-size:14px;}
 .topbar .btn-back{background:rgba(255,255,255,0.2);color:white;padding:6px 14px;border-radius:20px;text-decoration:none;font-size:13px;font-weight:600;transition:.3s;}
 .topbar .btn-back:hover{background:rgba(255,255,255,0.35);color:white;}
-.content{padding:15px;}
+.content{padding:18px;}
 .search-box{margin-bottom:15px;}
-.search-box input{height:45px;border-radius:10px;font-size:14px;padding:0 15px;border:1px solid #ddd;width:100%;max-width:400px;}
+.search-box input{height:48px;border-radius:10px;font-size:15px;padding:0 15px;border:1px solid #ddd;width:100%;max-width:450px;}
 .table-card{background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);}
-.table-header{background:#1976d2;color:white;padding:12px 18px;font-size:16px;font-weight:bold;}
-.table th{background:#e3f2fd;color:#0d47a1;font-size:13px;padding:10px 8px;}
-.table td{padding:10px 8px;font-size:13px;vertical-align:middle;}
-.status-active{background:#198754;color:white;padding:5px 10px;border-radius:15px;font-size:11px;}
-.status-suspended{background:#dc3545;color:white;padding:5px 10px;border-radius:15px;font-size:11px;}
-.btn-view{background:#1976d2;color:white;border-radius:15px;font-size:12px;padding:5px 10px;}
+.table-header{background:#1976d2;color:white;padding:14px 20px;font-size:18px;font-weight:bold;}
+.table th{background:#e3f2fd;color:#0d47a1;font-size:14px;padding:12px 10px;}
+.table td{padding:12px 10px;font-size:14px;vertical-align:middle;}
+.status-active{background:#198754;color:white;padding:6px 12px;border-radius:15px;font-size:12px;}
+.status-suspended{background:#dc3545;color:white;padding:6px 12px;border-radius:15px;font-size:12px;}
+.btn-view{background:#1976d2;color:white;border-radius:15px;font-size:13px;padding:6px 14px;}
 .btn-view:hover{background:#0d47a1;color:white;}
-.profile-img-large{width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #1976d2;}
-.section-title{background:#0d47a1;color:white;padding:8px 15px;border-radius:8px;margin-top:12px;font-weight:bold;font-size:14px;}
-.detail-card{background:#f8fbff;border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid #dbeafe;}
-.info-row{display:flex;padding:6px 0;border-bottom:1px solid #eee;font-size:13px;}
+.profile-img-large{width:130px;height:130px;border-radius:50%;object-fit:cover;border:4px solid #1976d2;}
+.section-title{background:#0d47a1;color:white;padding:10px 18px;border-radius:8px;margin-top:15px;font-weight:bold;font-size:15px;}
+.detail-card{background:#f8fbff;border-radius:10px;padding:15px;margin-bottom:12px;border:1px solid #dbeafe;}
+.info-row{display:flex;padding:8px 0;border-bottom:1px solid #eee;font-size:14px;}
 .info-row:last-child{border-bottom:none;}
-.info-label{font-weight:bold;color:#0F4C81;width:150px;flex-shrink:0;}
-.info-value{color:#444;}
-.btn-danger-disabled{background:#ccc;color:#888;border-radius:15px;font-size:12px;padding:5px 10px;border:none;cursor:not-allowed;}
+.info-label{font-weight:bold;color:#0F4C81;width:160px;flex-shrink:0;font-size:14px;}
+.info-value{color:#444;font-size:14px;}
+.document-img{width:100%;height:180px;object-fit:contain;border-radius:10px;border:1px solid #ddd;margin-top:5px;}
+.btn-doc{font-size:13px;padding:5px 12px;}
+.btn-danger-disabled{background:#ccc;color:#888;border-radius:15px;font-size:13px;padding:6px 14px;border:none;cursor:not-allowed;}
 </style>
 </head>
 <body>
@@ -69,7 +71,9 @@ body{background:#edf4ff;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;}
 
 </div></div>
 
-<div class="modal fade" id="clientModal"><div class="modal-dialog modal-xl"><div class="modal-content"><div class="modal-header bg-primary text-white"><h5 class="modal-title"><i class="fa fa-user"></i> Client Details</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body" id="clientDetails"></div><div class="modal-footer"><button class="btn btn-warning" id="btnResetPass" onclick="resetPassword()"><i class="fa fa-key"></i> Reset Password</button><button class="btn btn-danger" id="btnDelete" onclick="deleteClient()"><i class="fa fa-trash"></i> Delete</button><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>
+<div class="modal fade" id="clientModal"><div class="modal-dialog modal-xl"><div class="modal-content"><div class="modal-header bg-primary text-white"><h5 class="modal-title"><i class="fa fa-user"></i> Client Details</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body" id="clientDetails"></div><div class="modal-footer"><button class="btn btn-info" id="btnViewDocs" onclick="viewDocuments()"><i class="fa fa-file-image"></i> View Documents</button><button class="btn btn-warning" id="btnResetPass" onclick="resetPassword()"><i class="fa fa-key"></i> Reset Password</button><button class="btn btn-danger" id="btnDelete" onclick="deleteClient()"><i class="fa fa-trash"></i> Delete</button><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>
+
+<div class="modal fade" id="docsModal"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header bg-info text-white"><h5 class="modal-title"><i class="fa fa-file-image"></i> Client Documents</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body" id="docsContent"></div></div></div></div>
 
 <script src="assets/js/api.js"></script>
 <script src="assets/js/auth.js"></script>
@@ -77,9 +81,11 @@ body{background:#edf4ff;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;}
 <script>
 if(!AUTH.currentAdmin()){window.location.href="admin-login.html";}
 let admin=AUTH.currentAdmin();if(admin)document.getElementById("adminName").innerHTML=admin.username;
-let allClients=[],selectedClientId=null,selectedClientHasLoans=false;
+let allClients=[],selectedClientId=null,selectedClientData=null,selectedClientHasLoans=false;
 function money(v){return"KES "+Number(v||0).toLocaleString();}
 const DEFAULT_IMG="https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+
+function showFullImage(src,title){if(!src){alert("No image available");return;}let m=document.createElement("div");m.style.cssText="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:99999;cursor:pointer;";m.innerHTML=`<div style="max-width:90%;max-height:90%;text-align:center;"><h5 style="color:white;margin-bottom:10px;">${title}</h5><img src="${src}" style="max-width:100%;max-height:80vh;border-radius:10px;"><br><small style="color:#ccc;">Click anywhere to close</small></div>`;m.onclick=function(){document.body.removeChild(m);};document.body.appendChild(m);}
 
 async function loadClients(){
     let result=await api.getClients();
@@ -107,47 +113,51 @@ function filterClients(){
 async function viewClient(id){
     let result=await api.getClient(id);
     if(!result.success)return;
-    let c=result.client;selectedClientId=id;
+    let c=result.client;selectedClientId=id;selectedClientData=c;
     
-    // Check if client has active loans
     let loansResult=await api.getLoans();
     let activeLoans=loansResult.success?(loansResult.loans||[]).filter(l=>l.client_id==id&&l.status==="ACTIVE"&&Number(l.remaining_principal||0)>0):[];
     selectedClientHasLoans=activeLoans.length>0;
     let totalOutstanding=activeLoans.reduce((s,l)=>s+Number(l.remaining_principal||0),0);
     
     document.getElementById("clientDetails").innerHTML=`
-        <div class="row"><div class="col-md-3 text-center"><img src="${c.profile_photo||DEFAULT_IMG}" class="profile-img-large mb-2"><h5>${c.fullname||"-"}</h5><span class="badge ${c.status==='ACTIVE'?'bg-success':'bg-danger'}">${c.status||'ACTIVE'}</span></div>
+        <div class="row"><div class="col-md-3 text-center"><img src="${c.profile_photo||DEFAULT_IMG}" class="profile-img-large mb-2"><h5>${c.fullname||"-"}</h5><span class="badge ${c.status==='ACTIVE'?'bg-success':'bg-danger'} mt-1" style="font-size:13px;padding:6px 14px;">${c.status||'ACTIVE'}</span></div>
         <div class="col-md-9"><div class="row"><div class="col-md-6"><div class="info-row"><div class="info-label">Phone</div><div class="info-value">${c.phone||"-"}</div></div><div class="info-row"><div class="info-label">National ID</div><div class="info-value">${c.national_id||"-"}</div></div><div class="info-row"><div class="info-label">Email</div><div class="info-value">${c.email||"Not Provided"}</div></div></div><div class="col-md-6"><div class="info-row"><div class="info-label">Occupation</div><div class="info-value">${c.occupation||"-"}</div></div><div class="info-row"><div class="info-label">Employer</div><div class="info-value">${c.employer||"Not Provided"}</div></div><div class="info-row"><div class="info-label">Monthly Income</div><div class="info-value">${money(c.monthly_income)}</div></div></div></div><div class="info-row"><div class="info-label">County</div><div class="info-value">${c.county||"-"}</div></div><div class="info-row"><div class="info-label">Address</div><div class="info-value">${c.address||"-"}</div></div><div class="info-row"><div class="info-label">Registered</div><div class="info-value">${formatDate(c.created_at)}</div></div></div></div>`;
     
-    // Show/hide delete button based on loans
     let btnDelete=document.getElementById("btnDelete");
     if(selectedClientHasLoans){
-        btnDelete.className="btn btn-danger-disabled";
-        btnDelete.disabled=true;
+        btnDelete.className="btn btn-danger-disabled";btnDelete.disabled=true;
         btnDelete.title="Cannot delete - client has active loan of "+money(totalOutstanding);
-        btnDelete.innerHTML='<i class="fa fa-lock"></i> Cannot Delete (Active Loan)';
+        btnDelete.innerHTML='<i class="fa fa-lock"></i> Cannot Delete (Active Loan: '+money(totalOutstanding)+')';
     }else{
-        btnDelete.className="btn btn-danger";
-        btnDelete.disabled=false;
-        btnDelete.title="";
+        btnDelete.className="btn btn-danger";btnDelete.disabled=false;btnDelete.title="";
         btnDelete.innerHTML='<i class="fa fa-trash"></i> Delete';
     }
     
     new bootstrap.Modal(document.getElementById("clientModal")).show();
 }
 
+function viewDocuments(){
+    if(!selectedClientData)return;
+    let c=selectedClientData;
+    document.getElementById("docsContent").innerHTML=`
+        <div class="row"><div class="col-md-4 text-center"><h6 class="fw-bold">Profile Photo</h6>${c.profile_photo?`<img src="${c.profile_photo}" class="document-img"><button class="btn btn-sm btn-outline-primary btn-doc mt-2" onclick="showFullImage('${c.profile_photo}','Profile Photo')"><i class="fa fa-search-plus"></i> View Full</button>`:'<p class="text-muted">Not uploaded</p>'}</div>
+        <div class="col-md-4 text-center"><h6 class="fw-bold">ID Front</h6>${c.id_front?`<img src="${c.id_front}" class="document-img"><button class="btn btn-sm btn-outline-primary btn-doc mt-2" onclick="showFullImage('${c.id_front}','ID Front')"><i class="fa fa-search-plus"></i> View Full</button>`:'<p class="text-muted">Not uploaded</p>'}</div>
+        <div class="col-md-4 text-center"><h6 class="fw-bold">ID Back</h6>${c.id_back?`<img src="${c.id_back}" class="document-img"><button class="btn btn-sm btn-outline-primary btn-doc mt-2" onclick="showFullImage('${c.id_back}','ID Back')"><i class="fa fa-search-plus"></i> View Full</button>`:'<p class="text-muted">Not uploaded</p>'}</div></div>`;
+    new bootstrap.Modal(document.getElementById("docsModal")).show();
+}
+
 async function resetPassword(){
     if(!selectedClientId)return;
     let newPass=prompt("Enter new password for this client (min 4 characters):");
     if(!newPass||newPass.length<4){alert("Password must be at least 4 characters.");return;}
-    // For now, update via clients endpoint - in production this would be a dedicated endpoint
     alert("Password reset to: "+newPass+"\n\nNote: Password reset requires a dedicated backend endpoint. Currently the update client API doesn't support password changes.");
 }
 
 async function deleteClient(){
     if(!selectedClientId)return;
     if(selectedClientHasLoans){alert("Cannot delete this client. They have an active loan.");return;}
-    if(!confirm("WARNING: Delete this client permanently? This cannot be undone!"))return;
+    if(!confirm("WARNING: Delete this client permanently?"))return;
     let result=await api.deleteClient(selectedClientId);
     if(result.success){alert("Client deleted.");bootstrap.Modal.getInstance(document.getElementById("clientModal")).hide();loadClients();}
     else{alert("Error: "+result.message);}
