@@ -3,65 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto Test | Bejja Credit</title>
+    <title>Register & Apply | Bejja Credit</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <style>
         body { background: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
-        .container { max-width: 700px; margin-top: 30px; }
+        .container { max-width: 600px; margin-top: 30px; }
         .card { border-radius: 15px; border: none; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        .btn-run { 
-            padding: 20px 40px; font-size: 20px; font-weight: 700;
-            border-radius: 50px; background: linear-gradient(135deg, #0d47a1, #1976d2);
-            border: none; color: white; transition: all 0.3s;
+        .btn-action { 
+            padding: 15px 30px; font-size: 18px; font-weight: 600;
+            border-radius: 50px; border: none; color: white; transition: all 0.3s; width: 100%;
         }
-        .btn-run:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(13,71,161,0.4); }
-        .step { 
-            padding: 12px 15px; margin: 8px 0; border-radius: 10px;
-            display: flex; align-items: center; gap: 10px;
+        .btn-register { background: linear-gradient(135deg, #0d47a1, #1976d2); }
+        .btn-apply { background: linear-gradient(135deg, #e67e00, #f39c12); }
+        .btn-action:hover { transform: scale(1.02); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .result { 
+            padding: 12px 15px; border-radius: 10px; margin-top: 10px;
+            font-weight: 500; font-size: 14px;
         }
-        .step.waiting { background: #f8f9fa; color: #888; }
-        .step.running { background: #fff3cd; color: #856404; animation: pulse 1s infinite; }
-        .step.success { background: #d4edda; color: #155724; }
-        .step.error { background: #f8d7da; color: #721c24; }
-        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.7; } }
-        .spinner { width: 20px; height: 20px; border: 3px solid #ccc; border-top-color: #0d47a1; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .result.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .result.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .result.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .spinner { width: 20px; height: 20px; border: 3px solid #ccc; border-top-color: #0d47a1; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        pre { background: #1a1a2e; color: #e0e0e0; padding: 15px; border-radius: 10px; max-height: 300px; overflow-y: auto; font-size: 12px; }
+        pre { background: #1a1a2e; color: #e0e0e0; padding: 15px; border-radius: 10px; font-size: 12px; margin: 0; }
     </style>
 </head>
 <body>
     <div class="container text-center">
-        <div class="card p-4 mb-4">
-            <h2 class="text-primary mb-2"><i class="fa fa-bolt"></i> Bejja Credit Auto Test</h2>
-            <p class="text-muted">One click to register client, apply loan, and approve!</p>
-            
-            <button class="btn-run mt-3" onclick="runFullTest()" id="runBtn">
-                <i class="fa fa-play"></i> Run Full Test
-            </button>
-        </div>
-
         <div class="card p-4 mb-3">
-            <h5 class="fw-bold mb-3">Progress</h5>
-            <div id="step1" class="step waiting"><span class="spinner" style="display:none;"></span><i class="fa fa-circle"></i> Step 1: Admin Login</div>
-            <div id="step2" class="step waiting"><span class="spinner" style="display:none;"></span><i class="fa fa-circle"></i> Step 2: Register Client</div>
-            <div id="step3" class="step waiting"><span class="spinner" style="display:none;"></span><i class="fa fa-circle"></i> Step 3: Client Login</div>
-            <div id="step4" class="step waiting"><span class="spinner" style="display:none;"></span><i class="fa fa-circle"></i> Step 4: Apply for Loan</div>
-            <div id="step5" class="step waiting"><span class="spinner" style="display:none;"></span><i class="fa fa-circle"></i> Step 5: Approve Application</div>
-            <div id="step6" class="step waiting"><span class="spinner" style="display:none;"></span><i class="fa fa-circle"></i> Step 6: Verify Results</div>
+            <h3 class="text-primary mb-3"><i class="fa fa-user-plus"></i> Register Client & Apply Loan</h3>
+            <p class="text-muted">Step 1: Register → Step 2: Apply Loan → Then you approve manually in admin</p>
+            
+            <button class="btn-action btn-register mt-2" onclick="registerAndApply()" id="mainBtn">
+                <i class="fa fa-play"></i> Register Client & Apply for Loan
+            </button>
+            
+            <div id="result" class="mt-3"></div>
         </div>
 
         <div class="card p-4">
-            <h6 class="fw-bold"><i class="fa fa-terminal"></i> Test Log</h6>
-            <pre id="log">Click "Run Full Test" to start...</pre>
+            <h6 class="fw-bold"><i class="fa fa-terminal"></i> Log</h6>
+            <pre id="log">Click the button to start...</pre>
         </div>
     </div>
 
     <script>
         const API = "http://localhost:5000";
-        let adminToken = "";
         let clientToken = "";
-        let applicationId = null;
         
         // Generate random phone to avoid duplicates
         const randomPhone = "07" + Math.floor(10000000 + Math.random() * 90000000);
@@ -75,102 +65,74 @@
             logEl.scrollTop = logEl.scrollHeight;
         }
 
-        function setStep(id, status) {
-            const step = document.getElementById(id);
-            step.className = "step " + status;
-            const spinner = step.querySelector(".spinner");
-            const icon = step.querySelector("i");
-            
-            if (status === "running") {
-                spinner.style.display = "inline-block";
-                icon.style.display = "none";
-            } else {
-                spinner.style.display = "none";
-                icon.style.display = "inline-block";
-                icon.className = status === "success" ? "fa fa-check-circle" : status === "error" ? "fa fa-times-circle" : "fa fa-circle";
-            }
+        function showResult(type, message) {
+            document.getElementById("result").innerHTML = `<div class="result ${type}">${message}</div>`;
         }
 
-        async function runFullTest() {
-            const btn = document.getElementById("runBtn");
+        async function registerAndApply() {
+            const btn = document.getElementById("mainBtn");
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner me-2"></span>Running...';
-            
-            document.getElementById("log").textContent = "🚀 STARTING FULL AUTOMATED TEST\n";
-            log(`📱 Test Phone: ${randomPhone}`);
+            btn.innerHTML = '<span class="spinner me-2"></span>Processing...';
+            document.getElementById("result").innerHTML = "";
+            document.getElementById("log").textContent = "🚀 STARTING...\n";
+            log(`📱 Phone: ${randomPhone}`);
             log(`💰 Loan Amount: KSh ${loanAmount.toLocaleString()}`);
             log("─".repeat(40));
 
-            // Reset all steps
-            for (let i = 1; i <= 6; i++) {
-                setStep("step" + i, "waiting");
-            }
-
             try {
-                // Step 1: Admin Login
-                setStep("step1", "running");
-                log("🔵 Step 1: Admin Login...");
-                const adminRes = await fetch(API + "/api/auth/admin-login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ username: "Kiplangat", password: "Admin@123" })
-                });
-                const adminData = await adminRes.json();
-                if (!adminData.success) throw new Error(adminData.message);
-                adminToken = adminData.token;
-                setStep("step1", "success");
-                log("✅ Admin login SUCCESS");
-
-                await sleep(300);
-
-                // Step 2: Register Client
-                setStep("step2", "running");
-                log(`🔵 Step 2: Registering client ${randomPhone}...`);
+                // STEP 1: Register Client
+                log("🔵 Step 1: Registering client...");
+                
                 const regRes = await fetch(API + "/api/auth/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        fullname: "Auto Test User",
+                        fullname: "Test Client " + randomPhone.slice(-4),
                         nationalID: String(Math.floor(10000000 + Math.random() * 90000000)),
                         phone: randomPhone,
                         email: randomPhone + "@test.com",
                         password: testPassword,
-                        occupation: "Tester",
-                        employer: "Test Corp",
+                        occupation: "Business Owner",
+                        employer: "Self Employed",
                         monthlyIncome: "50000",
                         county: "Nairobi",
-                        address: "Test Address"
+                        address: "Test Address, Nairobi"
                     })
                 });
+                
                 const regData = await regRes.json();
-                if (!regData.success) {
-                    log("⚠️ " + regData.message + " (continuing anyway)");
+                
+                if (regData.success) {
+                    log("✅ Registration SUCCESS!");
                 } else {
-                    log("✅ Registration SUCCESS");
+                    log("⚠️ " + regData.message);
+                    if (!regData.message.includes("already registered")) {
+                        throw new Error(regData.message);
+                    }
+                    log("ℹ️ Client already exists, continuing...");
                 }
-                setStep("step2", "success");
 
-                await sleep(300);
-
-                // Step 3: Client Login
-                setStep("step3", "running");
-                log("🔵 Step 3: Client Login...");
+                // STEP 2: Login as Client
+                log("🔵 Step 2: Logging in as client...");
+                
                 const loginRes = await fetch(API + "/api/auth/client-login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ phone: randomPhone, password: testPassword })
                 });
+                
                 const loginData = await loginRes.json();
-                if (!loginData.success) throw new Error(loginData.message);
+                
+                if (!loginData.success) {
+                    throw new Error("Login failed: " + loginData.message);
+                }
+                
                 clientToken = loginData.token;
-                setStep("step3", "success");
-                log(`✅ Client login SUCCESS - ${loginData.client.fullname}`);
+                log("✅ Client login SUCCESS!");
 
-                await sleep(300);
-
-                // Step 4: Apply for Loan
-                setStep("step4", "running");
-                log(`🔵 Step 4: Applying for KSh ${loanAmount.toLocaleString()}...`);
+                // STEP 3: Apply for Loan
+                log(`🔵 Step 3: Applying for KSh ${loanAmount.toLocaleString()}...`);
+                
                 const applyRes = await fetch(API + "/api/applications", {
                     method: "POST",
                     headers: {
@@ -180,77 +142,62 @@
                     body: JSON.stringify({
                         amount: loanAmount,
                         purpose: "Business Expansion",
-                        guarantor1: { name: "Auto G1", id: "11111111", phone: "0711111111", relationship: "Friend", address: "Test" },
-                        guarantor2: { name: "Auto G2", id: "22222222", phone: "0722222222", relationship: "Colleague", address: "Test" }
+                        guarantor1: { 
+                            name: "Jane Guarantor", 
+                            id: "11111111", 
+                            phone: "0711111111", 
+                            relationship: "Sister", 
+                            address: "456 Nairobi" 
+                        },
+                        guarantor2: { 
+                            name: "Bob Guarantor", 
+                            id: "22222222", 
+                            phone: "0722222222", 
+                            relationship: "Friend", 
+                            address: "789 Nairobi" 
+                        }
                     })
                 });
+                
                 const applyData = await applyRes.json();
-                if (!applyData.success) throw new Error(applyData.message);
-                applicationId = applyData.applicationId;
-                setStep("step4", "success");
-                log(`✅ Application SUCCESS - ID: ${applicationId}`);
-
-                await sleep(300);
-
-                // Step 5: Approve Application
-                setStep("step5", "running");
-                log(`🔵 Step 5: Approving application #${applicationId}...`);
-                const approveRes = await fetch(API + "/api/applications/" + applicationId + "/approve", {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer " + adminToken
-                    },
-                    body: JSON.stringify({
-                        loanDate: new Date().toISOString().split("T")[0],
-                        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-                        interestRate: 20
-                    })
-                });
-                const approveData = await approveRes.json();
-                if (!approveData.success) throw new Error(approveData.message);
-                setStep("step5", "success");
-                log(`✅ Loan APPROVED! Loan ID: ${approveData.loanId || "N/A"}`);
-
-                await sleep(300);
-
-                // Step 6: Verify
-                setStep("step6", "running");
-                log("🔵 Step 6: Verifying results...");
                 
-                const [loansRes, statsRes] = await Promise.all([
-                    fetch(API + "/api/loans", { headers: { "Authorization": "Bearer " + adminToken } }),
-                    fetch(API + "/api/stats", { headers: { "Authorization": "Bearer " + adminToken } })
-                ]);
+                if (!applyData.success) {
+                    throw new Error("Application failed: " + applyData.message);
+                }
                 
-                const loansData = await loansRes.json();
-                const statsData = await statsRes.json();
-                
-                setStep("step6", "success");
-                log("✅ Verification complete!");
+                const appId = applyData.applicationId;
+                log("✅ Loan application SUBMITTED!");
                 log("─".repeat(40));
-                log(`📊 Total Loans: ${statsData.stats?.activeLoans + statsData.stats?.completedLoans || loansData.loans?.length || 0}`);
-                log(`📊 Active Loans: ${statsData.stats?.activeLoans || 0}`);
-                log(`📊 Total Clients: ${statsData.stats?.totalClients || 0}`);
+                log("🎉 ALL DONE!");
+                log("");
+                log("📋 SUMMARY:");
+                log(`   📱 Phone: ${randomPhone}`);
+                log(`   🔑 Password: ${testPassword}`);
+                log(`   💰 Loan Amount: KSh ${loanAmount.toLocaleString()}`);
+                log(`   📝 Application ID: ${appId}`);
+                log("");
+                log("👨‍💼 NEXT STEP (You do this manually):");
+                log("   1. Go to admin-portal.html");
+                log("   2. Login as: Kiplangat / Admin@123");
+                log("   3. Go to Loan Applications");
+                log("   4. Find the pending application and APPROVE it");
+
+                showResult("success", 
+                    `✅ SUCCESS!<br><br>
+                    <b>Phone:</b> ${randomPhone}<br>
+                    <b>Password:</b> ${testPassword}<br>
+                    <b>Loan:</b> KSh ${loanAmount.toLocaleString()}<br>
+                    <b>App ID:</b> ${appId}<br><br>
+                    <small>Now login to <a href="admin-portal.html" target="_blank">Admin Panel</a> to approve the loan.</small>`
+                );
 
             } catch (error) {
                 log("❌ ERROR: " + error.message);
-                // Find which step failed
-                for (let i = 1; i <= 6; i++) {
-                    if (document.getElementById("step" + i).classList.contains("running")) {
-                        setStep("step" + i, "error");
-                        break;
-                    }
-                }
+                showResult("error", "❌ " + error.message);
             }
 
-            log("\n🎉 TEST COMPLETE!");
             btn.disabled = false;
-            btn.innerHTML = '<i class="fa fa-play"></i> Run Full Test';
-        }
-
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
+            btn.innerHTML = '<i class="fa fa-redo"></i> Register Another Client & Apply';
         }
     </script>
 </body>
