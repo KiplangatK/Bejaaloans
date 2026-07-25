@@ -1,104 +1,702 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Loans | Bejja Credit</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:#edf4ff;font-family:'Segoe UI',Tahoma,sans-serif;}
-.sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#0F4C81;color:white;}
-.logo{padding:20px;font-size:22px;font-weight:bold;border-bottom:1px solid rgba(255,255,255,.2);}
-.logo i{margin-right:8px;}
-.sidebar a{display:block;padding:12px 20px;color:white;text-decoration:none;transition:.3s;font-size:15px;}
-.sidebar a:hover{background:#2563EB;padding-left:28px;}.sidebar i{width:22px;}
-.main{margin-left:260px;height:100vh;display:flex;flex-direction:column;}
-.topbar{height:50px;background:#2563EB;color:white;display:flex;align-items:center;justify-content:space-between;padding:0 20px;box-shadow:0 2px 10px rgba(0,0,0,.15);flex-shrink:0;}
-.topbar h3{font-size:19px;}.topbar .topbar-right{display:flex;align-items:center;gap:12px;font-size:14px;}
-.topbar .btn-home{background:rgba(255,255,255,0.2);color:white;padding:6px 14px;border-radius:20px;text-decoration:none;font-size:13px;font-weight:600;transition:.3s;}
-.topbar .btn-home:hover{background:rgba(255,255,255,0.35);color:white;}
-.topbar .btn-logout{color:#ffc107;font-weight:600;cursor:pointer;text-decoration:none;font-size:13px;}.topbar .btn-logout:hover{color:#fff;}
-.content{flex:1;padding:15px;overflow-y:auto;}
-.summary-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:15px;}
-.summary-card{border-radius:12px;padding:16px;color:white;height:105px;display:flex;flex-direction:column;justify-content:center;}
-.summary-card h2{font-size:26px;font-weight:bold;margin:0;}.summary-card h5{font-size:13px;margin:0 0 4px 0;opacity:0.9;}
-.total{background:#1565c0;}.active{background:#198754;}.borrowed{background:#6f42c1;}.balance{background:#dc3545;}
-.table-card{background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);}
-.table-header{background:#0F4C81;color:white;padding:13px 18px;font-size:17px;font-weight:bold;}
-.table th{background:#e3f2fd;color:#0F4C81;font-size:13px;padding:10px 8px;}.table td{padding:10px 8px;font-size:14px;vertical-align:middle;}
-.badge{font-size:12px;padding:6px 10px;}
-.btn-payment{background:#198754;color:white;border-radius:15px;font-size:12px;padding:5px 10px;}
-.btn-payment:hover{background:#146c43;color:white;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Loans | Bejja Credit</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #0d47a1;
+            --primary-light: #1976d2;
+            --success: #198754;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --purple: #6f42c1;
+            --white: #ffffff;
+            --bg-light: #edf4ff;
+            --shadow-sm: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow-md: 0 8px 25px rgba(0,0,0,0.12);
+            --transition: all 0.3s ease;
+            --radius: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg-light);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* ==================== SIDEBAR ==================== */
+        .sidebar {
+            position: fixed; left: 0; top: 0;
+            width: 260px; height: 100vh;
+            background: linear-gradient(180deg, #0a3d8f, #0d47a1, #1565c0);
+            color: var(--white); z-index: 1000;
+            overflow-y: auto; box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+        }
+        .logo {
+            padding: 22px 20px; font-size: 20px; font-weight: 800;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .logo i { color: var(--warning); font-size: 24px; }
+        .sidebar .nav-section { padding: 15px 0; }
+        .sidebar .nav-section-title {
+            padding: 8px 20px; font-size: 10px;
+            text-transform: uppercase; letter-spacing: 2px;
+            color: rgba(255,255,255,0.5); font-weight: 700;
+        }
+        .sidebar a {
+            display: flex; align-items: center;
+            padding: 13px 20px; color: rgba(255,255,255,0.85);
+            text-decoration: none; transition: var(--transition);
+            font-size: 14px; font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background: rgba(255,255,255,0.1); color: var(--white);
+            border-left-color: var(--warning); padding-left: 25px;
+        }
+        .sidebar a i { width: 22px; margin-right: 10px; }
+
+        /* ==================== MAIN ==================== */
+        .main { margin-left: 260px; min-height: 100vh; }
+
+        /* ==================== TOPBAR ==================== */
+        .topbar {
+            height: 65px; background: var(--white);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 25px; box-shadow: var(--shadow-sm);
+            position: sticky; top: 0; z-index: 999;
+        }
+        .topbar h3 { font-weight: 700; color: var(--primary); margin: 0; display: flex; align-items: center; gap: 10px; }
+        .topbar .btn-home {
+            background: var(--bg-light); color: var(--primary);
+            padding: 8px 16px; border-radius: 20px;
+            text-decoration: none; font-size: 13px; font-weight: 600;
+            transition: var(--transition);
+        }
+        .topbar .btn-home:hover { background: var(--primary); color: var(--white); }
+
+        /* ==================== CONTENT ==================== */
+        .content { padding: 25px; }
+
+        /* ==================== STATS CARDS ==================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            border-radius: var(--radius); padding: 22px;
+            color: var(--white); position: relative; overflow: hidden;
+            box-shadow: var(--shadow-sm); transition: var(--transition);
+            cursor: pointer;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+        .stat-card.primary { background: linear-gradient(135deg, #1565c0, #1976d2); }
+        .stat-card.success { background: linear-gradient(135deg, #157347, #198754); }
+        .stat-card.purple { background: linear-gradient(135deg, #5a3399, #6f42c1); }
+        .stat-card.danger { background: linear-gradient(135deg, #c82333, #dc3545); }
+        .stat-card .stat-icon {
+            position: absolute; right: 15px; top: 50%;
+            transform: translateY(-50%); font-size: 50px;
+            opacity: 0.15;
+        }
+        .stat-card .stat-value { font-size: 28px; font-weight: 700; margin-bottom: 3px; }
+        .stat-card .stat-label { font-size: 12px; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* ==================== TABS ==================== */
+        .tab-nav {
+            display: flex; gap: 8px;
+            margin-bottom: 20px; flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 10px 20px; border-radius: 25px;
+            border: 2px solid #e0e0e0; background: var(--white);
+            font-weight: 600; font-size: 13px; cursor: pointer;
+            transition: var(--transition); color: #666;
+        }
+        .tab-btn:hover { border-color: var(--primary-light); color: var(--primary); }
+        .tab-btn.active {
+            background: var(--primary); color: var(--white);
+            border-color: var(--primary);
+        }
+
+        /* ==================== TABLE CARD ==================== */
+        .table-card {
+            background: var(--white); border-radius: var(--radius);
+            box-shadow: var(--shadow-sm); overflow: hidden;
+        }
+        .table-header {
+            padding: 16px 22px; border-bottom: 1px solid #f0f0f0;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .table-header h5 { font-weight: 700; color: var(--primary); margin: 0; }
+        .table th {
+            background: #f8faff; color: var(--primary);
+            font-weight: 600; font-size: 12px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            white-space: nowrap; text-align: center;
+        }
+        .table td { text-align: center; vertical-align: middle; font-size: 13px; }
+        .table tbody tr { transition: var(--transition); }
+        .table tbody tr:hover { background: #f8fbff; }
+
+        /* ==================== PROGRESS BAR ==================== */
+        .progress { height: 8px; border-radius: 4px; background: #e9ecef; }
+        .progress-bar { border-radius: 4px; transition: width 0.5s ease; }
+
+        /* ==================== BUTTONS ==================== */
+        .btn {
+            border-radius: 10px; font-weight: 600;
+            transition: var(--transition); font-size: 12px;
+            padding: 6px 14px;
+        }
+        .btn-payment { background: var(--success); color: var(--white); }
+        .btn-payment:hover { background: #157347; color: var(--white); }
+        .btn-view { background: var(--primary-light); color: var(--white); }
+        .btn-view:hover { background: var(--primary); color: var(--white); }
+
+        /* ==================== MODAL ==================== */
+        .modal-header { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: var(--white); }
+        .modal-header .btn-close { filter: brightness(0) invert(1); }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 992px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+        }
+        @media (max-width: 576px) {
+            .content { padding: 15px; }
+            .topbar h3 { font-size: 16px; }
+            .stat-card .stat-value { font-size: 22px; }
+        }
+    </style>
 </head>
 <body>
 
-<script src="assets/js/api.js"></script>
-<script src="assets/js/auth.js"></script>
-<script>if(!AUTH.currentClient()){window.location.href="client-portal.html";}</script>
+    <!-- Auth Check -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script>
+        if (!AUTH.currentClient()) {
+            window.location.href = "client-portal.html";
+        }
+    </script>
 
-<div class="sidebar">
-<div class="logo"><i class="fa-solid fa-building-columns"></i>Bejja Credit</div>
-<a href="client-dashboard.html"><i class="fa fa-home"></i>Dashboard</a>
-<a href="apply-loan.html"><i class="fa fa-hand-holding-dollar"></i>Apply Loan</a>
-<a href="my-loans.html"><i class="fa fa-money-bill-wave"></i>My Loans</a>
-<a href="client-profile.html"><i class="fa fa-user"></i>My Profile</a>
-<a href="#" onclick="AUTH.clientLogout()"><i class="fa fa-right-from-bracket"></i>Logout</a>
-</div>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-building-columns"></i>Bejja Credit
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Main Menu</div>
+            <a href="client-dashboard.html"><i class="fa fa-dashboard"></i>Dashboard</a>
+            <a href="apply-loan.html"><i class="fa fa-hand-holding-dollar"></i>Apply Loan</a>
+            <a href="my-loans.html" class="active"><i class="fa fa-money-bill-wave"></i>My Loans</a>
+            <a href="client-profile.html"><i class="fa fa-user"></i>My Profile</a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Account</div>
+            <a href="#" onclick="AUTH.clientLogout()"><i class="fa fa-right-from-bracket"></i>Logout</a>
+        </div>
+    </div>
 
-<div class="main">
-<div class="topbar"><h3><i class="fa fa-money-bill-wave"></i> My Loans</h3><div class="topbar-right"><a href="index.html" class="btn-home"><i class="fa fa-home"></i> Home</a><span>Welcome, <strong id="clientNameTop"></strong></span><a href="#" class="btn-logout" onclick="AUTH.clientLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></div></div>
-<div class="content">
+    <!-- Main Content -->
+    <div class="main">
+        <!-- Topbar -->
+        <div class="topbar">
+            <h3>
+                <button class="btn btn-link d-lg-none" onclick="document.getElementById('sidebar').classList.toggle('show')">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <i class="fa fa-money-bill-wave"></i> My Loans
+            </h3>
+            <div class="d-flex align-items-center gap-3">
+                <a href="index.html" class="btn-home"><i class="fa fa-home"></i> Home</a>
+                <span>Welcome, <strong id="clientNameTop">-</strong></span>
+                <a href="#" onclick="AUTH.clientLogout()" class="text-danger fw-bold text-decoration-none">
+                    <i class="fa fa-right-from-bracket"></i> Logout
+                </a>
+            </div>
+        </div>
 
-<div class="summary-cards">
-<div class="summary-card total"><h5>Total</h5><h2 id="totalLoans">0</h2></div>
-<div class="summary-card active"><h5>Active</h5><h2 id="activeLoans">0</h2></div>
-<div class="summary-card borrowed"><h5>Borrowed</h5><h2 id="totalBorrowed">KES 0</h2></div>
-<div class="summary-card balance"><h5>Outstanding</h5><h2 id="outstanding">KES 0</h2></div>
-</div>
+        <!-- Content -->
+        <div class="content">
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card primary" onclick="switchTab('ALL')">
+                    <div class="stat-icon"><i class="fa fa-file-invoice"></i></div>
+                    <div class="stat-value" id="statTotal">0</div>
+                    <div class="stat-label">Total Loans</div>
+                </div>
+                <div class="stat-card success" onclick="switchTab('ACTIVE')">
+                    <div class="stat-icon"><i class="fa fa-spinner"></i></div>
+                    <div class="stat-value" id="statActive">0</div>
+                    <div class="stat-label">Active Loans</div>
+                </div>
+                <div class="stat-card purple" onclick="switchTab('ALL')">
+                    <div class="stat-icon"><i class="fa fa-coins"></i></div>
+                    <div class="stat-value" id="statBorrowed">KSh 0</div>
+                    <div class="stat-label">Total Borrowed</div>
+                </div>
+                <div class="stat-card danger" onclick="switchTab('ACTIVE')">
+                    <div class="stat-icon"><i class="fa fa-wallet"></i></div>
+                    <div class="stat-value" id="statOutstanding">KSh 0</div>
+                    <div class="stat-label">Outstanding</div>
+                </div>
+            </div>
 
-<div class="table-card"><div class="table-header"><i class="fa fa-list"></i> My Loans & Applications</div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Balance</th><th>Due Date</th><th>Status</th><th>Action</th></tr></thead><tbody id="myLoansTable"><tr><td colspan="7" class="text-center text-muted p-4">Loading...</td></tr></tbody></table></div></div>
+            <!-- Tabs -->
+            <div class="tab-nav">
+                <button class="tab-btn active" onclick="switchTab('ALL')" id="tabALL">
+                    <i class="fa fa-list me-1"></i> All Items
+                </button>
+                <button class="tab-btn" onclick="switchTab('ACTIVE')" id="tabACTIVE">
+                    <i class="fa fa-spinner me-1"></i> Active Loans
+                </button>
+                <button class="tab-btn" onclick="switchTab('COMPLETED')" id="tabCOMPLETED">
+                    <i class="fa fa-check-circle me-1"></i> Completed
+                </button>
+                <button class="tab-btn" onclick="switchTab('APPLICATIONS')" id="tabAPPLICATIONS">
+                    <i class="fa fa-file-alt me-1"></i> Applications
+                </button>
+            </div>
 
-</div></div>
+            <!-- Loans Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h5><i class="fa fa-list"></i> <span id="tableTitle">All Loans & Applications</span></h5>
+                    <span class="text-muted" id="resultCount">0 items</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Balance</th>
+                                <th>Repayment</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="myLoansTable">
+                            <tr>
+                                <td colspan="8" class="text-center text-muted p-5">
+                                    <div class="spinner-border spinner-border-sm me-2"></div>Loading your loans...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div class="modal fade" id="paymentModal"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header bg-success text-white"><h5 class="modal-title">Payment History</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><h5 id="paymentLoanTitle" class="mb-3"></h5><table class="table table-bordered"><thead class="table-success"><tr><th>Date</th><th>Amount</th><th>Principal</th><th>Interest</th><th>Balance</th><th>Note</th></tr></thead><tbody id="paymentTable"></tbody></table></div></div></div></div>
+    <!-- Payment History Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fa fa-history"></i> Payment History</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info" id="paymentLoanInfo"></div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>#</th><th>Date</th><th>Amount</th>
+                                    <th>Principal</th><th>Interest</th>
+                                    <th>Balance</th><th>Method</th><th>Note</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentTable">
+                                <tr><td colspan="8" class="text-center text-muted">No payments recorded</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<script>
-function money(v){return"KES "+Number(v||0).toLocaleString();}
-document.addEventListener("DOMContentLoaded",()=>{let c=AUTH.currentClient();if(c)document.getElementById("clientNameTop").textContent=c.fullname||"-";});
+    <!-- Make Payment Modal -->
+    <div class="modal fade" id="makePaymentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fa fa-money-bill"></i> Make Payment</h5>
+                    <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="makePaymentLoanId">
+                    <div class="alert alert-info" id="makePaymentLoanInfo"></div>
+                    <label class="form-label">Amount (KSh)</label>
+                    <input type="number" id="makePaymentAmount" class="form-control mb-3" placeholder="Enter amount" min="100">
+                    <label class="form-label">Payment Method</label>
+                    <select id="makePaymentMethod" class="form-select mb-3">
+                        <option value="M-Pesa">M-Pesa</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                    </select>
+                    <label class="form-label">Transaction Reference (Optional)</label>
+                    <input type="text" id="makePaymentRef" class="form-control mb-3" placeholder="M-Pesa code, etc.">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success" onclick="submitPayment()">
+                        <i class="fa fa-check"></i> Submit Payment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-async function loadMyLoans(){
-    let loansResult=await api.getMyLoans();
-    let appsResult=await api.getMyApplications();
-    let loans=loansResult.success?loansResult.loans:[];
-    let applications=appsResult.success?(appsResult.applications||[]):[];
-    let table=document.getElementById("myLoansTable");table.innerHTML="";
-    let allItems=[],totalBorrowed=0,outstanding=0,activeCount=0,today=new Date();
-    
-    if(Array.isArray(loans)){loans.forEach(l=>{let amount=Number(l.original_principal||0),balance=Number(l.remaining_principal||0);totalBorrowed+=amount;outstanding+=balance;let realStatus=l.status;if(l.status==="COMPLETED"||balance<=0)realStatus="COMPLETED";else if(l.due_date&&new Date(l.due_date)<today)realStatus="LATE";if(realStatus==="ACTIVE")activeCount++;allItems.push({date:l.loan_date||l.created_at,type:"Loan",amount:amount,balance:balance,dueDate:l.due_date,status:realStatus,id:l.id,isLoan:true});});}
-    if(Array.isArray(applications)){applications.forEach(a=>{if(a.status==="APPROVED")return;allItems.push({date:a.application_date,type:"Application",amount:Number(a.amount||0),balance:0,dueDate:"-",status:a.status,id:a.id,isLoan:false});});}
-    
-    if(allItems.length===0){table.innerHTML='<tr><td colspan="7" class="text-center text-muted p-4">No loans or applications found.</td></tr>';updateSummary(0,0,0,0);return;}
-    allItems.sort((a,b)=>b.date.localeCompare(a.date));
-    
-    allItems.forEach(item=>{let sc="bg-secondary";if(item.status==="ACTIVE")sc="bg-success";if(item.status==="COMPLETED")sc="bg-info";if(item.status==="LATE")sc="bg-danger";if(item.status==="PENDING")sc="bg-warning text-dark";if(item.status==="REJECTED")sc="bg-danger";let action=item.isLoan?`<button class="btn btn-payment btn-sm" onclick="viewPayments(${item.id},'${money(item.amount)}')"><i class="fa fa-list"></i> Payments</button>`:'<span class="text-muted small">Awaiting review</span>';table.innerHTML+=`<tr><td>${formatDate(item.date)}</td><td>${item.type}</td><td>${money(item.amount)}</td><td>${item.isLoan?money(item.balance):"-"}</td><td>${item.isLoan?formatDate(item.dueDate):"-"}</td><td><span class="badge ${sc}">${item.status}</span></td><td>${action}</td></tr>`;});
-    updateSummary(allItems.length,activeCount,totalBorrowed,outstanding);
-}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ==================== GLOBALS ====================
+        let allItems = [];
+        let currentTab = "ALL";
 
-function updateSummary(t,a,b,o){document.getElementById("totalLoans").innerHTML=t;document.getElementById("activeLoans").innerHTML=a;document.getElementById("totalBorrowed").innerHTML=money(b);document.getElementById("outstanding").innerHTML=money(o);}
+        // ==================== UTILITY ====================
+        function money(v) {
+            return "KSh " + Number(v || 0).toLocaleString("en-KE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
 
-async function viewPayments(loanId,loanAmount){
-    document.getElementById("paymentLoanTitle").innerHTML="<i class='fa fa-money-bill'></i> Payments for: "+loanAmount;
-    let result=await api.getLoanPayments(loanId);let table=document.getElementById("paymentTable");table.innerHTML="";
-    if(!result.success||!result.payments||result.payments.length===0){table.innerHTML='<tr><td colspan="6" class="text-center text-muted">No payments yet</td></tr>';}
-    else{result.payments.forEach(p=>{table.innerHTML+=`<tr><td>${formatDate(p.payment_date)}</td><td>${money(p.amount)}</td><td>${money(p.principal_paid)}</td><td>${money(p.interest_paid)}</td><td>${money(p.balance)}</td><td>${p.note||"-"}</td></tr>`;});}
-    new bootstrap.Modal(document.getElementById("paymentModal")).show();
-}
+        function moneyShort(v) {
+            const num = Number(v || 0);
+            if (num >= 1000000) return "KSh " + (num / 1000000).toFixed(1) + "M";
+            if (num >= 1000) return "KSh " + (num / 1000).toFixed(1) + "K";
+            return "KSh " + num.toLocaleString();
+        }
 
-loadMyLoans();
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const c = AUTH.currentClient();
+            if (c) document.getElementById("clientNameTop").textContent = c.fullname || "-";
+        });
+
+        // ==================== LOAD DATA ====================
+        async function loadMyLoans() {
+            try {
+                const [loansResult, appsResult] = await Promise.all([
+                    api.getMyLoans(),
+                    api.getMyApplications ? api.getMyApplications() : { success: false }
+                ]);
+
+                const loans = loansResult.success ? (loansResult.loans || []) : [];
+                const applications = appsResult.success ? (appsResult.applications || []) : [];
+
+                allItems = [];
+                let totalBorrowed = 0, outstanding = 0, activeCount = 0;
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                // Process loans
+                if (Array.isArray(loans)) {
+                    loans.forEach(l => {
+                        const amount = Number(l.original_principal || 0);
+                        const balance = Number(l.remaining_principal || 0);
+                        const paid = amount - balance;
+                        const progressPct = amount > 0 ? Math.round((paid / amount) * 100) : 0;
+
+                        totalBorrowed += amount;
+                        outstanding += balance;
+
+                        let realStatus = l.status;
+                        if (l.status === "COMPLETED" || balance <= 0) {
+                            realStatus = "COMPLETED";
+                        } else if (l.due_date && new Date(l.due_date) < today && balance > 0) {
+                            realStatus = "OVERDUE";
+                        }
+
+                        if (realStatus === "ACTIVE") activeCount++;
+
+                        allItems.push({
+                            date: l.loan_date || l.created_at,
+                            type: "Loan",
+                            amount,
+                            balance,
+                            paid,
+                            progressPct,
+                            dueDate: l.due_date,
+                            status: realStatus,
+                            id: l.id,
+                            isLoan: true,
+                            interestRate: l.interest_rate || 20,
+                            purpose: l.purpose || "-"
+                        });
+                    });
+                }
+
+                // Process applications (non-approved)
+                if (Array.isArray(applications)) {
+                    applications.forEach(a => {
+                        if (a.status === "APPROVED") return; // Skip approved (already a loan)
+                        allItems.push({
+                            date: a.application_date,
+                            type: "Application",
+                            amount: Number(a.amount || 0),
+                            balance: 0,
+                            paid: 0,
+                            progressPct: 0,
+                            dueDate: null,
+                            status: a.status,
+                            id: a.id,
+                            isLoan: false,
+                            purpose: a.purpose || "-"
+                        });
+                    });
+                }
+
+                // Sort by date (newest first)
+                allItems.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                // Update stats
+                document.getElementById("statTotal").textContent = allItems.filter(i => i.isLoan).length;
+                document.getElementById("statActive").textContent = activeCount;
+                document.getElementById("statBorrowed").textContent = moneyShort(totalBorrowed);
+                document.getElementById("statOutstanding").textContent = moneyShort(outstanding);
+
+                // Render table
+                renderTable();
+
+            } catch (error) {
+                console.error("Error loading loans:", error);
+                document.getElementById("myLoansTable").innerHTML = 
+                    '<tr><td colspan="8" class="text-center text-danger p-5">Failed to load data. Please try again.</td></tr>';
+            }
+        }
+
+        // ==================== TAB SWITCHING ====================
+        function switchTab(tab) {
+            currentTab = tab;
+
+            document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+            document.getElementById("tab" + tab).classList.add("active");
+
+            const titles = {
+                "ALL": "All Loans & Applications",
+                "ACTIVE": "Active Loans",
+                "COMPLETED": "Completed Loans",
+                "APPLICATIONS": "Loan Applications"
+            };
+            document.getElementById("tableTitle").textContent = titles[tab] || "Loans";
+
+            renderTable();
+        }
+
+        // ==================== RENDER TABLE ====================
+        function renderTable() {
+            const table = document.getElementById("myLoansTable");
+
+            let filtered = [...allItems];
+
+            // Filter by tab
+            switch (currentTab) {
+                case "ACTIVE":
+                    filtered = filtered.filter(i => i.isLoan && i.status === "ACTIVE");
+                    break;
+                case "COMPLETED":
+                    filtered = filtered.filter(i => i.isLoan && i.status === "COMPLETED");
+                    break;
+                case "APPLICATIONS":
+                    filtered = filtered.filter(i => !i.isLoan);
+                    break;
+            }
+
+            document.getElementById("resultCount").textContent = filtered.length + " item(s)";
+
+            if (filtered.length === 0) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center p-5">
+                            <i class="fa fa-inbox" style="font-size:48px;color:#0d47a1;"></i>
+                            <h5 class="mt-3">No ${currentTab.toLowerCase()} items found.</h5>
+                            ${currentTab === "ACTIVE" ? '<a href="apply-loan.html" class="btn btn-primary mt-2"><i class="fa fa-plus"></i> Apply for a Loan</a>' : ''}
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            const statusColors = {
+                "ACTIVE": "success",
+                "COMPLETED": "info",
+                "OVERDUE": "danger",
+                "PENDING": "warning",
+                "REJECTED": "danger",
+                "CANCELLED": "secondary"
+            };
+
+            table.innerHTML = filtered.map(item => {
+                const badgeColor = statusColors[item.status] || "primary";
+                const statusLabel = item.status === "OVERDUE" ? "LATE" : item.status;
+
+                let actionButtons = "";
+                if (item.isLoan) {
+                    actionButtons = `
+                        <button class="btn btn-view btn-sm" onclick="viewPayments(${item.id}, '${money(item.amount)}')" title="View Payments">
+                            <i class="fa fa-list"></i>
+                        </button>
+                        ${item.status === "ACTIVE" || item.status === "OVERDUE" ? `
+                            <button class="btn btn-payment btn-sm" onclick="openMakePayment(${item.id}, ${item.balance}, ${item.interestRate})" title="Make Payment">
+                                <i class="fa fa-money-bill"></i>
+                            </button>
+                        ` : ''}
+                    `;
+                } else {
+                    actionButtons = '<span class="text-muted small">Awaiting review</span>';
+                }
+
+                return `
+                    <tr>
+                        <td>${formatDate(item.date)}</td>
+                        <td>
+                            <span class="badge bg-secondary">${item.type}</span>
+                            ${item.isLoan ? `<br><small class="text-muted">${item.purpose.substring(0, 20)}${item.purpose.length > 20 ? '...' : ''}</small>` : ''}
+                        </td>
+                        <td><strong>${money(item.amount)}</strong></td>
+                        <td class="${item.balance > 0 ? 'text-danger fw-bold' : 'text-success'}">
+                            ${item.isLoan ? money(item.balance) : "-"}
+                        </td>
+                        <td>
+                            ${item.isLoan ? `
+                                <div class="progress" style="height:6px;width:80px;margin:0 auto;">
+                                    <div class="progress-bar bg-success" style="width:${item.progressPct}%"></div>
+                                </div>
+                                <small>${item.progressPct}%</small>
+                            ` : "-"}
+                        </td>
+                        <td>
+                            ${item.isLoan ? 
+                                `<span class="${item.status === 'OVERDUE' ? 'text-danger fw-bold' : ''}">${formatDate(item.dueDate)}</span>` : 
+                                "-"}
+                        </td>
+                        <td><span class="badge bg-${badgeColor}">${statusLabel}</span></td>
+                        <td>${actionButtons}</td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        // ==================== VIEW PAYMENTS ====================
+        async function viewPayments(loanId, loanAmount) {
+            document.getElementById("paymentLoanInfo").innerHTML = 
+                `<strong>Loan Amount:</strong> ${loanAmount}`;
+            
+            const table = document.getElementById("paymentTable");
+            table.innerHTML = '<tr><td colspan="8" class="text-center"><div class="spinner-border spinner-border-sm me-2"></div>Loading...</td></tr>';
+            
+            new bootstrap.Modal(document.getElementById("paymentModal")).show();
+
+            try {
+                const result = await api.getLoanPayments(loanId);
+                
+                if (!result.success || !result.payments || result.payments.length === 0) {
+                    table.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No payments recorded yet</td></tr>';
+                } else {
+                    let totalPaid = 0;
+                    table.innerHTML = result.payments.map((p, i) => {
+                        totalPaid += Number(p.amount || 0);
+                        return `
+                            <tr>
+                                <td>${i + 1}</td>
+                                <td>${formatDate(p.payment_date)}</td>
+                                <td class="fw-bold">${money(p.amount)}</td>
+                                <td>${money(p.principal_paid)}</td>
+                                <td>${money(p.interest_paid)}</td>
+                                <td>${money(p.balance)}</td>
+                                <td>${p.payment_method || p.method || "-"}</td>
+                                <td>${p.note || "-"}</td>
+                            </tr>
+                        `;
+                    }).join("");
+                    
+                    // Add total row
+                    table.innerHTML += `
+                        <tr class="table-success fw-bold">
+                            <td colspan="2">Total Paid</td>
+                            <td>${money(totalPaid)}</td>
+                            <td colspan="5"></td>
+                        </tr>
+                    `;
+                }
+            } catch (error) {
+                table.innerHTML = '<tr><td colspan="8" class="text-center text-danger">Failed to load payments</td></tr>';
+            }
+        }
+
+        // ==================== MAKE PAYMENT ====================
+        function openMakePayment(loanId, balance, interestRate) {
+            document.getElementById("makePaymentLoanId").value = loanId;
+            document.getElementById("makePaymentAmount").value = "";
+            document.getElementById("makePaymentRef").value = "";
+            
+            document.getElementById("makePaymentLoanInfo").innerHTML = `
+                <strong>Remaining Balance:</strong> ${money(balance)}<br>
+                <strong>Interest Rate:</strong> ${interestRate}%<br>
+                <strong>Monthly Interest:</strong> ${money((balance * interestRate) / 100)}
+            `;
+            
+            new bootstrap.Modal(document.getElementById("makePaymentModal")).show();
+        }
+
+        async function submitPayment() {
+            const loanId = document.getElementById("makePaymentLoanId").value;
+            const amount = Number(document.getElementById("makePaymentAmount").value);
+            const method = document.getElementById("makePaymentMethod").value;
+            const ref = document.getElementById("makePaymentRef").value;
+
+            if (amount <= 0) { alert("Please enter a valid amount."); return; }
+            if (amount < 100) { alert("Minimum payment is KSh 100."); return; }
+
+            try {
+                let note = "Payment via " + method;
+                if (ref) note += " | Ref: " + ref;
+
+                await api.addPayment({
+                    loanId,
+                    amount,
+                    paymentDate: new Date().toISOString().split("T")[0],
+                    method,
+                    note
+                });
+
+                alert("✅ Payment submitted successfully!");
+                bootstrap.Modal.getInstance(document.getElementById("makePaymentModal")).hide();
+                loadMyLoans();
+            } catch (error) {
+                console.error("Payment error:", error);
+                alert("❌ Failed to submit payment. Please try again.");
+            }
+        }
+
+        // ==================== INITIALIZE ====================
+        loadMyLoans();
+        setInterval(loadMyLoans, 300000); // Refresh every 5 minutes
+    </script>
 </body>
 </html>
