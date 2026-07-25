@@ -32,10 +32,9 @@ body{background:#edf4ff;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;}
 .status-suspended{background:#dc3545;color:white;padding:7px 14px;border-radius:18px;font-size:13px;font-weight:600;}
 .btn-view{background:#1976d2;color:white;border-radius:18px;font-size:14px;padding:8px 16px;font-weight:600;}
 .btn-view:hover{background:#0d47a1;color:white;}
-.profile-img-large{width:160px;height:160px;border-radius:50%;object-fit:cover;border:5px solid #1976d2;}
-.section-title{background:#0d47a1;color:white;padding:12px 20px;border-radius:10px;margin-top:18px;font-weight:bold;font-size:17px;}
-.detail-card{background:#f8fbff;border-radius:12px;padding:18px;margin-bottom:14px;border:1px solid #dbeafe;}
-.info-row{display:flex;padding:10px 0;border-bottom:1px solid #eee;font-size:16px;}
+.profile-img-large{width:160px;height:160px;border-radius:50%;object-fit:cover;border:5px solid #1976d2;margin-bottom:12px;}
+.info-list{display:flex;flex-direction:column;gap:4px;}
+.info-row{display:flex;padding:12px 0;border-bottom:1px solid #e8e8e8;font-size:16px;}
 .info-row:last-child{border-bottom:none;}
 .info-label{font-weight:bold;color:#0F4C81;width:180px;flex-shrink:0;font-size:16px;}
 .info-value{color:#444;font-size:16px;}
@@ -121,16 +120,26 @@ async function viewClient(id){
     let totalOutstanding=activeLoans.reduce((s,l)=>s+Number(l.remaining_principal||0),0);
     
     document.getElementById("clientDetails").innerHTML=`
-        <div class="row"><div class="col-md-3 text-center"><img src="${c.profile_photo||DEFAULT_IMG}" class="profile-img-large mb-3"><h4>${c.fullname||"-"}</h4><span class="badge ${c.status==='ACTIVE'?'bg-success':'bg-danger'} mt-2" style="font-size:15px;padding:8px 18px;">${c.status||'ACTIVE'}</span></div>
-        <div class="col-md-9"><div class="row"><div class="col-md-6"><div class="info-row"><div class="info-label">Phone</div><div class="info-value">${c.phone||"-"}</div></div><div class="info-row"><div class="info-label">National ID</div><div class="info-value">${c.national_id||"-"}</div></div><div class="info-row"><div class="info-label">Email</div><div class="info-value">${c.email||"Not Provided"}</div></div></div><div class="col-md-6"><div class="info-row"><div class="info-label">Occupation</div><div class="info-value">${c.occupation||"-"}</div></div><div class="info-row"><div class="info-label">Employer</div><div class="info-value">${c.employer||"Not Provided"}</div></div><div class="info-row"><div class="info-label">Monthly Income</div><div class="info-value">${money(c.monthly_income)}</div></div></div></div><div class="info-row"><div class="info-label">County</div><div class="info-value">${c.county||"-"}</div></div><div class="info-row"><div class="info-label">Address</div><div class="info-value">${c.address||"-"}</div></div><div class="info-row"><div class="info-label">Registered</div><div class="info-value">${formatDate(c.created_at)}</div></div></div></div>`;
+        <div style="text-align:center;margin-bottom:20px;"><img src="${c.profile_photo||DEFAULT_IMG}" class="profile-img-large"><h4 style="margin-top:8px;">${c.fullname||"-"}</h4><span class="badge ${c.status==='ACTIVE'?'bg-success':'bg-danger'} mt-2" style="font-size:15px;padding:8px 18px;">${c.status||'ACTIVE'}</span></div>
+        <hr>
+        <div class="info-list">
+            <div class="info-row"><div class="info-label">Phone</div><div class="info-value">${c.phone||"-"}</div></div>
+            <div class="info-row"><div class="info-label">National ID</div><div class="info-value">${c.national_id||"-"}</div></div>
+            <div class="info-row"><div class="info-label">Email</div><div class="info-value">${c.email||"Not Provided"}</div></div>
+            <div class="info-row"><div class="info-label">Occupation</div><div class="info-value">${c.occupation||"-"}</div></div>
+            <div class="info-row"><div class="info-label">Employer</div><div class="info-value">${c.employer||"Not Provided"}</div></div>
+            <div class="info-row"><div class="info-label">Monthly Income</div><div class="info-value">${money(c.monthly_income)}</div></div>
+            <div class="info-row"><div class="info-label">County</div><div class="info-value">${c.county||"-"}</div></div>
+            <div class="info-row"><div class="info-label">Address</div><div class="info-value">${c.address||"-"}</div></div>
+            <div class="info-row"><div class="info-label">Registered</div><div class="info-value">${formatDate(c.created_at)}</div></div>
+        </div>`;
     
     let btnDelete=document.getElementById("btnDelete");
     if(selectedClientHasLoans){
         btnDelete.className="btn btn-danger-disabled";btnDelete.disabled=true;
-        btnDelete.title="Cannot delete - client has active loan of "+money(totalOutstanding);
         btnDelete.innerHTML='<i class="fa fa-lock"></i> Cannot Delete (Active Loan: '+money(totalOutstanding)+')';
     }else{
-        btnDelete.className="btn btn-danger";btnDelete.disabled=false;btnDelete.title="";
+        btnDelete.className="btn btn-danger";btnDelete.disabled=false;
         btnDelete.innerHTML='<i class="fa fa-trash"></i> Delete';
     }
     
