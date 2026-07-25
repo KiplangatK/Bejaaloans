@@ -83,17 +83,28 @@ function goToStep2(){
 function updateSteps(s){for(let i=1;i<=3;i++){let st=document.getElementById("step"+i);st.classList.remove("active","done");if(i<s)st.classList.add("done");if(i===s)st.classList.add("active");}}
 function showError(m){let e=document.getElementById("errorBox");e.innerHTML=m;e.style.display="block";setTimeout(()=>e.style.display="none",4000);}
 
-let generatedOTP="";
-function sendOTP(){
-    let phone=document.getElementById("phone").value.trim();
-    if(!/^07\d{8}$/.test(phone)){document.getElementById("phoneStatus").innerHTML='<span class="status-error">Enter valid 07XXXXXXXX</span>';return;}
-    generatedOTP=String(Math.floor(100000+Math.random()*900000));
-    console.log("OTP:",generatedOTP);
-    document.getElementById("phoneStatus").innerHTML='<span class="status-ok">Code sent! (Demo: <b>'+generatedOTP+'</b>)</span>';
-    document.getElementById("otpBox").style.display="block";
-    document.getElementById("sendOTPBtn").disabled=true;
-    document.getElementById("sendOTPBtn").innerHTML='<i class="fa fa-clock"></i> Sent';
-    document.getElementById("otp1").focus();
+async function sendOTP() {
+    let phone = document.getElementById("phone").value.trim();
+    if (!/^07\d{8}$/.test(phone)) {
+        document.getElementById("phoneStatus").innerHTML = '<span class="status-error">Enter valid 07XXXXXXXX</span>';
+        return;
+    }
+    
+    document.getElementById("phoneStatus").innerHTML = '<span class="status-checking">Sending code...</span>';
+    
+    let result = await api.sendOTP("0" + phone);
+    
+    if (result.success) {
+        // Sandbox mode shows OTP
+        let msg = result.sandboxOTP ? 'Code sent! (Sandbox: <b>' + result.sandboxOTP + '</b>)' : 'Code sent via SMS!';
+        document.getElementById("phoneStatus").innerHTML = '<span class="status-ok">' + msg + '</span>';
+        document.getElementById("otpBox").style.display = "block";
+        document.getElementById("sendOTPBtn").disabled = true;
+        document.getElementById("sendOTPBtn").innerHTML = '<i class="fa fa-clock"></i> Sent';
+        document.getElementById("otp1").focus();
+    } else {
+        document.getElementById("phoneStatus").innerHTML = '<span class="status-error">' + result.message + '</span>';
+    }
 }
 function otpNext(c,n){if(c.value.length===1&&n)document.getElementById(n).focus();}
 function verifyOTP(){
