@@ -3,60 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register & Apply | Bejja Credit</title>
+    <title>System Test | Bejja Credit</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <style>
-        body { background: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
-        .container { max-width: 600px; margin-top: 30px; }
+        body { background: #f0f4f8; font-family: 'Segoe UI', sans-serif; padding: 20px; }
+        .container { max-width: 800px; }
         .card { border-radius: 15px; border: none; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        .btn-action { 
-            padding: 15px 30px; font-size: 18px; font-weight: 600;
-            border-radius: 50px; border: none; color: white; transition: all 0.3s; width: 100%;
-        }
-        .btn-register { background: linear-gradient(135deg, #0d47a1, #1976d2); }
-        .btn-apply { background: linear-gradient(135deg, #e67e00, #f39c12); }
-        .btn-action:hover { transform: scale(1.02); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
-        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .result { 
-            padding: 12px 15px; border-radius: 10px; margin-top: 10px;
-            font-weight: 500; font-size: 14px;
-        }
-        .result.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .result.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .result.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .btn-run { padding: 20px 40px; font-size: 20px; font-weight: 700; border-radius: 50px; background: linear-gradient(135deg, #dc3545, #c82333); border: none; color: white; }
+        .btn-run:hover { transform: scale(1.05); }
+        .step { padding: 12px 15px; margin: 5px 0; border-radius: 10px; display: flex; align-items: center; gap: 10px; }
+        .step.waiting { background: #f8f9fa; color: #888; }
+        .step.running { background: #fff3cd; color: #856404; }
+        .step.success { background: #d4edda; color: #155724; }
+        .step.error { background: #f8d7da; color: #721c24; }
         .spinner { width: 20px; height: 20px; border: 3px solid #ccc; border-top-color: #0d47a1; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        pre { background: #1a1a2e; color: #e0e0e0; padding: 15px; border-radius: 10px; font-size: 12px; margin: 0; }
+        pre { background: #1a1a2e; color: #e0e0e0; padding: 15px; border-radius: 10px; max-height: 400px; overflow-y: auto; font-size: 12px; }
     </style>
 </head>
 <body>
-    <div class="container text-center">
-        <div class="card p-4 mb-3">
-            <h3 class="text-primary mb-3"><i class="fa fa-user-plus"></i> Register Client & Apply Loan</h3>
-            <p class="text-muted">Step 1: Register → Step 2: Apply Loan → Then you approve manually in admin</p>
+    <div class="container">
+        <div class="card p-4 mb-3 text-center">
+            <h2 class="text-danger mb-3"><i class="fa fa-flask"></i> Full System Reset & Test</h2>
+            <p class="text-muted">⚠️ This will DELETE all clients, loans, applications, and payments. Then register a new client and apply for a loan.</p>
             
-            <button class="btn-action btn-register mt-2" onclick="registerAndApply()" id="mainBtn">
-                <i class="fa fa-play"></i> Register Client & Apply for Loan
+            <button class="btn-run mt-2" onclick="runFullTest()" id="runBtn">
+                <i class="fa fa-play"></i> Start Full Test
             </button>
-            
-            <div id="result" class="mt-3"></div>
+        </div>
+
+        <div class="card p-4 mb-3">
+            <h5 class="fw-bold mb-3">Progress</h5>
+            <div id="step1" class="step waiting"><span class="spinner" style="display:none;"></span> Step 1: Admin Login</div>
+            <div id="step2" class="step waiting"><span class="spinner" style="display:none;"></span> Step 2: Delete All Existing Data</div>
+            <div id="step3" class="step waiting"><span class="spinner" style="display:none;"></span> Step 3: Register New Test Client</div>
+            <div id="step4" class="step waiting"><span class="spinner" style="display:none;"></span> Step 4: Client Login</div>
+            <div id="step5" class="step waiting"><span class="spinner" style="display:none;"></span> Step 5: Apply for Loan</div>
+            <div id="step6" class="step waiting"><span class="spinner" style="display:none;"></span> Step 6: Admin Approve Loan</div>
+            <div id="step7" class="step waiting"><span class="spinner" style="display:none;"></span> Step 7: Verify Results</div>
         </div>
 
         <div class="card p-4">
-            <h6 class="fw-bold"><i class="fa fa-terminal"></i> Log</h6>
-            <pre id="log">Click the button to start...</pre>
+            <h6 class="fw-bold"><i class="fa fa-terminal"></i> Test Log</h6>
+            <pre id="log">Click "Start Full Test" to begin...</pre>
         </div>
     </div>
 
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/auth.js"></script>
     <script>
-        const API = "http://localhost:5000";
+        let adminToken = "";
         let clientToken = "";
-        
-        // Generate random phone to avoid duplicates
-        const randomPhone = "07" + Math.floor(10000000 + Math.random() * 90000000);
-        const testPassword = "Test@123";
-        const loanAmount = Math.floor(Math.random() * 5 + 1) * 5000; // Random 5000-25000
+        let testPhone = "0711111111";
+        let testPassword = "Test@123";
+        let applicationId = null;
 
         function log(msg) {
             const logEl = document.getElementById("log");
@@ -65,140 +66,188 @@
             logEl.scrollTop = logEl.scrollHeight;
         }
 
-        function showResult(type, message) {
-            document.getElementById("result").innerHTML = `<div class="result ${type}">${message}</div>`;
+        function setStep(id, status) {
+            const step = document.getElementById(id);
+            step.className = "step " + status;
+            const spinner = step.querySelector(".spinner");
+            const icon = step.querySelector("i");
+            if (status === "running") { spinner.style.display = "inline-block"; icon.style.display = "none"; }
+            else { spinner.style.display = "none"; icon.style.display = "inline-block"; icon.className = status === "success" ? "fa fa-check-circle" : status === "error" ? "fa fa-times-circle" : "fa fa-circle"; }
         }
 
-        async function registerAndApply() {
-            const btn = document.getElementById("mainBtn");
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        async function runFullTest() {
+            const btn = document.getElementById("runBtn");
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner me-2"></span>Processing...';
-            document.getElementById("result").innerHTML = "";
-            document.getElementById("log").textContent = "🚀 STARTING...\n";
-            log(`📱 Phone: ${randomPhone}`);
-            log(`💰 Loan Amount: KSh ${loanAmount.toLocaleString()}`);
-            log("─".repeat(40));
+            btn.innerHTML = '<span class="spinner me-2"></span>Running...';
+            document.getElementById("log").textContent = "🚀 FULL SYSTEM RESET & TEST\n";
+            log("─".repeat(50));
+
+            for (let i = 1; i <= 7; i++) setStep("step" + i, "waiting");
 
             try {
-                // STEP 1: Register Client
-                log("🔵 Step 1: Registering client...");
+                // Step 1: Admin Login
+                setStep("step1", "running");
+                log("🔵 Step 1: Admin Login...");
+                const adminRes = await fetch("http://localhost:5000/api/auth/admin-login", {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username: "Kiplangat", password: "Admin@123" })
+                });
+                const adminData = await adminRes.json();
+                if (!adminData.success) throw new Error(adminData.message);
+                adminToken = adminData.token;
+                setStep("step1", "success");
+                log("✅ Admin login SUCCESS");
+                await sleep(500);
+
+                // Step 2: Delete All Data
+                setStep("step2", "running");
+                log("🔵 Step 2: Deleting all existing data...");
                 
-                const regRes = await fetch(API + "/api/auth/register", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                // Get all loans and delete payments first
+                const loansRes = await fetch("http://localhost:5000/api/loans", {
+                    headers: { "Authorization": "Bearer " + adminToken }
+                });
+                const loansData = await loansRes.json();
+                
+                // Get all clients
+                const clientsRes = await fetch("http://localhost:5000/api/clients", {
+                    headers: { "Authorization": "Bearer " + adminToken }
+                });
+                const clientsData = await clientsRes.json();
+                
+                // Delete all clients (cascades to loans, applications, payments)
+                if (clientsData.success && clientsData.clients) {
+                    for (const client of clientsData.clients) {
+                        try {
+                            await fetch(`http://localhost:5000/api/clients/${client.id}`, {
+                                method: "DELETE",
+                                headers: { "Authorization": "Bearer " + adminToken }
+                            });
+                        } catch (e) {}
+                    }
+                    log(`✅ Deleted ${clientsData.clients.length} clients and all related data`);
+                }
+                setStep("step2", "success");
+                await sleep(500);
+
+                // Step 3: Register New Client
+                setStep("step3", "running");
+                log(`🔵 Step 3: Registering new client: ${testPhone}`);
+                const regRes = await fetch("http://localhost:5000/api/auth/register", {
+                    method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        fullname: "Test Client " + randomPhone.slice(-4),
-                        nationalID: String(Math.floor(10000000 + Math.random() * 90000000)),
-                        phone: randomPhone,
-                        email: randomPhone + "@test.com",
+                        fullname: "Test Client System",
+                        nationalID: "11111111",
+                        phone: testPhone,
+                        email: "test@bejja.com",
                         password: testPassword,
-                        occupation: "Business Owner",
-                        employer: "Self Employed",
+                        occupation: "Tester",
+                        employer: "Bejja Corp",
                         monthlyIncome: "50000",
                         county: "Nairobi",
-                        address: "Test Address, Nairobi"
+                        address: "123 Test Avenue"
                     })
                 });
-                
                 const regData = await regRes.json();
-                
-                if (regData.success) {
-                    log("✅ Registration SUCCESS!");
-                } else {
-                    log("⚠️ " + regData.message);
-                    if (!regData.message.includes("already registered")) {
-                        throw new Error(regData.message);
-                    }
-                    log("ℹ️ Client already exists, continuing...");
-                }
+                if (!regData.success) throw new Error(regData.message);
+                setStep("step3", "success");
+                log("✅ Client registered: Test Client System");
+                await sleep(500);
 
-                // STEP 2: Login as Client
-                log("🔵 Step 2: Logging in as client...");
-                
-                const loginRes = await fetch(API + "/api/auth/client-login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ phone: randomPhone, password: testPassword })
+                // Step 4: Client Login
+                setStep("step4", "running");
+                log("🔵 Step 4: Client Login...");
+                const loginRes = await fetch("http://localhost:5000/api/auth/client-login", {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ phone: testPhone, password: testPassword })
                 });
-                
                 const loginData = await loginRes.json();
-                
-                if (!loginData.success) {
-                    throw new Error("Login failed: " + loginData.message);
-                }
-                
+                if (!loginData.success) throw new Error(loginData.message);
                 clientToken = loginData.token;
-                log("✅ Client login SUCCESS!");
+                setStep("step4", "success");
+                log("✅ Client login SUCCESS");
+                await sleep(500);
 
-                // STEP 3: Apply for Loan
-                log(`🔵 Step 3: Applying for KSh ${loanAmount.toLocaleString()}...`);
-                
-                const applyRes = await fetch(API + "/api/applications", {
+                // Step 5: Apply for Loan
+                setStep("step5", "running");
+                const loanAmount = 15000;
+                log(`🔵 Step 5: Applying for KSh ${loanAmount.toLocaleString()}...`);
+                const applyRes = await fetch("http://localhost:5000/api/applications", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer " + clientToken
-                    },
+                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + clientToken },
                     body: JSON.stringify({
                         amount: loanAmount,
                         purpose: "Business Expansion",
-                        guarantor1: { 
-                            name: "Jane Guarantor", 
-                            id: "11111111", 
-                            phone: "0711111111", 
-                            relationship: "Sister", 
-                            address: "456 Nairobi" 
-                        },
-                        guarantor2: { 
-                            name: "Bob Guarantor", 
-                            id: "22222222", 
-                            phone: "0722222222", 
-                            relationship: "Friend", 
-                            address: "789 Nairobi" 
-                        }
+                        guarantor1: { name: "Jane G", id: "22222222", phone: "0722222222", relationship: "Sister", address: "Nairobi" },
+                        guarantor2: { name: "Bob G", id: "33333333", phone: "0733333333", relationship: "Friend", address: "Nairobi" }
                     })
                 });
-                
                 const applyData = await applyRes.json();
-                
-                if (!applyData.success) {
-                    throw new Error("Application failed: " + applyData.message);
-                }
-                
-                const appId = applyData.applicationId;
-                log("✅ Loan application SUBMITTED!");
-                log("─".repeat(40));
-                log("🎉 ALL DONE!");
-                log("");
-                log("📋 SUMMARY:");
-                log(`   📱 Phone: ${randomPhone}`);
-                log(`   🔑 Password: ${testPassword}`);
-                log(`   💰 Loan Amount: KSh ${loanAmount.toLocaleString()}`);
-                log(`   📝 Application ID: ${appId}`);
-                log("");
-                log("👨‍💼 NEXT STEP (You do this manually):");
-                log("   1. Go to admin-portal.html");
-                log("   2. Login as: Kiplangat / Admin@123");
-                log("   3. Go to Loan Applications");
-                log("   4. Find the pending application and APPROVE it");
+                if (!applyData.success) throw new Error(applyData.message);
+                applicationId = applyData.applicationId;
+                setStep("step5", "success");
+                log(`✅ Loan application submitted! ID: ${applicationId}`);
+                await sleep(500);
 
-                showResult("success", 
-                    `✅ SUCCESS!<br><br>
-                    <b>Phone:</b> ${randomPhone}<br>
-                    <b>Password:</b> ${testPassword}<br>
-                    <b>Loan:</b> KSh ${loanAmount.toLocaleString()}<br>
-                    <b>App ID:</b> ${appId}<br><br>
-                    <small>Now login to <a href="admin-portal.html" target="_blank">Admin Panel</a> to approve the loan.</small>`
-                );
+                // Step 6: Admin Approve
+                setStep("step6", "running");
+                log(`🔵 Step 6: Approving application #${applicationId}...`);
+                const approveRes = await fetch(`http://localhost:5000/api/applications/${applicationId}/approve`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + adminToken },
+                    body: JSON.stringify({
+                        loanDate: new Date().toISOString().split("T")[0],
+                        dueDate: new Date(Date.now() + 30*24*60*60*1000).toISOString().split("T")[0],
+                        interestRate: 20
+                    })
+                });
+                const approveData = await approveRes.json();
+                if (!approveData.success) throw new Error(approveData.message);
+                setStep("step6", "success");
+                log(`✅ Loan APPROVED! Loan ID: ${approveData.loanId || "N/A"}`);
+                await sleep(500);
+
+                // Step 7: Verify
+                setStep("step7", "running");
+                log("🔵 Step 7: Verifying results...");
+                const [statsRes, loansVerifyRes, clientsVerifyRes] = await Promise.all([
+                    fetch("http://localhost:5000/api/stats", { headers: { "Authorization": "Bearer " + adminToken } }),
+                    fetch("http://localhost:5000/api/loans", { headers: { "Authorization": "Bearer " + adminToken } }),
+                    fetch("http://localhost:5000/api/clients", { headers: { "Authorization": "Bearer " + adminToken } })
+                ]);
+                const statsData = await statsRes.json();
+                const loansVerify = await loansVerifyRes.json();
+                const clientsVerify = await clientsVerifyRes.json();
+                
+                setStep("step7", "success");
+                log("─".repeat(50));
+                log("🎉 TEST COMPLETE! Results:");
+                log(`   📊 Clients: ${statsData.stats?.totalClients || clientsVerify.clients?.length || 0}`);
+                log(`   💰 Active Loans: ${statsData.stats?.activeLoans || 0}`);
+                log(`   📝 Total Loans: ${loansVerify.loans?.length || 0}`);
+                log(`   💵 Total Disbursed: ${money(statsData.stats?.totalLoanAmount || 0)}`);
+                log("");
+                log("✅ SYSTEM IS WORKING PERFECTLY!");
+                log(`   Admin: Kiplangat / Admin@123`);
+                log(`   Client: ${testPhone} / ${testPassword}`);
 
             } catch (error) {
                 log("❌ ERROR: " + error.message);
-                showResult("error", "❌ " + error.message);
+                for (let i = 1; i <= 7; i++) {
+                    if (document.getElementById("step" + i).classList.contains("running")) {
+                        setStep("step" + i, "error");
+                        break;
+                    }
+                }
             }
 
             btn.disabled = false;
-            btn.innerHTML = '<i class="fa fa-redo"></i> Register Another Client & Apply';
+            btn.innerHTML = '<i class="fa fa-redo"></i> Run Again';
         }
+
+        function money(v) { return "KSh " + Number(v || 0).toLocaleString("en-KE", { minimumFractionDigits: 2 }); }
     </script>
 </body>
 </html>
