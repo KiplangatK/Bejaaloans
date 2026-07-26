@@ -1,17 +1,22 @@
 /*=========================================================
     BEJJA LOAN CREDIT - API Helper
-    Connects frontend to backend
+    Auto-detects local or network access
 =========================================================*/
 
-// API Base URL - Change this to your server IP for network access
-const API_BASE = "http://10.129.121.64:5000/api";
-
-// For local development only, use:
-// const API_BASE = "http://localhost:5000/api";
+// Auto-detect API base URL
+const API_BASE = (function() {
+    const host = window.location.hostname;
+    // If accessing from localhost, use localhost
+    if (host === "localhost" || host === "127.0.0.1" || host === "") {
+        return "http://localhost:5000/api";
+    }
+    // If accessing from network IP, use that IP with port 5000
+    return "http://" + host + ":5000/api";
+})();
 
 console.log("🔗 API Connected to:", API_BASE);
 
-// Format date function
+// Format date
 function formatDate(dateStr) {
     if (!dateStr) return "-";
     let d = new Date(dateStr);
@@ -30,7 +35,7 @@ function formatDate(dateStr) {
 
 window.formatDate = formatDate;
 
-// API Helper Object
+// API Helper
 const api = {
     async request(endpoint, options = {}) {
         const token = localStorage.getItem("bejja_token");
