@@ -1,18 +1,12 @@
 /*=========================================================
     BEJJA LOAN CREDIT - API Helper
-    Auto-detects local or network access
 =========================================================*/
 
-// Auto-detect API base URL
-const API_BASE = (function() {
-    const host = window.location.hostname;
-    // If accessing from localhost, use localhost
-    if (host === "localhost" || host === "127.0.0.1" || host === "") {
-        return "http://localhost:5000/api";
-    }
-    // If accessing from network IP, use that IP with port 5000
-    return "http://" + host + ":5000/api";
-})();
+// CHANGE THIS TO YOUR LOCAL IP WHEN USING GITHUB PAGES
+const API_BASE = "http://10.129.121.64:5000/api";
+
+// For local development, use:
+// const API_BASE = "http://localhost:5000/api";
 
 console.log("🔗 API Connected to:", API_BASE);
 
