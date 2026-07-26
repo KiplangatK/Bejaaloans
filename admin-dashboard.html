@@ -247,6 +247,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        // ✅ FIXED: Redirect to admin-portal.html
         if (!AUTH.currentAdmin()) { window.location.href = "admin-portal.html"; }
 
         let admin = AUTH.currentAdmin();
@@ -310,38 +311,30 @@
         async function updateCharts() {
             if (loanTrendChart) loanTrendChart.destroy();
             if (portfolioChart) portfolioChart.destroy();
-
             try {
                 const loansResult = await api.getLoans();
                 const loans = loansResult.success ? (loansResult.loans || []) : [];
                 const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
                 const disbursedData = new Array(12).fill(0);
                 const collectedData = new Array(12).fill(0);
-
                 loans.forEach(loan => {
                     if (loan.loan_date) { const m = new Date(loan.loan_date).getMonth(); disbursedData[m] += Number(loan.original_principal||0); }
                     if (loan.total_paid) { const m = new Date(loan.updated_at||loan.created_at).getMonth(); collectedData[m] += Number(loan.total_paid||0); }
                 });
-
                 const ctx1 = document.getElementById("loanTrendChart")?.getContext("2d");
                 if (ctx1) {
                     loanTrendChart = new Chart(ctx1, {
                         type: "line",
-                        data: {
-                            labels: months,
-                            datasets: [
-                                { label: "Disbursed", data: disbursedData, borderColor: "#1976d2", backgroundColor: "rgba(25,118,210,0.1)", fill: true, tension: 0.4 },
-                                { label: "Collected", data: collectedData, borderColor: "#198754", backgroundColor: "rgba(25,135,84,0.1)", fill: true, tension: 0.4 }
-                            ]
-                        },
+                        data: { labels: months, datasets: [
+                            { label: "Disbursed", data: disbursedData, borderColor: "#1976d2", backgroundColor: "rgba(25,118,210,0.1)", fill: true, tension: 0.4 },
+                            { label: "Collected", data: collectedData, borderColor: "#198754", backgroundColor: "rgba(25,135,84,0.1)", fill: true, tension: 0.4 }
+                        ]},
                         options: { responsive: true, plugins: { legend: { position: "bottom" } }, scales: { y: { beginAtZero: true, ticks: { callback: (v) => moneyShort(v) } } } }
                     });
                 }
-
                 const active = loans.filter(l => l.status==="ACTIVE" && Number(l.remaining_principal)>0).length;
                 const completed = loans.filter(l => l.status==="COMPLETED" || Number(l.remaining_principal)<=0).length;
                 const overdue = loans.filter(l => l.status==="ACTIVE" && l.due_date && new Date(l.due_date)<new Date()).length;
-
                 const ctx2 = document.getElementById("portfolioChart")?.getContext("2d");
                 if (ctx2) {
                     portfolioChart = new Chart(ctx2, {
@@ -354,7 +347,9 @@
         }
 
         function logout() {
-            AUTH.adminLogout();
+            if (confirm("Are you sure you want to logout?")) {
+                AUTH.adminLogout();
+            }
         }
 
         loadDashboard();
