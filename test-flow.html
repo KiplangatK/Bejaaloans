@@ -26,17 +26,16 @@
     <div class="container">
         <div class="card p-4 mb-3 text-center">
             <h3 class="text-primary mb-2"><i class="fa fa-tools"></i> Test Tool</h3>
-            <p class="text-muted mb-3">No admin login needed</p>
-            
+            <p class="text-muted mb-3">One-click operations</p>
             <div class="d-grid gap-2">
                 <button class="btn btn-danger" onclick="deleteAll()" id="deleteBtn">
-                    <i class="fa fa-trash"></i> Delete All Clients & Loans
+                    <i class="fa fa-trash"></i> Delete All Data
                 </button>
                 <button class="btn btn-primary" onclick="registerAndApply()" id="registerBtn">
-                    <i class="fa fa-play"></i> Register Client & Apply Loan
+                    <i class="fa fa-play"></i> Register & Apply Loan
                 </button>
                 <button class="btn btn-success" onclick="runAll()" id="runAllBtn">
-                    <i class="fa fa-forward"></i> Delete All → Register → Apply
+                    <i class="fa fa-forward"></i> Full Reset & Test
                 </button>
             </div>
         </div>
@@ -48,7 +47,7 @@
 
         <div class="card p-4">
             <h6 class="fw-bold"><i class="fa fa-terminal"></i> Log</h6>
-            <pre id="log">Ready. Choose an action above.</pre>
+            <pre id="log">Ready.</pre>
         </div>
     </div>
 
@@ -62,8 +61,8 @@
             el.scrollTop = el.scrollHeight;
         }
 
-        function showSteps(stepsList) {
-            document.getElementById("steps").innerHTML = stepsList.map((s, i) => 
+        function showSteps(list) {
+            document.getElementById("steps").innerHTML = list.map((s, i) => 
                 `<div id="step${i}" class="step waiting">⏳ ${s}</div>`
             ).join("");
         }
@@ -73,54 +72,39 @@
             if (!el) return;
             const icons = { waiting: "⏳", running: "🔄", success: "✅", error: "❌" };
             el.className = "step " + status;
-            const text = el.textContent.replace(/[⏳🔄✅❌] /, "");
-            el.innerHTML = `${icons[status]} ${text}`;
+            el.innerHTML = `${icons[status]} ${el.textContent.replace(/[⏳🔄✅❌] /, "")}`;
         }
 
         function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
         function disable() { document.querySelectorAll("button").forEach(b => b.disabled = true); }
         function enable() { document.querySelectorAll("button").forEach(b => b.disabled = false); }
 
-        // ==================== DELETE ALL (auto admin login) ====================
         async function deleteAll() {
-            document.getElementById("log").textContent = "🗑️ DELETE ALL DATA\n";
+            document.getElementById("log").textContent = "🗑️ DELETE ALL\n";
             log("─".repeat(30));
-            showSteps(["Delete All Data"]);
+            showSteps(["Deleting all data..."]);
             disable();
 
             try {
                 updateStep(0, "running");
-                log("🔵 Deleting all clients...");
-                
-                // Auto login as admin
                 const loginRes = await fetch(API + "/auth/admin-login", {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ username: "Kiplangat", password: "Admin@123" })
                 });
                 const loginData = await loginRes.json();
                 if (!loginData.success) throw new Error(loginData.message);
-                const token = loginData.token;
-
-                // Get and delete all clients
-                const res = await fetch(API + "/clients", {
-                    headers: { "Authorization": "Bearer " + token }
-                });
-                const data = await res.json();
                 
-                if (data.success && data.clients && data.clients.length > 0) {
-                    for (const c of data.clients) {
-                        await fetch(API + "/clients/" + c.id, {
-                            method: "DELETE",
-                            headers: { "Authorization": "Bearer " + token }
-                        });
-                    }
-                    log(`✅ Deleted ${data.clients.length} clients + all loans`);
-                } else {
-                    log("✅ No data to delete");
-                }
+                const deleteRes = await fetch(API + "/clients/all/clear", {
+                    method: "DELETE",
+                    headers: { "Authorization": "Bearer " + loginData.token }
+                });
+                const deleteData = await deleteRes.json();
+                if (!deleteData.success) throw new Error(deleteData.message);
+                
                 updateStep(0, "success");
+                log("✅ " + deleteData.message);
                 log("─".repeat(30));
-                log("🎉 ALL CLEAN!");
+                log("🎉 DONE!");
 
             } catch (error) {
                 log("❌ " + error.message);
@@ -129,56 +113,48 @@
             enable();
         }
 
-        // ==================== REGISTER & APPLY ====================
         async function registerAndApply() {
             const phone = "07" + Math.floor(10000000 + Math.random() * 90000000);
             const password = "Test@123";
             const amount = Math.floor(Math.random() * 5 + 1) * 5000;
 
             document.getElementById("log").textContent = "🚀 REGISTER & APPLY\n";
-            log(`📱 Phone: ${phone}`);
-            log(`💰 Loan: KSh ${amount.toLocaleString()}`);
+            log(`📱 ${phone} | 💰 KSh ${amount.toLocaleString()}`);
             log("─".repeat(30));
-            showSteps(["Register Client", "Client Login", "Apply for Loan"]);
+            showSteps(["Register", "Login", "Apply Loan"]);
             disable();
 
             try {
-                // Register
                 updateStep(0, "running");
                 const regRes = await fetch(API + "/auth/register", {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         fullname: "Auto Test", nationalID: String(Math.floor(10000000 + Math.random() * 90000000)),
-                        phone: phone, password: password, occupation: "Tester",
-                        monthlyIncome: "50000", county: "Nairobi", address: "Test"
+                        phone, password, occupation: "Tester", monthlyIncome: "50000", county: "Nairobi", address: "Test"
                     })
                 });
                 const regData = await regRes.json();
                 if (!regData.success && !regData.message.includes("already")) throw new Error(regData.message);
                 updateStep(0, "success");
-                log("✅ Registered");
                 await sleep(300);
 
-                // Login
                 updateStep(1, "running");
                 const loginRes = await fetch(API + "/auth/client-login", {
                     method: "POST", headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ phone: phone, password: password })
+                    body: JSON.stringify({ phone, password })
                 });
                 const loginData = await loginRes.json();
                 if (!loginData.success) throw new Error(loginData.message);
                 clientToken = loginData.token;
                 updateStep(1, "success");
-                log("✅ Logged in");
                 await sleep(300);
 
-                // Apply
                 updateStep(2, "running");
                 const applyRes = await fetch(API + "/applications", {
                     method: "POST",
                     headers: { "Content-Type": "application/json", "Authorization": "Bearer " + clientToken },
                     body: JSON.stringify({
-                        amount: amount, purpose: "Business",
+                        amount, purpose: "Business",
                         guarantor1: { name: "G1", id: "11111111", phone: "0711111111", relationship: "Friend", address: "Test" },
                         guarantor2: { name: "G2", id: "22222222", phone: "0722222222", relationship: "Friend", address: "Test" }
                     })
@@ -186,24 +162,16 @@
                 const applyData = await applyRes.json();
                 if (!applyData.success) throw new Error(applyData.message);
                 updateStep(2, "success");
-                log("✅ Applied!");
                 log("─".repeat(30));
-                log(`🎉 Phone: ${phone} | Pass: ${password}`);
-                log(`   Loan: KSh ${amount.toLocaleString()}`);
-                log(`   App ID: ${applyData.applicationId}`);
+                log(`✅ Phone: ${phone} | Pass: ${password}`);
+                log(`✅ Loan: KSh ${amount.toLocaleString()} | ID: ${applyData.applicationId}`);
 
             } catch (error) {
                 log("❌ " + error.message);
-                for (let i = 0; i < 3; i++) {
-                    if (document.getElementById("step" + i)?.classList.contains("running")) {
-                        updateStep(i, "error"); break;
-                    }
-                }
             }
             enable();
         }
 
-        // ==================== RUN ALL ====================
         async function runAll() {
             await deleteAll();
             await sleep(500);
