@@ -26,7 +26,7 @@
     <div class="container">
         <div class="card p-4 mb-3 text-center">
             <h3 class="text-primary mb-2"><i class="fa fa-tools"></i> Test Tool</h3>
-            <p class="text-muted mb-3">Quick test without admin login</p>
+            <p class="text-muted mb-3">No admin login needed</p>
             
             <div class="d-grid gap-2">
                 <button class="btn btn-danger" onclick="deleteAll()" id="deleteBtn">
@@ -78,70 +78,55 @@
         }
 
         function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+        function disable() { document.querySelectorAll("button").forEach(b => b.disabled = true); }
+        function enable() { document.querySelectorAll("button").forEach(b => b.disabled = false); }
 
-        function disableButtons() {
-            document.getElementById("deleteBtn").disabled = true;
-            document.getElementById("registerBtn").disabled = true;
-            document.getElementById("runAllBtn").disabled = true;
-        }
-
-        function enableButtons() {
-            document.getElementById("deleteBtn").disabled = false;
-            document.getElementById("registerBtn").disabled = false;
-            document.getElementById("runAllBtn").disabled = false;
-        }
-
-        // ==================== DELETE ALL ====================
+        // ==================== DELETE ALL (auto admin login) ====================
         async function deleteAll() {
             document.getElementById("log").textContent = "🗑️ DELETE ALL DATA\n";
             log("─".repeat(30));
-            showSteps(["Login as Admin", "Delete All Clients"]);
-            disableButtons();
+            showSteps(["Delete All Data"]);
+            disable();
 
             try {
-                // Login as admin
                 updateStep(0, "running");
-                log("🔵 Logging in as admin...");
+                log("🔵 Deleting all clients...");
+                
+                // Auto login as admin
                 const loginRes = await fetch(API + "/auth/admin-login", {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ username: "Kiplangat", password: "Admin@123" })
                 });
                 const loginData = await loginRes.json();
-                if (!loginData.success) throw new Error("Admin login: " + loginData.message);
+                if (!loginData.success) throw new Error(loginData.message);
                 const token = loginData.token;
-                updateStep(0, "success");
-                log("✅ Admin logged in");
-                await sleep(300);
 
-                // Delete all clients
-                updateStep(1, "running");
+                // Get and delete all clients
                 const res = await fetch(API + "/clients", {
                     headers: { "Authorization": "Bearer " + token }
                 });
                 const data = await res.json();
                 
                 if (data.success && data.clients && data.clients.length > 0) {
-                    log(`   Found ${data.clients.length} client(s)`);
                     for (const c of data.clients) {
                         await fetch(API + "/clients/" + c.id, {
                             method: "DELETE",
                             headers: { "Authorization": "Bearer " + token }
                         });
                     }
-                    log(`✅ Deleted ${data.clients.length} clients and all loans`);
+                    log(`✅ Deleted ${data.clients.length} clients + all loans`);
                 } else {
-                    log("✅ No clients to delete");
+                    log("✅ No data to delete");
                 }
-                updateStep(1, "success");
+                updateStep(0, "success");
                 log("─".repeat(30));
-                log("🎉 ALL DATA DELETED!");
+                log("🎉 ALL CLEAN!");
 
             } catch (error) {
                 log("❌ " + error.message);
                 updateStep(0, "error");
             }
-
-            enableButtons();
+            enable();
         }
 
         // ==================== REGISTER & APPLY ====================
@@ -152,15 +137,14 @@
 
             document.getElementById("log").textContent = "🚀 REGISTER & APPLY\n";
             log(`📱 Phone: ${phone}`);
-            log(`💰 Amount: KSh ${amount.toLocaleString()}`);
+            log(`💰 Loan: KSh ${amount.toLocaleString()}`);
             log("─".repeat(30));
             showSteps(["Register Client", "Client Login", "Apply for Loan"]);
-            disableButtons();
+            disable();
 
             try {
                 // Register
                 updateStep(0, "running");
-                log("🔵 Registering...");
                 const regRes = await fetch(API + "/auth/register", {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -177,7 +161,6 @@
 
                 // Login
                 updateStep(1, "running");
-                log("🔵 Logging in...");
                 const loginRes = await fetch(API + "/auth/client-login", {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ phone: phone, password: password })
@@ -191,7 +174,6 @@
 
                 // Apply
                 updateStep(2, "running");
-                log(`🔵 Applying KSh ${amount.toLocaleString()}...`);
                 const applyRes = await fetch(API + "/applications", {
                     method: "POST",
                     headers: { "Content-Type": "application/json", "Authorization": "Bearer " + clientToken },
@@ -204,11 +186,11 @@
                 const applyData = await applyRes.json();
                 if (!applyData.success) throw new Error(applyData.message);
                 updateStep(2, "success");
-                log("✅ Loan applied!");
+                log("✅ Applied!");
                 log("─".repeat(30));
-                log("🎉 SUCCESS!");
-                log(`   Phone: ${phone} | Pass: ${password}`);
-                log(`   Loan: KSh ${amount.toLocaleString()} | App ID: ${applyData.applicationId}`);
+                log(`🎉 Phone: ${phone} | Pass: ${password}`);
+                log(`   Loan: KSh ${amount.toLocaleString()}`);
+                log(`   App ID: ${applyData.applicationId}`);
 
             } catch (error) {
                 log("❌ " + error.message);
@@ -218,8 +200,7 @@
                     }
                 }
             }
-
-            enableButtons();
+            enable();
         }
 
         // ==================== RUN ALL ====================
