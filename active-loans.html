@@ -60,10 +60,7 @@
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
                         <thead>
-                            <tr>
-                                <th>#</th><th>Client</th><th>Phone</th><th>Amount</th>
-                                <th>Balance</th><th>Interest/Mo</th><th>Due Date</th><th>Actions</th>
-                            </tr>
+                            <tr><th>#</th><th>Client</th><th>Phone</th><th>Amount</th><th>Balance</th><th>Interest/Mo</th><th>Due Date</th><th>Actions</th></tr>
                         </thead>
                         <tbody id="activeLoansTable">
                             <tr><td colspan="8" class="text-center text-muted p-5">Loading...</td></tr>
@@ -186,7 +183,7 @@
                 method, note: "Payment"
             });
 
-            alert("✅ Payment recorded!");
+            alert("✅ Payment recorded! Refresh to see changes.");
             bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
             loadActiveLoans();
         }
