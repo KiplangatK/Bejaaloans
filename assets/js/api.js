@@ -6,9 +6,6 @@
 // Local API
 const API_BASE = "http://localhost:5000/api";
 
-// For network access from other devices, use:
-// const API_BASE = "http://10.129.121.64:5000/api";
-
 console.log("🔗 API Connected to:", API_BASE);
 
 function formatDate(dateStr) {
