@@ -175,15 +175,26 @@
             let loanId = document.getElementById("paymentLoanId").value;
             let amount = Number(document.getElementById("paymentAmount").value);
             let method = document.getElementById("paymentMethod").value;
-            if (amount <= 0) { alert("Enter valid amount"); return; }
+            
+            if (amount <= 0) { 
+                alert("Please enter a valid amount."); 
+                return; 
+            }
 
-            await api.addPayment({
-                loanId, amount,
+            let result = await api.addPayment({
+                loanId, 
+                amount,
                 paymentDate: new Date().toISOString().split("T")[0],
-                method, note: "Payment"
+                method, 
+                note: "Payment"
             });
 
-            alert("✅ Payment recorded! Refresh to see changes.");
+            if (result.success) {
+                alert(result.message);
+            } else {
+                alert("❌ Payment failed: " + (result.message || "Unknown error"));
+            }
+
             bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
             loadActiveLoans();
         }
