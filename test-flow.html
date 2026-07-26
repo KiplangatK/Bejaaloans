@@ -26,7 +26,7 @@
     <div class="container">
         <div class="card p-4 mb-3 text-center">
             <h3 class="text-primary mb-2"><i class="fa fa-tools"></i> Test Tool</h3>
-            <p class="text-muted mb-3">Delete data, register clients, apply loans</p>
+            <p class="text-muted mb-3">Quick test without admin login</p>
             
             <div class="d-grid gap-2">
                 <button class="btn btn-danger" onclick="deleteAll()" id="deleteBtn">
@@ -52,10 +52,8 @@
         </div>
     </div>
 
-    <script src="assets/js/api.js"></script>
     <script>
-        const API = "http://localhost:5000";
-        let adminToken = "";
+        const API = "http://localhost:5000/api";
         let clientToken = "";
 
         function log(msg) {
@@ -81,51 +79,56 @@
 
         function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-        // Admin login helper
-        async function adminLogin() {
-            if (adminToken) return true;
-            log("🔵 Admin login...");
-            const res = await fetch(API + "/api/auth/admin-login", {
-                method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username: "Kiplangat", password: "Admin@123" })
-            });
-            const data = await res.json();
-            if (data.success) { adminToken = data.token; log("✅ Admin logged in"); return true; }
-            log("❌ Admin login failed: " + data.message);
-            return false;
+        function disableButtons() {
+            document.getElementById("deleteBtn").disabled = true;
+            document.getElementById("registerBtn").disabled = true;
+            document.getElementById("runAllBtn").disabled = true;
+        }
+
+        function enableButtons() {
+            document.getElementById("deleteBtn").disabled = false;
+            document.getElementById("registerBtn").disabled = false;
+            document.getElementById("runAllBtn").disabled = false;
         }
 
         // ==================== DELETE ALL ====================
         async function deleteAll() {
             document.getElementById("log").textContent = "🗑️ DELETE ALL DATA\n";
             log("─".repeat(30));
-            showSteps(["Admin Login", "Delete All Clients"]);
-            
-            document.getElementById("deleteBtn").disabled = true;
-            document.getElementById("registerBtn").disabled = true;
-            document.getElementById("runAllBtn").disabled = true;
+            showSteps(["Login as Admin", "Delete All Clients"]);
+            disableButtons();
 
             try {
+                // Login as admin
                 updateStep(0, "running");
-                if (!await adminLogin()) throw new Error("Admin login failed");
+                log("🔵 Logging in as admin...");
+                const loginRes = await fetch(API + "/auth/admin-login", {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username: "Kiplangat", password: "Admin@123" })
+                });
+                const loginData = await loginRes.json();
+                if (!loginData.success) throw new Error("Admin login: " + loginData.message);
+                const token = loginData.token;
                 updateStep(0, "success");
+                log("✅ Admin logged in");
                 await sleep(300);
 
+                // Delete all clients
                 updateStep(1, "running");
-                const res = await fetch(API + "/api/clients", {
-                    headers: { "Authorization": "Bearer " + adminToken }
+                const res = await fetch(API + "/clients", {
+                    headers: { "Authorization": "Bearer " + token }
                 });
                 const data = await res.json();
                 
                 if (data.success && data.clients && data.clients.length > 0) {
                     log(`   Found ${data.clients.length} client(s)`);
                     for (const c of data.clients) {
-                        await fetch(API + "/api/clients/" + c.id, {
+                        await fetch(API + "/clients/" + c.id, {
                             method: "DELETE",
-                            headers: { "Authorization": "Bearer " + adminToken }
+                            headers: { "Authorization": "Bearer " + token }
                         });
                     }
-                    log(`✅ Deleted ${data.clients.length} clients and all related data`);
+                    log(`✅ Deleted ${data.clients.length} clients and all loans`);
                 } else {
                     log("✅ No clients to delete");
                 }
@@ -135,16 +138,10 @@
 
             } catch (error) {
                 log("❌ " + error.message);
-                for (let i = 0; i < 2; i++) {
-                    if (document.getElementById("step" + i)?.classList.contains("running")) {
-                        updateStep(i, "error"); break;
-                    }
-                }
+                updateStep(0, "error");
             }
 
-            document.getElementById("deleteBtn").disabled = false;
-            document.getElementById("registerBtn").disabled = false;
-            document.getElementById("runAllBtn").disabled = false;
+            enableButtons();
         }
 
         // ==================== REGISTER & APPLY ====================
@@ -158,16 +155,13 @@
             log(`💰 Amount: KSh ${amount.toLocaleString()}`);
             log("─".repeat(30));
             showSteps(["Register Client", "Client Login", "Apply for Loan"]);
-
-            document.getElementById("deleteBtn").disabled = true;
-            document.getElementById("registerBtn").disabled = true;
-            document.getElementById("runAllBtn").disabled = true;
+            disableButtons();
 
             try {
                 // Register
                 updateStep(0, "running");
                 log("🔵 Registering...");
-                const regRes = await fetch(API + "/api/auth/register", {
+                const regRes = await fetch(API + "/auth/register", {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         fullname: "Auto Test", nationalID: String(Math.floor(10000000 + Math.random() * 90000000)),
@@ -184,7 +178,7 @@
                 // Login
                 updateStep(1, "running");
                 log("🔵 Logging in...");
-                const loginRes = await fetch(API + "/api/auth/client-login", {
+                const loginRes = await fetch(API + "/auth/client-login", {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ phone: phone, password: password })
                 });
@@ -198,7 +192,7 @@
                 // Apply
                 updateStep(2, "running");
                 log(`🔵 Applying KSh ${amount.toLocaleString()}...`);
-                const applyRes = await fetch(API + "/api/applications", {
+                const applyRes = await fetch(API + "/applications", {
                     method: "POST",
                     headers: { "Content-Type": "application/json", "Authorization": "Bearer " + clientToken },
                     body: JSON.stringify({
@@ -225,9 +219,7 @@
                 }
             }
 
-            document.getElementById("deleteBtn").disabled = false;
-            document.getElementById("registerBtn").disabled = false;
-            document.getElementById("runAllBtn").disabled = false;
+            enableButtons();
         }
 
         // ==================== RUN ALL ====================
