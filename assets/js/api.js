@@ -1,10 +1,13 @@
 /*=========================================================
     BEJJA LOAN CREDIT - API Helper
-    Local Development Version
+    Network Access Version
 =========================================================*/
 
-// Local API
-const API_BASE = "http://localhost:5000/api";
+// Your Computer's IP - Other devices use this
+const API_BASE = "http://10.14.6.64:5000/api";
+
+// For local use only, comment above and uncomment below:
+// const API_BASE = "http://localhost:5000/api";
 
 console.log("🔗 API Connected to:", API_BASE);
 
@@ -40,7 +43,7 @@ const api = {
             return await response.json();
         } catch (error) {
             console.error("API Error:", error);
-            return { success: false, message: "Network error." };
+            return { success: false, message: "Network error. Make sure backend is running." };
         }
     },
 
