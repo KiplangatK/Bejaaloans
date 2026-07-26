@@ -39,7 +39,7 @@ const api = {
             return await response.json();
         } catch (error) {
             console.error("API Error:", error);
-            return { success: false, message: "Make sure backend is running on localhost:5000" };
+            return { success: false, message: "Network error." };
         }
     },
 
