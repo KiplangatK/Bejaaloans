@@ -18,17 +18,13 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            background: var(--bg-light);
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-        }
+        body { background: var(--bg-light); font-family: 'Segoe UI', Tahoma, sans-serif; }
 
         .sidebar {
             position: fixed; left: 0; top: 0;
             width: 260px; height: 100vh;
             background: linear-gradient(180deg, #0a3d8f, #0d47a1, #1565c0);
-            color: var(--white); z-index: 1000;
-            overflow-y: auto;
+            color: var(--white); z-index: 1000; overflow-y: auto;
         }
 
         .logo {
@@ -36,22 +32,18 @@
             border-bottom: 1px solid rgba(255,255,255,0.15);
             display: flex; align-items: center; gap: 10px;
         }
-
         .logo i { color: #ffc107; font-size: 24px; }
 
         .sidebar a {
             display: flex; align-items: center;
             padding: 13px 20px; color: rgba(255,255,255,0.85);
             text-decoration: none; transition: all 0.3s;
-            font-size: 14px; font-weight: 500;
-            border-left: 3px solid transparent;
+            font-size: 14px; font-weight: 500; border-left: 3px solid transparent;
         }
-
         .sidebar a:hover, .sidebar a.active {
             background: rgba(255,255,255,0.1); color: var(--white);
             border-left-color: #ffc107; padding-left: 25px;
         }
-
         .sidebar a i { width: 22px; margin-right: 10px; }
 
         .main { margin-left: 260px; min-height: 100vh; }
@@ -62,13 +54,11 @@
             padding: 0 25px; box-shadow: 0 2px 15px rgba(0,0,0,0.08);
             position: sticky; top: 0; z-index: 999;
         }
-
         .topbar h3 { font-weight: 700; color: var(--primary); margin: 0; }
         .topbar .btn-back {
             background: var(--bg-light); color: var(--primary);
             padding: 8px 16px; border-radius: 20px;
             text-decoration: none; font-size: 13px; font-weight: 600;
-            transition: all 0.3s;
         }
         .topbar .btn-back:hover { background: var(--primary); color: var(--white); }
 
@@ -85,43 +75,21 @@
             font-size: 18px; font-weight: 700;
         }
 
-        .table th {
-            background: #e3f2fd; color: var(--primary);
-            font-weight: 600; font-size: 13px;
-            text-align: center; padding: 12px;
-        }
+        .table th { background: #e3f2fd; color: var(--primary); font-weight: 600; font-size: 13px; text-align: center; padding: 12px; }
+        .table td { text-align: center; vertical-align: middle; font-size: 13px; padding: 12px; }
 
-        .table td {
-            text-align: center; vertical-align: middle;
-            font-size: 13px; padding: 12px;
-        }
-
-        .btn-view {
-            background: var(--primary-light); color: var(--white);
-            border-radius: 20px; font-size: 12px; padding: 6px 14px;
-        }
-
+        .btn-view { background: var(--primary-light); color: var(--white); border-radius: 20px; font-size: 12px; padding: 6px 14px; }
         .btn-view:hover { background: var(--primary); color: var(--white); }
-        .btn-payment {
-            background: var(--success); color: var(--white);
-            border-radius: 20px; font-size: 12px; padding: 6px 14px;
-        }
+        .btn-payment { background: var(--success); color: var(--white); border-radius: 20px; font-size: 12px; padding: 6px 14px; }
         .btn-payment:hover { background: #157347; color: var(--white); }
 
-        @media (max-width: 992px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.show { transform: translateX(0); }
-            .main { margin-left: 0; }
-        }
+        @media (max-width: 992px) { .sidebar { transform: translateX(-100%); } .sidebar.show { transform: translateX(0); } .main { margin-left: 0; } }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <div class="logo">
-            <i class="fa-solid fa-building-columns"></i>Bejja Credit
-        </div>
+        <div class="logo"><i class="fa-solid fa-building-columns"></i>Bejja Credit</div>
         <a href="admin-dashboard.html"><i class="fa fa-dashboard"></i>Dashboard</a>
         <a href="registered-clients.html"><i class="fa fa-users"></i>Registered Clients</a>
         <a href="active-loans.html" class="active"><i class="fa fa-money-bill-wave"></i>Active Loans</a>
@@ -132,30 +100,18 @@
         <a href="#" onclick="logout()"><i class="fa fa-right-from-bracket"></i>Logout</a>
     </div>
 
-    <!-- Main Content -->
     <div class="main">
-        <!-- Topbar -->
         <div class="topbar">
-            <h3>
-                <button class="btn btn-link d-lg-none" onclick="document.getElementById('sidebar').classList.toggle('show')">
-                    <i class="fa fa-bars"></i>
-                </button>
-                <i class="fa fa-money-bill-wave"></i> Active Loans
-            </h3>
+            <h3><i class="fa fa-money-bill-wave"></i> Active Loans</h3>
             <div class="d-flex align-items-center gap-3">
-                <a href="admin-dashboard.html" class="btn-back">
-                    <i class="fa fa-arrow-left"></i> Back to Dashboard
-                </a>
+                <a href="admin-dashboard.html" class="btn-back"><i class="fa fa-arrow-left"></i> Back</a>
                 <span>Welcome, <strong id="adminName">Admin</strong></span>
             </div>
         </div>
 
-        <!-- Content -->
         <div class="content">
             <div class="table-card">
-                <div class="table-header">
-                    <i class="fa fa-list"></i> Active Loan List
-                </div>
+                <div class="table-header"><i class="fa fa-list"></i> Active Loan List</div>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
                         <thead>
@@ -171,11 +127,7 @@
                             </tr>
                         </thead>
                         <tbody id="activeLoansTable">
-                            <tr>
-                                <td colspan="8" class="text-center text-muted p-5">
-                                    <div class="spinner-border spinner-border-sm me-2"></div>Loading active loans...
-                                </td>
-                            </tr>
+                            <tr><td colspan="8" class="text-center text-muted p-5">Loading...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -183,330 +135,124 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Payment Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fa fa-money-bill"></i> Record Payment</h5>
+                    <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="paymentLoanId">
+                    <div class="alert alert-info" id="loanInfo"></div>
+                    <label class="form-label">Amount (KSh)</label>
+                    <input type="number" id="paymentAmount" class="form-control mb-3" placeholder="Enter amount" min="100">
+                    <label class="form-label">Payment Method</label>
+                    <select id="paymentMethod" class="form-select mb-3">
+                        <option value="Cash">Cash</option>
+                        <option value="M-Pesa">M-Pesa</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success" onclick="savePayment()"><i class="fa fa-check"></i> Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="assets/js/api.js"></script>
     <script src="assets/js/auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // ==================== AUTH CHECK ====================
-        if (!AUTH.currentAdmin()) {
-            window.location.href = "admin-login.html";
-        }
-
+        if (!AUTH.currentAdmin()) { window.location.href = "admin-portal.html"; }
         let admin = AUTH.currentAdmin();
         if (admin) document.getElementById("adminName").innerHTML = admin.username;
 
-        const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+        function money(v) { return "KES " + Number(v || 0).toLocaleString("en-KE", { minimumFractionDigits: 2 }); }
 
-        // ==================== UTILITY ====================
-        function money(v) {
-            return "KES " + Number(v || 0).toLocaleString("en-KE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        }
-
-        // ==================== LOAD ACTIVE LOANS ====================
         async function loadActiveLoans() {
-            try {
-                let result = await api.getLoans();
-                let table = document.getElementById("activeLoansTable");
-                table.innerHTML = "";
+            let result = await api.getLoans();
+            let table = document.getElementById("activeLoansTable");
+            table.innerHTML = "";
 
-                if (!result.success || !result.loans) {
-                    table.innerHTML = '<tr><td colspan="8" class="text-center p-4">No active loans found.</td></tr>';
-                    return;
-                }
-
-                let today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                let active = result.loans.filter(l => {
-                    if (l.status !== "ACTIVE") return false;
-                    if (Number(l.remaining_principal || 0) <= 0) return false;
-                    if (!l.due_date) return true;
-                    let d = new Date(l.due_date);
-                    d.setHours(0, 0, 0, 0);
-                    return d >= today;
-                });
-
-                if (active.length === 0) {
-                    table.innerHTML = '<tr><td colspan="8" class="text-center text-muted p-4">No active loans.</td></tr>';
-                    return;
-                }
-
-                active.reverse().forEach((l, i) => {
-                    let bal = Number(l.remaining_principal || 0);
-                    let rate = Number(l.interest_rate || 20);
-                    let interest = (bal * rate) / 100;
-
-                    table.innerHTML += `
-                        <tr>
-                            <td>${i + 1}</td>
-                            <td>
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <img src="${l.profile_photo || DEFAULT_IMG}" 
-                                         style="width:32px;height:32px;border-radius:50%;object-fit:cover;margin-right:8px;"
-                                         onerror="this.src='${DEFAULT_IMG}'">
-                                    <strong>${l.fullname || "Unknown"}</strong>
-                                </div>
-                            </td>
-                            <td>${l.phone || "-"}</td>
-                            <td><strong>${money(l.original_principal)}</strong></td>
-                            <td class="text-danger fw-bold">${money(bal)}</td>
-                            <td>${money(interest)} <small>(${rate}%)</small></td>
-                            <td><span class="badge bg-success">${formatDate(l.due_date)}</span></td>
-                            <td>
-                                <button class="btn btn-view btn-sm me-1" onclick="viewLoan(${l.id})">
-                                    <i class="fa fa-eye"></i> View
-                                </button>
-                                <button class="btn btn-payment btn-sm" onclick="openPayment(${l.id}, ${bal}, ${rate})">
-                                    <i class="fa fa-money-bill"></i> Pay
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            } catch (error) {
-                console.error("Error loading loans:", error);
-                document.getElementById("activeLoansTable").innerHTML = 
-                    '<tr><td colspan="8" class="text-center text-danger p-4">Failed to load loans.</td></tr>';
-            }
-        }
-
-        // ==================== VIEW LOAN DETAILS ====================
-        async function viewLoan(id) {
-            try {
-                // Show loading in a modal first
-                let loadingModal = document.createElement("div");
-                loadingModal.className = "modal fade";
-                loadingModal.id = "loadingModal";
-                loadingModal.innerHTML = `
-                    <div class="modal-dialog modal-sm">
-                        <div class="modal-content">
-                            <div class="modal-body text-center p-4">
-                                <div class="spinner-border text-primary mb-2"></div>
-                                <p>Loading loan details...</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(loadingModal);
-                let loadModal = new bootstrap.Modal(loadingModal);
-                loadModal.show();
-
-                // Get loan data
-                let result = await api.getLoans();
-                if (!result.success) {
-                    loadModal.hide();
-                    loadingModal.remove();
-                    alert("Failed to load loan details.");
-                    return;
-                }
-
-                let loan = result.loans.find(l => l.id == id);
-                if (!loan) {
-                    loadModal.hide();
-                    loadingModal.remove();
-                    alert("Loan not found.");
-                    return;
-                }
-
-                let balance = Number(loan.remaining_principal || 0);
-                let original = Number(loan.original_principal || 0);
-                let rate = Number(loan.interest_rate || 20);
-                let interest = (balance * rate) / 100;
-                let paid = original - balance;
-                let progressPct = original > 0 ? Math.round((paid / original) * 100) : 0;
-
-                // Get client details
-                let clientResult = await api.getClient(loan.client_id);
-                let client = clientResult.success ? clientResult.client : {};
-
-                // Get payment history
-                let pResult = await api.getLoanPayments(id);
-                let payments = pResult.success ? (pResult.payments || []) : [];
-                if (!Array.isArray(payments)) payments = [];
-
-                // Hide loading
-                loadModal.hide();
-                loadingModal.remove();
-
-                // Build modal HTML
-                let modalHTML = `
-                    <div class="modal fade" id="loanDetailModal" tabindex="-1">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header bg-primary text-white">
-                                    <h5 class="modal-title">
-                                        <i class="fa fa-file-invoice-dollar"></i> Loan Details #${loan.id}
-                                    </h5>
-                                    <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body" style="max-height:70vh;overflow-y:auto;">
-                                    <!-- Client Info -->
-                                    <h6 class="fw-bold text-primary mb-3">
-                                        <i class="fa fa-user me-2"></i>Client Information
-                                    </h6>
-                                    <div class="row mb-3">
-                                        <div class="col-md-3 text-center">
-                                            <img src="${client.profile_photo || loan.profile_photo || DEFAULT_IMG}" 
-                                                 style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #1976d2;"
-                                                 onerror="this.src='${DEFAULT_IMG}'">
-                                            <h6 class="mt-2">${client.fullname || loan.fullname || "-"}</h6>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <table class="table table-bordered table-sm">
-                                                <tr><td width="120"><b>Phone</b></td><td>${client.phone || loan.phone || "-"}</td></tr>
-                                                <tr><td><b>National ID</b></td><td>${client.national_id || "-"}</td></tr>
-                                                <tr><td><b>Email</b></td><td>${client.email || "-"}</td></tr>
-                                                <tr><td><b>Occupation</b></td><td>${client.occupation || "-"}</td></tr>
-                                                <tr><td><b>County</b></td><td>${client.county || "-"}</td></tr>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                    <!-- Loan Info -->
-                                    <h6 class="fw-bold text-primary mb-3">
-                                        <i class="fa fa-money-bill me-2"></i>Loan Information
-                                    </h6>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <table class="table table-bordered table-sm">
-                                                <tr><td width="140"><b>Original Amount</b></td><td class="fw-bold">${money(original)}</td></tr>
-                                                <tr><td><b>Remaining Balance</b></td><td class="text-danger fw-bold">${money(balance)}</td></tr>
-                                                <tr><td><b>Amount Repaid</b></td><td class="text-success fw-bold">${money(paid)}</td></tr>
-                                                <tr><td><b>Interest Rate</b></td><td>${rate}% per month</td></tr>
-                                                <tr><td><b>Monthly Interest</b></td><td>${money(interest)}</td></tr>
-                                            </table>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <table class="table table-bordered table-sm">
-                                                <tr><td width="120"><b>Loan Date</b></td><td>${formatDate(loan.loan_date)}</td></tr>
-                                                <tr><td><b>Due Date</b></td><td><span class="badge bg-success">${formatDate(loan.due_date)}</span></td></tr>
-                                                <tr><td><b>Status</b></td><td><span class="badge bg-success">${loan.status}</span></td></tr>
-                                                <tr><td><b>Approved By</b></td><td>${loan.approved_by || "-"}</td></tr>
-                                                <tr><td><b>Purpose</b></td><td>${loan.purpose || "-"}</td></tr>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                    <!-- Repayment Progress -->
-                                    <p class="fw-bold mb-1">Repayment Progress:</p>
-                                    <div class="progress mb-3" style="height:25px;">
-                                        <div class="progress-bar bg-success fw-bold" style="width:${progressPct}%">
-                                            ${progressPct}%
-                                        </div>
-                                    </div>
-
-                                    <!-- Payment History -->
-                                    <h6 class="fw-bold text-primary mb-3">
-                                        <i class="fa fa-history me-2"></i>Payment History (${payments.length} payments)
-                                    </h6>
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered table-striped table-sm">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th>#</th><th>Date</th><th>Amount</th>
-                                                    <th>Principal</th><th>Interest</th>
-                                                    <th>Balance</th><th>Method</th><th>Note</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                ${payments.length === 0 ? 
-                                                    '<tr><td colspan="8" class="text-center text-muted">No payments recorded yet</td></tr>' :
-                                                    payments.map((p, idx) => `
-                                                        <tr>
-                                                            <td>${idx + 1}</td>
-                                                            <td>${formatDate(p.payment_date)}</td>
-                                                            <td class="fw-bold">${money(p.amount)}</td>
-                                                            <td>${money(p.principal_paid)}</td>
-                                                            <td>${money(p.interest_paid)}</td>
-                                                            <td>${money(p.balance)}</td>
-                                                            <td>${p.method || p.payment_method || "-"}</td>
-                                                            <td>${p.note || "-"}</td>
-                                                        </tr>
-                                                    `).join("")
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                // Remove old modal if exists
-                let oldModal = document.getElementById("loanDetailModal");
-                if (oldModal) oldModal.remove();
-
-                // Add modal to body
-                document.body.insertAdjacentHTML("beforeend", modalHTML);
-
-                // Show modal
-                let modal = new bootstrap.Modal(document.getElementById("loanDetailModal"));
-                modal.show();
-
-                // Clean up on close
-                document.getElementById("loanDetailModal").addEventListener("hidden.bs.modelta", function() {
-                    this.remove();
-                });
-
-            } catch (error) {
-                console.error("Error viewing loan:", error);
-                alert("Failed to load loan details.");
-            }
-        }
-
-        // ==================== OPEN PAYMENT ====================
-        function openPayment(loanId, balance, rate) {
-            let amount = prompt(
-                `Loan #${loanId}\nRemaining Balance: ${money(balance)}\nInterest Rate: ${rate}%\nMonthly Interest: ${money((balance * rate) / 100)}\n\nEnter payment amount:`,
-                ""
-            );
-            
-            if (!amount || isNaN(amount) || Number(amount) <= 0) {
-                alert("Invalid amount.");
+            if (!result.success || !result.loans) {
+                table.innerHTML = '<tr><td colspan="8" class="text-center p-4">No active loans.</td></tr>';
                 return;
             }
 
-            let method = prompt("Payment method (Cash/M-Pesa/Bank):", "Cash");
-            if (!method) return;
+            // FIXED: Show all ACTIVE loans with balance > 0 (regardless of due date)
+            let active = result.loans.filter(l => {
+                if (l.status !== "ACTIVE") return false;
+                if (Number(l.remaining_principal || 0) <= 0) return false;
+                return true; // Show all active loans with balance
+            });
 
-            savePayment(loanId, Number(amount), method);
-        }
-
-        async function savePayment(loanId, amount, method) {
-            try {
-                await api.addPayment({
-                    loanId: loanId,
-                    amount: amount,
-                    paymentDate: new Date().toISOString().split("T")[0],
-                    method: method || "Cash",
-                    note: "Payment recorded"
-                });
-
-                alert("✅ Payment recorded successfully!");
-                loadActiveLoans();
-            } catch (error) {
-                console.error("Payment error:", error);
-                alert("❌ Failed to record payment.");
+            if (active.length === 0) {
+                table.innerHTML = '<tr><td colspan="8" class="text-center text-muted p-4">No active loans.</td></tr>';
+                return;
             }
+
+            active.reverse().forEach((l, i) => {
+                let bal = Number(l.remaining_principal || 0);
+                let rate = Number(l.interest_rate || 20);
+                let interest = (bal * rate) / 100;
+
+                table.innerHTML += `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td><b>${l.fullname || "Unknown"}</b></td>
+                        <td>${l.phone || "-"}</td>
+                        <td><strong>${money(l.original_principal)}</strong></td>
+                        <td class="text-danger fw-bold">${money(bal)}</td>
+                        <td>${money(interest)} (${rate}%)</td>
+                        <td><span class="badge bg-success">${formatDate(l.due_date)}</span></td>
+                        <td>
+                            <button class="btn btn-payment btn-sm" onclick="openPayment(${l.id}, ${bal}, ${rate})">
+                                <i class="fa fa-money-bill"></i> Pay
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
         }
 
-        // ==================== LOGOUT ====================
+        function openPayment(loanId, balance, rate) {
+            document.getElementById("paymentLoanId").value = loanId;
+            document.getElementById("paymentAmount").value = "";
+            document.getElementById("loanInfo").innerHTML = `
+                <strong>Balance:</strong> ${money(balance)}<br>
+                <strong>Rate:</strong> ${rate}%<br>
+                <strong>Monthly Interest:</strong> ${money((balance * rate) / 100)}
+            `;
+            new bootstrap.Modal(document.getElementById("paymentModal")).show();
+        }
+
+        async function savePayment() {
+            let loanId = document.getElementById("paymentLoanId").value;
+            let amount = Number(document.getElementById("paymentAmount").value);
+            let method = document.getElementById("paymentMethod").value;
+
+            if (amount <= 0) { alert("Enter valid amount"); return; }
+
+            await api.addPayment({
+                loanId, amount,
+                paymentDate: new Date().toISOString().split("T")[0],
+                method, note: "Payment"
+            });
+
+            alert("✅ Payment recorded!");
+            bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
+            loadActiveLoans();
+        }
+
         function logout() {
-            if (confirm("Are you sure you want to logout?")) {
-                AUTH.adminLogout();
-            }
+            if (confirm("Logout?")) AUTH.adminLogout();
         }
 
-        // ==================== INITIALIZE ====================
         loadActiveLoans();
     </script>
 </body>
