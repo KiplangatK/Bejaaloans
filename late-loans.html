@@ -128,7 +128,7 @@ async function viewLoan(id){
         <div class="row"><div class="col-md-3 text-center"><img src="${client.profile_photo||DEFAULT_IMG}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #1976d2;"><h5>${client.fullname||loan.fullname||"-"}</h5></div><div class="col-md-9"><div class="row"><div class="col-md-6"><p><b>Phone:</b> ${client.phone||loan.phone||"-"}</p><p><b>National ID:</b> ${client.national_id||"-"}</p><p><b>Email:</b> ${client.email||"-"}</p></div><div class="col-md-6"><p><b>Occupation:</b> ${client.occupation||"-"}</p><p><b>Employer:</b> ${client.employer||"-"}</p><p><b>Monthly Income:</b> ${money(client.monthly_income)}</p></div></div><p><b>County:</b> ${client.county||"-"}</p><p><b>Address:</b> ${client.address||"-"}</p></div></div>
         <h5 class="text-primary mt-4">Loan Information</h5><hr>
         <div class="row"><div class="col-md-6"><p><b>Original:</b> ${money(loan.original_principal)}</p><p><b>Remaining:</b> ${money(balance)}</p><p><b>Monthly Interest:</b> ${money(currentInterest)}</p><p><b>Months Overdue:</b> <span class="text-danger fw-bold">${monthsOverdue} mo</span></p></div><div class="col-md-6"><p><b>Total Paid:</b> <span class="text-success fw-bold">${money(totalPaid)}</span></p><p><b>Total Outstanding Interest:</b> <span class="text-danger fw-bold">${money(totalOutstandingInterest)}</span></p><p><b>Progress:</b> ${progress}%</p></div></div>
-        <p><b>Loan Date:</b> ${formatDate(loan.loan_date)}</p><p><b>Due Date:</b> <span class="text-danger fw-bold">${formatDate(loan.due_date)}</span></p><p><b>Status:</b> <span class="badge bg-danger">${loan.status}</span></p>
+        <p><b>Loan Date (Approval):</b> ${formatDate(loan.loan_date)}</p><p><b>Due Date:</b> <span class="text-danger fw-bold">${formatDate(loan.due_date)}</span></p><p><b>Status:</b> <span class="badge bg-danger">${loan.status}</span></p>
         <div class="progress mt-2 mb-3" style="height:10px;"><div class="progress-bar bg-success" style="width:${progress}%"></div></div>
         <h5 class="text-primary mt-4">Payment History</h5>
         <table class="table table-bordered"><tr><th>Date</th><th>Amount</th><th>Principal</th><th>Interest</th><th>Balance</th><th>Note</th></tr>${payments.length===0?'<tr><td colspan="6" class="text-center">No payments yet</td></tr>':payments.map(p=>`<tr><td>${formatDate(p.payment_date)}</td><td>${money(p.amount)}</td><td>${money(p.principal_paid)}</td><td>${money(p.interest_paid)}</td><td>${money(p.balance)}</td><td>${p.note||"-"}</td></tr>`).join("")}</table>`;
@@ -152,16 +152,7 @@ async function savePayment(){
     
     if(updatedLoan){
         let newDue=updatedLoan.due_date;
-        let today=new Date();
-        today.setHours(0,0,0,0);
-        let parts=String(newDue).split("T")[0].split("-");
-        let dueDate=new Date(parts[0],parts[1]-1,parts[2]);
-        
-        if(dueDate>today){
-            alert("✅ Outstanding balance cleared!\n\nNext due date updated to: "+formatDate(newDue)+"\n\nLoan moved to Active Loans.");
-        }else{
-            alert("✅ Payment recorded!\n\nRemaining overdue. Pay more to advance due date.");
-        }
+        alert("✅ Payment recorded!\n\nNew due date: "+formatDate(newDue));
     }else{
         alert("✅ Payment recorded!");
     }
