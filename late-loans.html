@@ -69,14 +69,30 @@ const DEFAULT_IMG="https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 function showFullImage(src,title){if(!src){alert("No image available");return;}let m=document.createElement("div");m.style.cssText="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:99999;cursor:pointer;";m.innerHTML=`<div style="max-width:90%;max-height:90%;text-align:center;"><h5 style="color:white;margin-bottom:10px;">${title}</h5><img src="${src}" style="max-width:100%;max-height:80vh;border-radius:10px;"><br><small style="color:#ccc;">Click anywhere to close</small></div>`;m.onclick=function(){document.body.removeChild(m);};document.body.appendChild(m);}
 
 async function loadLateLoans(){
-    let result=await api.getLoans();let table=document.getElementById("lateLoansTable");table.innerHTML="";
-    if(!result.success||!result.loans){table.innerHTML='<tr><td colspan="10" class="text-center text-muted p-5">No late loans.</td></tr>';return;}
-    let today=new Date();today.setHours(0,0,0,0);
+    let result=await api.getLoans();
+    let table=document.getElementById("lateLoansTable");
+    table.innerHTML="";
+    
+    if(!result.success||!result.loans){
+        table.innerHTML='<tr><td colspan="10" class="text-center text-muted p-5">No late loans.</td></tr>';
+        return;
+    }
+    
+    let today=new Date();
+    today.setHours(0,0,0,0);
     let lateCount=0;
+    
     for(let l of result.loans){
-        if(l.status!=="ACTIVE"||Number(l.remaining_principal||0)<=0||!l.due_date)continue;
-        let dueDate=new Date(l.due_date);dueDate.setHours(0,0,0,0);
-        if(dueDate>=today)continue;
+        if(l.status!=="ACTIVE") continue;
+        if(Number(l.remaining_principal||0)<=0) continue;
+        if(!l.due_date) continue;
+        
+        let parts = String(l.due_date).split("T")[0].split("-");
+        let dueDate = new Date(parts[0], parts[1]-1, parts[2]);
+        dueDate.setHours(0,0,0,0);
+        
+        if(dueDate >= today) continue;
+        
         let balance=Number(l.remaining_principal||0),rate=Number(l.interest_rate||20);
         let monthsDiff=0,checkDate=new Date(dueDate);
         while(true){checkDate.setMonth(checkDate.getMonth()+1);if(today<checkDate)break;monthsDiff++;}
@@ -86,7 +102,7 @@ async function loadLateLoans(){
         let totalPaid=0;
         if(pResult.success&&Array.isArray(pResult.payments))pResult.payments.forEach(p=>{totalPaid+=Number(p.amount||0);});
         let remaining=totalOutstandingInterest-totalPaid;
-        if(remaining<=0)continue;
+        if(remaining<=0) continue;
         lateCount++;
         let daysLate=Math.floor((today-dueDate)/(1000*60*60*24));
         table.innerHTML+=`<tr><td>${lateCount}</td><td><b>${l.fullname||"?"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td>${money(balance)}</td><td>${money(monthlyInterest)}</td><td class="fw-bold">${money(remaining)}</td><td>${formatDate(l.due_date)}</td><td class="text-danger fw-bold">${daysLate}d</td><td><button class="btn btn-view btn-sm" onclick="viewLoan(${l.id})"><i class="fa fa-eye"></i></button> <button class="btn btn-payment btn-sm" onclick="openPayment(${l.id})"><i class="fa fa-money-bill"></i></button></td></tr>`;
@@ -101,7 +117,7 @@ async function viewLoan(id){
     let totalPaid=0,payments=pResult.success?pResult.payments:[];
     if(Array.isArray(payments))payments.forEach(p=>{totalPaid+=Number(p.amount||0);});
     let monthsOverdue=0;
-    if(loan.due_date){let dueDate=new Date(loan.due_date);dueDate.setHours(0,0,0,0);let today=new Date();today.setHours(0,0,0,0);let checkDate=new Date(dueDate);while(true){checkDate.setMonth(checkDate.getMonth()+1);if(today<checkDate)break;monthsOverdue++;}monthsOverdue++;if(monthsOverdue<1)monthsOverdue=1;}
+    if(loan.due_date){let parts=String(loan.due_date).split("T")[0].split("-");let dueDate=new Date(parts[0],parts[1]-1,parts[2]);dueDate.setHours(0,0,0,0);let today=new Date();today.setHours(0,0,0,0);let checkDate=new Date(dueDate);while(true){checkDate.setMonth(checkDate.getMonth()+1);if(today<checkDate)break;monthsOverdue++;}monthsOverdue++;if(monthsOverdue<1)monthsOverdue=1;}
     let totalOutstandingInterest=currentInterest*monthsOverdue;
     let totalExpected=Number(loan.original_principal)+Number(loan.original_principal)*rate/100;
     let progress=totalExpected>0?Math.round((totalPaid/totalExpected)*100):0;
@@ -109,7 +125,7 @@ async function viewLoan(id){
     let client=clientResult.success?clientResult.client:{};
     document.getElementById("loanDetails").innerHTML=`
         <h5 class="text-primary">Client Information</h5><hr>
-        <div class="row"><div class="col-md-3 text-center"><img src="${client.profile_photo||DEFAULT_IMG}" class="profile-img-large mb-2" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #1976d2;"><h5>${client.fullname||loan.fullname||"-"}</h5></div><div class="col-md-9"><div class="row"><div class="col-md-6"><p><b>Phone:</b> ${client.phone||loan.phone||"-"}</p><p><b>National ID:</b> ${client.national_id||"-"}</p><p><b>Email:</b> ${client.email||"-"}</p></div><div class="col-md-6"><p><b>Occupation:</b> ${client.occupation||"-"}</p><p><b>Employer:</b> ${client.employer||"-"}</p><p><b>Monthly Income:</b> ${money(client.monthly_income)}</p></div></div><p><b>County:</b> ${client.county||"-"}</p><p><b>Address:</b> ${client.address||"-"}</p></div></div>
+        <div class="row"><div class="col-md-3 text-center"><img src="${client.profile_photo||DEFAULT_IMG}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #1976d2;"><h5>${client.fullname||loan.fullname||"-"}</h5></div><div class="col-md-9"><div class="row"><div class="col-md-6"><p><b>Phone:</b> ${client.phone||loan.phone||"-"}</p><p><b>National ID:</b> ${client.national_id||"-"}</p><p><b>Email:</b> ${client.email||"-"}</p></div><div class="col-md-6"><p><b>Occupation:</b> ${client.occupation||"-"}</p><p><b>Employer:</b> ${client.employer||"-"}</p><p><b>Monthly Income:</b> ${money(client.monthly_income)}</p></div></div><p><b>County:</b> ${client.county||"-"}</p><p><b>Address:</b> ${client.address||"-"}</p></div></div>
         <h5 class="text-primary mt-4">Loan Information</h5><hr>
         <div class="row"><div class="col-md-6"><p><b>Original:</b> ${money(loan.original_principal)}</p><p><b>Remaining:</b> ${money(balance)}</p><p><b>Monthly Interest:</b> ${money(currentInterest)}</p><p><b>Months Overdue:</b> <span class="text-danger fw-bold">${monthsOverdue} mo</span></p></div><div class="col-md-6"><p><b>Total Paid:</b> <span class="text-success fw-bold">${money(totalPaid)}</span></p><p><b>Total Outstanding Interest:</b> <span class="text-danger fw-bold">${money(totalOutstandingInterest)}</span></p><p><b>Progress:</b> ${progress}%</p></div></div>
         <p><b>Loan Date:</b> ${formatDate(loan.loan_date)}</p><p><b>Due Date:</b> <span class="text-danger fw-bold">${formatDate(loan.due_date)}</span></p><p><b>Status:</b> <span class="badge bg-danger">${loan.status}</span></p>
