@@ -78,7 +78,6 @@
         </div>
     </div>
 
-    <!-- Payment Modal -->
     <div class="modal fade" id="paymentModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -107,7 +106,6 @@
         </div>
     </div>
 
-    <!-- Details Modal -->
     <div class="modal fade" id="detailsModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -165,7 +163,6 @@
                 let daysLate = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
                 let monthlyInterest = (balance * rate) / 100;
 
-                // Calculate months overdue
                 let monthsOverdue = 1;
                 let checkDate = new Date(dueDate);
                 while (true) {
@@ -176,7 +173,6 @@
 
                 let totalOutstandingInterest = monthlyInterest * monthsOverdue;
 
-                // Get payments for this loan
                 let totalPaid = 0;
                 try {
                     let pResult = await api.getLoanPayments(l.id);
@@ -186,7 +182,7 @@
                 } catch (e) {}
 
                 let remaining = totalOutstandingInterest - totalPaid;
-                if (remaining <= 0) continue; // Skip if fully covered
+                if (remaining <= 0) continue;
 
                 lateCount++;
                 let severity = getSeverity(daysLate);
@@ -233,7 +229,7 @@
                 <strong>Remaining to Clear:</strong> ${money(remaining)}
             `;
             document.getElementById("paymentHint").innerHTML = `
-                <i class="fa fa-info-circle"></i> Pay <b>${money(remaining)}</b> to clear overdue interest and advance due date.
+                <i class="fa fa-info-circle"></i> Pay <b>${money(remaining)}</b> to clear overdue and advance due date.
             `;
             new bootstrap.Modal(document.getElementById("paymentModal")).show();
         }
@@ -244,13 +240,29 @@
             let method = document.getElementById("paymentMethod").value;
             if (amount <= 0) { alert("Enter valid amount"); return; }
 
-            let result = await api.addPayment({
+            await api.addPayment({
                 loanId, amount,
                 paymentDate: new Date().toISOString().split("T")[0],
                 method, note: "Late loan payment"
             });
 
-            alert("✅ Payment recorded!\n" + (result.message || ""));
+            // Check updated loan
+            let updatedLoan = await api.getLoan(loanId);
+            
+            if (updatedLoan.success && updatedLoan.loan) {
+                let newDue = new Date(updatedLoan.loan.due_date);
+                let today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                if (newDue >= today) {
+                    alert("✅ Payment recorded!\nDue date advanced to: " + formatDate(updatedLoan.loan.due_date) + "\nLoan moved to Active Loans.");
+                } else {
+                    alert("✅ Payment recorded!\nStill overdue. Pay more to advance due date.");
+                }
+            } else {
+                alert("✅ Payment recorded!");
+            }
+            
             bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
             loadLateLoans();
         }
