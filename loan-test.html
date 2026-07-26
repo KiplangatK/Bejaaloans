@@ -1,71 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Check Loan | Bejja</title>
-</head>
+<html>
+<head><title>Debug</title></head>
 <body>
-    <h3>Check Loan After Payment</h3>
-    <label>Loan ID: <input id="loanId" type="number" value="1"></label>
-    <button onclick="checkLoan()">Check Loan</button>
-    <button onclick="makePayment()">Make Test Payment</button>
-    <pre id="result"></pre>
+    <h3>Loan Debugger</h3>
+    <button onclick="showLoans()">Show All Loans</button>
+    <button onclick="showPayments()">Show All Payments</button>
+    <pre id="out"></pre>
 
     <script>
         const API = "http://localhost:5000/api";
-
-        async function checkLoan() {
-            const id = document.getElementById("loanId").value;
-            
-            // Login as admin
-            const loginRes = await fetch(API + "/auth/admin-login", {
-                method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username: "Kiplangat", password: "Admin@123" })
+        
+        async function login() {
+            const r = await fetch(API + "/auth/admin-login", {
+                method: "POST", headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({username:"Kiplangat",password:"Admin@123"})
             });
-            const loginData = await loginRes.json();
-            const token = loginData.token;
-
-            // Get loan
-            const res = await fetch(API + "/loans/" + id, {
-                headers: { "Authorization": "Bearer " + token }
-            });
-            const loan = await res.json();
-
-            // Get payments
-            const pRes = await fetch(API + "/payments/loan/" + id);
-            const payments = await pRes.json();
-
-            document.getElementById("result").textContent = 
-                "LOAN:\n" + JSON.stringify(loan, null, 2) + 
-                "\n\nPAYMENTS:\n" + JSON.stringify(payments, null, 2);
+            const d = await r.json();
+            return d.token;
         }
 
-        async function makePayment() {
-            const id = document.getElementById("loanId").value;
-            
-            const loginRes = await fetch(API + "/auth/admin-login", {
-                method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username: "Kiplangat", password: "Admin@123" })
+        async function showLoans() {
+            const token = await login();
+            const r = await fetch(API + "/loans", {
+                headers: {"Authorization":"Bearer "+token}
             });
-            const loginData = await loginRes.json();
-            const token = loginData.token;
+            const d = await r.json();
+            document.getElementById("out").textContent = JSON.stringify(d.loans, null, 2);
+        }
 
-            const res = await fetch(API + "/payments", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
-                body: JSON.stringify({
-                    loanId: Number(id),
-                    amount: 500,
-                    paymentDate: new Date().toISOString().split("T")[0],
-                    method: "Cash",
-                    note: "Test payment"
-                })
+        async function showPayments() {
+            const token = await login();
+            const r = await fetch(API + "/payments", {
+                headers: {"Authorization":"Bearer "+token}
             });
-            const data = await res.json();
-            document.getElementById("result").textContent = JSON.stringify(data, null, 2);
-            
-            // Check again after 1 second
-            setTimeout(checkLoan, 1000);
+            const d = await r.json();
+            document.getElementById("out").textContent = JSON.stringify(d, null, 2);
         }
     </script>
 </body>
