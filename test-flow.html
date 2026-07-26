@@ -3,56 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quick Test | Bejja Credit</title>
+    <title>Test Tool | Bejja Credit</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <style>
         body { background: #f0f4f8; font-family: 'Segoe UI', sans-serif; padding: 20px; }
-        .container { max-width: 600px; }
+        .container { max-width: 700px; }
         .card { border-radius: 15px; border: none; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        .btn-run { padding: 20px; font-size: 18px; font-weight: 700; border-radius: 15px; background: linear-gradient(135deg, #0d47a1, #1976d2); border: none; color: white; width: 100%; }
-        .step { padding: 12px 15px; margin: 5px 0; border-radius: 10px; }
+        .btn { padding: 12px 20px; font-size: 16px; font-weight: 600; border-radius: 12px; }
+        .btn-danger { background: #dc3545; border: none; color: white; }
+        .btn-primary { background: linear-gradient(135deg, #0d47a1, #1976d2); border: none; color: white; }
+        .btn-success { background: #198754; border: none; color: white; }
+        .step { padding: 10px 15px; margin: 3px 0; border-radius: 10px; font-size: 14px; }
         .step.waiting { background: #f8f9fa; color: #888; }
         .step.running { background: #fff3cd; color: #856404; }
         .step.success { background: #d4edda; color: #155724; }
         .step.error { background: #f8d7da; color: #721c24; }
-        pre { background: #1a1a2e; color: #e0e0e0; padding: 15px; border-radius: 10px; max-height: 300px; overflow-y: auto; font-size: 12px; }
+        pre { background: #1a1a2e; color: #e0e0e0; padding: 15px; border-radius: 10px; max-height: 400px; overflow-y: auto; font-size: 12px; margin: 0; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="card p-4 mb-3 text-center">
-            <h3 class="text-primary mb-3"><i class="fa fa-bolt"></i> Quick Test</h3>
-            <p class="text-muted">Register client → Apply loan automatically</p>
-            <button class="btn-run" onclick="runTest()" id="runBtn">
-                <i class="fa fa-play"></i> Register & Apply Loan
-            </button>
+            <h3 class="text-primary mb-2"><i class="fa fa-tools"></i> Test Tool</h3>
+            <p class="text-muted mb-3">Delete data, register clients, apply loans</p>
+            
+            <div class="d-grid gap-2">
+                <button class="btn btn-danger" onclick="deleteAll()" id="deleteBtn">
+                    <i class="fa fa-trash"></i> Delete All Clients & Loans
+                </button>
+                <button class="btn btn-primary" onclick="registerAndApply()" id="registerBtn">
+                    <i class="fa fa-play"></i> Register Client & Apply Loan
+                </button>
+                <button class="btn btn-success" onclick="runAll()" id="runAllBtn">
+                    <i class="fa fa-forward"></i> Delete All → Register → Apply
+                </button>
+            </div>
         </div>
 
         <div class="card p-4 mb-3">
-            <h5 class="fw-bold mb-3">Progress</h5>
+            <h6 class="fw-bold mb-2">Progress</h6>
             <div id="steps"></div>
         </div>
 
         <div class="card p-4">
             <h6 class="fw-bold"><i class="fa fa-terminal"></i> Log</h6>
-            <pre id="log">Click the button to start...</pre>
+            <pre id="log">Ready. Choose an action above.</pre>
         </div>
     </div>
 
     <script src="assets/js/api.js"></script>
     <script>
         const API = "http://localhost:5000";
-        const phone = "07" + Math.floor(10000000 + Math.random() * 90000000);
-        const password = "Test@123";
-        const amount = Math.floor(Math.random() * 5 + 1) * 5000;
+        let adminToken = "";
         let clientToken = "";
-
-        const steps = [
-            "Register Client",
-            "Client Login",
-            "Apply for Loan"
-        ];
 
         function log(msg) {
             const el = document.getElementById("log");
@@ -60,8 +64,8 @@
             el.scrollTop = el.scrollHeight;
         }
 
-        function renderSteps() {
-            document.getElementById("steps").innerHTML = steps.map((s, i) => 
+        function showSteps(stepsList) {
+            document.getElementById("steps").innerHTML = stepsList.map((s, i) => 
                 `<div id="step${i}" class="step waiting">⏳ ${s}</div>`
             ).join("");
         }
@@ -71,39 +75,113 @@
             if (!el) return;
             const icons = { waiting: "⏳", running: "🔄", success: "✅", error: "❌" };
             el.className = "step " + status;
-            el.innerHTML = `${icons[status]} ${steps[i]}`;
+            const text = el.textContent.replace(/[⏳🔄✅❌] /, "");
+            el.innerHTML = `${icons[status]} ${text}`;
         }
 
-        async function runTest() {
-            const btn = document.getElementById("runBtn");
-            btn.disabled = true;
-            btn.innerHTML = "Running...";
-            document.getElementById("log").textContent = "🚀 STARTING TEST\n";
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        // Admin login helper
+        async function adminLogin() {
+            if (adminToken) return true;
+            log("🔵 Admin login...");
+            const res = await fetch(API + "/api/auth/admin-login", {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: "Kiplangat", password: "Admin@123" })
+            });
+            const data = await res.json();
+            if (data.success) { adminToken = data.token; log("✅ Admin logged in"); return true; }
+            log("❌ Admin login failed: " + data.message);
+            return false;
+        }
+
+        // ==================== DELETE ALL ====================
+        async function deleteAll() {
+            document.getElementById("log").textContent = "🗑️ DELETE ALL DATA\n";
+            log("─".repeat(30));
+            showSteps(["Admin Login", "Delete All Clients"]);
+            
+            document.getElementById("deleteBtn").disabled = true;
+            document.getElementById("registerBtn").disabled = true;
+            document.getElementById("runAllBtn").disabled = true;
+
+            try {
+                updateStep(0, "running");
+                if (!await adminLogin()) throw new Error("Admin login failed");
+                updateStep(0, "success");
+                await sleep(300);
+
+                updateStep(1, "running");
+                const res = await fetch(API + "/api/clients", {
+                    headers: { "Authorization": "Bearer " + adminToken }
+                });
+                const data = await res.json();
+                
+                if (data.success && data.clients && data.clients.length > 0) {
+                    log(`   Found ${data.clients.length} client(s)`);
+                    for (const c of data.clients) {
+                        await fetch(API + "/api/clients/" + c.id, {
+                            method: "DELETE",
+                            headers: { "Authorization": "Bearer " + adminToken }
+                        });
+                    }
+                    log(`✅ Deleted ${data.clients.length} clients and all related data`);
+                } else {
+                    log("✅ No clients to delete");
+                }
+                updateStep(1, "success");
+                log("─".repeat(30));
+                log("🎉 ALL DATA DELETED!");
+
+            } catch (error) {
+                log("❌ " + error.message);
+                for (let i = 0; i < 2; i++) {
+                    if (document.getElementById("step" + i)?.classList.contains("running")) {
+                        updateStep(i, "error"); break;
+                    }
+                }
+            }
+
+            document.getElementById("deleteBtn").disabled = false;
+            document.getElementById("registerBtn").disabled = false;
+            document.getElementById("runAllBtn").disabled = false;
+        }
+
+        // ==================== REGISTER & APPLY ====================
+        async function registerAndApply() {
+            const phone = "07" + Math.floor(10000000 + Math.random() * 90000000);
+            const password = "Test@123";
+            const amount = Math.floor(Math.random() * 5 + 1) * 5000;
+
+            document.getElementById("log").textContent = "🚀 REGISTER & APPLY\n";
             log(`📱 Phone: ${phone}`);
             log(`💰 Amount: KSh ${amount.toLocaleString()}`);
             log("─".repeat(30));
-            renderSteps();
+            showSteps(["Register Client", "Client Login", "Apply for Loan"]);
+
+            document.getElementById("deleteBtn").disabled = true;
+            document.getElementById("registerBtn").disabled = true;
+            document.getElementById("runAllBtn").disabled = true;
 
             try {
-                // Step 1: Register
+                // Register
                 updateStep(0, "running");
-                log("🔵 Registering client...");
+                log("🔵 Registering...");
                 const regRes = await fetch(API + "/api/auth/register", {
                     method: "POST", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         fullname: "Auto Test", nationalID: String(Math.floor(10000000 + Math.random() * 90000000)),
-                        phone: phone, password: password,
-                        occupation: "Tester", monthlyIncome: "50000",
-                        county: "Nairobi", address: "Test Address"
+                        phone: phone, password: password, occupation: "Tester",
+                        monthlyIncome: "50000", county: "Nairobi", address: "Test"
                     })
                 });
                 const regData = await regRes.json();
                 if (!regData.success && !regData.message.includes("already")) throw new Error(regData.message);
                 updateStep(0, "success");
-                log("✅ Client registered");
+                log("✅ Registered");
                 await sleep(300);
 
-                // Step 2: Login
+                // Login
                 updateStep(1, "running");
                 log("🔵 Logging in...");
                 const loginRes = await fetch(API + "/api/auth/client-login", {
@@ -117,9 +195,9 @@
                 log("✅ Logged in");
                 await sleep(300);
 
-                // Step 3: Apply Loan
+                // Apply
                 updateStep(2, "running");
-                log(`🔵 Applying for KSh ${amount.toLocaleString()}...`);
+                log(`🔵 Applying KSh ${amount.toLocaleString()}...`);
                 const applyRes = await fetch(API + "/api/applications", {
                     method: "POST",
                     headers: { "Content-Type": "application/json", "Authorization": "Bearer " + clientToken },
@@ -135,31 +213,29 @@
                 log("✅ Loan applied!");
                 log("─".repeat(30));
                 log("🎉 SUCCESS!");
-                log(`   Phone: ${phone}`);
-                log(`   Password: ${password}`);
-                log(`   Loan: KSh ${amount.toLocaleString()}`);
-                log(`   App ID: ${applyData.applicationId}`);
-                log("");
-                log("👨‍💼 Now login as admin to approve:");
-                log("   http://127.0.0.1:5500/admin-portal.html");
-                log("   Kiplangat / Admin@123");
+                log(`   Phone: ${phone} | Pass: ${password}`);
+                log(`   Loan: KSh ${amount.toLocaleString()} | App ID: ${applyData.applicationId}`);
 
             } catch (error) {
                 log("❌ " + error.message);
                 for (let i = 0; i < 3; i++) {
                     if (document.getElementById("step" + i)?.classList.contains("running")) {
-                        updateStep(i, "error");
-                        break;
+                        updateStep(i, "error"); break;
                     }
                 }
             }
 
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fa fa-redo"></i> Run Again';
+            document.getElementById("deleteBtn").disabled = false;
+            document.getElementById("registerBtn").disabled = false;
+            document.getElementById("runAllBtn").disabled = false;
         }
 
-        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-        renderSteps();
+        // ==================== RUN ALL ====================
+        async function runAll() {
+            await deleteAll();
+            await sleep(500);
+            await registerAndApply();
+        }
     </script>
 </body>
 </html>
