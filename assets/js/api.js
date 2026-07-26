@@ -1,8 +1,13 @@
 /*=========================================================
     BEJJA LOAN CREDIT - API Helper
+    Local Development Version
 =========================================================*/
 
-const API_BASE = "https://sadness-unread-thicket.ngrok-free.dev/api";
+// Local API
+const API_BASE = "http://localhost:5000/api";
+
+// For network access from other devices, use:
+// const API_BASE = "http://10.129.121.64:5000/api";
 
 console.log("🔗 API Connected to:", API_BASE);
 
@@ -27,10 +32,7 @@ window.formatDate = formatDate;
 const api = {
     async request(endpoint, options = {}) {
         const token = localStorage.getItem("bejja_token");
-        const headers = { 
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "true"
-        };
+        const headers = { "Content-Type": "application/json" };
         if (token) headers["Authorization"] = `Bearer ${token}`;
         
         try {
