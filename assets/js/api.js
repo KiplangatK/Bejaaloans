@@ -1,6 +1,5 @@
 /*=========================================================
     BEJJA LOAN CREDIT - API Helper
-    GitHub Pages + Local Backend
 =========================================================*/
 
 const API_BASE = "http://localhost:5000/api";
