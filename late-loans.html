@@ -135,19 +135,50 @@ async function loadLateLoans(){
         
         if(dueDate >= today) continue;
         
-        let balance=Number(l.remaining_principal||0),rate=Number(l.interest_rate||20);
-        let monthsDiff=0,checkDate=new Date(dueDate);
-        while(true){checkDate.setMonth(checkDate.getMonth()+1);if(today<checkDate)break;monthsDiff++;}
-        monthsDiff++;
-        let monthlyInterest=(balance*rate)/100,totalOutstandingInterest=monthlyInterest*monthsDiff;
+        let originalPrincipal=Number(l.original_principal||0);
+        let rate=Number(l.interest_rate||20);
+        let monthlyInterest=(originalPrincipal*rate)/100;
+        
+        // Calculate total overdue from due date to today
+        let monthsOverdue=0;
+        let checkDate=new Date(dueDate);
+        while(true){
+            checkDate.setMonth(checkDate.getMonth()+1);
+            if(today<checkDate)break;
+            monthsOverdue++;
+        }
+        monthsOverdue++;
+        let totalOverdueInterest=monthlyInterest*monthsOverdue;
+        
+        // Get total paid
         let pResult=await api.getLoanPayments(l.id);
         let totalPaid=0;
-        if(pResult.success&&Array.isArray(pResult.payments))pResult.payments.forEach(p=>{totalPaid+=Number(p.amount||0);});
-        let remaining=totalOutstandingInterest-totalPaid;
-        if(remaining<=0) continue;
+        if(pResult.success&&Array.isArray(pResult.payments)){
+            pResult.payments.forEach(p=>{totalPaid+=Number(p.amount||0);});
+        }
+        
+        // Remaining overdue = total overdue - paid
+        let remainingOverdue=totalOverdueInterest-totalPaid;
+        if(remainingOverdue<=0) continue;
+        
         lateCount++;
         let daysLate=Math.floor((today-dueDate)/(1000*60*60*24));
-        table.innerHTML+=`<tr><td>${lateCount}</td><td><b>${l.fullname||"?"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td>${money(balance)}</td><td>${money(monthlyInterest)}</td><td class="fw-bold text-danger">${money(remaining)}</td><td>${formatDate(l.due_date)}</td><td class="text-danger fw-bold">${daysLate}d</td><td><button class="btn btn-details btn-sm" onclick="viewLoanDetails(${l.id})"><i class="fa fa-eye"></i> Details</button> <button class="btn btn-payment btn-sm" onclick="openPayment(${l.id})"><i class="fa fa-money-bill"></i> Pay</button></td></tr>`;
+        
+        table.innerHTML+=`<tr>
+            <td>${lateCount}</td>
+            <td><b>${l.fullname||"?"}</b></td>
+            <td>${l.phone||"-"}</td>
+            <td>${money(originalPrincipal)}</td>
+            <td>${money(Number(l.remaining_principal||0))}</td>
+            <td>${money(monthlyInterest)}</td>
+            <td class="fw-bold text-danger">${money(remainingOverdue)}</td>
+            <td>${formatDate(l.due_date)}</td>
+            <td class="text-danger fw-bold">${daysLate}d</td>
+            <td>
+                <button class="btn btn-details btn-sm" onclick="viewLoanDetails(${l.id})"><i class="fa fa-eye"></i> Details</button>
+                <button class="btn btn-payment btn-sm" onclick="openPayment(${l.id})"><i class="fa fa-money-bill"></i> Pay</button>
+            </td>
+        </tr>`;
     }
     if(lateCount===0)table.innerHTML='<tr><td colspan="10" class="text-center text-success p-5"><h5>No overdue loans!</h5></td></tr>';
 }
@@ -191,7 +222,7 @@ async function viewLoanDetails(loanId){
         const bal=Number(loan.remaining_principal||0);
         const original=Number(loan.original_principal||0);
         const rate=Number(loan.interest_rate||20);
-        const interest=(bal*rate)/100;
+        const interest=(original*rate)/100;
         const paid=original-bal;
         const progressPct=original>0?Math.round((paid/original)*100):0;
 
@@ -207,6 +238,11 @@ async function viewLoanDetails(loanId){
                 overdueAmount=interest*monthsOverdue;
             }
         }
+
+        let totalPaid=0;
+        payments.forEach(p=>{totalPaid+=Number(p.amount||0);});
+        let remainingOverdue=overdueAmount-totalPaid;
+        if(remainingOverdue<0)remainingOverdue=0;
 
         let html=`
             <div class="section-title"><i class="fa fa-user"></i> Client Information</div>
@@ -245,14 +281,15 @@ async function viewLoanDetails(loanId){
                         <div class="info-row"><div class="info-label">Amount Repaid</div><div class="info-value text-success fw-bold">${money(paid)}</div></div>
                         <div class="info-row"><div class="info-label">Interest Rate</div><div class="info-value">${rate}%</div></div>
                         <div class="info-row"><div class="info-label">Monthly Interest</div><div class="info-value">${money(interest)}</div></div>
-                        <div class="info-row"><div class="info-label"><span class="text-danger fw-bold">Overdue Amount</span></div><div class="info-value text-danger fw-bold">${money(overdueAmount)} (${monthsOverdue} mo)</div></div>
+                        <div class="info-row"><div class="info-label"><span class="text-danger fw-bold">Total Overdue</span></div><div class="info-value text-danger fw-bold">${money(overdueAmount)} (${monthsOverdue} mo)</div></div>
+                        <div class="info-row"><div class="info-label">Total Paid</div><div class="info-value text-success">${money(totalPaid)}</div></div>
+                        <div class="info-row"><div class="info-label"><span class="text-danger fw-bold">Remaining Overdue</span></div><div class="info-value text-danger fw-bold" style="font-size:16px;">${money(remainingOverdue)}</div></div>
                     </div>
                     <div class="col-md-6">
                         <div class="info-row"><div class="info-label">Loan Date</div><div class="info-value">${formatDate(loan.loan_date)}</div></div>
                         <div class="info-row"><div class="info-label">Due Date</div><div class="info-value text-danger fw-bold">${formatDate(loan.due_date)}</div></div>
                         <div class="info-row"><div class="info-label">Days Late</div><div class="info-value text-danger fw-bold">${loan.due_date?Math.floor((today-new Date(loan.due_date))/(1000*60*60*24)):0} days</div></div>
                         <div class="info-row"><div class="info-label">Status</div><div class="info-value"><span class="badge bg-danger">OVERDUE</span></div></div>
-                        <div class="info-row"><div class="info-label">Total Paid</div><div class="info-value">${money(loan.total_paid||0)}</div></div>
                     </div>
                 </div>
                 <div class="mt-3">
