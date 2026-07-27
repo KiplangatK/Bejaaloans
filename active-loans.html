@@ -124,7 +124,7 @@
                 <div class="modal-body" id="loanDetailsContent" style="max-height:70vh;overflow-y:auto;">
                     <p class="text-center text-muted p-4">Loading...</p>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" id="detailsFooter">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -141,6 +141,7 @@
         if (admin) document.getElementById("adminName").innerHTML = admin.username;
 
         const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+        let currentLoanAppId = null;
 
         function money(v) { return "KES " + Number(v || 0).toLocaleString("en-KE", { minimumFractionDigits: 2 }); }
 
@@ -246,6 +247,10 @@
             document.getElementById("loanDetailsContent").innerHTML = 
                 '<p class="text-center text-muted p-4"><div class="spinner-border spinner-border-sm me-2"></div>Loading...</p>';
             
+            document.getElementById("detailsFooter").innerHTML = `
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            `;
+
             new bootstrap.Modal(document.getElementById("loanDetailsModal")).show();
 
             try {
@@ -273,6 +278,7 @@
 
                 const applications = appsResult.success ? (appsResult.applications || []) : [];
                 const application = applications.find(a => a.id == loan.application_id);
+                currentLoanAppId = loan.application_id;
 
                 const bal = Number(loan.remaining_principal || 0);
                 const original = Number(loan.original_principal || 0);
@@ -280,6 +286,9 @@
                 const interest = (bal * rate) / 100;
                 const paid = original - bal;
                 const progressPct = original > 0 ? Math.round((paid / original) * 100) : 0;
+
+                // For active loans, overdue is 0 since due date hasn't passed
+                const overdueAmount = 0;
 
                 let html = `
                     <div class="section-title"><i class="fa fa-user"></i> Client Information</div>
@@ -318,6 +327,7 @@
                                 <div class="info-row"><div class="info-label">Amount Repaid</div><div class="info-value text-success fw-bold">${money(paid)}</div></div>
                                 <div class="info-row"><div class="info-label">Interest Rate</div><div class="info-value">${rate}%</div></div>
                                 <div class="info-row"><div class="info-label">Monthly Interest</div><div class="info-value">${money(interest)}</div></div>
+                                <div class="info-row"><div class="info-label"><span class="text-success">Overdue Amount</span></div><div class="info-value text-success fw-bold">${money(overdueAmount)}</div></div>
                             </div>
                             <div class="col-md-6">
                                 <div class="info-row"><div class="info-label">Loan Date</div><div class="info-value">${formatDate(loan.loan_date)}</div></div>
@@ -358,32 +368,71 @@
                             </div>
                         `}
                     </div>
-
-                    <div class="section-title"><i class="fa fa-users"></i> Guarantors</div>
                 `;
 
-                if (application && (application.guarantor1?.name || application.guarantor2?.name)) {
-                    html += `
-                        <div class="detail-card">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    ${renderGuarantorCard(application.guarantor1, "Guarantor 1")}
-                                </div>
-                                <div class="col-md-6">
-                                    ${renderGuarantorCard(application.guarantor2, "Guarantor 2")}
-                                </div>
-                            </div>
-                        </div>
+                document.getElementById("loanDetailsContent").innerHTML = html;
+
+                // Add View Guarantors button in footer if application exists
+                if (application) {
+                    document.getElementById("detailsFooter").innerHTML = `
+                        <button class="btn btn-guarantors" onclick="showGuarantorsInModal(${loan.application_id})">
+                            <i class="fa fa-users"></i> View Guarantors
+                        </button>
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     `;
                 } else {
-                    html += `<div class="detail-card"><p class="text-center text-muted">No guarantor information available for this loan.</p></div>`;
+                    document.getElementById("detailsFooter").innerHTML = `
+                        <span class="text-muted me-auto">No guarantor data available</span>
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    `;
                 }
-
-                document.getElementById("loanDetailsContent").innerHTML = html;
 
             } catch (error) {
                 console.error("View details error:", error);
                 document.getElementById("loanDetailsContent").innerHTML = '<p class="text-danger">Failed to load details.</p>';
+            }
+        }
+
+        // ==================== SHOW GUARANTORS ====================
+        async function showGuarantorsInModal(appId) {
+            const content = document.getElementById("loanDetailsContent");
+            
+            // Add guarantors section at the bottom
+            try {
+                const result = await api.getApplications();
+                if (!result.success) return;
+                
+                const app = result.applications.find(a => a.id == appId);
+                if (!app) {
+                    content.innerHTML += `<div class="section-title mt-3"><i class="fa fa-users"></i> Guarantors</div><div class="detail-card"><p class="text-center text-muted">No guarantor information found.</p></div>`;
+                    return;
+                }
+
+                let guarantorHTML = `
+                    <div class="section-title mt-3"><i class="fa fa-users"></i> Guarantors</div>
+                    <div class="detail-card">
+                        <div class="row">
+                            <div class="col-md-6">
+                                ${renderGuarantorCard(app.guarantor1, "Guarantor 1")}
+                            </div>
+                            <div class="col-md-6">
+                                ${renderGuarantorCard(app.guarantor2, "Guarantor 2")}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                content.innerHTML += guarantorHTML;
+                
+                // Scroll to guarantors
+                content.scrollTop = content.scrollHeight;
+                
+                // Disable the button after clicking
+                document.querySelector('.btn-guarantors').disabled = true;
+                document.querySelector('.btn-guarantors').innerHTML = '<i class="fa fa-check"></i> Guarantors Loaded';
+
+            } catch (error) {
+                content.innerHTML += `<div class="alert alert-danger mt-3">Failed to load guarantors.</div>`;
             }
         }
 
@@ -394,7 +443,7 @@
             return `
                 <div style="border:1px solid #e0e0e0;border-radius:12px;padding:15px;">
                     <div class="text-center mb-3">
-                        <img src="${g.photo || DEFAULT_IMG}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--primary-light);" onerror="this.src='${DEFAULT_IMG}'">
+                        <img src="${g.photo || DEFAULT_IMG}" class="guarantor-photo" onerror="this.src='${DEFAULT_IMG}'">
                         <h6 class="mt-2">${g.name || "-"}</h6>
                         <span class="badge bg-info">${title}</span>
                     </div>
