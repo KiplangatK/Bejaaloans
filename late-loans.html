@@ -100,7 +100,6 @@ if(!AUTH.currentAdmin()){window.location.href="admin-portal.html";}
 const admin=AUTH.currentAdmin();if(admin)document.getElementById("adminName").innerHTML=admin.username;
 function money(v){return "KES "+Number(v||0).toLocaleString();}
 const DEFAULT_IMG="https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-let currentLoanAppId=null;
 
 function showFullImage(src,title){
     if(!src){alert("No image available");return;}
@@ -148,7 +147,7 @@ async function loadLateLoans(){
         if(remaining<=0) continue;
         lateCount++;
         let daysLate=Math.floor((today-dueDate)/(1000*60*60*24));
-        table.innerHTML+=`<tr><td>${lateCount}</td><td><b>${l.fullname||"?"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td>${money(balance)}</td><td>${money(monthlyInterest)}</td><td class="fw-bold text-danger">${money(remaining)}</td><td>${formatDate(l.due_date)}</td><td class="text-danger fw-bold">${daysLate}d</td><td><button class="btn btn-details btn-sm" onclick="viewLoanDetails(${l.id})"><i class="fa fa-eye"></i></button> <button class="btn btn-payment btn-sm" onclick="openPayment(${l.id})"><i class="fa fa-money-bill"></i></button></td></tr>`;
+        table.innerHTML+=`<tr><td>${lateCount}</td><td><b>${l.fullname||"?"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td>${money(balance)}</td><td>${money(monthlyInterest)}</td><td class="fw-bold text-danger">${money(remaining)}</td><td>${formatDate(l.due_date)}</td><td class="text-danger fw-bold">${daysLate}d</td><td><button class="btn btn-details btn-sm" onclick="viewLoanDetails(${l.id})"><i class="fa fa-eye"></i> Details</button> <button class="btn btn-payment btn-sm" onclick="openPayment(${l.id})"><i class="fa fa-money-bill"></i> Pay</button></td></tr>`;
     }
     if(lateCount===0)table.innerHTML='<tr><td colspan="10" class="text-center text-success p-5"><h5>No overdue loans!</h5></td></tr>';
 }
@@ -188,7 +187,6 @@ async function viewLoanDetails(loanId){
 
         const applications=appsResult.success?(appsResult.applications||[]):[];
         const application=applications.find(a=>a.id==loan.application_id);
-        currentLoanAppId=loan.application_id;
 
         const bal=Number(loan.remaining_principal||0);
         const original=Number(loan.original_principal||0);
@@ -247,7 +245,7 @@ async function viewLoanDetails(loanId){
                         <div class="info-row"><div class="info-label">Amount Repaid</div><div class="info-value text-success fw-bold">${money(paid)}</div></div>
                         <div class="info-row"><div class="info-label">Interest Rate</div><div class="info-value">${rate}%</div></div>
                         <div class="info-row"><div class="info-label">Monthly Interest</div><div class="info-value">${money(interest)}</div></div>
-                        <div class="info-row"><div class="info-label"><span class="text-danger fw-bold">Overdue Amount</span></div><div class="info-value text-danger fw-bold">${money(overdueAmount)} (${monthsOverdue} months)</div></div>
+                        <div class="info-row"><div class="info-label"><span class="text-danger fw-bold">Overdue Amount</span></div><div class="info-value text-danger fw-bold">${money(overdueAmount)} (${monthsOverdue} mo)</div></div>
                     </div>
                     <div class="col-md-6">
                         <div class="info-row"><div class="info-label">Loan Date</div><div class="info-value">${formatDate(loan.loan_date)}</div></div>
