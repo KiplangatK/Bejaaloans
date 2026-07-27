@@ -7,15 +7,18 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 <style>
+:root { --primary: #0d47a1; --primary-light: #1976d2; --success: #198754; --white: #ffffff; --bg-light: #edf4ff; --shadow: 0 8px 25px rgba(0,0,0,0.12); }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:#edf4ff;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;}
 .wrapper{display:flex;}
 .sidebar{width:260px;min-height:100vh;background:#0d47a1;color:white;position:fixed;}
-.logo{padding:25px;font-size:28px;font-weight:bold;border-bottom:1px solid rgba(255,255,255,.15);}
-.logo i{margin-right:10px;}
+.logo{padding:25px;font-size:24px;font-weight:bold;border-bottom:1px solid rgba(255,255,255,.15);}
+.logo i{margin-right:10px;color:#ffc107;}
 .sidebar ul{list-style:none;padding:15px 0;}
 .sidebar ul li a{display:block;color:white;padding:15px 25px;text-decoration:none;transition:.3s;}
-.sidebar ul li a:hover{background:#1565c0;padding-left:35px;}.sidebar ul li i{width:25px;}
+.sidebar ul li a:hover{background:#1565c0;padding-left:35px;}
+.sidebar ul li a.active{background:rgba(255,255,255,0.1);border-left:3px solid #ffc107;}
+.sidebar ul li i{width:25px;}
 .main{margin-left:260px;width:calc(100% - 260px);}
 .topbar{height:60px;background:#1976d2;color:white;display:flex;justify-content:space-between;align-items:center;padding:0 25px;box-shadow:0 2px 10px rgba(0,0,0,.15);}
 .topbar h2{font-size:24px;}.topbar a{color:white;text-decoration:none;}
@@ -26,20 +29,35 @@ body{background:#edf4ff;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;}
 .table{margin-bottom:0;}
 .table thead th{background:#e3f2fd;color:#0d47a1;text-align:center;font-size:13px;padding:10px 8px;white-space:nowrap;}
 .table tbody td{text-align:center;vertical-align:middle;font-size:13px;padding:10px 8px;}
-.btn-view{background:#1976d2;color:white;border-radius:20px;font-size:12px;padding:5px 10px;}
+.btn-details{background:#1976d2;color:white;border-radius:20px;font-size:12px;padding:5px 10px;}
+.btn-details:hover{background:#0d47a1;color:white;}
 .btn-payment{background:#198754;color:white;border-radius:20px;font-size:12px;padding:5px 10px;}
+.btn-payment:hover{background:#157347;color:white;}
+.btn-guarantors{background:#6f42c1;color:white;border-radius:20px;font-size:12px;padding:6px 14px;}
+.btn-guarantors:hover{background:#5a3399;color:white;}
+.modal-header{background:linear-gradient(135deg, #0d47a1, #1976d2);color:white;}
+.modal-header .btn-close{filter:brightness(0) invert(1);}
+.detail-card{background:#f8faff;border-radius:12px;padding:18px;margin-bottom:12px;border:1px solid #dbeafe;}
+.section-title{background:linear-gradient(135deg, #0d47a1, #1976d2);color:white;padding:12px 18px;border-radius:10px;margin:15px 0;font-weight:700;}
+.info-row{display:flex;padding:8px 0;border-bottom:1px solid #f0f0f0;}
+.info-label{font-weight:600;color:#0d47a1;width:160px;flex-shrink:0;font-size:13px;}
+.info-value{color:#444;font-size:13px;}
+.document-img{width:100%;height:100px;object-fit:contain;border-radius:8px;border:1px solid #ddd;cursor:pointer;margin-top:4px;}
+.guarantor-photo{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #1976d2;}
+.profile-img-large{width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #1976d2;}
+@media(max-width:992px){.sidebar{transform:translateX(-100%);}.sidebar.show{transform:translateX(0);}.main{margin-left:0;width:100%;}}
 </style>
 </head>
 <body>
 <div class="wrapper">
 
-<div class="sidebar">
+<div class="sidebar" id="sidebar">
 <div class="logo"><i class="fa-solid fa-building-columns"></i>Bejja Credit</div>
 <ul>
 <li><a href="admin-dashboard.html"><i class="fa-solid fa-gauge"></i>Dashboard</a></li>
 <li><a href="registered-clients.html"><i class="fa-solid fa-users"></i>Registered Clients</a></li>
 <li><a href="active-loans.html"><i class="fa-solid fa-money-bill-wave"></i>Active Loans</a></li>
-<li><a href="late-loans.html"><i class="fa-solid fa-triangle-exclamation"></i>Late Loans</a></li>
+<li><a href="late-loans.html" class="active"><i class="fa-solid fa-triangle-exclamation"></i>Late Loans</a></li>
 <li><a href="loan-applications.html"><i class="fa-solid fa-file-circle-check"></i>Applications</a></li>
 <li><a href="statistics.html"><i class="fa-solid fa-chart-column"></i>Statistics</a></li>
 <li><a href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i>Logout</a></li>
@@ -47,15 +65,32 @@ body{background:#edf4ff;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;}
 </div>
 
 <div class="main">
-<div class="topbar"><h2><i class="fa-solid fa-triangle-exclamation text-warning"></i>Late Loans</h2><div><a href="admin-dashboard.html" class="btn btn-sm btn-light me-2">Back</a>Welcome, <strong id="adminName">Admin</strong></div></div>
+<div class="topbar"><h2><i class="fa-solid fa-triangle-exclamation text-warning"></i> Late Loans</h2><div><a href="admin-dashboard.html" class="btn btn-sm btn-light me-2">Back</a>Welcome, <strong id="adminName">Admin</strong></div></div>
 <div class="content">
 
 <div class="table-card"><div class="table-header">Late Loan Clients</div><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>#</th><th>Client</th><th>Phone</th><th>Amount</th><th>Balance</th><th>Int/mo</th><th>Overdue</th><th>Due Date</th><th>Days</th><th>Act</th></tr></thead><tbody id="lateLoansTable"><tr><td colspan="10" class="text-center text-muted p-5">Loading...</td></tr></tbody></table></div></div>
 </div></div></div>
 
-<div class="modal fade" id="loanModal"><div class="modal-dialog modal-xl"><div class="modal-content"><div class="modal-header bg-primary text-white"><h5 class="modal-title"><i class="fa fa-file-invoice-dollar"></i>Loan Details</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body" id="loanDetails"></div></div></div></div>
+<!-- Payment Modal -->
+<div class="modal fade" id="paymentModal"><div class="modal-dialog"><div class="modal-content"><div class="modal-header bg-success text-white"><h5 class="modal-title"><i class="fa fa-money-bill"></i> Record Payment</h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="paymentLoanId"><label class="form-label">Amount Paid</label><input type="number" id="paymentAmount" class="form-control mb-3" placeholder="Enter payment amount"><label class="form-label">Payment Date</label><input type="date" id="paymentDate" class="form-control mb-3"><label class="form-label">Payment Method</label><select id="paymentMethod" class="form-select"><option>Cash</option><option>M-Pesa</option><option>Bank</option></select></div><div class="modal-footer"><button class="btn btn-success" onclick="savePayment()"><i class="fa fa-check"></i>Save Payment</button></div></div></div></div>
 
-<div class="modal fade" id="paymentModal"><div class="modal-dialog"><div class="modal-content"><div class="modal-header bg-success text-white"><h5 class="modal-title"><i class="fa fa-money-bill"></i> Record Payment</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="paymentLoanId"><label class="form-label">Amount Paid</label><input type="number" id="paymentAmount" class="form-control mb-3" placeholder="Enter payment amount"><label class="form-label">Payment Date</label><input type="date" id="paymentDate" class="form-control mb-3"><label class="form-label">Payment Method</label><select id="paymentMethod" class="form-select"><option>Cash</option><option>M-Pesa</option><option>Bank</option></select></div><div class="modal-footer"><button class="btn btn-success" onclick="savePayment()"><i class="fa fa-check"></i>Save Payment</button></div></div></div></div>
+<!-- Loan Details Modal -->
+<div class="modal fade" id="loanDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fa fa-file-invoice-dollar"></i> Loan Details</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="loanDetailsContent" style="max-height:70vh;overflow-y:auto;">
+                <p class="text-center text-muted p-4">Loading...</p>
+            </div>
+            <div class="modal-footer" id="detailsFooter">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="assets/js/api.js"></script>
 <script src="assets/js/auth.js"></script>
@@ -65,8 +100,16 @@ if(!AUTH.currentAdmin()){window.location.href="admin-portal.html";}
 const admin=AUTH.currentAdmin();if(admin)document.getElementById("adminName").innerHTML=admin.username;
 function money(v){return "KES "+Number(v||0).toLocaleString();}
 const DEFAULT_IMG="https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+let currentLoanAppId=null;
 
-function showFullImage(src,title){if(!src){alert("No image available");return;}let m=document.createElement("div");m.style.cssText="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:99999;cursor:pointer;";m.innerHTML=`<div style="max-width:90%;max-height:90%;text-align:center;"><h5 style="color:white;margin-bottom:10px;">${title}</h5><img src="${src}" style="max-width:100%;max-height:80vh;border-radius:10px;"><br><small style="color:#ccc;">Click anywhere to close</small></div>`;m.onclick=function(){document.body.removeChild(m);};document.body.appendChild(m);}
+function showFullImage(src,title){
+    if(!src){alert("No image available");return;}
+    let m=document.createElement("div");
+    m.style.cssText="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;z-index:99999;cursor:pointer;";
+    m.innerHTML=`<div style="max-width:95%;max-height:95%;text-align:center;"><h5 style="color:white;margin-bottom:15px;">${title}</h5><img src="${src}" style="max-width:100%;max-height:85vh;border-radius:10px;"><br><small style="color:#ccc;margin-top:10px;">Click anywhere to close</small></div>`;
+    m.onclick=function(){document.body.removeChild(m);};
+    document.body.appendChild(m);
+}
 
 async function loadLateLoans(){
     let result=await api.getLoans();
@@ -105,34 +148,9 @@ async function loadLateLoans(){
         if(remaining<=0) continue;
         lateCount++;
         let daysLate=Math.floor((today-dueDate)/(1000*60*60*24));
-        table.innerHTML+=`<tr><td>${lateCount}</td><td><b>${l.fullname||"?"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td>${money(balance)}</td><td>${money(monthlyInterest)}</td><td class="fw-bold">${money(remaining)}</td><td>${formatDate(l.due_date)}</td><td class="text-danger fw-bold">${daysLate}d</td><td><button class="btn btn-view btn-sm" onclick="viewLoan(${l.id})"><i class="fa fa-eye"></i></button> <button class="btn btn-payment btn-sm" onclick="openPayment(${l.id})"><i class="fa fa-money-bill"></i></button></td></tr>`;
+        table.innerHTML+=`<tr><td>${lateCount}</td><td><b>${l.fullname||"?"}</b></td><td>${l.phone||"-"}</td><td>${money(l.original_principal)}</td><td>${money(balance)}</td><td>${money(monthlyInterest)}</td><td class="fw-bold text-danger">${money(remaining)}</td><td>${formatDate(l.due_date)}</td><td class="text-danger fw-bold">${daysLate}d</td><td><button class="btn btn-details btn-sm" onclick="viewLoanDetails(${l.id})"><i class="fa fa-eye"></i></button> <button class="btn btn-payment btn-sm" onclick="openPayment(${l.id})"><i class="fa fa-money-bill"></i></button></td></tr>`;
     }
     if(lateCount===0)table.innerHTML='<tr><td colspan="10" class="text-center text-success p-5"><h5>No overdue loans!</h5></td></tr>';
-}
-
-async function viewLoan(id){
-    let r=await api.getLoans();if(!r.success)return;let loan=r.loans.find(l=>l.id==id);if(!loan)return;
-    let balance=Number(loan.remaining_principal||0),rate=Number(loan.interest_rate||20),currentInterest=(balance*rate)/100;
-    let pResult=await api.getLoanPayments(id);
-    let totalPaid=0,payments=pResult.success?pResult.payments:[];
-    if(Array.isArray(payments))payments.forEach(p=>{totalPaid+=Number(p.amount||0);});
-    let monthsOverdue=0;
-    if(loan.due_date){let parts=String(loan.due_date).split("T")[0].split("-");let dueDate=new Date(parts[0],parts[1]-1,parts[2]);dueDate.setHours(0,0,0,0);let today=new Date();today.setHours(0,0,0,0);let checkDate=new Date(dueDate);while(true){checkDate.setMonth(checkDate.getMonth()+1);if(today<checkDate)break;monthsOverdue++;}monthsOverdue++;if(monthsOverdue<1)monthsOverdue=1;}
-    let totalOutstandingInterest=currentInterest*monthsOverdue;
-    let totalExpected=Number(loan.original_principal)+Number(loan.original_principal)*rate/100;
-    let progress=totalExpected>0?Math.round((totalPaid/totalExpected)*100):0;
-    let clientResult=await api.getClient(loan.client_id);
-    let client=clientResult.success?clientResult.client:{};
-    document.getElementById("loanDetails").innerHTML=`
-        <h5 class="text-primary">Client Information</h5><hr>
-        <div class="row"><div class="col-md-3 text-center"><img src="${client.profile_photo||DEFAULT_IMG}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #1976d2;"><h5>${client.fullname||loan.fullname||"-"}</h5></div><div class="col-md-9"><div class="row"><div class="col-md-6"><p><b>Phone:</b> ${client.phone||loan.phone||"-"}</p><p><b>National ID:</b> ${client.national_id||"-"}</p><p><b>Email:</b> ${client.email||"-"}</p></div><div class="col-md-6"><p><b>Occupation:</b> ${client.occupation||"-"}</p><p><b>Employer:</b> ${client.employer||"-"}</p><p><b>Monthly Income:</b> ${money(client.monthly_income)}</p></div></div><p><b>County:</b> ${client.county||"-"}</p><p><b>Address:</b> ${client.address||"-"}</p></div></div>
-        <h5 class="text-primary mt-4">Loan Information</h5><hr>
-        <div class="row"><div class="col-md-6"><p><b>Original:</b> ${money(loan.original_principal)}</p><p><b>Remaining:</b> ${money(balance)}</p><p><b>Monthly Interest:</b> ${money(currentInterest)}</p><p><b>Months Overdue:</b> <span class="text-danger fw-bold">${monthsOverdue} mo</span></p></div><div class="col-md-6"><p><b>Total Paid:</b> <span class="text-success fw-bold">${money(totalPaid)}</span></p><p><b>Total Outstanding Interest:</b> <span class="text-danger fw-bold">${money(totalOutstandingInterest)}</span></p><p><b>Progress:</b> ${progress}%</p></div></div>
-        <p><b>Loan Date (Approval):</b> ${formatDate(loan.loan_date)}</p><p><b>Due Date:</b> <span class="text-danger fw-bold">${formatDate(loan.due_date)}</span></p><p><b>Status:</b> <span class="badge bg-danger">${loan.status}</span></p>
-        <div class="progress mt-2 mb-3" style="height:10px;"><div class="progress-bar bg-success" style="width:${progress}%"></div></div>
-        <h5 class="text-primary mt-4">Payment History</h5>
-        <table class="table table-bordered"><tr><th>Date</th><th>Amount</th><th>Principal</th><th>Interest</th><th>Balance</th><th>Note</th></tr>${payments.length===0?'<tr><td colspan="6" class="text-center">No payments yet</td></tr>':payments.map(p=>`<tr><td>${formatDate(p.payment_date)}</td><td>${money(p.amount)}</td><td>${money(p.principal_paid)}</td><td>${money(p.interest_paid)}</td><td>${money(p.balance)}</td><td>${p.note||"-"}</td></tr>`).join("")}</table>`;
-    new bootstrap.Modal(document.getElementById("loanModal")).show();
 }
 
 function openPayment(id){document.getElementById("paymentLoanId").value=id;document.getElementById("paymentAmount").value="";document.getElementById("paymentDate").value=new Date().toISOString().split("T")[0];new bootstrap.Modal(document.getElementById("paymentModal")).show();}
@@ -142,19 +160,188 @@ async function savePayment(){
     let amount=Number(document.getElementById("paymentAmount").value);
     let date=document.getElementById("paymentDate").value;
     let method=document.getElementById("paymentMethod").value;
-    
     if(amount<=0){alert("Please enter a valid amount.");return;}
-    
     let result=await api.addPayment({loanId,amount,paymentDate:date,method,note:"Late loan payment"});
-    
-    if(result.success){
-        alert(result.message);
-    }else{
-        alert("❌ Payment failed: "+(result.message||"Unknown error"));
-    }
-    
+    if(result.success){alert(result.message);}else{alert("❌ Payment failed: "+(result.message||"Unknown error"));}
     bootstrap.Modal.getInstance(document.getElementById("paymentModal")).hide();
     loadLateLoans();
+}
+
+// ==================== VIEW LOAN DETAILS ====================
+async function viewLoanDetails(loanId){
+    document.getElementById("loanDetailsContent").innerHTML='<p class="text-center text-muted p-4"><div class="spinner-border spinner-border-sm me-2"></div>Loading...</p>';
+    document.getElementById("detailsFooter").innerHTML='<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
+    new bootstrap.Modal(document.getElementById("loanDetailsModal")).show();
+
+    try{
+        const[loansResult,appsResult]=await Promise.all([api.getLoans(),api.getApplications()]);
+        if(!loansResult.success){document.getElementById("loanDetailsContent").innerHTML='<p class="text-danger">Failed to load loan data.</p>';return;}
+
+        const loan=loansResult.loans.find(l=>l.id==loanId);
+        if(!loan){document.getElementById("loanDetailsContent").innerHTML='<p class="text-danger">Loan not found.</p>';return;}
+
+        const clientResult=await api.getClient(loan.client_id);
+        const client=clientResult.success?clientResult.client:{};
+
+        const paymentsResult=await api.getLoanPayments(loanId);
+        const payments=paymentsResult.success?(paymentsResult.payments||[]):[];
+
+        const applications=appsResult.success?(appsResult.applications||[]):[];
+        const application=applications.find(a=>a.id==loan.application_id);
+        currentLoanAppId=loan.application_id;
+
+        const bal=Number(loan.remaining_principal||0);
+        const original=Number(loan.original_principal||0);
+        const rate=Number(loan.interest_rate||20);
+        const interest=(bal*rate)/100;
+        const paid=original-bal;
+        const progressPct=original>0?Math.round((paid/original)*100):0;
+
+        // Calculate overdue
+        const today=new Date();today.setHours(0,0,0,0);
+        let overdueAmount=0,monthsOverdue=0;
+        if(loan.due_date){
+            const dueDate=new Date(loan.due_date);dueDate.setHours(0,0,0,0);
+            if(dueDate<today){
+                let checkDate=new Date(dueDate);
+                while(true){checkDate.setMonth(checkDate.getMonth()+1);if(today<checkDate)break;monthsOverdue++;}
+                monthsOverdue++;
+                overdueAmount=interest*monthsOverdue;
+            }
+        }
+
+        let html=`
+            <div class="section-title"><i class="fa fa-user"></i> Client Information</div>
+            <div class="detail-card">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <img src="${client.profile_photo||loan.profile_photo||DEFAULT_IMG}" class="profile-img-large mb-2" onerror="this.src='${DEFAULT_IMG}'">
+                        <h6>${client.fullname||loan.fullname||"-"}</h6>
+                        <span class="badge bg-${client.status==='ACTIVE'?'success':'warning'}">${client.status||'ACTIVE'}</span>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="info-row"><div class="info-label">Phone</div><div class="info-value">${client.phone||loan.phone||"-"}</div></div>
+                                <div class="info-row"><div class="info-label">National ID</div><div class="info-value">${client.national_id||loan.national_id||"-"}</div></div>
+                                <div class="info-row"><div class="info-label">Email</div><div class="info-value">${client.email||"-"}</div></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-row"><div class="info-label">Occupation</div><div class="info-value">${client.occupation||"-"}</div></div>
+                                <div class="info-row"><div class="info-label">Employer</div><div class="info-value">${client.employer||"-"}</div></div>
+                                <div class="info-row"><div class="info-label">Monthly Income</div><div class="info-value fw-bold">${money(client.monthly_income)}</div></div>
+                            </div>
+                        </div>
+                        <div class="info-row"><div class="info-label">County</div><div class="info-value">${client.county||"-"}</div></div>
+                        <div class="info-row"><div class="info-label">Address</div><div class="info-value">${client.address||"-"}</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title"><i class="fa fa-money-bill"></i> Loan Information</div>
+            <div class="detail-card">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-row"><div class="info-label">Original Amount</div><div class="info-value fw-bold">${money(original)}</div></div>
+                        <div class="info-row"><div class="info-label">Remaining Balance</div><div class="info-value text-danger fw-bold">${money(bal)}</div></div>
+                        <div class="info-row"><div class="info-label">Amount Repaid</div><div class="info-value text-success fw-bold">${money(paid)}</div></div>
+                        <div class="info-row"><div class="info-label">Interest Rate</div><div class="info-value">${rate}%</div></div>
+                        <div class="info-row"><div class="info-label">Monthly Interest</div><div class="info-value">${money(interest)}</div></div>
+                        <div class="info-row"><div class="info-label"><span class="text-danger fw-bold">Overdue Amount</span></div><div class="info-value text-danger fw-bold">${money(overdueAmount)} (${monthsOverdue} months)</div></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-row"><div class="info-label">Loan Date</div><div class="info-value">${formatDate(loan.loan_date)}</div></div>
+                        <div class="info-row"><div class="info-label">Due Date</div><div class="info-value text-danger fw-bold">${formatDate(loan.due_date)}</div></div>
+                        <div class="info-row"><div class="info-label">Days Late</div><div class="info-value text-danger fw-bold">${loan.due_date?Math.floor((today-new Date(loan.due_date))/(1000*60*60*24)):0} days</div></div>
+                        <div class="info-row"><div class="info-label">Status</div><div class="info-value"><span class="badge bg-danger">OVERDUE</span></div></div>
+                        <div class="info-row"><div class="info-label">Total Paid</div><div class="info-value">${money(loan.total_paid||0)}</div></div>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <label class="fw-bold">Repayment Progress: ${progressPct}%</label>
+                    <div class="progress" style="height:20px;">
+                        <div class="progress-bar bg-danger" style="width:${progressPct}%">${progressPct}%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title"><i class="fa fa-history"></i> Payment History (${payments.length} payments)</div>
+            <div class="detail-card">
+                ${payments.length===0?'<p class="text-center text-muted">No payments recorded yet.</p>':`
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-light"><tr><th>#</th><th>Date</th><th>Amount</th><th>Balance</th><th>Method</th><th>Note</th></tr></thead>
+                            <tbody>${payments.map((p,i)=>`<tr><td>${i+1}</td><td>${formatDate(p.payment_date)}</td><td class="fw-bold">${money(p.amount)}</td><td>${money(p.balance)}</td><td>${p.payment_method||p.method||"-"}</td><td>${p.note||"-"}</td></tr>`).join("")}</tbody>
+                        </table>
+                    </div>
+                `}
+            </div>
+        `;
+
+        document.getElementById("loanDetailsContent").innerHTML=html;
+
+        if(application){
+            document.getElementById("detailsFooter").innerHTML=`
+                <button class="btn btn-guarantors" onclick="showGuarantors(${loan.application_id})"><i class="fa fa-users"></i> View Guarantors</button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            `;
+        }else{
+            document.getElementById("detailsFooter").innerHTML=`<span class="text-muted me-auto">No guarantor data</span><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>`;
+        }
+
+    }catch(error){console.error("View details error:",error);document.getElementById("loanDetailsContent").innerHTML='<p class="text-danger">Failed to load details.</p>';}
+}
+
+// ==================== SHOW GUARANTORS ====================
+async function showGuarantors(appId){
+    const content=document.getElementById("loanDetailsContent");
+    try{
+        const result=await api.getApplications();
+        if(!result.success)return;
+        const app=result.applications.find(a=>a.id==appId);
+        if(!app){content.innerHTML+='<div class="section-title mt-3"><i class="fa fa-users"></i> Guarantors</div><div class="detail-card"><p class="text-center text-muted">No guarantor information found.</p></div>';return;}
+
+        let html=`
+            <div class="section-title mt-3"><i class="fa fa-users"></i> Guarantors</div>
+            <div class="detail-card">
+                <div class="row">
+                    <div class="col-md-6">${renderGuarantorCard(app.guarantor1,"Guarantor 1")}</div>
+                    <div class="col-md-6">${renderGuarantorCard(app.guarantor2,"Guarantor 2")}</div>
+                </div>
+            </div>
+        `;
+        content.innerHTML+=html;
+        content.scrollTop=content.scrollHeight;
+        const btn=document.querySelector('.btn-guarantors');
+        if(btn){btn.disabled=true;btn.innerHTML='<i class="fa fa-check"></i> Guarantors Loaded';}
+    }catch(error){content.innerHTML+='<div class="alert alert-danger mt-3">Failed to load guarantors.</div>';}
+}
+
+function renderGuarantorCard(g,title){
+    if(!g||!g.name){return`<div class="text-center p-3"><i class="fa fa-user-slash" style="font-size:40px;color:#ccc;"></i><p class="text-muted mt-2">${title}: Not provided</p></div>`;}
+    return`
+        <div style="border:1px solid #e0e0e0;border-radius:12px;padding:15px;">
+            <div class="text-center mb-3">
+                <img src="${g.photo||DEFAULT_IMG}" class="guarantor-photo" onerror="this.src='${DEFAULT_IMG}'">
+                <h6 class="mt-2">${g.name||"-"}</h6>
+                <span class="badge bg-info">${title}</span>
+            </div>
+            <div class="info-row"><div class="info-label">Phone</div><div class="info-value">${g.phone||"-"}</div></div>
+            <div class="info-row"><div class="info-label">National ID</div><div class="info-value">${g.id||"-"}</div></div>
+            <div class="info-row"><div class="info-label">Relationship</div><div class="info-value">${g.relationship||"-"}</div></div>
+            <div class="info-row"><div class="info-label">Address</div><div class="info-value">${g.address||"-"}</div></div>
+            <div class="row mt-2">
+                <div class="col-6 text-center">
+                    <small class="fw-bold">ID Front</small>
+                    ${g.idFront?`<img src="${g.idFront}" class="document-img" onclick="showFullImage('${g.idFront}','${title} ID Front')">`:'<p class="text-muted small">N/A</p>'}
+                </div>
+                <div class="col-6 text-center">
+                    <small class="fw-bold">ID Back</small>
+                    ${g.idBack?`<img src="${g.idBack}" class="document-img" onclick="showFullImage('${g.idBack}','${title} ID Back')">`:'<p class="text-muted small">N/A</p>'}
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 function logout(){AUTH.adminLogout();}
