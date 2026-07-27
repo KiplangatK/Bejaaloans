@@ -96,8 +96,23 @@
                 <div class="modal-body">
                     <input type="hidden" id="paymentLoanId">
                     <div class="alert alert-info" id="loanInfo"></div>
+                    
+                    <label class="form-label fw-bold">Payment Type</label>
+                    <select id="paymentType" class="form-select mb-3" onchange="handlePaymentTypeChange()">
+                        <option value="principal">Principal Payment (Reduce Balance)</option>
+                        <option value="early">Early Payment (Extra Principal)</option>
+                    </select>
+
                     <label class="form-label">Amount (KSh)</label>
                     <input type="number" id="paymentAmount" class="form-control mb-3" placeholder="Enter amount" min="100">
+                    
+                    <div id="principalPaymentInfo" class="alert alert-primary small">
+                        <i class="fa fa-info-circle"></i> Reduces your outstanding balance. New interest will be calculated on the reduced balance. Due date stays the same.
+                    </div>
+                    <div id="earlyPaymentInfo" class="alert alert-info small" style="display:none;">
+                        <i class="fa fa-info-circle"></i> Extra payment toward principal. This reduces your balance faster and saves on interest! Due date stays the same.
+                    </div>
+
                     <label class="form-label">Payment Method</label>
                     <select id="paymentMethod" class="form-select mb-3">
                         <option value="Cash">Cash</option>
@@ -107,7 +122,7 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-success" onclick="savePayment()"><i class="fa fa-check"></i> Save</button>
+                    <button class="btn btn-success" onclick="savePayment()"><i class="fa fa-check"></i> Save Payment</button>
                 </div>
             </div>
         </div>
@@ -141,7 +156,6 @@
         if (admin) document.getElementById("adminName").innerHTML = admin.username;
 
         const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-        let currentLoanAppId = null;
 
         function money(v) { return "KES " + Number(v || 0).toLocaleString("en-KE", { minimumFractionDigits: 2 }); }
 
@@ -211,25 +225,38 @@
         function openPayment(loanId, balance, rate) {
             document.getElementById("paymentLoanId").value = loanId;
             document.getElementById("paymentAmount").value = "";
+            document.getElementById("paymentType").value = "principal";
+            handlePaymentTypeChange();
             document.getElementById("loanInfo").innerHTML = `
-                <strong>Balance:</strong> ${money(balance)}<br>
-                <strong>Rate:</strong> ${rate}%<br>
-                <strong>Monthly Interest:</strong> ${money((balance * rate) / 100)}
+                <strong>Outstanding Balance:</strong> ${money(balance)}<br>
+                <strong>Interest Rate:</strong> ${rate}%<br>
+                <strong>Monthly Interest:</strong> ${money((balance * rate) / 100)}<br>
+                <small class="text-muted">New interest will be calculated on reduced balance</small>
             `;
             new bootstrap.Modal(document.getElementById("paymentModal")).show();
+        }
+
+        function handlePaymentTypeChange() {
+            const type = document.getElementById("paymentType").value;
+            document.getElementById("principalPaymentInfo").style.display = type === "principal" ? "block" : "none";
+            document.getElementById("earlyPaymentInfo").style.display = type === "early" ? "block" : "none";
         }
 
         async function savePayment() {
             let loanId = document.getElementById("paymentLoanId").value;
             let amount = Number(document.getElementById("paymentAmount").value);
             let method = document.getElementById("paymentMethod").value;
+            let paymentType = document.getElementById("paymentType").value;
             
             if (amount <= 0) { alert("Please enter a valid amount."); return; }
+
+            let note = paymentType === "early" ? "Early payment (extra principal)" : "Principal payment";
 
             let result = await api.addPayment({
                 loanId, amount,
                 paymentDate: new Date().toISOString().split("T")[0],
-                method, note: "Payment"
+                method, note: note,
+                paymentType: paymentType
             });
 
             if (result.success) {
@@ -247,28 +274,15 @@
             document.getElementById("loanDetailsContent").innerHTML = 
                 '<p class="text-center text-muted p-4"><div class="spinner-border spinner-border-sm me-2"></div>Loading...</p>';
             
-            document.getElementById("detailsFooter").innerHTML = `
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            `;
-
+            document.getElementById("detailsFooter").innerHTML = '<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>';
             new bootstrap.Modal(document.getElementById("loanDetailsModal")).show();
 
             try {
-                const [loansResult, appsResult] = await Promise.all([
-                    api.getLoans(),
-                    api.getApplications()
-                ]);
-
-                if (!loansResult.success) {
-                    document.getElementById("loanDetailsContent").innerHTML = '<p class="text-danger">Failed to load loan data.</p>';
-                    return;
-                }
+                const [loansResult, appsResult] = await Promise.all([api.getLoans(), api.getApplications()]);
+                if (!loansResult.success) { document.getElementById("loanDetailsContent").innerHTML = '<p class="text-danger">Failed to load loan data.</p>'; return; }
 
                 const loan = loansResult.loans.find(l => l.id == loanId);
-                if (!loan) {
-                    document.getElementById("loanDetailsContent").innerHTML = '<p class="text-danger">Loan not found.</p>';
-                    return;
-                }
+                if (!loan) { document.getElementById("loanDetailsContent").innerHTML = '<p class="text-danger">Loan not found.</p>'; return; }
 
                 const clientResult = await api.getClient(loan.client_id);
                 const client = clientResult.success ? clientResult.client : {};
@@ -278,7 +292,6 @@
 
                 const applications = appsResult.success ? (appsResult.applications || []) : [];
                 const application = applications.find(a => a.id == loan.application_id);
-                currentLoanAppId = loan.application_id;
 
                 const bal = Number(loan.remaining_principal || 0);
                 const original = Number(loan.original_principal || 0);
@@ -286,9 +299,6 @@
                 const interest = (bal * rate) / 100;
                 const paid = original - bal;
                 const progressPct = original > 0 ? Math.round((paid / original) * 100) : 0;
-
-                // For active loans, overdue is 0 since due date hasn't passed
-                const overdueAmount = 0;
 
                 let html = `
                     <div class="section-title"><i class="fa fa-user"></i> Client Information</div>
@@ -327,7 +337,7 @@
                                 <div class="info-row"><div class="info-label">Amount Repaid</div><div class="info-value text-success fw-bold">${money(paid)}</div></div>
                                 <div class="info-row"><div class="info-label">Interest Rate</div><div class="info-value">${rate}%</div></div>
                                 <div class="info-row"><div class="info-label">Monthly Interest</div><div class="info-value">${money(interest)}</div></div>
-                                <div class="info-row"><div class="info-label"><span class="text-success">Overdue Amount</span></div><div class="info-value text-success fw-bold">${money(overdueAmount)}</div></div>
+                                <div class="info-row"><div class="info-label"><span class="text-success">Overdue Amount</span></div><div class="info-value text-success fw-bold">${money(0)}</div></div>
                             </div>
                             <div class="col-md-6">
                                 <div class="info-row"><div class="info-label">Loan Date</div><div class="info-value">${formatDate(loan.loan_date)}</div></div>
@@ -349,21 +359,8 @@
                         ${payments.length === 0 ? '<p class="text-center text-muted">No payments recorded yet.</p>' : `
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped">
-                                    <thead class="table-light">
-                                        <tr><th>#</th><th>Date</th><th>Amount</th><th>Balance</th><th>Method</th><th>Note</th></tr>
-                                    </thead>
-                                    <tbody>
-                                        ${payments.map((p, i) => `
-                                            <tr>
-                                                <td>${i + 1}</td>
-                                                <td>${formatDate(p.payment_date)}</td>
-                                                <td class="fw-bold">${money(p.amount)}</td>
-                                                <td>${money(p.balance)}</td>
-                                                <td>${p.payment_method || p.method || "-"}</td>
-                                                <td>${p.note || "-"}</td>
-                                            </tr>
-                                        `).join("")}
-                                    </tbody>
+                                    <thead class="table-light"><tr><th>#</th><th>Date</th><th>Amount</th><th>Balance</th><th>Method</th><th>Note</th></tr></thead>
+                                    <tbody>${payments.map((p, i) => `<tr><td>${i + 1}</td><td>${formatDate(p.payment_date)}</td><td class="fw-bold">${money(p.amount)}</td><td>${money(p.balance)}</td><td>${p.payment_method || p.method || "-"}</td><td>${p.note || "-"}</td></tr>`).join("")}</tbody>
                                 </table>
                             </div>
                         `}
@@ -372,19 +369,13 @@
 
                 document.getElementById("loanDetailsContent").innerHTML = html;
 
-                // Add View Guarantors button in footer if application exists
                 if (application) {
                     document.getElementById("detailsFooter").innerHTML = `
-                        <button class="btn btn-guarantors" onclick="showGuarantorsInModal(${loan.application_id})">
-                            <i class="fa fa-users"></i> View Guarantors
-                        </button>
+                        <button class="btn btn-guarantors" onclick="showGuarantors(${loan.application_id})"><i class="fa fa-users"></i> View Guarantors</button>
                         <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     `;
                 } else {
-                    document.getElementById("detailsFooter").innerHTML = `
-                        <span class="text-muted me-auto">No guarantor data available</span>
-                        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    `;
+                    document.getElementById("detailsFooter").innerHTML = `<span class="text-muted me-auto">No guarantor data</span><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>`;
                 }
 
             } catch (error) {
@@ -394,52 +385,32 @@
         }
 
         // ==================== SHOW GUARANTORS ====================
-        async function showGuarantorsInModal(appId) {
+        async function showGuarantors(appId) {
             const content = document.getElementById("loanDetailsContent");
-            
-            // Add guarantors section at the bottom
             try {
                 const result = await api.getApplications();
                 if (!result.success) return;
-                
                 const app = result.applications.find(a => a.id == appId);
-                if (!app) {
-                    content.innerHTML += `<div class="section-title mt-3"><i class="fa fa-users"></i> Guarantors</div><div class="detail-card"><p class="text-center text-muted">No guarantor information found.</p></div>`;
-                    return;
-                }
+                if (!app) { content.innerHTML += '<div class="section-title mt-3"><i class="fa fa-users"></i> Guarantors</div><div class="detail-card"><p class="text-center text-muted">No guarantor information found.</p></div>'; return; }
 
-                let guarantorHTML = `
+                let html = `
                     <div class="section-title mt-3"><i class="fa fa-users"></i> Guarantors</div>
                     <div class="detail-card">
                         <div class="row">
-                            <div class="col-md-6">
-                                ${renderGuarantorCard(app.guarantor1, "Guarantor 1")}
-                            </div>
-                            <div class="col-md-6">
-                                ${renderGuarantorCard(app.guarantor2, "Guarantor 2")}
-                            </div>
+                            <div class="col-md-6">${renderGuarantorCard(app.guarantor1, "Guarantor 1")}</div>
+                            <div class="col-md-6">${renderGuarantorCard(app.guarantor2, "Guarantor 2")}</div>
                         </div>
                     </div>
                 `;
-
-                content.innerHTML += guarantorHTML;
-                
-                // Scroll to guarantors
+                content.innerHTML += html;
                 content.scrollTop = content.scrollHeight;
-                
-                // Disable the button after clicking
-                document.querySelector('.btn-guarantors').disabled = true;
-                document.querySelector('.btn-guarantors').innerHTML = '<i class="fa fa-check"></i> Guarantors Loaded';
-
-            } catch (error) {
-                content.innerHTML += `<div class="alert alert-danger mt-3">Failed to load guarantors.</div>`;
-            }
+                const btn = document.querySelector('.btn-guarantors');
+                if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa fa-check"></i> Guarantors Loaded'; }
+            } catch (error) { content.innerHTML += '<div class="alert alert-danger mt-3">Failed to load guarantors.</div>'; }
         }
 
         function renderGuarantorCard(g, title) {
-            if (!g || !g.name) {
-                return `<div class="text-center p-3"><i class="fa fa-user-slash" style="font-size:40px;color:#ccc;"></i><p class="text-muted mt-2">${title}: Not provided</p></div>`;
-            }
+            if (!g || !g.name) { return `<div class="text-center p-3"><i class="fa fa-user-slash" style="font-size:40px;color:#ccc;"></i><p class="text-muted mt-2">${title}: Not provided</p></div>`; }
             return `
                 <div style="border:1px solid #e0e0e0;border-radius:12px;padding:15px;">
                     <div class="text-center mb-3">
@@ -452,14 +423,8 @@
                     <div class="info-row"><div class="info-label">Relationship</div><div class="info-value">${g.relationship || "-"}</div></div>
                     <div class="info-row"><div class="info-label">Address</div><div class="info-value">${g.address || "-"}</div></div>
                     <div class="row mt-2">
-                        <div class="col-6 text-center">
-                            <small class="fw-bold">ID Front</small>
-                            ${g.idFront ? `<img src="${g.idFront}" class="document-img" onclick="showFullImage('${g.idFront}','${title} ID Front')">` : '<p class="text-muted small">N/A</p>'}
-                        </div>
-                        <div class="col-6 text-center">
-                            <small class="fw-bold">ID Back</small>
-                            ${g.idBack ? `<img src="${g.idBack}" class="document-img" onclick="showFullImage('${g.idBack}','${title} ID Back')">` : '<p class="text-muted small">N/A</p>'}
-                        </div>
+                        <div class="col-6 text-center"><small class="fw-bold">ID Front</small>${g.idFront ? `<img src="${g.idFront}" class="document-img" onclick="showFullImage('${g.idFront}','${title} ID Front')">` : '<p class="text-muted small">N/A</p>'}</div>
+                        <div class="col-6 text-center"><small class="fw-bold">ID Back</small>${g.idBack ? `<img src="${g.idBack}" class="document-img" onclick="showFullImage('${g.idBack}','${title} ID Back')">` : '<p class="text-muted small">N/A</p>'}</div>
                     </div>
                 </div>
             `;
