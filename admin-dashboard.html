@@ -160,6 +160,23 @@
 
         .client-avatar-sm { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; margin-right: 10px; border: 2px solid #e0e0e0; }
 
+        .btn-apply-early {
+            background: linear-gradient(135deg, #0dcaf0, #0aa2c0);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 20px;
+        }
+        .btn-apply-early:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(13,202,240,0.4);
+        }
+
         @media (max-width: 1200px) { .charts-row { grid-template-columns: 1fr; } }
         @media (max-width: 992px) { .sidebar { transform: translateX(-100%); } .sidebar.show { transform: translateX(0); } .main { margin-left: 0; } .stat-card .stat-value { font-size: 28px; } }
         @media (max-width: 576px) { .stats-grid { grid-template-columns: 1fr 1fr; } .stat-card { padding: 15px; } .stat-card .stat-value { font-size: 22px; } }
@@ -191,6 +208,13 @@
         </div>
 
         <div class="content">
+            <!-- Apply Early Payments Button -->
+            <div class="text-end mb-3">
+                <button class="btn-apply-early" onclick="applyEarlyPayments()">
+                    <i class="fa fa-magic"></i> Apply Early Payments (Due Today)
+                </button>
+            </div>
+
             <div class="stats-grid">
                 <a href="registered-clients.html" class="stat-card">
                     <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
@@ -247,7 +271,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // ✅ FIXED: Redirect to admin-portal.html
         if (!AUTH.currentAdmin()) { window.location.href = "admin-portal.html"; }
 
         let admin = AUTH.currentAdmin();
@@ -344,6 +367,41 @@
                     });
                 }
             } catch (error) { console.error("Chart error:", error); }
+        }
+
+        // ==================== APPLY EARLY PAYMENTS ====================
+        async function applyEarlyPayments() {
+            if (!confirm("Apply all early payments for loans due today or earlier?\n\nThis will automatically use early payment credits to cover interest and principal.")) return;
+            
+            const btn = document.querySelector('.btn-apply-early');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+            
+            try {
+                const token = localStorage.getItem("bejja_token");
+                const response = await fetch("http://localhost:5000/api/loans/apply-early-payments", {
+                    method: "POST",
+                    headers: { 
+                        "Authorization": "Bearer " + token, 
+                        "Content-Type": "application/json" 
+                    }
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert("✅ " + result.message);
+                    loadDashboard();
+                } else {
+                    alert("❌ " + (result.message || "Failed to apply early payments."));
+                }
+            } catch (error) {
+                alert("❌ Failed to connect to server. Please try again.");
+                console.error(error);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
         }
 
         function logout() {
