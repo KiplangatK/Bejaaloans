@@ -11,175 +11,85 @@
     
     <style>
         :root {
-            --primary: #0d47a1;
-            --primary-light: #1976d2;
-            --success: #198754;
-            --warning: #ffc107;
-            --danger: #dc3545;
-            --white: #ffffff;
-            --bg-light: #edf4ff;
-            --shadow-sm: 0 5px 15px rgba(0,0,0,0.08);
-            --shadow-md: 0 8px 25px rgba(0,0,0,0.12);
-            --transition: all 0.3s ease;
-            --radius: 15px;
+            --primary: #0d47a1; --primary-light: #1976d2; --success: #198754;
+            --warning: #ffc107; --danger: #dc3545; --white: #ffffff;
+            --bg-light: #edf4ff; --shadow-sm: 0 5px 15px rgba(0,0,0,0.08);
+            --shadow-md: 0 8px 25px rgba(0,0,0,0.12); --transition: all 0.3s ease; --radius: 15px;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background: var(--bg-light);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden;
-        }
-
-        .sidebar {
-            position: fixed; left: 0; top: 0;
-            width: 270px; height: 100vh;
-            background: linear-gradient(180deg, #0a3d8f 0%, #0d47a1 40%, #1565c0 100%);
-            color: var(--white); z-index: 1000;
-            overflow-y: auto; box-shadow: 4px 0 25px rgba(0,0,0,0.25);
-        }
-
-        .logo {
-            padding: 28px 25px; font-size: 24px; font-weight: 800;
-            border-bottom: 1px solid rgba(255,255,255,0.15);
-            display: flex; align-items: center; gap: 12px;
-        }
+        body { background: var(--bg-light); font-family: 'Segoe UI', Tahoma, sans-serif; overflow-x: hidden; }
+        .sidebar { position: fixed; left: 0; top: 0; width: 270px; height: 100vh; background: linear-gradient(180deg, #0a3d8f 0%, #0d47a1 40%, #1565c0 100%); color: var(--white); z-index: 1000; overflow-y: auto; box-shadow: 4px 0 25px rgba(0,0,0,0.25); }
+        .logo { padding: 28px 25px; font-size: 24px; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; gap: 12px; }
         .logo i { font-size: 30px; color: #ffc107; }
-
-        .sidebar a {
-            display: flex; align-items: center;
-            padding: 14px 25px; color: rgba(255,255,255,0.8);
-            text-decoration: none; transition: var(--transition);
-            font-size: 14px; font-weight: 500;
-            border-left: 3px solid transparent;
-        }
-        .sidebar a:hover, .sidebar a.active {
-            background: rgba(255,255,255,0.12); color: var(--white);
-            border-left-color: #ffc107;
-        }
+        .sidebar a { display: flex; align-items: center; padding: 14px 25px; color: rgba(255,255,255,0.8); text-decoration: none; transition: var(--transition); font-size: 14px; font-weight: 500; border-left: 3px solid transparent; }
+        .sidebar a:hover, .sidebar a.active { background: rgba(255,255,255,0.12); color: var(--white); border-left-color: #ffc107; }
         .sidebar a i { width: 24px; margin-right: 12px; font-size: 16px; }
-
-        .sidebar .badge-count {
-            background: #ffc107; color: #0d47a1;
-            padding: 3px 9px; border-radius: 15px;
-            font-size: 11px; font-weight: 700; margin-left: auto;
-        }
-
+        .sidebar .badge-count { background: #ffc107; color: #0d47a1; padding: 3px 9px; border-radius: 15px; font-size: 11px; font-weight: 700; margin-left: auto; }
         .main { margin-left: 270px; min-height: 100vh; }
-
-        .topbar {
-            height: 72px; background: var(--white);
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 30px; box-shadow: 0 2px 20px rgba(0,0,0,0.06);
-            position: sticky; top: 0; z-index: 999;
-        }
+        .topbar { height: 72px; background: var(--white); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; box-shadow: 0 2px 20px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 999; }
         .topbar h2 { font-weight: 700; font-size: 22px; margin: 0; color: #1a1a1a; }
-        .topbar .btn-home {
-            background: var(--bg-light); color: var(--primary);
-            padding: 8px 18px; border-radius: 25px; text-decoration: none;
-            font-size: 14px; font-weight: 600; transition: var(--transition);
-        }
+        .topbar .btn-home { background: var(--bg-light); color: var(--primary); padding: 8px 18px; border-radius: 25px; text-decoration: none; font-size: 14px; font-weight: 600; transition: var(--transition); }
         .topbar .btn-home:hover { background: var(--primary); color: var(--white); }
-        .topbar .user-avatar {
-            width: 38px; height: 38px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: var(--white); display: flex; align-items: center;
-            justify-content: center; font-weight: 700; font-size: 16px;
-        }
+        .topbar .user-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; }
         .topbar .btn-logout { color: var(--danger); font-weight: 600; cursor: pointer; text-decoration: none; }
 
+        /* Notifications Bell */
+        .notification-wrapper { position: relative; margin-right: 15px; cursor: pointer; }
+        .notification-bell { font-size: 22px; color: #555; transition: var(--transition); }
+        .notification-bell:hover { color: var(--primary); }
+        .notification-badge { position: absolute; top: -8px; right: -10px; background: var(--danger); color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: 700; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+        .notification-dropdown { position: absolute; top: 40px; right: 0; width: 350px; background: var(--white); border-radius: 15px; box-shadow: 0 15px 40px rgba(0,0,0,0.2); z-index: 1001; display: none; overflow: hidden; }
+        .notification-dropdown.show { display: block; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .notification-header { padding: 15px 20px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; font-weight: 700; color: var(--primary); }
+        .notification-item { padding: 12px 20px; border-bottom: 1px solid #f5f5f5; display: flex; align-items: flex-start; gap: 12px; transition: var(--transition); cursor: pointer; }
+        .notification-item:hover { background: #f8faff; }
+        .notification-item .notif-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .notification-item .notif-icon.pending { background: rgba(255,193,7,0.15); color: #b8860b; }
+        .notification-item .notif-icon.payment { background: rgba(25,135,84,0.15); color: var(--success); }
+        .notification-item .notif-icon.overdue { background: rgba(220,53,69,0.15); color: var(--danger); }
+        .notification-item .notif-content { flex: 1; }
+        .notification-item .notif-title { font-weight: 600; font-size: 13px; color: #333; }
+        .notification-item .notif-desc { font-size: 12px; color: #888; }
+        .notification-item .notif-time { font-size: 11px; color: #aaa; margin-top: 4px; }
+        .notification-footer { padding: 12px 20px; text-align: center; }
+        .notification-footer a { color: var(--primary); font-weight: 600; font-size: 13px; text-decoration: none; }
+        .notification-empty { padding: 30px; text-align: center; color: #999; }
+
         .content { padding: 30px; }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 20px; margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: var(--white); border-radius: var(--radius);
-            padding: 25px; box-shadow: var(--shadow-sm); transition: var(--transition);
-            text-decoration: none; color: inherit; display: block;
-            border-left: 4px solid var(--primary);
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: var(--white); border-radius: var(--radius); padding: 25px; box-shadow: var(--shadow-sm); transition: var(--transition); text-decoration: none; color: inherit; display: block; border-left: 4px solid var(--primary); }
         .stat-card:hover { transform: translateY(-8px); box-shadow: 0 12px 35px rgba(0,0,0,0.18); }
         .stat-card.success { border-left-color: var(--success); }
         .stat-card.warning { border-left-color: var(--warning); }
         .stat-card.danger { border-left-color: var(--danger); }
-
-        .stat-card .stat-icon {
-            width: 55px; height: 55px; border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 26px; margin-bottom: 18px;
-        }
+        .stat-card .stat-icon { width: 55px; height: 55px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 18px; }
         .stat-card .stat-icon.blue { background: rgba(13,71,161,0.1); color: var(--primary); }
         .stat-card .stat-icon.green { background: rgba(25,135,84,0.1); color: var(--success); }
         .stat-card .stat-icon.yellow { background: rgba(255,193,7,0.1); color: #b8860b; }
         .stat-card .stat-icon.red { background: rgba(220,53,69,0.1); color: var(--danger); }
-
         .stat-card .stat-value { font-size: 36px; font-weight: 800; color: #1a1a1a; }
         .stat-card .stat-label { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-top: 8px; }
-
-        .charts-row {
-            display: grid; grid-template-columns: 2fr 1fr;
-            gap: 20px; margin-bottom: 30px;
-        }
-
-        .chart-card {
-            background: var(--white); border-radius: var(--radius);
-            box-shadow: var(--shadow-sm); overflow: hidden;
-        }
-        .chart-header {
-            padding: 18px 25px; border-bottom: 1px solid #f0f0f0;
-            font-weight: 700; color: #0d47a1;
-        }
-        .chart-body { padding: 20px; }
-        .chart-body canvas { max-height: 300px; }
-
-        .table-card {
-            background: var(--white); border-radius: var(--radius);
-            box-shadow: var(--shadow-sm); overflow: hidden; margin-bottom: 30px;
-        }
-        .table-header {
-            padding: 18px 25px; border-bottom: 1px solid #f0f0f0;
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 30px; }
+        .chart-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+        .chart-header { padding: 18px 25px; border-bottom: 1px solid #f0f0f0; font-weight: 700; color: #0d47a1; }
+        .chart-body { padding: 20px; } .chart-body canvas { max-height: 300px; }
+        .table-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; margin-bottom: 30px; }
+        .table-header { padding: 18px 25px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
         .table-header h5 { margin: 0; font-weight: 700; color: #0d47a1; }
-        .table-header .btn-view-all {
-            background: var(--bg-light); color: var(--primary);
-            padding: 6px 16px; border-radius: 20px; text-decoration: none;
-            font-size: 13px; font-weight: 600; transition: var(--transition);
-        }
+        .table-header .btn-view-all { background: var(--bg-light); color: var(--primary); padding: 6px 16px; border-radius: 20px; text-decoration: none; font-size: 13px; font-weight: 600; transition: var(--transition); }
         .table-header .btn-view-all:hover { background: var(--primary); color: var(--white); }
-
         table { width: 100%; border-collapse: collapse; }
         th { background: #f8faff; color: #0d47a1; font-weight: 600; font-size: 13px; text-transform: uppercase; padding: 14px 18px; }
         td { padding: 14px 18px; border-bottom: 1px solid #f0f0f0; }
         tbody tr:hover { background: #f8fbff; }
-
         .client-avatar-sm { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; margin-right: 10px; border: 2px solid #e0e0e0; }
-
-        .btn-apply-early {
-            background: linear-gradient(135deg, #0dcaf0, #0aa2c0);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: var(--transition);
-            margin-bottom: 20px;
-        }
-        .btn-apply-early:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(13,202,240,0.4);
-        }
-
+        .btn-apply-early { background: linear-gradient(135deg, #0dcaf0, #0aa2c0); color: white; border: none; padding: 10px 20px; border-radius: 25px; font-weight: 600; font-size: 14px; cursor: pointer; transition: var(--transition); margin-bottom: 20px; }
+        .btn-apply-early:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(13,202,240,0.4); }
         @media (max-width: 1200px) { .charts-row { grid-template-columns: 1fr; } }
-        @media (max-width: 992px) { .sidebar { transform: translateX(-100%); } .sidebar.show { transform: translateX(0); } .main { margin-left: 0; } .stat-card .stat-value { font-size: 28px; } }
-        @media (max-width: 576px) { .stats-grid { grid-template-columns: 1fr 1fr; } .stat-card { padding: 15px; } .stat-card .stat-value { font-size: 22px; } }
+        @media (max-width: 992px) { .sidebar { transform: translateX(-100%); } .sidebar.show { transform: translateX(0); } .main { margin-left: 0; } .notification-dropdown { width: 300px; right: -50px; } }
+        @media (max-width: 576px) { .stats-grid { grid-template-columns: 1fr 1fr; } .stat-card .stat-value { font-size: 22px; } .notification-dropdown { width: 280px; right: -100px; } }
     </style>
 </head>
 <body>
@@ -201,6 +111,26 @@
             <h2><i class="fa-solid fa-gauge" style="color:#1976d2;"></i> Admin Dashboard</h2>
             <div class="d-flex align-items-center gap-3">
                 <a href="index.html" class="btn-home"><i class="fa fa-home"></i> Home</a>
+                
+                <!-- Notifications Bell -->
+                <div class="notification-wrapper" onclick="toggleNotifications()">
+                    <i class="fa-solid fa-bell notification-bell"></i>
+                    <span class="notification-badge" id="notifBadge" style="display:none;">0</span>
+                    
+                    <div class="notification-dropdown" id="notifDropdown">
+                        <div class="notification-header">
+                            <span><i class="fa fa-bell me-2"></i>Notifications</span>
+                            <small class="text-muted" id="notifTime">Just now</small>
+                        </div>
+                        <div id="notifList">
+                            <div class="notification-empty">Loading...</div>
+                        </div>
+                        <div class="notification-footer">
+                            <a href="loan-applications.html">View All Applications →</a>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="user-avatar" id="userInitial">A</div>
                 <span>Welcome, <strong id="adminName">Admin</strong></span>
                 <a href="#" class="btn-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
@@ -208,7 +138,6 @@
         </div>
 
         <div class="content">
-            <!-- Apply Early Payments Button -->
             <div class="text-end mb-3">
                 <button class="btn-apply-early" onclick="applyEarlyPayments()">
                     <i class="fa fa-magic"></i> Apply Early Payments (Due Today)
@@ -239,29 +168,13 @@
             </div>
 
             <div class="charts-row">
-                <div class="chart-card">
-                    <div class="chart-header">📈 Loan & Payment Trends</div>
-                    <div class="chart-body"><canvas id="loanTrendChart"></canvas></div>
-                </div>
-                <div class="chart-card">
-                    <div class="chart-header">📊 Portfolio Summary</div>
-                    <div class="chart-body"><canvas id="portfolioChart"></canvas></div>
-                </div>
+                <div class="chart-card"><div class="chart-header">📈 Loan & Payment Trends</div><div class="chart-body"><canvas id="loanTrendChart"></canvas></div></div>
+                <div class="chart-card"><div class="chart-header">📊 Portfolio Summary</div><div class="chart-body"><canvas id="portfolioChart"></canvas></div></div>
             </div>
 
             <div class="table-card">
-                <div class="table-header">
-                    <h5><i class="fa fa-clock me-2"></i>Recent Loan Applications</h5>
-                    <a href="loan-applications.html" class="btn-view-all">View All →</a>
-                </div>
-                <div class="table-responsive">
-                    <table>
-                        <thead><tr><th>Client</th><th>Amount</th><th>Purpose</th><th>Date</th><th>Status</th></tr></thead>
-                        <tbody id="recentApplications">
-                            <tr><td colspan="5" class="text-center text-muted p-4">Loading...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+                <div class="table-header"><h5><i class="fa fa-clock me-2"></i>Recent Loan Applications</h5><a href="loan-applications.html" class="btn-view-all">View All →</a></div>
+                <div class="table-responsive"><table><thead><tr><th>Client</th><th>Amount</th><th>Purpose</th><th>Date</th><th>Status</th></tr></thead><tbody id="recentApplications"><tr><td colspan="5" class="text-center text-muted p-4">Loading...</td></tr></tbody></table></div>
             </div>
         </div>
     </div>
@@ -279,12 +192,154 @@
             document.getElementById("userInitial").textContent = admin.username.charAt(0).toUpperCase();
         }
 
-        let loanTrendChart = null;
-        let portfolioChart = null;
+        let loanTrendChart = null, portfolioChart = null;
 
         function money(v) { return "KSh " + Number(v || 0).toLocaleString("en-KE", { minimumFractionDigits: 2 }); }
         function moneyShort(v) { const num = Number(v || 0); if (num >= 1000000) return "KSh " + (num/1000000).toFixed(1)+"M"; if (num >= 1000) return "KSh " + (num/1000).toFixed(1)+"K"; return "KSh "+num.toLocaleString(); }
 
+        // ==================== TOGGLE NOTIFICATIONS ====================
+        function toggleNotifications() {
+            const dropdown = document.getElementById("notifDropdown");
+            dropdown.classList.toggle("show");
+            if (dropdown.classList.contains("show")) {
+                loadNotifications();
+            }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", function(e) {
+            const wrapper = document.querySelector(".notification-wrapper");
+            if (wrapper && !wrapper.contains(e.target)) {
+                document.getElementById("notifDropdown").classList.remove("show");
+            }
+        });
+
+        async function loadNotifications() {
+            const notifList = document.getElementById("notifList");
+            const notifBadge = document.getElementById("notifBadge");
+            const notifTime = document.getElementById("notifTime");
+            
+            notifTime.textContent = new Date().toLocaleTimeString();
+
+            try {
+                const [statsResult, appsResult, loansResult] = await Promise.all([
+                    api.getStats(),
+                    api.getApplications(),
+                    api.getLoans()
+                ]);
+
+                let notifications = [];
+                let totalBadge = 0;
+
+                // Pending applications
+                if (appsResult.success && appsResult.applications) {
+                    const pending = appsResult.applications.filter(a => a.status === "PENDING");
+                    if (pending.length > 0) {
+                        totalBadge += pending.length;
+                        notifications.push({
+                            icon: "fa-clock",
+                            iconClass: "pending",
+                            title: `${pending.length} Pending Application(s)`,
+                            desc: "Loan applications waiting for review",
+                            link: "loan-applications.html",
+                            time: "Needs attention"
+                        });
+                    }
+                }
+
+                // Payments today
+                if (loansResult.success && loansResult.loans) {
+                    const today = new Date().toISOString().split("T")[0];
+                    let todayPayments = 0;
+                    for (let loan of loansResult.loans) {
+                        try {
+                            const pResult = await api.getLoanPayments(loan.id);
+                            if (pResult.success && pResult.payments) {
+                                const todayOnes = pResult.payments.filter(p => 
+                                    p.payment_date && String(p.payment_date).split("T")[0] === today
+                                );
+                                todayPayments += todayOnes.length;
+                            }
+                        } catch(e) {}
+                    }
+                    if (todayPayments > 0) {
+                        totalBadge += todayPayments;
+                        notifications.push({
+                            icon: "fa-money-bill",
+                            iconClass: "payment",
+                            title: `${todayPayments} Payment(s) Today`,
+                            desc: "Payments recorded today",
+                            link: "total-loans.html",
+                            time: "Today"
+                        });
+                    }
+                }
+
+                // Overdue loans
+                if (loansResult.success && loansResult.loans) {
+                    const today = new Date(); today.setHours(0,0,0,0);
+                    const overdue = loansResult.loans.filter(l => 
+                        l.status === "ACTIVE" && Number(l.remaining_principal) > 0 && 
+                        l.due_date && new Date(l.due_date) < today
+                    );
+                    if (overdue.length > 0) {
+                        totalBadge += overdue.length;
+                        notifications.push({
+                            icon: "fa-exclamation-triangle",
+                            iconClass: "overdue",
+                            title: `${overdue.length} Overdue Loan(s)`,
+                            desc: "Loans past their due date",
+                            link: "late-loans.html",
+                            time: "Urgent"
+                        });
+                    }
+                }
+
+                // Early payments ready to apply
+                if (loansResult.success && loansResult.loans) {
+                    const today = new Date().toISOString().split("T")[0];
+                    const earlyLoans = loansResult.loans.filter(l =>
+                        l.status === "ACTIVE" && Number(l.early_payment_balance || 0) > 0 && l.due_date <= today
+                    );
+                    if (earlyLoans.length > 0) {
+                        notifications.push({
+                            icon: "fa-piggy-bank",
+                            iconClass: "payment",
+                            title: `${earlyLoans.length} Early Payment(s) Ready`,
+                            desc: "Early payments can be applied now",
+                            link: "#",
+                            time: "Ready to apply",
+                            onClick: "applyEarlyPayments()"
+                        });
+                    }
+                }
+
+                // Render
+                if (notifications.length === 0) {
+                    notifList.innerHTML = '<div class="notification-empty"><i class="fa fa-check-circle" style="font-size:40px;color:#198754;"></i><p class="mt-2">All caught up! No notifications.</p></div>';
+                    notifBadge.style.display = "none";
+                } else {
+                    notifBadge.textContent = totalBadge;
+                    notifBadge.style.display = "flex";
+
+                    notifList.innerHTML = notifications.map(n => `
+                        <div class="notification-item" onclick="${n.onClick ? n.onClick : `window.location.href='${n.link}'`}">
+                            <div class="notif-icon ${n.iconClass}"><i class="fa ${n.icon}"></i></div>
+                            <div class="notif-content">
+                                <div class="notif-title">${n.title}</div>
+                                <div class="notif-desc">${n.desc}</div>
+                                <div class="notif-time">${n.time}</div>
+                            </div>
+                        </div>
+                    `).join("");
+                }
+
+            } catch (error) {
+                notifList.innerHTML = '<div class="notification-empty text-danger">Failed to load notifications</div>';
+            }
+        }
+
+        // ==================== DASHBOARD ====================
         async function loadDashboard() {
             try {
                 let result = await api.getStats();
@@ -315,18 +370,11 @@
                 }
                 const recent = apps.applications.sort((a,b) => new Date(b.application_date) - new Date(a.application_date)).slice(0, 8);
                 const statusColors = { 'PENDING': 'warning', 'APPROVED': 'success', 'REJECTED': 'danger', 'CANCELLED': 'secondary' };
-
                 table.innerHTML = recent.map(a => {
                     const clientName = a.client ? a.client.fullname || "Unknown" : "Unknown";
                     const photo = a.client?.profile_photo || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
                     const badge = statusColors[a.status] || 'primary';
-                    return `<tr>
-                        <td><img src="${photo}" class="client-avatar-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'"><strong>${clientName}</strong></td>
-                        <td><strong>${money(Number(a.amount||0))}</strong></td>
-                        <td>${(a.purpose||'-').substring(0,30)}</td>
-                        <td>${formatDate(a.application_date)}</td>
-                        <td><span class="badge bg-${badge}">${a.status}</span></td>
-                    </tr>`;
+                    return `<tr><td><img src="${photo}" class="client-avatar-sm" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'"><strong>${clientName}</strong></td><td><strong>${money(Number(a.amount||0))}</strong></td><td>${(a.purpose||'-').substring(0,30)}</td><td>${formatDate(a.application_date)}</td><td><span class="badge bg-${badge}">${a.status}</span></td></tr>`;
                 }).join("");
             } catch (error) { table.innerHTML = '<tr><td colspan="5" class="text-center text-danger p-4">Failed to load.</td></tr>'; }
         }
@@ -347,12 +395,10 @@
                 const ctx1 = document.getElementById("loanTrendChart")?.getContext("2d");
                 if (ctx1) {
                     loanTrendChart = new Chart(ctx1, {
-                        type: "line",
-                        data: { labels: months, datasets: [
+                        type: "line", data: { labels: months, datasets: [
                             { label: "Disbursed", data: disbursedData, borderColor: "#1976d2", backgroundColor: "rgba(25,118,210,0.1)", fill: true, tension: 0.4 },
                             { label: "Collected", data: collectedData, borderColor: "#198754", backgroundColor: "rgba(25,135,84,0.1)", fill: true, tension: 0.4 }
-                        ]},
-                        options: { responsive: true, plugins: { legend: { position: "bottom" } }, scales: { y: { beginAtZero: true, ticks: { callback: (v) => moneyShort(v) } } } }
+                        ]}, options: { responsive: true, plugins: { legend: { position: "bottom" } }, scales: { y: { beginAtZero: true, ticks: { callback: (v) => moneyShort(v) } } } }
                     });
                 }
                 const active = loans.filter(l => l.status==="ACTIVE" && Number(l.remaining_principal)>0).length;
@@ -361,54 +407,32 @@
                 const ctx2 = document.getElementById("portfolioChart")?.getContext("2d");
                 if (ctx2) {
                     portfolioChart = new Chart(ctx2, {
-                        type: "doughnut",
-                        data: { labels: ["Active","Completed","Overdue"], datasets: [{ data: [active,completed,overdue], backgroundColor: ["#1976d2","#198754","#ffc107"], borderWidth: 3, borderColor: "#fff" }] },
+                        type: "doughnut", data: { labels: ["Active","Completed","Overdue"], datasets: [{ data: [active,completed,overdue], backgroundColor: ["#1976d2","#198754","#ffc107"], borderWidth: 3, borderColor: "#fff" }] },
                         options: { responsive: true, plugins: { legend: { position: "bottom" } } }
                     });
                 }
             } catch (error) { console.error("Chart error:", error); }
         }
 
-        // ==================== APPLY EARLY PAYMENTS ====================
         async function applyEarlyPayments() {
-            if (!confirm("Apply all early payments for loans due today or earlier?\n\nThis will automatically use early payment credits to cover interest and principal.")) return;
-            
+            if (!confirm("Apply all early payments for loans due today or earlier?")) return;
             const btn = document.querySelector('.btn-apply-early');
             const originalText = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
-            
             try {
                 const token = localStorage.getItem("bejja_token");
                 const response = await fetch("http://localhost:5000/api/loans/apply-early-payments", {
-                    method: "POST",
-                    headers: { 
-                        "Authorization": "Bearer " + token, 
-                        "Content-Type": "application/json" 
-                    }
+                    method: "POST", headers: { "Authorization": "Bearer " + token, "Content-Type": "application/json" }
                 });
                 const result = await response.json();
-                
-                if (result.success) {
-                    alert("✅ " + result.message);
-                    loadDashboard();
-                } else {
-                    alert("❌ " + (result.message || "Failed to apply early payments."));
-                }
-            } catch (error) {
-                alert("❌ Failed to connect to server. Please try again.");
-                console.error(error);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = originalText;
-            }
+                alert(result.success ? "✅ " + result.message : "❌ " + (result.message || "Failed"));
+                loadDashboard();
+            } catch (error) { alert("❌ Failed to connect."); }
+            finally { btn.disabled = false; btn.innerHTML = originalText; }
         }
 
-        function logout() {
-            if (confirm("Are you sure you want to logout?")) {
-                AUTH.adminLogout();
-            }
-        }
+        function logout() { if (confirm("Logout?")) AUTH.adminLogout(); }
 
         loadDashboard();
     </script>
