@@ -2,9 +2,9 @@
     BEJJA LOAN CREDIT - API Helper
 =========================================================*/
 
-const API_BASE = "http://localhost:5000/api";
-
 const API_BASE = "https://bejja-credit-api.onrender.com/api";
+
+console.log("🔗 API Connected to:", API_BASE);
 
 function formatDate(dateStr) {
     if (!dateStr) return "-";
