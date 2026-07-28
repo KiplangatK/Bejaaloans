@@ -4,7 +4,7 @@
 
 const API_BASE = "http://localhost:5000/api";
 
-console.log("🔗 API Connected to:", API_BASE);
+const API_BASE = "https://bejja-credit-api.onrender.com/api";
 
 function formatDate(dateStr) {
     if (!dateStr) return "-";
